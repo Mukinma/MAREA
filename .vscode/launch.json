@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "MAREA Web · configuración local",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "toolArgs": [
+        "--web-port=7357",
+        "--dart-define-from-file=config/supabase.example.json"
+      ]
+    },
+    {
+      "name": "MAREA · dispositivo seleccionado · configuración local",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "toolArgs": [
+        "--dart-define-from-file=config/supabase.example.json"
+      ]
+    }
+  ]
+}

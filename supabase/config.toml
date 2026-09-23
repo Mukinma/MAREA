@@ -1,0 +1,7 @@
+project_id = "marea"
+
+[functions.delete-account]
+verify_jwt = true
+
+[functions.profile-media]
+verify_jwt = true
