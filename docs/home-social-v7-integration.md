@@ -8,8 +8,9 @@ de 2026, zona America/Mexico_City.
 
 Checkout: `/Users/crisis/.codex/worktrees/marea-home-social-v7/marea`.
 Rama: `Chris/home-social-v7`. El checkout original y sus cambios pendientes se
-conservaron; se copiaron al checkout aislado antes de implementar. No hay commit,
-push ni publicación del frontend en Netlify. Las migraciones 009–011 **sí están
+conservaron; se copiaron al checkout aislado antes de implementar. La versión v7
+se integró posteriormente en `main`. No se ha publicado el frontend en Netlify.
+Las migraciones 009–011 **sí están
 aplicadas** al proyecto Supabase enlazado, con gate remoto aprobado.
 
 ## Interfaz integrada
@@ -132,7 +133,7 @@ La compilación web emite advertencias informativas de tree shaking de iconos y
 dry run Wasm; termina correctamente. iOS se verificó sin firma; no se generó una
 distribución App Store. Android es un APK debug para probar, no un release firmado.
 
-## Evidencia
+## Evidencia local (no versionada)
 
 Capturas reales: `output/playwright/home-web-v7.png`, `home-mobile-v7.png`,
 `notifications-web-v7.png`, `notifications-mobile-v7.png`, `saved-mobile-v7.png`,
