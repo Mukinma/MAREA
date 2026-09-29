@@ -126,27 +126,25 @@ class AppShell extends StatelessWidget {
 
         return Scaffold(
           body: content,
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            type: BottomNavigationBarType.fixed,
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: _selectedIndex,
             backgroundColor: AppColors.surface,
-            selectedItemColor: AppColors.actionBlue,
-            unselectedItemColor: AppColors.textSecondary,
+            surfaceTintColor: Colors.transparent,
             elevation: 0,
-            selectedFontSize: 12,
-            unselectedFontSize: 12,
-            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w800),
-            onTap: (index) => _navigate(context, index),
-            items: [
+            height: 76,
+            indicatorColor: AppColors.mint,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            onDestinationSelected: (index) => _navigate(context, index),
+            destinations: [
               for (var index = 0; index < _destinations.length; index++)
-                BottomNavigationBarItem(
+                NavigationDestination(
                   icon: index == 2
                       ? const _CreateButton(key: Key('create-destination'))
                       : Icon(_destinations[index].icon),
-                  activeIcon: index == 2
+                  selectedIcon: index == 2
                       ? const _CreateButton(key: Key('create-destination'))
                       : Icon(_destinations[index].selectedIcon),
-                  label: index == 2 ? '' : _destinations[index].label,
+                  label: _destinations[index].label,
                 ),
             ],
           ),

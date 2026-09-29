@@ -32,6 +32,39 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         if (profile != null)
           Card(
+            color: AppColors.mist,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => context.go('/create'),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: AppColors.lavender,
+                      child: Text(
+                        profile.fullName.isEmpty
+                            ? 'M'
+                            : profile.fullName[0].toUpperCase(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        '¿Qué quieres mover hoy en tu comunidad?',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    const Icon(Icons.add_circle_outline_rounded),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        if (profile != null) const SizedBox(height: 16),
+        if (profile != null)
+          Card(
             color: AppColors.mint,
             child: Padding(
               padding: const EdgeInsets.all(24),
@@ -42,9 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     profile.userType.headline,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 8),
-                  Text(profile.userType.description),
                   const SizedBox(height: 16),
+                  Text(profile.userType.description),
+                  const SizedBox(height: 12),
                   Wrap(
                     spacing: 12,
                     runSpacing: 8,
@@ -60,7 +93,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       if (profile.role == ProfileRole.admin)
                         OutlinedButton.icon(
-                          onPressed: () async { await context.push('/moderation'); if(mounted) _refresh(); },
+                          onPressed: () async {
+                            await context.push('/moderation');
+                            if (mounted) _refresh();
+                          },
                           icon: const Icon(Icons.shield_outlined),
                           label: const Text('Moderación'),
                         ),
@@ -186,7 +222,10 @@ class _PostsFeedState extends State<PostsFeed> {
                   : widget.savedOnly
                   ? 'Tus guardados'
                   : 'Publicaciones recientes',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
           IconButton(
@@ -196,7 +235,7 @@ class _PostsFeedState extends State<PostsFeed> {
           ),
         ],
       ),
-      const SizedBox(height: 12),
+      const SizedBox(height: 8),
       for (final post in _posts)
         PostCard(
           key: ValueKey(post.id),
@@ -305,10 +344,10 @@ class _PostCardState extends State<PostCard> {
     final post = widget.post;
     final owner = post.authorId == widget.viewerId;
     return Card(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 16),
       clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -427,7 +466,7 @@ class _PostCardState extends State<PostCard> {
                   const Chip(label: Text('Oculta por moderación')),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(post.title, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 10),
             SelectableText(post.body),
@@ -486,7 +525,7 @@ class _PostCardState extends State<PostCard> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Wrap(
               alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,

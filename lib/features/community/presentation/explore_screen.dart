@@ -47,7 +47,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         ),
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: 16),
       Wrap(
         spacing: 8,
         runSpacing: 8,
@@ -64,7 +64,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             ),
         ],
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: 16),
       if (_section != 'people') ...[
         Wrap(
           spacing: 8,
@@ -239,7 +239,14 @@ class PublicProfileScreen extends StatelessWidget {
                           for (final mission in missions)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 16),
-                              child: MissionSummary(mission: mission, repository: repo, onTap: () async { await context.push('/missions/${mission.id}'); if(context.mounted) reload(); }),
+                              child: MissionSummary(
+                                mission: mission,
+                                repository: repo,
+                                onTap: () async {
+                                  await context.push('/missions/${mission.id}');
+                                  if (context.mounted) reload();
+                                },
+                              ),
                             ),
                         ],
                       ),

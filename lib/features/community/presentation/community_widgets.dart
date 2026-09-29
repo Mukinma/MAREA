@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
+import 'package:marea/shared/widgets/marea_logo.dart';
 
 class CommunityPage extends StatelessWidget {
   const CommunityPage({
@@ -19,16 +21,37 @@ class CommunityPage extends StatelessWidget {
   final Widget? action;
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 600;
     final body = ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.fromLTRB(
+        compact ? 16 : 24,
+        compact ? 12 : 24,
+        compact ? 16 : 24,
+        32,
+      ),
       children: [
         Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 900),
+            constraints: const BoxConstraints(maxWidth: 960),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                if (compact)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Row(
+                      children: [
+                        const MareaLogo(compact: true),
+                        const Spacer(),
+                        IconButton(
+                          tooltip: 'Explorar la comunidad',
+                          onPressed: () => context.go('/explore'),
+                          icon: const Icon(Icons.explore_outlined),
+                        ),
+                      ],
+                    ),
+                  ),
                 Wrap(
                   alignment: WrapAlignment.spaceBetween,
                   crossAxisAlignment: WrapCrossAlignment.center,
@@ -37,7 +60,11 @@ class CommunityPage extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontSize: compact ? 28 : null,
+                            height: 1.08,
+                          ),
                     ),
                     ?action,
                   ],
@@ -50,7 +77,7 @@ class CommunityPage extends StatelessWidget {
                       style: const TextStyle(color: AppColors.textSecondary),
                     ),
                   ),
-                const SizedBox(height: 24),
+                SizedBox(height: compact ? 20 : 28),
                 ...children,
                 const SizedBox(height: 40),
               ],
