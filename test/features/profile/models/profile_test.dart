@@ -31,14 +31,17 @@ void main() {
       'full_name': 'Christopher Aguilar',
       'username': 'cris',
       'bio': 'Creo experiencias urbanas.',
-      'user_type': 'Artista / creador',
       'avatar_path': null,
       'cover_path': null,
       'cover_preset': 'marea',
       'website': null,
-      'interests': <String>[],
-      'goals': <String>[],
-      'onboarding_status': 'pending',
+      'contact_url': null,
+      'open_to_collaboration': false,
+      'location': null,
+      'location_latitude': null,
+      'location_longitude': null,
+      'location_precision': null,
+      'business_hours': <String, String?>{},
     });
     expect(payload, isNot(contains('role')));
     expect(payload, isNot(contains('id')));
@@ -68,7 +71,6 @@ void main() {
       fullName: 'Ana López',
       username: 'ana.mx',
       bio: '',
-      userType: UserType.creator,
       avatarUrl: null,
     );
 
@@ -76,14 +78,17 @@ void main() {
       'full_name': 'Ana López',
       'username': 'ana.mx',
       'bio': null,
-      'user_type': 'Artista / creador',
       'avatar_path': null,
       'cover_path': null,
       'cover_preset': 'marea',
       'website': null,
-      'interests': <String>[],
-      'goals': <String>[],
-      'onboarding_status': 'pending',
+      'contact_url': null,
+      'open_to_collaboration': false,
+      'location': null,
+      'location_latitude': null,
+      'location_longitude': null,
+      'location_precision': null,
+      'business_hours': <String, String?>{},
     });
   });
 }

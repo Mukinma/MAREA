@@ -1,3 +1,4 @@
+import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/features/legal/legal_policy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -25,6 +26,7 @@ abstract interface class AuthRepository {
     required String username,
     required String email,
     required String password,
+    UserType userType = UserType.general,
     LegalConsent? consent,
   });
 
@@ -73,6 +75,7 @@ class SupabaseAuthRepository implements AuthRepository {
     required String username,
     required String email,
     required String password,
+    UserType userType = UserType.general,
     LegalConsent? consent,
   }) async {
     try {
@@ -87,9 +90,20 @@ class SupabaseAuthRepository implements AuthRepository {
         data: {
           'full_name': fullName.trim(),
           'username': username,
+          'user_type': userType.databaseValue,
+          'registration_flow': 'minimal-v1',
           ...consent.toMetadata(),
         },
       );
+      // Supabase masks repeated signups for confirmed accounts with a fake
+      // user whose identities are empty. No confirmation email is sent.
+      if (response.session == null &&
+          response.user?.identities?.isEmpty == true) {
+        throw const AppFailure(
+          'No pudimos completar este registro. Si ya tienes una cuenta, inicia sesión o recupera tu contraseña',
+          kind: AppFailureKind.emailAlreadyUsed,
+        );
+      }
       return response.session == null
           ? SignUpOutcome.confirmationRequired
           : SignUpOutcome.authenticated;

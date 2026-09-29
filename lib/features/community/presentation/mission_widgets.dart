@@ -1,8 +1,10 @@
+import 'package:marea/core/theme/app_depth.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/community/data/community_repository.dart';
 import 'package:marea/features/community/models/community_models.dart';
+import 'package:marea/features/profile/models/profile.dart';
 
 String missionDate(DateTime value) {
   final d = value.toLocal();
@@ -19,8 +21,8 @@ class MissionSurface extends StatelessWidget {
     padding: EdgeInsets.all(padding),
     decoration: BoxDecoration(
       color: Colors.white,
+      boxShadow: AppDepth.raised,
       borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: AppColors.softBorder),
     ),
     child: child,
   );
@@ -104,12 +106,16 @@ class MissionSummary extends StatelessWidget {
     this.onTap,
     this.owner = false,
     this.dateLabel,
+    this.viewerType,
+    this.viewerId,
   });
   final Mission mission;
   final CommunityRepository? repository;
   final Uint8List? bytes;
   final bool preview, owner;
   final String? dateLabel;
+  final UserType? viewerType;
+  final String? viewerId;
   final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) => MissionSurface(
@@ -126,12 +132,14 @@ class MissionSummary extends StatelessWidget {
           ),
           const SizedBox(height: 16),
         ],
-        MissionCover(
-          path: mission.imagePath,
-          bytes: bytes,
-          repository: repository,
-        ),
-        const SizedBox(height: 16),
+        if (mission.imagePath != null || bytes != null) ...[
+          MissionCover(
+            path: mission.imagePath,
+            bytes: bytes,
+            repository: repository,
+          ),
+          const SizedBox(height: 16),
+        ],
         Wrap(
           spacing: 8,
           runSpacing: 6,
@@ -181,6 +189,15 @@ class MissionSummary extends StatelessWidget {
             Icons.inbox_outlined,
             '${mission.pendingCount} pendientes · ${mission.acceptedCount} aceptadas',
           ),
+        if (!owner && !preview && viewerType != null)
+          _line(
+            Icons.account_circle_outlined,
+            mission.authorId == viewerId
+                ? 'Misión que organizas'
+                : mission.targetType == null || mission.targetType == viewerType
+                ? 'Compatible con tu perfil'
+                : 'Busca otro tipo de perfil',
+          ),
         if (preview && mission.requirements != null) ...[
           const SizedBox(height: 12),
           const Text(
@@ -204,7 +221,7 @@ class MissionSummary extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: onTap,
               icon: const Icon(Icons.arrow_forward, size: 18),
-              label: const Text('Ver misión'),
+              label: Text(owner ? 'Gestionar misión' : 'Ver misión'),
             ),
           ),
         ],

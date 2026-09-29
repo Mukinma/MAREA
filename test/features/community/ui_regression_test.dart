@@ -26,6 +26,7 @@ class _Repository implements CommunityRepository {
     createdAt: DateTime.utc(2030),
     updatedAt: DateTime.utc(2030),
   );
+  int postRequests = 0;
   bool saved = true;
   bool failSave = false;
   bool hidden = false;
@@ -56,7 +57,11 @@ class _Repository implements CommunityRepository {
     String? category,
     bool savedOnly = false,
     int offset = 0,
-  }) async => savedOnly && !saved ? [] : [postValue];
+  }) async {
+    postRequests++;
+    return savedOnly && !saved ? [] : [postValue];
+  }
+
   @override
   Future<List<CommunityProfile>> profiles({
     List<String>? ids,
@@ -137,6 +142,29 @@ Future<AppSessionController> _session(
 }
 
 void main() {
+  testWidgets('hiding the feed heading preserves accessible refresh', (
+    tester,
+  ) async {
+    final repo = _Repository();
+    final session = await _session(repo);
+    addTearDown(session.dispose);
+    await tester.pumpWidget(
+      testApp(
+        Scaffold(
+          body: SingleChildScrollView(
+            child: PostsFeed(controller: session, showHeading: false),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(repo.postRequests, 1);
+    final refresh = find.byTooltip('Actualizar publicaciones');
+    expect(refresh.hitTestable(), findsOneWidget);
+    await tester.tap(refresh);
+    await tester.pumpAndSettle();
+    expect(repo.postRequests, 2);
+  });
   testWidgets('removing a saved post removes it from saved-only feed', (
     tester,
   ) async {
@@ -152,9 +180,13 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final bookmark = find.widgetWithText(TextButton, 'Guardado');
+    final bookmark = find.byTooltip('Acciones');
     await tester.ensureVisible(bookmark);
     await tester.tap(bookmark);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Quitar guardado'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
     expect(repo.saved, isFalse);
     expect(find.text('Pieza original'), findsNothing);

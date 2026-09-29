@@ -58,6 +58,43 @@ const rpcCreate=async (fields={}) => Object.values((await db.query('select publi
 const edit=async (id,fields) => db.query('select public.update_mission($1,$2::jsonb)',[id,fields]);
 const row=async id => (await db.query('select * from public.missions where id=$1',[id])).rows[0];
 const listing=async (id,scope='all') => (await db.query('select * from public.list_missions(mission_filter => $1,scope_filter => $2)',[id,scope])).rows.map(r=>r.list_missions);
+// Exercise the permission matrix through real RPCs under authenticated roles.
+const types=['Usuario general','Artista / creador','Emprendedor','Negocio'];
+const permissionMissions=[];
+for (const ownerType of types) {
+  await system();
+  await db.query('update public.profiles set user_type=$1 where id=$2',[ownerType,a]);
+  for (const targetType of [null,...types]) {
+    await login(a);
+    const id=await rpcCreate({title:`Permisos ${ownerType}`,target_type:targetType});
+    permissionMissions.push(id);
+    check((await row(id)).author_id,a,`${ownerType} can organize for ${targetType ?? 'everyone'}`);
+    await rejects(`select public.apply_to_mission('${id}','Mi propia misión')`,'organizer cannot self-apply');
+    for (const viewerType of types) {
+      await system();
+      await db.query('update public.profiles set user_type=$1 where id=$2',[viewerType,b]);
+      await login(b);
+      if (targetType === null || targetType === viewerType) {
+        const request=await scalar(`select public.apply_to_mission('${id}','Quiero colaborar')`);
+        check(await scalar(`select status from public.mission_applications where id='${request}'`),'pending',`${viewerType} can apply for ${targetType ?? 'everyone'}`);
+        await db.exec(`select public.withdraw_application('${request}')`);
+      } else {
+        await assert.rejects(db.exec(`select public.apply_to_mission('${id}','Quiero colaborar')`),error => error.message.includes('mission_target_mismatch'));
+        assertions++;
+      }
+      await rejects(`select public.set_mission_status('${id}','closed')`,'participant cannot manage another mission');
+    }
+  }
+  for (const viewerType of types) {
+    const filtered=(await db.query('select * from public.list_missions(query_text=>$1,target_filter=>$2,scope_filter=>\'discover\')',[`Permisos ${ownerType}`,viewerType])).rows.map(r=>r.list_missions);
+    check(filtered.length,2,'compatible filter includes matching and all-profile calls');
+    check(filtered.every(m=>m.target_type===null || m.target_type===viewerType),true,'compatible results exclude other types');
+  }
+}
+await system();
+await db.query('delete from public.missions where id=any($1::uuid[])',[permissionMissions]);
+await db.query('update public.profiles set user_type=$1 where id=any($2::uuid[])',['Usuario general',[a,b]]);
+await login(a);
 check(await scalar(`select count(*)::int from information_schema.routines where routine_schema='public' and routine_name='create_mission'`),1,'create RPC exists');
 check(await scalar(`select location from public.posts where id='${legacyPost}'`),'Centro','upgrade preserves legacy location text');
 check(await scalar(`select location_latitude from public.posts where id='${legacyPost}'`),null,'upgrade removes partial coordinates');

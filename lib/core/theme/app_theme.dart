@@ -86,6 +86,37 @@ abstract final class AppTheme {
           fontWeight: FontWeight.w800,
         ),
       ),
+      cardTheme: CardThemeData(
+        color: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.surface,
+        selectedColor: AppColors.mint,
+        side: const BorderSide(color: AppColors.softBorder),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        labelStyle: const TextStyle(
+          color: AppColors.brandNavy,
+          fontWeight: FontWeight.w600,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        showCheckmark: false,
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          foregroundColor: AppColors.brandNavy,
+          minimumSize: const Size(48, 48),
+        ),
+      ),
+      listTileTheme: const ListTileThemeData(iconColor: AppColors.brandNavy),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(48, 48),
+          foregroundColor: AppColors.actionBlue,
+        ),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.paper,
@@ -116,6 +147,7 @@ abstract final class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: const Size(48, 52),
+          elevation: 0,
           backgroundColor: AppColors.actionBlue,
           foregroundColor: Colors.white,
           disabledBackgroundColor: AppColors.border,
@@ -129,7 +161,8 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(48, 52),
           foregroundColor: AppColors.actionBlue,
-          side: const BorderSide(color: AppColors.actionBlue, width: 1.5),
+          backgroundColor: AppColors.surface,
+          side: const BorderSide(color: AppColors.border),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.medium),
           ),

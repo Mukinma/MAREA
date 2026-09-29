@@ -10,9 +10,10 @@ import 'package:marea/shared/widgets/marea_text_field.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({required this.controller, super.key});
+  const LoginScreen({required this.controller, this.email, super.key});
 
   final AppSessionController controller;
+  final String? email;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -20,7 +21,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  late final _emailController = TextEditingController(text: widget.email);
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   String? _confirmationEmail;
@@ -74,15 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 Text(
-                  'Bienvenido de nuevo',
+                  'Iniciar sesión',
                   style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  'Descubre personas, proyectos y lugares cerca de ti.',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
                 ),
                 const SizedBox(height: AppSpacing.xxl),
                 MareaTextField(
@@ -154,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: AppSpacing.sm),
                         ],
                         PrimaryButton(
-                          label: 'Iniciar sesión',
+                          label: 'Entrar',
                           isLoading: widget.controller.isBusy,
                           onPressed: _submit,
                         ),
@@ -180,12 +174,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: WrapAlignment.center,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Text('¿Nuevo en MAREA?'),
+                    const Text('¿No tienes cuenta?'),
                     TextButton(
                       onPressed: widget.controller.isBusy
                           ? null
                           : () => context.go('/register'),
-                      child: const Text('Crear una cuenta'),
+                      child: const Text('Crear cuenta'),
                     ),
                   ],
                 ),

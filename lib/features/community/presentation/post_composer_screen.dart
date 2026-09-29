@@ -27,6 +27,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
   String _category = 'otros';
   Uint8List? _image;
   String? _imagePath, _originalImagePath, _imageUrl, _error;
+  bool _allowsCollaboration = false;
   bool _busy = false, _loading = false, _dirty = false;
   @override
   void initState() {
@@ -60,6 +61,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
       _coordinates = post.coordinates;
       _price.text = post.price?.toString() ?? '';
       _kind = post.kind;
+      _allowsCollaboration = post.allowsCollaboration;
       _category = post.category;
       _imagePath = post.imagePath;
       _originalImagePath = post.imagePath;
@@ -137,6 +139,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
     }
     final kind = _kind ?? profile.userType.postKinds.first;
     // Freeze the submitted values before upload: navigation may dispose this form.
+    final allowsCollaboration = _allowsCollaboration;
     final title = _title.text.trim();
     final body = _body.text.trim();
     final category = _category;
@@ -157,6 +160,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
       coordinates: coordinates,
       price: price,
       imagePath: imagePath,
+      allowsCollaboration: allowsCollaboration,
     );
     final validation = input(
       _imagePath,
@@ -201,8 +205,10 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
           ),
         ),
       );
-      if(widget.postId != null && context.canPop()) {
-        WidgetsBinding.instance.addPostFrameCallback((_) { if(mounted) context.pop(true); });
+      if (widget.postId != null && context.canPop()) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) context.pop(true);
+        });
       } else {
         context.go('/home');
       }
@@ -275,6 +281,19 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
               )
             : null,
         children: [
+          SwitchListTile.adaptive(
+            value: _allowsCollaboration,
+            onChanged: _busy || _loading
+                ? null
+                : (value) => setState(() {
+                    _allowsCollaboration = value;
+                    _dirty = true;
+                  }),
+            title: const Text('Invitar a colaborar'),
+            subtitle: const Text(
+              'Recibe mensajes privados de interés para esta publicación.',
+            ),
+          ),
           if (_loading)
             const Center(child: CircularProgressIndicator())
           else if (widget.postId != null && _kind == null)

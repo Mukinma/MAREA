@@ -30,6 +30,7 @@ void main() {
       ]);
       expect(UserType.business.postKinds, [
         PostKind.community,
+        PostKind.service,
         PostKind.space,
         PostKind.event,
       ]);
@@ -120,6 +121,7 @@ void main() {
           json.keys,
           unorderedEquals([
             'kind',
+        'allows_collaboration',
             'title',
             'body',
             'category',

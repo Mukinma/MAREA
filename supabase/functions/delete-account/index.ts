@@ -49,7 +49,7 @@ Deno.serve(async (request) => {
   if (requestError) return jsonResponse(500, {error: 'account_deletion_failed'});
   if (!ready) return jsonResponse(409, {error: 'media_operation_in_progress_retry_deletion'});
   // All uploads are now blocked. Failed attempts resume from this marker.
-  for (const bucketName of ['profile-media', 'post-images', 'mission-images']) {
+  for (const bucketName of ['profile-media', 'post-images', 'mission-images', 'showcase-media']) {
     const bucket = adminClient.storage.from(bucketName);
     for (let batch = 0; batch < 100; batch++) {
       const {data: files, error: listError} = await bucket.list(data.user.id, {limit: 100});

@@ -1,25 +1,69 @@
 import 'dart:async';
+import 'package:marea/core/errors/app_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import '../../support/fakes.dart';
 
 void main() {
-  test('skip onboarding persists status without inventing interests', () async {
-    final profiles = FakeProfileRepository();
+  test('initial confirmation is mandatory and cannot be repeated', () async {
+    final profiles = FakeProfileRepository()
+      ..value = sampleProfile.copyWith(initialProfileCompletedAt: null);
     final controller = AppSessionController(
       authRepository: FakeAuthRepository(),
       profileRepository: profiles,
     );
     addTearDown(controller.dispose);
     await controller.initialize();
+    expect(controller.needsOnboarding, isTrue);
     expect(
-      await controller.finishOnboarding(skip: true, interests: [], goals: []),
+      await controller.completeInitialProfile(
+        const InitialProfileInput(
+          userType: UserType.creator,
+          interests: [],
+          goals: [],
+        ),
+      ),
       isTrue,
     );
-    expect(controller.profile!.onboardingStatus, OnboardingStatus.skipped);
-    expect(controller.profile!.interests, isEmpty);
+    expect(controller.needsOnboarding, isFalse);
+    expect(
+      await controller.completeInitialProfile(
+        const InitialProfileInput(
+          userType: UserType.business,
+          interests: ['arte'],
+          goals: ['colaborar'],
+        ),
+      ),
+      isFalse,
+    );
+    expect(controller.profile!.userType, UserType.creator);
   });
+  test(
+    'lost initial confirmation response recovers the persisted selection',
+    () async {
+      final profiles = LostConfirmationResponse()
+        ..value = sampleProfile.copyWith(initialProfileCompletedAt: null);
+      final controller = AppSessionController(
+        authRepository: FakeAuthRepository(),
+        profileRepository: profiles,
+      );
+      addTearDown(controller.dispose);
+      await controller.initialize();
+      expect(
+        await controller.completeInitialProfile(
+          const InitialProfileInput(
+            userType: UserType.business,
+            interests: ['arte'],
+            goals: ['colaborar'],
+          ),
+        ),
+        isTrue,
+      );
+      expect(controller.needsOnboarding, isFalse);
+      expect(controller.profile!.userType, UserType.business);
+    },
+  );
   test(
     'an in-flight profile refresh cannot restore a signed-out account',
     () async {
@@ -47,4 +91,12 @@ class DelayedProfiles extends FakeProfileRepository {
   @override
   Future<Profile> getCurrentProfile() =>
       delay?.future ?? super.getCurrentProfile();
+}
+
+class LostConfirmationResponse extends FakeProfileRepository {
+  @override
+  Future<Profile> completeInitialProfile(InitialProfileInput input) async {
+    await super.completeInitialProfile(input);
+    throw const AppFailure('No pudimos conectarnos.');
+  }
 }

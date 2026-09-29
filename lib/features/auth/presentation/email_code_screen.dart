@@ -102,7 +102,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
             ? '/legal/accept'
             : widget.controller.needsOnboarding
             ? '/onboarding'
-            : '/profile',
+            : '/home',
       );
     }
   }
@@ -135,16 +135,22 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                 ),
               ),
               Text(
-                widget.recovery ? 'Recupera tu acceso' : 'Revisa tu correo',
+                _codeStep
+                    ? (widget.recovery
+                          ? 'Verifica el código'
+                          : 'Verifica tu correo')
+                    : widget.recovery
+                    ? 'Recupera tu acceso'
+                    : 'Verifica tu correo',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 16),
               Text(
                 _codeStep
-                    ? 'Introduce el código del correo de MAREA. No lo compartas con nadie.'
+                    ? 'Escribe el código que recibiste.'
                     : widget.recovery
-                    ? 'Escribe el correo de tu cuenta para solicitar un código y elegir una contraseña nueva.'
-                    : 'Confirma el correo de tu cuenta para poder entrar a MAREA. Solicita un código o usa uno que ya hayas recibido.',
+                    ? 'Escribe el correo de tu cuenta.'
+                    : 'Usa el correo con el que te registraste.',
               ),
               const SizedBox(height: 24),
               if (!_codeStep)
@@ -161,10 +167,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                   },
                 ),
               if (_codeStep) ...[
-                Text(
-                  'Correo de destino',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
+                Text('Correo', style: Theme.of(context).textTheme.labelLarge),
                 const SizedBox(height: 4),
                 Text(
                   _destination!,
@@ -174,7 +177,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                   alignment: Alignment.centerLeft,
                   child: TextButton(
                     onPressed: widget.controller.isBusy ? null : _changeEmail,
-                    child: const Text('Cambiar correo'),
+                    child: const Text('Usar otro correo'),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -182,7 +185,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                   key: const Key('email-code'),
                   enabled: !widget.controller.isBusy,
                   controller: _code,
-                  label: 'Código del correo',
+                  label: 'Código',
                   keyboardType: TextInputType.number,
                   autofillHints: const [AutofillHints.oneTimeCode],
                   textInputAction: TextInputAction.done,
@@ -196,9 +199,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
               SessionFeedback(controller: widget.controller),
               if (_requestAccepted && widget.controller.failure == null) ...[
                 const SizedBox(height: 16),
-                const Text(
-                  'Solicitud recibida. Revisa tu bandeja de entrada y spam; el mensaje puede tardar unos minutos.',
-                ),
+                const Text('Revisa tu correo y spam.'),
               ],
               const SizedBox(height: 24),
               PrimaryButton(
@@ -242,10 +243,10 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
               const SizedBox(height: 12),
               Text(
                 _codeStep
-                    ? '¿No llegó? Comprueba el correo de destino y revisa spam. Puedes solicitar otro código al terminar la espera. Por seguridad no indicamos si existe una cuenta con ese correo.'
+                    ? '¿No llegó? Revisa spam o reenvía el código.'
                     : widget.recovery
-                    ? 'Por seguridad, la solicitud no indica si existe una cuenta con ese correo. Tu contraseña no cambia hasta completar la recuperación.'
-                    : 'Por seguridad, la solicitud no indica si existe una cuenta con ese correo.',
+                    ? 'Recibirás un código si hay una cuenta con ese correo.'
+                    : 'Recibirás un código si hay una cuenta con ese correo.',
               ),
             ],
           ),

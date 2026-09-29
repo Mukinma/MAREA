@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -10,6 +11,7 @@ class CommunityPage extends StatelessWidget {
     this.subtitle,
     this.onRefresh,
     this.action,
+    this.maxWidth = 960,
     super.key,
   });
   final String title;
@@ -17,31 +19,36 @@ class CommunityPage extends StatelessWidget {
   final List<Widget> children;
   final Future<void> Function()? onRefresh;
   final Widget? action;
+  final double maxWidth;
   @override
   Widget build(BuildContext context) {
     final body = ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.sizeOf(context).width < 600 ? 20 : 32,
+        vertical: 24,
+      ),
       children: [
         Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 900),
+            constraints: BoxConstraints(maxWidth: maxWidth),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 16,
-                  runSpacing: 12,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    ?action,
-                  ],
-                ),
+                if (title.isNotEmpty)
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 12,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      ?action,
+                    ],
+                  ),
                 if (subtitle != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
@@ -50,7 +57,7 @@ class CommunityPage extends StatelessWidget {
                       style: const TextStyle(color: AppColors.textSecondary),
                     ),
                   ),
-                const SizedBox(height: 24),
+                if (title.isNotEmpty) const SizedBox(height: 24),
                 ...children,
                 const SizedBox(height: 40),
               ],
@@ -78,7 +85,7 @@ class CommunityNotice extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onRetry;
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => MareaCard(
     child: Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
