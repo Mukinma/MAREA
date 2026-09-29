@@ -14,14 +14,14 @@ class SocialAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.brandNavy,
-        border: Border.all(color: Colors.white, width: 5),
+        color: AppColors.mist,
+        border: Border.all(color: AppColors.aqua, width: 3),
       ),
       alignment: Alignment.center,
       child: Text(
         initials,
         style: TextStyle(
-          color: Colors.white,
+          color: AppColors.brandNavy,
           fontSize: size * .28,
           fontWeight: FontWeight.w800,
         ),

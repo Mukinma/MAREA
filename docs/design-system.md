@@ -14,13 +14,13 @@ Social, creativa, cercana, tecnológica, joven, amigable y expresiva. La interfa
 | Action Blue | `#0D4397` | CTA y selección |
 | Aqua | `#22C5C1` | Acentos, guía y progreso |
 | Mist | `#EAF6FD` | Bloques suaves |
-| Canvas | `#F7FBFF` | Fondo frío secundario |
-| Paper | `#FAF9F6` | Fondo general cálido, panel de bienvenida e inputs |
+| Canvas | `#F3F7FC` | Fondo general de la experiencia social |
+| Paper | `#F8FAFC` | Superficie neutra de formularios y estados |
 | Surface | `#FFFFFF` | Cards, navegación y área de autenticación |
 | Text | `#102149` | Texto principal |
 | Secondary | `#66738B` | Texto secundario |
-| Border | `#D9E5F0` | Contornos ligeros |
-| Soft Border | `#E9E8E4` | Contornos neutros de inputs y separación lateral |
+| Border | `#D7E1EC` | Contornos ligeros |
+| Soft Border | `#E2E8F0` | Contornos neutros de inputs y separación lateral |
 | Error | `#C93F58` | Acciones destructivas |
 | Success | `#128C78` | Confirmaciones |
 
@@ -42,7 +42,7 @@ El pulido visual conserva todos los colores originales de marca y añade un neut
 - **Input:** superficie Paper, contorno neutro discreto, foco azul, error traducido.
 - **Card:** superficie blanca sobre Paper, sin borde en perfil y vacíos; sin elevación pesada.
 - **Chip:** pastel contextual con texto navy; no actúa como CTA.
-- **Navegación:** cinco destinos; `+` central circular en móvil, rail de 88 px en tablet y lateral de al menos 260 px en desktop. Etiquetas desktop de 18 px, peso 600/800, iconos de 27 px y selección menta. Crear conserva un círculo azul de 48 px también en desktop.
+- **Navegación:** cinco destinos; navegación inferior etiquetada en móvil, rail compacto en tablet y rail extendido de 232 px en desktop. La selección usa Mist y Crear conserva un círculo aqua de 48 px como acción social diferenciada.
 - **Perfil:** portada abstracta pastel con un trazo aqua, avatar superpuesto sin sombra, nombre de 28/34 px, username, tipo y bio. Editar queda junto al avatar en ancho amplio y debajo de la bio en móvil. Correo queda en Configuración; UUID y role no se muestran.
 - **Autenticación:** panel de marca cálido separado del formulario; título y composición de mundos creativos en desktop. En móvil se priorizan logo y formulario para no alargar el acceso. No hay tarjetas de contenido ficticio ni acciones decorativas.
 

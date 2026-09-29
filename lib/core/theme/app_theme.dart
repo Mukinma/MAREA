@@ -21,7 +21,7 @@ abstract final class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: scheme,
-      scaffoldBackgroundColor: AppColors.paper,
+      scaffoldBackgroundColor: AppColors.canvas,
       fontFamily: 'NunitoSans',
       visualDensity: VisualDensity.standard,
     );
@@ -31,21 +31,21 @@ abstract final class AppTheme {
           .copyWith(
             displaySmall: const TextStyle(
               color: AppColors.brandNavy,
-              fontSize: 40,
+              fontSize: 38,
               fontWeight: FontWeight.w800,
-              height: 1.05,
-              letterSpacing: -1.2,
+              height: 1.08,
+              letterSpacing: -0.9,
             ),
             headlineMedium: const TextStyle(
               color: AppColors.brandNavy,
-              fontSize: 30,
+              fontSize: 28,
               fontWeight: FontWeight.w800,
-              height: 1.12,
-              letterSpacing: -0.7,
+              height: 1.15,
+              letterSpacing: -0.5,
             ),
             titleLarge: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 22,
+              color: AppColors.brandNavy,
+              fontSize: 20,
               fontWeight: FontWeight.w700,
             ),
             titleMedium: const TextStyle(
@@ -56,7 +56,7 @@ abstract final class AppTheme {
             bodyLarge: const TextStyle(
               color: AppColors.textPrimary,
               fontSize: 16,
-              height: 1.5,
+              height: 1.45,
             ),
             bodyMedium: const TextStyle(
               color: AppColors.textPrimary,
@@ -64,7 +64,7 @@ abstract final class AppTheme {
               height: 1.45,
             ),
             bodySmall: const TextStyle(
-              color: AppColors.textSecondary,
+              color: AppColors.textMuted,
               fontSize: 12,
               height: 1.4,
             ),
@@ -75,7 +75,7 @@ abstract final class AppTheme {
           )
           .apply(fontFamily: 'NunitoSans'),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.paper,
+        backgroundColor: AppColors.canvas,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
@@ -88,28 +88,28 @@ abstract final class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.paper,
+        fillColor: AppColors.surface,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 17,
+          horizontal: 18,
+          vertical: 16,
         ),
         labelStyle: const TextStyle(color: AppColors.textSecondary),
         hintStyle: const TextStyle(color: AppColors.textSecondary),
         errorMaxLines: 2,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderRadius: BorderRadius.circular(AppRadius.large),
           borderSide: const BorderSide(color: AppColors.softBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderRadius: BorderRadius.circular(AppRadius.large),
           borderSide: const BorderSide(color: AppColors.softBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderRadius: BorderRadius.circular(AppRadius.large),
           borderSide: const BorderSide(color: AppColors.actionBlue, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderRadius: BorderRadius.circular(AppRadius.large),
           borderSide: const BorderSide(color: AppColors.error),
         ),
       ),
@@ -121,7 +121,7 @@ abstract final class AppTheme {
           disabledBackgroundColor: AppColors.border,
           disabledForegroundColor: AppColors.textSecondary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.medium),
+            borderRadius: BorderRadius.circular(AppRadius.large),
           ),
         ),
       ),
@@ -138,6 +138,29 @@ abstract final class AppTheme {
       dividerTheme: const DividerThemeData(
         color: AppColors.border,
         thickness: 1,
+      ),
+      cardTheme: CardThemeData(
+        color: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.large),
+          side: const BorderSide(color: AppColors.softBorder),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.mist,
+        selectedColor: AppColors.mint,
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+        ),
+        labelStyle: const TextStyle(
+          color: AppColors.brandNavy,
+          fontWeight: FontWeight.w700,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.brandNavy,

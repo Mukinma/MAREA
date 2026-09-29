@@ -76,6 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(AppRadius.hero),
+                        border: Border.all(color: AppColors.softBorder),
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: LayoutBuilder(
@@ -129,30 +130,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               ),
                                             ),
                                           ),
-                                          if (wide)
-                                            Positioned(
-                                              top: 22,
-                                              right: 0,
-                                              child: SizedBox(
-                                                width: 180,
-                                                child: PrimaryButton(
-                                                  label: 'Editar perfil',
-                                                  icon: Icons.edit_outlined,
-                                                  onPressed: () => context.push(
-                                                    '/profile/edit',
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
                                         ],
                                       ),
                                     ),
-                                    Text(
-                                      profile.fullName,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium
-                                          ?.copyWith(fontSize: wide ? 34 : 28),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            profile.fullName,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium
+                                                ?.copyWith(
+                                                  fontSize: wide ? 34 : 28,
+                                                ),
+                                          ),
+                                        ),
+                                        if (wide)
+                                          TextButton.icon(
+                                            onPressed: () =>
+                                                context.push('/profile/edit'),
+                                            icon: const Icon(
+                                              Icons.edit_outlined,
+                                            ),
+                                            label: const Text('Editar perfil'),
+                                          ),
+                                      ],
                                     ),
                                     const SizedBox(height: 12),
                                     Wrap(
@@ -283,12 +288,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xxl),
-                    Text(
-                      profile.userType.showcaseLabel,
-                      style: Theme.of(context).textTheme.titleLarge,
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      decoration: BoxDecoration(
+                        color: AppColors.mist,
+                        borderRadius: BorderRadius.circular(AppRadius.large),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            profile.userType.showcaseLabel,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(profile.userType.description),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(profile.userType.description),
                     const SizedBox(height: 16),
                     Wrap(
                       spacing: 12,

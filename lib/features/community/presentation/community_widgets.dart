@@ -21,11 +21,11 @@ class CommunityPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final body = ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
       children: [
         Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 900),
+            constraints: const BoxConstraints(maxWidth: 980),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -44,13 +44,17 @@ class CommunityPage extends StatelessWidget {
                 ),
                 if (subtitle != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       subtitle!,
-                      style: const TextStyle(color: AppColors.textSecondary),
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 15,
+                        height: 1.45,
+                      ),
                     ),
                   ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
                 ...children,
                 const SizedBox(height: 40),
               ],
@@ -79,8 +83,9 @@ class CommunityNotice extends StatelessWidget {
   final VoidCallback? onRetry;
   @override
   Widget build(BuildContext context) => Card(
+    color: AppColors.mist,
     child: Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(28),
       child: Column(
         children: [
           Icon(icon, size: 32, color: AppColors.aquaDark),

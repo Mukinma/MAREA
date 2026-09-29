@@ -64,38 +64,42 @@ class AppShell extends StatelessWidget {
                 SafeArea(
                   child: NavigationRail(
                     extended: extended,
-                    minWidth: 88,
-                    minExtendedWidth: 260,
+                    minWidth: 80,
+                    minExtendedWidth: 232,
+                    groupAlignment: -0.65,
+                    useIndicator: true,
+                    indicatorShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     selectedLabelTextStyle: const TextStyle(
                       fontFamily: 'NunitoSans',
-                      fontSize: 18,
+                      fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: AppColors.brandNavy,
                     ),
                     unselectedLabelTextStyle: const TextStyle(
                       fontFamily: 'NunitoSans',
-                      fontSize: 18,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textSecondary,
                     ),
                     selectedIconTheme: const IconThemeData(
-                      size: 27,
+                      size: 24,
                       color: AppColors.brandNavy,
                     ),
                     unselectedIconTheme: const IconThemeData(
-                      size: 27,
+                      size: 24,
                       color: AppColors.textSecondary,
                     ),
                     backgroundColor: AppColors.surface,
                     selectedIndex: _selectedIndex,
-                    useIndicator: true,
-                    indicatorColor: AppColors.mint,
+                    indicatorColor: AppColors.mist,
                     leading: Padding(
                       padding: EdgeInsets.fromLTRB(
+                        14,
+                        24,
                         16,
-                        32,
-                        16,
-                        extended ? 48 : 28,
+                        extended ? 36 : 24,
                       ),
                       child: extended
                           ? const MareaLogo()
@@ -105,7 +109,7 @@ class AppShell extends StatelessWidget {
                     destinations: [
                       for (final destination in _destinations)
                         NavigationRailDestination(
-                          padding: const EdgeInsets.symmetric(vertical: 9),
+                          padding: const EdgeInsets.symmetric(vertical: 7),
                           icon: destination.path == '/create'
                               ? const _CreateButton()
                               : Icon(destination.icon),
@@ -126,29 +130,40 @@ class AppShell extends StatelessWidget {
 
         return Scaffold(
           body: content,
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: AppColors.surface,
-            selectedItemColor: AppColors.actionBlue,
-            unselectedItemColor: AppColors.textSecondary,
-            elevation: 0,
-            selectedFontSize: 12,
-            unselectedFontSize: 12,
-            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w800),
-            onTap: (index) => _navigate(context, index),
-            items: [
-              for (var index = 0; index < _destinations.length; index++)
-                BottomNavigationBarItem(
-                  icon: index == 2
-                      ? const _CreateButton(key: Key('create-destination'))
-                      : Icon(_destinations[index].icon),
-                  activeIcon: index == 2
-                      ? const _CreateButton(key: Key('create-destination'))
-                      : Icon(_destinations[index].selectedIcon),
-                  label: index == 2 ? '' : _destinations[index].label,
+          bottomNavigationBar: SafeArea(
+            top: false,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.navSurface,
+                border: Border(top: BorderSide(color: AppColors.softBorder)),
+              ),
+              child: BottomNavigationBar(
+                currentIndex: _selectedIndex,
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.transparent,
+                selectedItemColor: AppColors.brandNavy,
+                unselectedItemColor: AppColors.textMuted,
+                elevation: 0,
+                selectedFontSize: 11,
+                unselectedFontSize: 11,
+                selectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w800,
                 ),
-            ],
+                onTap: (index) => _navigate(context, index),
+                items: [
+                  for (var index = 0; index < _destinations.length; index++)
+                    BottomNavigationBarItem(
+                      icon: index == 2
+                          ? const _CreateButton(key: Key('create-destination'))
+                          : Icon(_destinations[index].icon),
+                      activeIcon: index == 2
+                          ? const _CreateButton(key: Key('create-destination'))
+                          : Icon(_destinations[index].selectedIcon),
+                      label: index == 2 ? 'Crear' : _destinations[index].label,
+                    ),
+                ],
+              ),
+            ),
           ),
         );
       },
@@ -166,10 +181,14 @@ class _CreateButton extends StatelessWidget {
       height: 48,
       margin: const EdgeInsets.only(top: 2),
       decoration: const BoxDecoration(
-        color: AppColors.actionBlue,
+        color: AppColors.aqua,
         shape: BoxShape.circle,
       ),
-      child: const Icon(Icons.add_rounded, color: Colors.white, size: 30),
+      child: const Icon(
+        Icons.add_rounded,
+        color: AppColors.inkOnAqua,
+        size: 28,
+      ),
     );
   }
 }
