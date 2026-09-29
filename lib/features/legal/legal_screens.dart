@@ -7,14 +7,15 @@ import 'package:marea/shared/widgets/primary_button.dart';
 import 'package:marea/shared/widgets/session_feedback.dart';
 
 class LegalLinks extends StatelessWidget {
-  const LegalLinks({super.key});
+  const LegalLinks({super.key, this.compact = false});
+  final bool compact;
   @override
   Widget build(BuildContext context) => Wrap(
     alignment: WrapAlignment.center,
     children: [
       TextButton(
         onPressed: () => context.push('/terms'),
-        child: const Text('Términos y condiciones'),
+        child: Text(compact ? 'Términos' : 'Términos y condiciones'),
       ),
       TextButton(
         onPressed: () => context.push('/privacy'),
@@ -38,7 +39,7 @@ class ConsentFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      const LegalLinks(),
+      const LegalLinks(compact: true),
       CheckboxListTile(
         key: const Key('accept-terms'),
         contentPadding: EdgeInsets.zero,
@@ -46,7 +47,7 @@ class ConsentFields extends StatelessWidget {
         value: terms,
         onChanged: enabled ? (value) => onTermsChanged(value ?? false) : null,
         title: const Text(
-          'Acepto los términos y condiciones y he leído el aviso de privacidad.',
+          'Acepto los términos y he leído el aviso de privacidad.',
         ),
       ),
       CheckboxListTile(
@@ -55,7 +56,7 @@ class ConsentFields extends StatelessWidget {
         controlAffinity: ListTileControlAffinity.leading,
         value: adult,
         onChanged: enabled ? (value) => onAdultChanged(value ?? false) : null,
-        title: const Text('Confirmo que tengo 18 años o más.'),
+        title: const Text('Tengo 18 años o más.'),
       ),
     ],
   );

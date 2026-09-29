@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marea/shared/widgets/marea_surface.dart';
 
 class MareaTextField extends StatelessWidget {
   const MareaTextField({
@@ -38,23 +39,28 @@ class MareaTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      enabled: enabled,
-      controller: controller,
-      validator: validator,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      autofillHints: autofillHints,
-      obscureText: obscureText,
-      maxLines: maxLines,
-      maxLength: maxLength,
-      onFieldSubmitted: onFieldSubmitted,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixText: prefixText,
-        suffixIcon: suffixIcon,
+    return MareaSurface(
+      inset: true,
+      radius: 16,
+      child: TextFormField(
+        enabled: enabled,
+        controller: controller,
+        validator: validator,
+        keyboardType: keyboardType,
+        textInputAction: textInputAction,
+        autofillHints: autofillHints,
+        obscureText: obscureText,
+        maxLines: maxLines,
+        maxLength: maxLength,
+        onFieldSubmitted: onFieldSubmitted,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          filled: false,
+          labelText: label,
+          hintText: hint,
+          prefixText: prefixText,
+          suffixIcon: suffixIcon,
+        ),
       ),
     );
   }

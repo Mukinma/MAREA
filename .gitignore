@@ -33,6 +33,7 @@ migrate_working_dir/
 /build/
 /coverage/
 .playwright-cli/
+/output/
 /output/playwright/
 /test/_visual/
 .env

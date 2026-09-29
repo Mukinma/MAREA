@@ -1,3 +1,6 @@
+import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
+import 'package:marea/shared/widgets/marea_tabs.dart';
+import 'package:marea/core/theme/app_depth.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -10,7 +13,8 @@ import 'package:marea/core/theme/app_spacing.dart';
 import 'package:marea/core/utils/form_validators.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
-import 'package:marea/features/profile/presentation/onboarding_screen.dart';
+import 'package:marea/features/community/presentation/post_location_picker.dart';
+import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/shared/widgets/marea_text_field.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
 import 'package:marea/shared/widgets/social_avatar.dart';
@@ -21,27 +25,53 @@ class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({
     required this.controller,
     this.mediaRepository,
+    this.initialSection,
     super.key,
   });
   final AppSessionController controller;
   final ProfileMediaRepository? mediaRepository;
+  final String? initialSection;
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _form = GlobalKey<FormState>();
+  late String _section =
+      widget.initialSection == 'professional' &&
+          widget.controller.profile?.userType != UserType.general
+      ? 'professional'
+      : 'identity';
   late final Profile? _original = widget.controller.profile;
   late final _name = TextEditingController(text: _original?.fullName);
   late final _username = TextEditingController(text: _original?.username);
   late final _bio = TextEditingController(text: _original?.bio);
   late final _website = TextEditingController(text: _original?.website);
-  late UserType _type = _original?.userType ?? UserType.general;
+  late final _contact = TextEditingController(text: _original?.contactUrl);
+  late bool _collaboration = _original?.openToCollaboration ?? false;
+  late final Map<String, TextEditingController> _hours = {
+    for (final day in ProfilePreferences.weekdays.keys)
+      day: TextEditingController(
+        text:
+            _original?.businessHours.containsKey(day) == true &&
+                _original?.businessHours[day] == null
+            ? 'cerrado'
+            : _original?.businessHours[day],
+      ),
+  };
+  late String? _location = _original?.location;
+  late PostCoordinates? _coordinates = _original?.locationLatitude == null
+      ? null
+      : PostCoordinates(
+          latitude: _original!.locationLatitude!,
+          longitude: _original.locationLongitude!,
+          precision: PostLocationPrecision.values.byName(
+            _original.locationPrecision ?? 'exact',
+          ),
+        );
   late String _preset = _original?.coverPreset ?? 'marea';
   late String? _avatarPath = _original?.avatarPath,
       _coverPath = _original?.coverPath;
-  late Set<String> _interests = {...?_original?.interests},
-      _goals = {...?_original?.goals};
   Uint8List? _avatarBytes, _coverBytes;
   bool _saving = false, _allowPop = false;
   String? _error;
@@ -54,9 +84,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     username: FormValidators.normalizeUsername(_username.text),
     bio: _bio.text.trim().isEmpty ? null : _bio.text.trim(),
     website: _website.text.trim().isEmpty ? null : _website.text.trim(),
-    userType: _type,
-    interests: _interests.toList(),
-    goals: _goals.toList(),
+    contactUrl: _contact.text,
+    openToCollaboration: _collaboration,
+    location: _location,
+    locationLatitude: _coordinates?.latitude,
+    locationLongitude: _coordinates?.longitude,
+    locationPrecision: _coordinates?.precision.name,
+    businessHours: {
+      for (final day in _hours.keys)
+        if (_hours[day]!.text.trim().isNotEmpty)
+          day: _hours[day]!.text.trim().toLowerCase() == 'cerrado'
+              ? null
+              : _hours[day]!.text.trim(),
+    },
     avatarPath: _avatarPath,
     coverPath: _coverPath,
     coverPreset: _preset,
@@ -69,7 +109,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    for (final c in [_name, _username, _bio, _website]) {
+    for (final c in [
+      _name,
+      _username,
+      _bio,
+      _website,
+      _contact,
+      ..._hours.values,
+    ]) {
       c.addListener(_changed);
     }
   }
@@ -80,7 +127,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void dispose() {
-    for (final c in [_name, _username, _bio, _website]) {
+    for (final c in [
+      _name,
+      _username,
+      _bio,
+      _website,
+      _contact,
+      ..._hours.values,
+    ]) {
       c.removeListener(_changed);
       c.dispose();
     }
@@ -145,10 +199,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _save() async {
-    if (_saving ||
-        widget.controller.isBusy ||
-        !_form.currentState!.validate() ||
-        _draft == null) {
+    if (_saving || widget.controller.isBusy || _draft == null) return;
+    final invalid = _form.currentState!.validateGranularly();
+    if (invalid.isNotEmpty) {
+      final field = invalid.first;
+      var section = 'identity';
+      field.context.visitAncestorElements((element) {
+        if (element.widget.key == const Key('edit-professional')) {
+          section = 'professional';
+        }
+        return true;
+      });
+      setState(() => _section = section);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && field.mounted) {
+          Scrollable.ensureVisible(
+            field.context,
+            alignment: .15,
+            duration: const Duration(milliseconds: 200),
+          );
+        }
+      });
       return;
     }
     setState(() {
@@ -215,10 +286,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _mediaEditor({required bool compact}) {
     final username = FormValidators.normalizeUsername(_username.text);
+    final coverHeight = compact ? 80.0 : 100.0;
     return Container(
       key: const Key('edit-media'),
       decoration: BoxDecoration(
         color: AppColors.surface,
+        boxShadow: AppDepth.raised,
         borderRadius: BorderRadius.circular(AppRadius.hero),
         border: Border.all(color: AppColors.softBorder),
       ),
@@ -226,79 +299,95 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              SizedBox(
-                height: compact ? 148 : 184,
-                width: double.infinity,
-                child: ProfileImage(
-                  path: _coverPath,
-                  preview: _coverBytes,
-                  repository: _media,
-                  fallback: ProfileCover(preset: _preset),
+          SizedBox(
+            height: coverHeight + 46,
+            child: Stack(
+              children: [
+                SizedBox(
+                  height: coverHeight,
+                  width: double.infinity,
+                  child: ProfileImage(
+                    path: _coverPath,
+                    preview: _coverBytes,
+                    repository: _media,
+                    fallback: ProfileCover(preset: _preset),
+                  ),
                 ),
-              ),
-              Positioned(
-                top: 12,
-                right: 12,
-                child: _MediaAction(
-                  key: const Key('edit-cover-action'),
-                  icon: Icons.photo_camera_outlined,
-                  label: 'Portada',
-                  onPressed: _saving ? null : () => _pick(false),
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: _MediaAction(
+                    key: const Key('edit-cover-action'),
+                    icon: Icons.photo_camera_outlined,
+                    label: 'Portada',
+                    onPressed: _saving ? null : () => _pick(false),
+                  ),
                 ),
-              ),
-              Positioned(
-                left: 22,
-                bottom: -46,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: 104,
-                      height: 104,
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: AppColors.surface,
-                        shape: BoxShape.circle,
-                      ),
-                      child: ClipOval(
-                        child: ProfileImage(
-                          path: _avatarPath,
-                          preview: _avatarBytes,
-                          repository: _media,
-                          fallback: SocialAvatar(
-                            initials: _draft?.initials ?? 'M',
-                            size: 96,
+                Positioned(
+                  left: 22,
+                  top: coverHeight - 34,
+                  width: 80,
+                  height: 80,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 64,
+                        height: 64,
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: AppColors.surface,
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipOval(
+                          child: ProfileImage(
+                            path: _avatarPath,
+                            preview: _avatarBytes,
+                            repository: _media,
+                            fallback: SocialAvatar(
+                              initials: _draft?.initials ?? 'M',
+                              size: 56,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Positioned(
-                      right: -2,
-                      bottom: 2,
-                      child: IconButton.filled(
-                        key: const Key('edit-avatar-action'),
-                        tooltip: 'Cambiar foto de perfil',
-                        onPressed: _saving ? null : () => _pick(true),
-                        icon: const Icon(Icons.photo_camera_outlined, size: 18),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: IconButton(
+                          key: const Key('edit-avatar-action'),
+                          tooltip: 'Cambiar foto de perfil',
+                          constraints: const BoxConstraints.tightFor(
+                            width: 48,
+                            height: 48,
+                          ),
+                          onPressed: _saving ? null : () => _pick(true),
+                          icon: Container(
+                            padding: const EdgeInsets.all(7),
+                            decoration: const BoxDecoration(
+                              color: AppColors.actionBlue,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.photo_camera_outlined,
+                              color: AppColors.surface,
+                              size: 16,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(22, 58, 22, 18),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   _name.text.trim().isEmpty ? 'Tu nombre' : _name.text.trim(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 2),
@@ -374,7 +463,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  'JPG o PNG. MAREA elimina la ubicación de la imagen.',
+                  'JPG o PNG · sin datos de ubicación',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -395,98 +484,152 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(height: AppSpacing.md),
         ],
         SessionFeedback(controller: widget.controller),
-        _EditorSection(
-          key: const Key('edit-identity'),
-          icon: Icons.badge_outlined,
-          title: 'Tu identidad',
-          description: 'Así te encontrarán y reconocerán otras personas.',
-          children: [
-            MareaTextField(
-              controller: _name,
-              label: 'Nombre completo',
-              textInputAction: TextInputAction.next,
-              validator: FormValidators.fullName,
-            ),
-            MareaTextField(
-              controller: _username,
-              label: 'Nombre de usuario',
-              prefixText: '@',
-              textInputAction: TextInputAction.next,
-              validator: FormValidators.username,
-            ),
-            DropdownButtonFormField<UserType>(
-              isExpanded: true,
-              initialValue: _type,
-              decoration: const InputDecoration(labelText: 'Tipo de perfil'),
-              items: [
-                for (final value in UserType.values)
-                  DropdownMenuItem(
-                    value: value,
-                    child: Text(value.databaseValue),
+        if (_original!.userType != UserType.general)
+          MareaTabs(
+            options: const {
+              'identity': 'Identidad',
+              'professional': 'Profesional',
+            },
+            value: _section,
+            onChanged: (value) {
+              FocusScope.of(context).unfocus();
+              setState(() => _section = value);
+            },
+          ),
+        const SizedBox(height: 12),
+        Visibility(
+          maintainState: true,
+          visible: _section == 'identity',
+          child: Column(
+            children: [
+              ProfileFormSection(
+                key: const Key('edit-identity'),
+                icon: Icons.badge_outlined,
+                title: 'Tu identidad',
+                children: [
+                  MareaTextField(
+                    controller: _name,
+                    label: 'Nombre completo',
+                    textInputAction: TextInputAction.next,
+                    validator: FormValidators.fullName,
                   ),
+                  MareaTextField(
+                    controller: _username,
+                    label: 'Nombre de usuario',
+                    prefixText: '@',
+                    textInputAction: TextInputAction.next,
+                    validator: FormValidators.username,
+                  ),
+                  Text(
+                    'Tipo de perfil: ${_original.userType.databaseValue}',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const Text('Elegido al crear tu perfil.'),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              ProfileFormSection(
+                key: const Key('edit-about'),
+                icon: Icons.auto_awesome_outlined,
+                title: 'Sobre ti',
+                children: [
+                  MareaTextField(
+                    controller: _bio,
+                    label: 'Bio',
+                    hint: '¿Qué haces y qué te mueve?',
+                    maxLength: 160,
+                    maxLines: 4,
+                    validator: FormValidators.bio,
+                  ),
+                  MareaTextField(
+                    controller: _website,
+                    label: 'Sitio web',
+                    hint: 'https://tusitio.com',
+                    keyboardType: TextInputType.url,
+                    validator: ProfilePreferences.websiteError,
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+            ],
+          ),
+        ),
+        if (_original.userType != UserType.general)
+          Visibility(
+            maintainState: true,
+            visible: _section == 'professional',
+            child: ProfileFormSection(
+              key: const Key('edit-professional'),
+              icon: Icons.work_outline,
+              title: 'Información profesional',
+              children: [
+                MareaTextField(
+                  controller: _contact,
+                  label: 'Enlace de contacto',
+                  hint: 'https://wa.me/... o tu página de contacto',
+                  keyboardType: TextInputType.url,
+                  validator: ProfilePreferences.websiteError,
+                ),
+                if (_original.userType == UserType.creator)
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Disponible para colaborar'),
+                    value: _collaboration,
+                    onChanged: (v) => setState(() => _collaboration = v),
+                  ),
+                if (_original.userType == UserType.business) ...[
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Ubicación del negocio'),
+                    subtitle: Text(_location ?? 'Sin ubicación'),
+                    trailing: IconButton(
+                      tooltip: 'Quitar ubicación',
+                      icon: const Icon(Icons.clear),
+                      onPressed: () => setState(() {
+                        _location = null;
+                        _coordinates = null;
+                      }),
+                    ),
+                    onTap: () async {
+                      final value = await showCommunityLocationPicker(
+                        context,
+                        initial: _location == null || _coordinates == null
+                            ? null
+                            : PostLocationSelection(
+                                label: _location!,
+                                coordinates: _coordinates!,
+                              ),
+                      );
+                      if (value != null && mounted) {
+                        setState(() {
+                          _location = value.label;
+                          _coordinates = value.coordinates;
+                        });
+                      }
+                    },
+                  ),
+                  const Text('Horarios semanales · hora local del negocio'),
+                  const Text(
+                    'Usa 09:00-18:00. Escribe cerrado para un día sin atención; vacío si no quieres mostrarlo.',
+                  ),
+                  for (final day in ProfilePreferences.weekdays.entries)
+                    MareaTextField(
+                      controller: _hours[day.key]!,
+                      label: day.value,
+                      hint: '09:00-18:00 o cerrado',
+                      validator: (value) => ProfilePreferences.hoursError({
+                        day.key: value?.trim().isEmpty ?? true
+                            ? null
+                            : value!.trim().toLowerCase() == 'cerrado'
+                            ? null
+                            : value.trim(),
+                      }),
+                    ),
+                ],
               ],
-              onChanged: _saving
-                  ? null
-                  : (value) => setState(() => _type = value ?? _type),
             ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        _EditorSection(
-          key: const Key('edit-about'),
-          icon: Icons.auto_awesome_outlined,
-          title: 'Sobre ti',
-          description: 'Cuenta lo esencial y agrega dónde conocer tu trabajo.',
-          children: [
-            MareaTextField(
-              controller: _bio,
-              label: 'Bio',
-              hint: '¿Qué haces y qué te mueve?',
-              maxLength: 160,
-              maxLines: 4,
-              validator: FormValidators.bio,
-            ),
-            MareaTextField(
-              controller: _website,
-              label: 'Portafolio o sitio web',
-              hint: 'https://tusitio.com',
-              keyboardType: TextInputType.url,
-              validator: ProfilePreferences.websiteError,
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        _EditorSection(
-          key: const Key('edit-interests'),
-          icon: Icons.favorite_border_rounded,
-          title: 'Intereses',
-          description:
-              'Ayudan a que tu perfil conecte con la comunidad correcta.',
-          children: [
-            PreferenceChips(
-              catalog: ProfilePreferences.interests,
-              selected: _interests,
-              enabled: !_saving,
-              onChanged: (value) => setState(() => _interests = value),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        _EditorSection(
-          key: const Key('edit-goals'),
-          icon: Icons.explore_outlined,
-          title: 'Lo que buscas',
-          description: 'Sólo tú puedes ver estas preferencias.',
-          children: [
-            PreferenceChips(
-              catalog: ProfilePreferences.goals,
-              selected: _goals,
-              enabled: !_saving,
-              onChanged: (value) => setState(() => _goals = value),
-            ),
-          ],
-        ),
-        const SizedBox(height: 104),
+          ),
+        const SizedBox(height: 24),
       ],
     ),
   );
@@ -534,7 +677,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           absorbing: _saving,
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final wide = constraints.maxWidth >= 960;
+              final wide = constraints.maxWidth >= 1024;
               if (wide) {
                 return Center(
                   child: ConstrainedBox(
@@ -557,23 +700,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Text(
-                                    'Así se verá tu perfil',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleLarge,
-                                  ),
-                                  const SizedBox(height: AppSpacing.sm),
-                                  Text(
-                                    'La vista cambia contigo mientras editas.',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                  const SizedBox(height: AppSpacing.lg),
-                                  _mediaEditor(compact: false),
-                                ],
+                                children: [_mediaEditor(compact: false)],
                               ),
                             ),
                           ),
@@ -612,119 +739,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             },
           ),
         ),
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: Container(
-            key: const Key('edit-save-bar'),
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.sm,
-              AppSpacing.md,
-              AppSpacing.sm,
-            ),
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              border: Border(top: BorderSide(color: AppColors.softBorder)),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x120B255E),
-                  blurRadius: 18,
-                  offset: Offset(0, -5),
-                ),
-              ],
-            ),
-            child: Align(
-              alignment: Alignment.center,
-              heightFactor: 1,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 720),
-                child: Row(
-                  children: [
-                    TextButton(
-                      onPressed: _saving ? null : _leave,
-                      child: const Text('Cancelar'),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: PrimaryButton(
-                        key: const Key('edit-save-button'),
-                        label: _dirty ? 'Guardar cambios' : 'Todo guardado',
-                        icon: _dirty ? Icons.check_rounded : null,
-                        isLoading: _saving || widget.controller.isBusy,
-                        onPressed: _dirty ? _save : null,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _EditorSection extends StatelessWidget {
-  const _EditorSection({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.children,
-    super.key,
-  });
-
-  final IconData icon;
-  final String title;
-  final String description;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.large),
-        border: Border.all(color: AppColors.softBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        bottomNavigationBar: ProfileActionBar(
+          key: const Key('edit-save-bar'),
+          child: Row(
             children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: AppColors.mist,
-                  borderRadius: BorderRadius.circular(AppRadius.small),
-                ),
-                child: Icon(icon, color: AppColors.actionBlue, size: 22),
+              TextButton(
+                onPressed: _saving ? null : _leave,
+                child: const Text('Cancelar'),
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: 8),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: AppSpacing.xxs),
-                    Text(
-                      description,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
+                child: PrimaryButton(
+                  key: const Key('edit-save-button'),
+                  label: _dirty ? 'Guardar cambios' : 'Todo guardado',
+                  icon: _dirty ? Icons.check_rounded : null,
+                  isLoading: _saving || widget.controller.isBusy,
+                  onPressed: _dirty ? _save : null,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.lg),
-          for (var index = 0; index < children.length; index++) ...[
-            if (index > 0) const SizedBox(height: AppSpacing.md),
-            children[index],
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -746,7 +781,7 @@ class _MediaAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return FilledButton.tonalIcon(
       style: FilledButton.styleFrom(
-        minimumSize: const Size(0, 40),
+        minimumSize: const Size(48, 48),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         backgroundColor: AppColors.surface.withValues(alpha: .94),
         foregroundColor: AppColors.brandNavy,

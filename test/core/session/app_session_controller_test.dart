@@ -276,6 +276,7 @@ class FakeAuthRepository extends support.FakeAuthRepository {
     required String username,
     required String email,
     required String password,
+    UserType userType = UserType.general,
     LegalConsent? consent,
   }) async {
     if (signUpOutcome == SignUpOutcome.authenticated) {
@@ -318,6 +319,17 @@ class FakeProfileRepository implements ProfileRepository {
 
   @override
   Future<bool> isUsernameAvailable(String username) async => true;
+
+  @override
+  Future<Profile> completeInitialProfile(InitialProfileInput input) async {
+    value = value.copyWith(
+      userType: input.userType,
+      interests: input.interests,
+      goals: input.goals,
+      initialProfileCompletedAt: DateTime.now(),
+    );
+    return value;
+  }
 
   @override
   Future<Profile> updateCurrentProfile(ProfileUpdateInput input) async {

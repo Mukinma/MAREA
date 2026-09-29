@@ -25,9 +25,21 @@ void main() {
       await tester.ensureVisible(find.byKey(const Key('welcome-register')));
       await tester.tap(find.byKey(const Key('welcome-register')));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byKey(const Key('register-type-creator')),
+      );
+      await tester.tap(find.byKey(const Key('register-type-creator')));
+      await tester.ensureVisible(find.text('Continuar'));
+      await tester.tap(find.text('Continuar'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('register-name')), 'Ana');
+      await tester.enterText(find.byKey(const Key('register-username')), 'ana');
+      await tester.ensureVisible(find.text('Continuar'));
+      await tester.tap(find.text('Continuar'));
+      await tester.pumpAndSettle();
       PrimaryButton submit() => tester.widget(
         find.byWidgetPredicate(
-          (w) => w is PrimaryButton && w.label == 'Crear mi cuenta',
+          (w) => w is PrimaryButton && w.label == 'Crear cuenta',
         ),
       );
       expect(submit().onPressed, isNull);
@@ -82,6 +94,8 @@ void main() {
     await tester.pumpWidget(MareaApp(controller: c));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byTooltip('Perfil'));
+    await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Configuración'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('open-delete-dialog')));
@@ -110,7 +124,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(c.status, AuthStatus.unauthenticated);
-    expect(find.text('Bienvenido de nuevo'), findsOneWidget);
+    expect(find.text('Iniciar sesión'), findsOneWidget);
   });
 
   testWidgets('sign out reaches login through the session guard', (
@@ -130,6 +144,8 @@ void main() {
     await tester.pumpWidget(MareaApp(controller: c));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byTooltip('Perfil'));
+    await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Configuración'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Cerrar sesión'));
@@ -137,7 +153,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(c.status, AuthStatus.unauthenticated);
-    expect(find.text('Bienvenido de nuevo'), findsOneWidget);
+    expect(find.text('Iniciar sesión'), findsOneWidget);
   });
 
   testWidgets('a deletion network failure remains retryable in settings', (
@@ -157,6 +173,8 @@ void main() {
     await tester.pumpWidget(MareaApp(controller: c));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byTooltip('Perfil'));
+    await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Configuración'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('open-delete-dialog')));

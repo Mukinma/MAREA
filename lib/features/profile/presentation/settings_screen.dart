@@ -1,3 +1,5 @@
+import 'package:marea/shared/widgets/marea_surface.dart';
+import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -33,7 +35,10 @@ class SettingsScreen extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (_, _) => Scaffold(
-        appBar: AppBar(title: const Text('Configuración')),
+        appBar: AppBar(
+          leading: const ProfileBackButton(),
+          title: const Text('Configuración'),
+        ),
         body: SafeArea(
           child: Column(
             children: [
@@ -55,16 +60,15 @@ class SettingsScreen extends StatelessWidget {
                               title: 'Cuenta',
                               children: [
                                 ListTile(
-                                  leading: const Icon(
+                                  leading: const _SettingsIcon(
                                     Icons.mail_outline_rounded,
                                   ),
-                                  title: const Text('Correo'),
-                                  subtitle: Text(
+                                  title: Text(
                                     controller.email ?? 'Sin correo disponible',
                                   ),
                                 ),
                                 ListTile(
-                                  leading: const Icon(
+                                  leading: const _SettingsIcon(
                                     Icons.alternate_email_rounded,
                                   ),
                                   title: const Text('Cambiar correo'),
@@ -77,7 +81,7 @@ class SettingsScreen extends StatelessWidget {
                                   },
                                 ),
                                 ListTile(
-                                  leading: const Icon(
+                                  leading: const _SettingsIcon(
                                     Icons.lock_outline_rounded,
                                   ),
                                   title: const Text('Cambiar contraseña'),
@@ -93,31 +97,28 @@ class SettingsScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: AppSpacing.lg),
                             _SettingsCard(
-                              title: 'A tu manera',
+                              title: 'Perfil',
                               children: [
                                 ListTile(
-                                  leading: const Icon(Icons.tune_rounded),
-                                  title: const Text(
-                                    'Mis intereses y objetivos',
+                                  leading: const _SettingsIcon(
+                                    Icons.edit_outlined,
                                   ),
-                                  subtitle: const Text(
-                                    'Retomar la guía opcional',
-                                  ),
-                                  trailing: const Icon(
-                                    Icons.chevron_right_rounded,
-                                  ),
-                                  onTap: () {
-                                    controller.clearFeedback();
-                                    context.push('/onboarding');
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.edit_outlined),
-                                  title: const Text('Personalizar mi perfil'),
+                                  title: const Text('Editar perfil'),
                                   trailing: const Icon(
                                     Icons.chevron_right_rounded,
                                   ),
                                   onTap: () => context.push('/profile/edit'),
+                                ),
+                                ListTile(
+                                  leading: const _SettingsIcon(
+                                    Icons.tune_rounded,
+                                  ),
+                                  title: const Text('Intereses y objetivos'),
+                                  trailing: const Icon(
+                                    Icons.chevron_right_rounded,
+                                  ),
+                                  onTap: () =>
+                                      context.push('/profile/preferences'),
                                 ),
                               ],
                             ),
@@ -127,7 +128,9 @@ class SettingsScreen extends StatelessWidget {
                               title: 'Sesión',
                               children: [
                                 ListTile(
-                                  leading: const Icon(Icons.logout_rounded),
+                                  leading: const _SettingsIcon(
+                                    Icons.logout_rounded,
+                                  ),
                                   title: const Text('Cerrar sesión'),
                                   trailing: const Icon(
                                     Icons.chevron_right_rounded,
@@ -142,11 +145,11 @@ class SettingsScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: AppSpacing.lg),
                             _SettingsCard(
-                              title: 'Zona de cuidado',
+                              title: null,
                               children: [
                                 ListTile(
                                   key: const Key('open-delete-dialog'),
-                                  leading: const Icon(
+                                  leading: const _SettingsIcon(
                                     Icons.delete_outline_rounded,
                                     color: AppColors.error,
                                   ),
@@ -189,26 +192,26 @@ class SettingsScreen extends StatelessWidget {
 
 class _SettingsCard extends StatelessWidget {
   const _SettingsCard({required this.title, required this.children});
-  final String title;
+  final String? title;
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(AppRadius.large);
-    return Material(
+    return MareaSurface(
       color: AppColors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: radius,
-        side: const BorderSide(color: AppColors.border),
-      ),
+      radius: AppRadius.large,
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
-            child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-          ),
+          if (title != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
+              child: Text(
+                title!,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
           ...children,
         ],
       ),
@@ -278,4 +281,20 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
       ],
     );
   }
+}
+
+class _SettingsIcon extends StatelessWidget {
+  const _SettingsIcon(this.icon, {this.color = AppColors.actionBlue});
+  final IconData icon;
+  final Color color;
+  @override
+  Widget build(BuildContext context) => MareaSurface(
+    radius: 14,
+    inset: true,
+    color: color == AppColors.error ? AppColors.pink : AppColors.mist,
+    child: SizedBox.square(
+      dimension: 40,
+      child: Icon(icon, color: color, size: 20),
+    ),
+  );
 }

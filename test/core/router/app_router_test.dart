@@ -78,15 +78,12 @@ void main() {
   });
 
   test('keeps authenticated users away from public auth routes', () {
-    expect(
-      AppRouter.redirectFor(AuthStatus.authenticated, '/login'),
-      '/profile',
-    );
+    expect(AppRouter.redirectFor(AuthStatus.authenticated, '/login'), '/home');
     expect(
       AppRouter.redirectFor(AuthStatus.authenticated, '/register'),
-      '/profile',
+      '/home',
     );
-    expect(AppRouter.redirectFor(AuthStatus.authenticated, '/'), '/profile');
+    expect(AppRouter.redirectFor(AuthStatus.authenticated, '/'), '/home');
     expect(
       AppRouter.redirectFor(AuthStatus.authenticated, '/missions'),
       isNull,
@@ -106,6 +103,6 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     await tester.pumpAndSettle();
 
-    expect(find.text('Conecta con lo\nque te mueve.'), findsOneWidget);
+    expect(find.byKey(const Key('welcome-register')), findsOneWidget);
   });
 }

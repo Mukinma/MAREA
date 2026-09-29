@@ -1,3 +1,4 @@
+import 'package:marea/features/profile/models/profile.dart';
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -137,6 +138,7 @@ class CountingAuth extends FakeAuthRepository {
     required String username,
     required String email,
     required String password,
+    UserType userType = UserType.general,
     LegalConsent? consent,
   }) async {
     registrations++;

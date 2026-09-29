@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:marea/features/showcase/data/showcase_repository.dart';
 import 'package:marea/features/community/data/community_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:marea/core/errors/app_failure.dart';
@@ -18,10 +19,12 @@ class AppSessionController extends ChangeNotifier {
     LegalRepository? legalRepository,
     this.mediaRepository,
     this.communityRepository,
+    this.showcaseRepository,
   }) : _auth = authRepository,
        _profiles = profileRepository,
        _legal = legalRepository;
   final CommunityRepository? communityRepository;
+  final ShowcaseRepository? showcaseRepository;
   final AuthRepository _auth;
   final ProfileRepository _profiles;
   final LegalRepository? _legal;
@@ -49,7 +52,7 @@ class AppSessionController extends ChangeNotifier {
   bool get isRecovering => _recovering;
   bool get needsLegalAcceptance => _needsLegal;
   bool get needsOnboarding =>
-      _profile?.onboardingStatus == OnboardingStatus.pending;
+      _profile != null && _profile!.initialProfileCompletedAt == null;
   AppFailure? get failure => _failure;
   String? get successMessage => _success;
   String? get email => _auth.currentUser?.email;
@@ -127,6 +130,7 @@ class AppSessionController extends ChangeNotifier {
     required String username,
     required String email,
     required String password,
+    UserType userType = UserType.general,
     LegalConsent? consent,
   }) => _run(() async {
     if (!_policy.canRegister) {
@@ -149,6 +153,7 @@ class AppSessionController extends ChangeNotifier {
       username: username,
       email: email.trim(),
       password: password,
+      userType: userType,
       consent: consent,
     );
     if (outcome == SignUpOutcome.authenticated) {
@@ -172,6 +177,10 @@ class AppSessionController extends ChangeNotifier {
         }
         final error = ProfilePreferences.websiteError(input.website);
         if (error != null) throw AppFailure(error);
+        final contactError = ProfilePreferences.websiteError(input.contactUrl);
+        if (contactError != null) throw AppFailure(contactError);
+        final hoursError = ProfilePreferences.hoursError(input.businessHours);
+        if (hoursError != null) throw AppFailure(hoursError);
         if (input.username != before.username &&
             !await _profiles.isUsernameAvailable(input.username)) {
           throw const AppFailure('Este nombre de usuario ya está ocupado.');
@@ -187,25 +196,46 @@ class AppSessionController extends ChangeNotifier {
         return true;
       }) ??
       false;
-  Future<bool> finishOnboarding({
-    required bool skip,
-    required List<String> interests,
-    required List<String> goals,
-  }) async {
-    final current = _profile;
-    if (current == null) return false;
-    return updateProfile(
-      current
-          .copyWith(
-            interests: skip ? current.interests : interests,
-            goals: skip ? current.goals : goals,
-            onboardingStatus: skip
-                ? OnboardingStatus.skipped
-                : OnboardingStatus.completed,
-          )
-          .updateInput,
-    );
-  }
+  Future<bool> completeInitialProfile(InitialProfileInput input) async =>
+      await _run(() async {
+        if (_profile == null || _profile!.initialProfileCompletedAt != null) {
+          throw const AppFailure(
+            'La elección inicial de tu perfil ya está confirmada.',
+          );
+        }
+        final error = input.validate();
+        if (error != null) throw AppFailure(error);
+        final generation = _generation;
+        ++_profileRevision;
+        final accountId = _profile!.id;
+        late final Profile updated;
+        try {
+          updated = await _profiles.completeInitialProfile(input);
+        } catch (error) {
+          // The transaction may have committed while its HTTP response was lost.
+          // Read the server state rather than offer an impossible second choice.
+          if (generation != _generation || _auth.currentUser == null) {
+            return false;
+          }
+          try {
+            final persisted = await _profiles.getCurrentProfile();
+            if (persisted.id != accountId ||
+                persisted.initialProfileCompletedAt == null) {
+              rethrow;
+            }
+            updated = persisted;
+          } catch (_) {
+            throw error;
+          }
+        }
+        if (generation != _generation || _auth.currentUser == null) {
+          return false;
+        }
+        _profile = updated;
+        _showSuccess('Tu perfil está listo. ¡Bienvenido a MAREA!');
+        return true;
+      }) ??
+      false;
 
   Future<bool> acceptLegal(LegalConsent consent) async =>
       await _run(() async {

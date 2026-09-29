@@ -1,3 +1,4 @@
+import 'package:marea/features/profile/models/profile.dart';
 import 'dart:ui' show PointerDeviceKind;
 
 import 'package:flutter/material.dart';
@@ -24,40 +25,40 @@ void main() {
 
   tearDown(() => controller.dispose());
 
-  testWidgets('login presents a social welcome and validated credentials', (
+  testWidgets('login presents concise access and validated credentials', (
     tester,
   ) async {
     await tester.pumpWidget(testApp(LoginScreen(controller: controller)));
 
-    expect(find.text('Bienvenido de nuevo'), findsOneWidget);
+    expect(find.text('Iniciar sesión'), findsOneWidget);
     expect(
       find.text('Descubre personas, proyectos y lugares cerca de ti.'),
-      findsOneWidget,
+      findsNothing,
     );
     expect(find.byKey(const Key('login-email')), findsOneWidget);
     expect(find.byKey(const Key('login-password')), findsOneWidget);
-    expect(find.text('Crear una cuenta'), findsOneWidget);
+    expect(find.text('Crear cuenta'), findsOneWidget);
   });
 
   testWidgets('register explains the public username identity', (tester) async {
     await tester.pumpWidget(testApp(RegisterScreen(controller: controller)));
 
-    expect(find.text('Crea tu lugar en MAREA'), findsOneWidget);
-    expect(
-      find.text(
-        'Este será el nombre con el que otras personas podrán encontrarte.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('¿Qué perfil quieres crear?'), findsOneWidget);
+    expect(find.byKey(const Key('register-username')), findsNothing);
+    await tester.ensureVisible(find.byKey(const Key('register-type-creator')));
+    await tester.tap(find.byKey(const Key('register-type-creator')));
+    await tester.ensureVisible(find.text('Continuar'));
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
     expect(find.byKey(const Key('register-username')), findsOneWidget);
-    expect(find.text('Crear mi cuenta'), findsOneWidget);
+    expect(find.text('Nombre artístico'), findsOneWidget);
   });
 
   testWidgets('login exposes natural validation instead of technical errors', (
     tester,
   ) async {
     await tester.pumpWidget(testApp(LoginScreen(controller: controller)));
-    await tester.tap(find.text('Iniciar sesión'));
+    await tester.tap(find.text('Entrar'));
     await tester.pump();
 
     expect(find.text('Escribe tu correo.'), findsOneWidget);
@@ -108,7 +109,8 @@ void main() {
     expect(find.text('Editar perfil'), findsOneWidget);
     expect(find.text('Nombre completo'), findsOneWidget);
     expect(find.text('Nombre de usuario'), findsOneWidget);
-    expect(find.text('Tipo de perfil'), findsOneWidget);
+    expect(find.text('Tipo de perfil: Artista / creador'), findsOneWidget);
+    expect(find.byType(DropdownButtonFormField<UserType>), findsNothing);
     expect(find.text('Bio'), findsOneWidget);
     expect(find.text(sampleProfile.id), findsNothing);
     expect(find.text('role'), findsNothing);
@@ -127,8 +129,8 @@ void main() {
     expect(find.byKey(const Key('edit-media')), findsOneWidget);
     expect(find.byKey(const Key('edit-identity')), findsOneWidget);
     expect(find.byKey(const Key('edit-about')), findsOneWidget);
-    expect(find.byKey(const Key('edit-interests')), findsOneWidget);
-    expect(find.byKey(const Key('edit-goals')), findsOneWidget);
+    expect(find.byKey(const Key('edit-interests')), findsNothing);
+    expect(find.byKey(const Key('edit-goals')), findsNothing);
     expect(
       find.byKey(const Key('edit-save-button')).hitTestable(),
       findsOneWidget,
@@ -136,41 +138,30 @@ void main() {
     expect(find.text('Vista previa'), findsNothing);
   });
 
-  testWidgets('mobile shell has five branded destinations and central create', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-
-    await tester.pumpWidget(
-      testApp(const AppShell(location: '/home', child: Text('contenido'))),
-    );
-
-    expect(find.byType(BottomNavigationBar), findsOneWidget);
-    expect(find.text('Inicio'), findsOneWidget);
-    expect(find.text('Explorar'), findsOneWidget);
-    expect(find.text('Misiones'), findsOneWidget);
-    expect(find.text('Perfil'), findsOneWidget);
-    expect(find.byKey(const Key('create-destination')), findsOneWidget);
-  });
-
-  testWidgets('desktop shell uses a navigation rail instead of bottom nav', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(1366, 768);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-
-    await tester.pumpWidget(
-      testApp(const AppShell(location: '/profile', child: Text('contenido'))),
-    );
-
-    expect(find.byType(NavigationRail), findsOneWidget);
-    expect(find.byType(BottomNavigationBar), findsNothing);
-  });
+  for (final width in [390.0, 1366.0]) {
+    testWidgets('shell exposes five labelled actions at $width', (
+      tester,
+    ) async {
+      tester.view.physicalSize = Size(width, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        testApp(const AppShell(location: '/home', child: Text('contenido'))),
+      );
+      for (final label in [
+        'Inicio',
+        'Explorar',
+        'Crear',
+        'Misiones',
+        'Perfil',
+      ]) {
+        expect(find.byTooltip(label).hitTestable(), findsOneWidget);
+      }
+      expect(find.byType(NavigationRail), findsNothing);
+      expect(find.byType(BottomNavigationBar), findsNothing);
+    });
+  }
 
   testWidgets('pulling main content down refreshes the current app data', (
     tester,

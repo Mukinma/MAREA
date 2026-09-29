@@ -2,6 +2,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/core/errors/app_failure.dart';
 
 void main() {
+  for (final error in [
+    'PostgrestException(code: PGRST204, message: Could not find setup_step in the schema cache)',
+    'PostgrestException(code: 42703, message: column setup_step does not exist)',
+    'PostgrestException(code: PGRST202, message: Could not find complete_initial_profile in the schema cache)',
+  ]) {
+    test('explains an outdated backend: $error', () {
+      expect(
+        AppFailureMapper.fromMessage(error).message,
+        'El servicio de MAREA necesita actualizarse para guardar estos cambios. Tus datos siguen aquí; vuelve a intentarlo cuando esté disponible.',
+      );
+    });
+  }
   test('maps invalid credentials to a natural Spanish message', () {
     final failure = AppFailureMapper.fromMessage('Invalid login credentials');
     expect(failure.message, 'El correo o la contraseña no son correctos.');

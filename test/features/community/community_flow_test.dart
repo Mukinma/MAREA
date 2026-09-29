@@ -167,6 +167,8 @@ void main() {
     await tester.pumpAndSettle();
     router.go('/create');
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Publicar en Inicio'));
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ChoiceChip, 'Producto'));
     await tester.pumpAndSettle();
     await tester.enterText(

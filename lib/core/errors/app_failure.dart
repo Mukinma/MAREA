@@ -1,4 +1,11 @@
-enum AppFailureKind { general, emailNotConfirmed, invalidSession }
+enum AppFailureKind {
+  general,
+  emailNotConfirmed,
+  invalidSession,
+  usernameTaken,
+  emailAlreadyUsed,
+  weakPassword,
+}
 
 class AppFailure implements Exception {
   const AppFailure(this.message, {this.kind = AppFailureKind.general});
@@ -15,6 +22,44 @@ abstract final class AppFailureMapper {
 
   static AppFailure fromMessage(String rawMessage) {
     final message = rawMessage.toLowerCase();
+    if (message.contains('pgrst202') ||
+        message.contains('pgrst204') ||
+        message.contains('42703')) {
+      return const AppFailure(
+        'El servicio de MAREA necesita actualizarse para guardar estos cambios. Tus datos siguen aquí; vuelve a intentarlo cuando esté disponible.',
+      );
+    }
+    if (message.contains('initial_profile_already_confirmed')) {
+      return const AppFailure(
+        'La elección inicial de tu perfil ya está confirmada. Actualiza la pantalla para continuar.',
+      );
+    }
+    if (message.contains('initial_profile_required') ||
+        message.contains('initial_profile_choices_required')) {
+      return const AppFailure('Confirma tu tipo de perfil para continuar.');
+    }
+    if (message.contains('invalid_business_hours')) {
+      return const AppFailure(
+        'Revisa tus horarios: usa un intervalo como 09:00-18:00.',
+      );
+    }
+    if (message.contains('showcase_kind_not_allowed')) {
+      return const AppFailure(
+        'Esta ficha no está disponible para tu tipo de perfil.',
+      );
+    }
+    if (message.contains('showcase_photo_required')) {
+      return const AppFailure('Agrega al menos una fotografía para publicar.');
+    }
+    if (message.contains('showcase_owner_required') ||
+        message.contains('showcase_unavailable')) {
+      return const AppFailure(
+        'Esta ficha ya no está disponible para esta acción.',
+      );
+    }
+    if (message.contains('report_showcase_unique')) {
+      return const AppFailure('Ya enviaste un reporte para esta ficha.');
+    }
     if (message.contains('email_address_not_authorized') ||
         message.contains('email address not authorized')) {
       return const AppFailure(
@@ -69,9 +114,7 @@ abstract final class AppFailureMapper {
     if (message.contains('otp_expired') ||
         message.contains('token has expired') ||
         message.contains('invalid token')) {
-      return const AppFailure(
-        'El código no es válido o venció. Solicita uno nuevo.',
-      );
+      return const AppFailure('Código incorrecto o vencido.');
     }
     if (message.contains('email_not_confirmed') ||
         message.contains('email not confirmed')) {
@@ -87,7 +130,10 @@ abstract final class AppFailureMapper {
     }
     if (message.contains('same_password') ||
         message.contains('weak_password')) {
-      return const AppFailure('Elige una contraseña nueva y más segura.');
+      return const AppFailure(
+        'Elige una contraseña nueva y más segura.',
+        kind: AppFailureKind.weakPassword,
+      );
     }
 
     if (message.contains('invalid login credentials') ||
@@ -102,11 +148,17 @@ abstract final class AppFailureMapper {
     }
     if (message.contains('username') &&
         (message.contains('duplicate') || message.contains('unique'))) {
-      return const AppFailure('Este nombre de usuario ya está ocupado.');
+      return const AppFailure(
+        'Este nombre de usuario ya está ocupado.',
+        kind: AppFailureKind.usernameTaken,
+      );
     }
     if (message.contains('user already registered') ||
         message.contains('email already')) {
-      return const AppFailure('Ya existe una cuenta con este correo.');
+      return const AppFailure(
+        'Ya existe una cuenta con este correo.',
+        kind: AppFailureKind.emailAlreadyUsed,
+      );
     }
     if (message.contains('socketexception') ||
         message.contains('network') ||

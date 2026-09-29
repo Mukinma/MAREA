@@ -23,6 +23,7 @@ class FakeAuthRepository implements AuthRepository {
     required String username,
     required String email,
     required String password,
+    UserType userType = UserType.general,
     LegalConsent? consent,
   }) async => SignUpOutcome.confirmationRequired;
 
@@ -87,6 +88,21 @@ class FakeProfileRepository implements ProfileRepository {
       username != 'taken';
 
   @override
+  Future<Profile> completeInitialProfile(InitialProfileInput input) async {
+    if (value.initialProfileCompletedAt != null) {
+      throw StateError('initial_profile_already_confirmed');
+    }
+    value = value.copyWith(
+      userType: input.userType,
+      interests: input.interests.toSet().toList(),
+      goals: input.goals.toSet().toList(),
+      onboardingStatus: OnboardingStatus.completed,
+      initialProfileCompletedAt: DateTime.now().toUtc(),
+    );
+    return value;
+  }
+
+  @override
   Future<Profile> updateCurrentProfile(ProfileUpdateInput input) async {
     value = Profile.fromJson({...value.toJson(), ...input.toJson()});
     return value;
@@ -110,6 +126,8 @@ final sampleProfile = Profile(
   bio: 'Creo experiencias que conectan la ciudad.',
   userType: UserType.creator,
   role: ProfileRole.user,
+  onboardingStatus: OnboardingStatus.completed,
+  initialProfileCompletedAt: DateTime.utc(2026, 9, 11),
   createdAt: DateTime.utc(2026, 9, 11),
   updatedAt: DateTime.utc(2026, 9, 11),
 );

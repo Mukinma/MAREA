@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 abstract interface class ProfileRepository {
   Future<bool> isUsernameAvailable(String username);
   Future<Profile> getCurrentProfile();
+  Future<Profile> completeInitialProfile(InitialProfileInput input);
   Future<Profile> updateCurrentProfile(ProfileUpdateInput input);
 }
 
@@ -45,6 +46,22 @@ class SupabaseProfileRepository implements ProfileRepository {
           .eq('id', _currentUserId)
           .single();
       return Profile.fromJson(row);
+    } catch (error) {
+      if (error is AppFailure) rethrow;
+      throw AppFailureMapper.from(error);
+    }
+  }
+
+  @override
+  Future<Profile> completeInitialProfile(InitialProfileInput input) async {
+    try {
+      final error = input.validate();
+      if (error != null) throw AppFailure(error);
+      final row = await _client.rpc(
+        'complete_initial_profile',
+        params: input.toJson(),
+      );
+      return Profile.fromJson(Map<String, dynamic>.from(row as Map));
     } catch (error) {
       if (error is AppFailure) rethrow;
       throw AppFailureMapper.from(error);

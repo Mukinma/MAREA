@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/theme/app_depth.dart';
 
 /// A small composition of creative worlds, not a feed or interactive cards.
 class CreativeArtwork extends StatelessWidget {
@@ -36,7 +37,7 @@ class CreativeArtwork extends StatelessWidget {
                   child: _WorldTile(
                     label: 'Digital',
                     color: AppColors.mint,
-                    icon: Icons.code_rounded,
+                    icon: Icons.inventory_2_outlined,
                     rotation: .07,
                     unit: unit,
                   ),
@@ -50,32 +51,6 @@ class CreativeArtwork extends StatelessWidget {
                     icon: Icons.graphic_eq_rounded,
                     rotation: .12,
                     unit: unit,
-                  ),
-                ),
-                Positioned(
-                  left: 25 * unit,
-                  bottom: 4 * unit,
-                  child: Transform.rotate(
-                    angle: -.05,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 18 * unit,
-                        vertical: 10 * unit,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.brandNavy,
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: Text(
-                        'Mejor, juntos.',
-                        style: TextStyle(
-                          fontFamily: 'NunitoSans',
-                          color: Colors.white,
-                          fontSize: 17 * unit,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
                   ),
                 ),
               ],
@@ -112,6 +87,11 @@ class _WorldTile extends StatelessWidget {
         padding: EdgeInsets.all(18 * unit),
         decoration: BoxDecoration(
           color: color,
+          boxShadow: AppDepth.floating,
+          border: Border.all(
+            color: Colors.white.withValues(alpha: .7),
+            width: 2,
+          ),
           borderRadius: BorderRadius.circular(24 * unit),
         ),
         child: Column(
@@ -120,15 +100,6 @@ class _WorldTile extends StatelessWidget {
             Expanded(
               child: Center(
                 child: Icon(icon, size: 58 * unit, color: AppColors.brandNavy),
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                color: AppColors.brandNavy,
-                fontFamily: 'NunitoSans',
-                fontSize: 18 * unit,
-                fontWeight: FontWeight.w800,
               ),
             ),
           ],

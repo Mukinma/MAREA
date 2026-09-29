@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -26,52 +27,32 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final profile = widget.controller.profile;
     return CommunityPage(
-      title: 'La ciudad se encuentra aquí',
-      subtitle: 'Ideas, proyectos y oportunidades de la comunidad MAREA.',
+      title: 'Inicio',
+      maxWidth: 760,
       onRefresh: _refresh,
+      action: FilledButton.icon(
+        onPressed: () => context.go('/create'),
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('Publicar'),
+      ),
       children: [
-        if (profile != null)
-          Card(
-            color: AppColors.mint,
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    profile.userType.headline,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(profile.userType.description),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 8,
-                    children: [
-                      FilledButton.icon(
-                        onPressed: () => context.go('/create'),
-                        icon: const Icon(Icons.add),
-                        label: const Text('Compartir publicación'),
-                      ),
-                      OutlinedButton(
-                        onPressed: () => context.go('/missions'),
-                        child: const Text('Encontrar misiones'),
-                      ),
-                      if (profile.role == ProfileRole.admin)
-                        OutlinedButton.icon(
-                          onPressed: () async { await context.push('/moderation'); if(mounted) _refresh(); },
-                          icon: const Icon(Icons.shield_outlined),
-                          label: const Text('Moderación'),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
+        if (profile?.role == ProfileRole.admin)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () async {
+                await context.push('/moderation');
+                if (mounted) _refresh();
+              },
+              icon: const Icon(Icons.shield_outlined),
+              label: const Text('Moderación'),
             ),
           ),
-        const SizedBox(height: 24),
-        PostsFeed(key: _postsFeedKey, controller: widget.controller),
+        PostsFeed(
+          key: _postsFeedKey,
+          controller: widget.controller,
+          showHeading: false,
+        ),
       ],
     );
   }
@@ -84,12 +65,13 @@ class PostsFeed extends StatefulWidget {
     this.query = '',
     this.category,
     this.savedOnly = false,
+    this.showHeading = true,
     super.key,
   });
   final AppSessionController controller;
   final String? authorId, category;
   final String query;
-  final bool savedOnly;
+  final bool savedOnly, showHeading;
   @override
   State<PostsFeed> createState() => _PostsFeedState();
 }
@@ -179,24 +161,27 @@ class _PostsFeedState extends State<PostsFeed> {
     children: [
       Row(
         children: [
-          Expanded(
-            child: Text(
-              widget.authorId != null
-                  ? 'Publicaciones'
-                  : widget.savedOnly
-                  ? 'Tus guardados'
-                  : 'Publicaciones recientes',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
+          if (widget.showHeading)
+            Expanded(
+              child: Text(
+                widget.authorId != null
+                    ? 'Publicaciones'
+                    : widget.savedOnly
+                    ? 'Tus guardados'
+                    : 'Publicaciones recientes',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            )
+          else
+            const Spacer(),
           IconButton(
             tooltip: 'Actualizar publicaciones',
             onPressed: _loading ? null : () => _load(reset: true),
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded),
           ),
         ],
       ),
-      const SizedBox(height: 12),
+      if (widget.showHeading) const SizedBox(height: 12),
       for (final post in _posts)
         PostCard(
           key: ValueKey(post.id),
@@ -304,7 +289,7 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     final post = widget.post;
     final owner = post.authorId == widget.viewerId;
-    return Card(
+    return MareaCard(
       margin: const EdgeInsets.only(bottom: 20),
       clipBehavior: Clip.antiAlias,
       child: Padding(
@@ -427,10 +412,6 @@ class _PostCardState extends State<PostCard> {
                   const Chip(label: Text('Oculta por moderación')),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(post.title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 10),
-            SelectableText(post.body),
             if (_url != null)
               Padding(
                 padding: const EdgeInsets.only(top: 16),
@@ -457,6 +438,10 @@ class _PostCardState extends State<PostCard> {
                         ),
                 ),
               ),
+            const SizedBox(height: 8),
+            Text(post.title, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 10),
+            SelectableText(post.body),
             if (post.location != null)
               Padding(
                 padding: const EdgeInsets.only(top: 14),

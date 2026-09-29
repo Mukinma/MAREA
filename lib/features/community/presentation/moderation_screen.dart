@@ -1,5 +1,8 @@
+import 'package:marea/shared/widgets/marea_surface.dart';
 import 'package:marea/features/community/presentation/mission_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:marea/features/showcase/models/showcase.dart';
+import 'package:marea/features/showcase/presentation/showcase_widgets.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
@@ -107,7 +110,7 @@ class _ReportCardState extends State<_ReportCard> {
     final report = widget.report;
     final repo = widget.controller.communityRepository!;
     final isMission = report.missionId != null;
-    return Card(
+    return MareaCard(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -122,20 +125,30 @@ class _ReportCardState extends State<_ReportCard> {
             Text('Motivo: ${report.reason}'),
             const Divider(height: 32),
             CommunityLoad<Object?>(
-              load: () async => isMission
+              load: () async => report.showcaseId != null
+                  ? await widget.controller.showcaseRepository?.item(
+                      report.showcaseId!,
+                    )
+                  : isMission
                   ? await repo.mission(report.missionId!)
                   : await repo.post(report.postId!),
               builder: (content, reload) {
                 if (content == null) {
                   return const Text('El contenido fue eliminado.');
                 }
-                final title = content is Mission
+                final title = content is ShowcaseItem
+                    ? content.title
+                    : content is Mission
                     ? content.title
                     : (content as CommunityPost).title;
-                final body = content is Mission
+                final body = content is ShowcaseItem
+                    ? content.body
+                    : content is Mission
                     ? content.body
                     : (content as CommunityPost).body;
-                final hidden = content is Mission
+                final hidden = content is ShowcaseItem
+                    ? content.hidden
+                    : content is Mission
                     ? content.hidden
                     : (content as CommunityPost).hidden;
                 return Column(
@@ -145,6 +158,14 @@ class _ReportCardState extends State<_ReportCard> {
                     const SizedBox(height: 8),
                     SelectableText(body),
                     const SizedBox(height: 12),
+                    if (content is ShowcaseItem) ...[
+                      Text('${content.kind.label} · ${content.status.label}'),
+                      for (final path in content.imagePaths)
+                        ShowcasePhoto(
+                          path: path,
+                          repository: widget.controller.showcaseRepository!,
+                        ),
+                    ],
                     if (content is CommunityPost) ...[
                       Text(
                         '${content.kind.label} · ${communityCategories[content.category] ?? 'Otros'}',
@@ -176,10 +197,17 @@ class _ReportCardState extends State<_ReportCard> {
                         ),
                     ],
                     if (content is Mission) ...[
-                      if(content.imagePath != null) MissionCover(path:content.imagePath, repository:repo, height:240),
-                      if(content.requirements != null) Text(content.requirements!),
-                      if(content.conditions != null) Text(content.conditions!),
-                      if(content.cancellationReason != null) Text('Cancelación: ${content.cancellationReason}'),
+                      if (content.imagePath != null)
+                        MissionCover(
+                          path: content.imagePath,
+                          repository: repo,
+                          height: 240,
+                        ),
+                      if (content.requirements != null)
+                        Text(content.requirements!),
+                      if (content.conditions != null) Text(content.conditions!),
+                      if (content.cancellationReason != null)
+                        Text('Cancelación: ${content.cancellationReason}'),
                       Text(
                         'Categoría: ${communityCategories[content.category] ?? 'Otros'}',
                       ),
@@ -206,11 +234,14 @@ class _ReportCardState extends State<_ReportCard> {
                               setState(() => _busy = true);
                               final ok = await runCommunityAction(
                                 context,
-                                () => repo.moderate(
-                                  report.missionId ?? report.postId!,
-                                  mission: isMission,
-                                  hide: !hidden,
-                                ),
+                                () => report.showcaseId != null
+                                    ? widget.controller.showcaseRepository!
+                                          .moderate(report.showcaseId!, !hidden)
+                                    : repo.moderate(
+                                        report.missionId ?? report.postId!,
+                                        mission: isMission,
+                                        hide: !hidden,
+                                      ),
                                 success: hidden
                                     ? 'Contenido restaurado.'
                                     : 'Contenido ocultado.',

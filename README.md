@@ -1,12 +1,12 @@
 # MAREA
 
-Configuración pendiente para recibir códigos reales: [guía breve de correo SMTP](docs/email-setup.md). Las plantillas locales aún no están publicadas; los cambios de UI no sustituyen este paso.
+SMTP de Gmail está activo y la plantilla publicada de confirmación incluye el código. Consulta el [estado y las pruebas de correo](docs/email-setup.md); la entrega con cuentas nuevas todavía requiere validación real.
 
-MAREA para Android, Web e iOS, con publicaciones y funciones diferenciadas por perfil. Consulta [Comunidad y misiones](docs/community.md) para los flujos y permisos de esta entrega. La app incluye registro e inicio de sesión con persistencia, perfil social editable, cierre de sesión y eliminación completa de cuenta. La interfaz parte del mockup oficial: azul marino, aqua, superficies claras, pasteles, formas suaves y navegación social responsive.
+MAREA para Android, Web e iOS, con publicaciones y funciones diferenciadas por perfil. Consulta [Comunidad y misiones](docs/community.md) para los flujos y permisos de esta entrega. La app incluye registro e inicio de sesión con persistencia, perfil social editable, portafolio/catálogo/servicios independientes, cierre de sesión y eliminación completa de cuenta. La interfaz parte del mockup oficial: azul marino, aqua, superficies claras, pasteles, formas suaves y navegación social responsive.
 
 ## Stack
 
-La ampliación de bienvenida, consentimiento legal (México, 18+), recuperación, guía opcional y personalización está documentada en [Acceso y perfil](docs/account-completion.md). Las migraciones y funciones de Supabase están incluidas como código fuente; cada instalación debe usar su propio proyecto y sus propias políticas operativas.
+La ampliación de bienvenida, consentimiento legal (México, 18+), recuperación, confirmación inicial obligatoria y personalización está documentada en [Acceso y perfil](docs/account-completion.md). Las migraciones y funciones de Supabase están incluidas como código fuente; cada instalación debe usar su propio proyecto y sus propias políticas operativas.
 
 - Flutter 3.44.1 y Dart 3.12.1
 - Material 3 personalizado y Nunito Sans local (OFL)
@@ -14,7 +14,7 @@ La ampliación de bienvenida, consentimiento legal (México, 18+), recuperación
 - `supabase_flutter` para Auth, PostgreSQL y Edge Functions
 - Android Kotlin, application ID `com.marea.app`, `minSdk 24`
 
-No hay backend adicional, Docker, librería externa de estado ni AR. La aplicación usa Supabase Storage privado para avatar y portada. Se retiró la entrada de demostración: `lib/main.dart` es la única aplicación ejecutable y los repositorios falsos se limitan a pruebas automatizadas.
+No hay backend adicional, Docker, librería externa de estado ni AR. La aplicación usa Supabase Storage privado para avatar, portada y fotografías de contenido. Se retiró la entrada de demostración: `lib/main.dart` es la única aplicación ejecutable y los repositorios falsos se limitan a pruebas automatizadas.
 
 ## Estructura importante
 
@@ -25,15 +25,28 @@ lib/
     auth/        repositorio y pantallas de autenticación
     profile/     modelo, repositorio y experiencia de perfil
     community/   publicaciones, descubrimiento, misiones y moderación
+    showcase/    fichas profesionales, fotografías, guardados y edición
     shell/       navegación adaptativa
   shared/        componentes visuales de MAREA
 supabase/
   migrations/001_initial_schema.sql
   migrations/002_account_completion.sql
   migrations/003_community.sql
+  migrations/004_post_locations.sql
+  migrations/005_mission_management.sql
+  migrations/006_profile_experience.sql
+  migrations/007_minimal_registration.sql
+  migrations/008_recover_minimal_registration.sql
   functions/delete-account/index.ts
 test/            unitarias, controlador, guards y widgets
 ```
+
+El nuevo [acceso y registro guiado](docs/access-redesign.md) requiere la migración 007 y tiene cuatro [referencias de imagegen](output/imagegen/README-access.md).
+
+La migración 008 recupera las elecciones de registros mínimos creados antes de
+aplicar la 007, conservando sus datos. Antes de distribuir Web o Android, ejecutar
+`node tool/check_backend_contract.mjs` desde la raíz del proyecto: impide distribuir
+un cliente contra un esquema desactualizado. Ver [gate de despliegue](tool/README.md).
 
 Los tokens visuales están documentados en [`docs/design-system.md`](docs/design-system.md). Los assets provisionales de mascota permanecen desacoplados hasta su aprobación; logo y estados actuales usan recursos vectoriales propios del código.
 
@@ -55,6 +68,7 @@ Los tokens visuales están documentados en [`docs/design-system.md`](docs/design
 4. Despliega la función sin Docker:
 
    ```bash
+   supabase functions deploy profile-media --use-api
    supabase functions deploy delete-account --use-api
    ```
 
@@ -117,7 +131,7 @@ Las pruebas remotas requieren dos cuentas temporales y deben comprobar:
 
 - cada persona solo puede leer y actualizar su fila privada de perfil; el directorio de comunidad devuelve únicamente campos de presentación;
 - un cliente anónimo solo puede consultar disponibilidad de username mediante RPC booleano;
-- `id`, `role` y timestamps no pueden modificarse desde Flutter;
+- `id`, `role`, timestamps y tipo confirmado no pueden modificarse directamente; el registro mínimo confirma el tipo en servidor y las cuentas pendientes lo confirman una sola vez; preferencias y avance de guía permanecen privados y editables;
 - la Edge Function rechaza peticiones sin JWT;
 - eliminar una cuenta borra `auth.users` y el perfil por cascade;
 - nombre, username y bio persisten entre Web y Android.
@@ -132,4 +146,4 @@ Las pruebas remotas requieren dos cuentas temporales y deben comprobar:
 
 ## Alcance y limitaciones del MVP
 
-Inicio, Explorar, Crear y Misiones utilizan datos persistentes de Supabase. Incluye publicaciones por tipo de perfil, fotografías, guardados, búsqueda, perfiles de la comunidad, postulaciones y moderación. Las limitaciones concretas se documentan en [Comunidad y misiones](docs/community.md). No incluye AR.
+Inicio, Explorar, Crear y Misiones utilizan datos persistentes de Supabase. Incluye publicaciones por tipo de perfil, fichas profesionales independientes, fotografías, guardados, búsqueda, perfiles de la comunidad, postulaciones y moderación. Las limitaciones concretas se documentan en [Comunidad y misiones](docs/community.md). No incluye AR.

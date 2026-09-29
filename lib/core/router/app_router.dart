@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:marea/features/profile/presentation/profile_setup_screen.dart';
+import 'package:marea/features/showcase/models/showcase.dart';
+import 'package:marea/features/showcase/presentation/showcase_composer_screen.dart';
+import 'package:marea/features/showcase/presentation/showcase_detail_screen.dart';
+import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/auth/presentation/email_code_screen.dart';
@@ -45,19 +50,34 @@ abstract final class AppRouter {
     if (recovery) {
       return location == '/reset-password' ? null : '/reset-password';
     }
-    if (location == '/reset-password') return '/profile';
+    if (location == '/reset-password') return '/home';
     if (legal) {
       return location == '/legal/accept' || location == '/settings'
           ? null
           : '/legal/accept';
     }
     if (onboarding && location != '/onboarding') return '/onboarding';
+    if (!onboarding && location == '/onboarding') return '/profile';
     return location == '/' ||
             _authPaths.contains(location) ||
             location == '/legal/accept'
-        ? '/profile'
+        ? '/home'
         : null;
   }
+
+  static Widget _profileSetup(
+    AppSessionController controller, {
+    bool preferencesOnly = false,
+  }) => AnimatedBuilder(
+    animation: controller,
+    builder: (_, _) => controller.profile == null
+        ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+        : ProfileSetupScreen(
+            key: ValueKey(controller.profile!.id),
+            controller: controller,
+            preferencesOnly: preferencesOnly,
+          ),
+  );
 
   static GoRouter create(AppSessionController controller) {
     final rootKey = GlobalKey<NavigatorState>();
@@ -98,13 +118,28 @@ abstract final class AppRouter {
           builder: (_, _) => AcceptLegalScreen(controller: controller),
         ),
         GoRoute(
+          path: '/profile/setup',
+          builder: (_, _) => _profileSetup(controller),
+        ),
+        GoRoute(
+          path: '/profile/preferences',
+          builder: (_, _) => _profileSetup(controller, preferencesOnly: true),
+        ),
+        GoRoute(
           path: '/onboarding',
           builder: (_, _) => OnboardingScreen(controller: controller),
         ),
         GoRoute(
           path: '/recover-password',
-          builder: (_, _) =>
-              EmailCodeScreen(controller: controller, recovery: true),
+          builder: (_, state) => EmailCodeScreen(
+            controller: controller,
+            recovery: true,
+            email: state.extra as String?,
+          ),
+        ),
+        GoRoute(
+          path: '/password-updated',
+          builder: (_, _) => const PasswordUpdatedScreen(),
         ),
         GoRoute(
           path: '/reset-password',
@@ -122,7 +157,10 @@ abstract final class AppRouter {
         ),
         GoRoute(
           path: '/login',
-          builder: (_, _) => LoginScreen(controller: controller),
+          builder: (_, state) => LoginScreen(
+            controller: controller,
+            email: state.extra as String?,
+          ),
         ),
         GoRoute(
           path: '/register',
@@ -137,11 +175,8 @@ abstract final class AppRouter {
           ),
         ),
         ShellRoute(
-          builder: (_, state, child) => AppShell(
-            location: state.uri.path,
-            onRefresh: state.uri.path == '/profile' ? controller.refresh : null,
-            child: child,
-          ),
+          builder: (_, state, child) =>
+              AppShell(location: state.uri.path, child: child),
           routes: [
             GoRoute(
               path: '/home',
@@ -152,14 +187,15 @@ abstract final class AppRouter {
             ),
             GoRoute(
               path: '/explore',
-              builder: (_, _) => ExploreScreen(
+              builder: (_, state) => ExploreScreen(
                 key: ValueKey(controller.profile?.id),
                 controller: controller,
+                initialSection: state.uri.queryParameters['section'],
               ),
             ),
             GoRoute(
               path: '/create',
-              builder: (_, _) => PostComposerScreen(
+              builder: (_, _) => CreateScreen(
                 key: ValueKey(
                   '${controller.profile?.id}:${controller.profile?.userType.name}',
                 ),
@@ -168,9 +204,12 @@ abstract final class AppRouter {
             ),
             GoRoute(
               path: '/missions',
-              builder: (_, _) => MissionsScreen(
-                key: ValueKey(controller.profile?.id),
+              builder: (_, state) => MissionsScreen(
+                key: ValueKey(
+                  '${controller.profile?.id}:${state.uri.queryParameters['section']}',
+                ),
                 controller: controller,
+                initialSection: state.uri.queryParameters['section'],
               ),
             ),
             GoRoute(
@@ -178,6 +217,42 @@ abstract final class AppRouter {
               builder: (_, _) => ProfileScreen(controller: controller),
             ),
           ],
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
+          path: '/posts/new',
+          builder: (_, _) => Scaffold(
+            appBar: AppBar(title: const Text('Crear publicación')),
+            body: PostComposerScreen(controller: controller),
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
+          path: '/showcase/new',
+          builder: (_, state) => ShowcaseComposerScreen(
+            controller: controller,
+            initialKind: ShowcaseKind.values
+                .where((v) => v.name == state.uri.queryParameters['kind'])
+                .firstOrNull,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
+          path: '/showcase/:id/edit',
+          builder: (_, state) => ShowcaseComposerScreen(
+            key: ValueKey(state.pathParameters['id']),
+            controller: controller,
+            itemId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
+          path: '/showcase/:id',
+          builder: (_, state) => ShowcaseDetailScreen(
+            key: ValueKey(state.pathParameters['id']),
+            controller: controller,
+            itemId: state.pathParameters['id']!,
+          ),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
@@ -222,6 +297,10 @@ abstract final class AppRouter {
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/people/:id',
+          redirect: (_, state) =>
+              state.pathParameters['id'] == controller.profile?.id
+              ? '/profile'
+              : null,
           builder: (_, state) => PublicProfileScreen(
             controller: controller,
             profileId: state.pathParameters['id']!,
@@ -235,7 +314,10 @@ abstract final class AppRouter {
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/profile/edit',
-          builder: (_, _) => EditProfileScreen(controller: controller),
+          builder: (_, state) => EditProfileScreen(
+            controller: controller,
+            initialSection: state.uri.queryParameters['section'],
+          ),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,

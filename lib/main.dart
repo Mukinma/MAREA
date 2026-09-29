@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:marea/features/showcase/data/showcase_repository.dart';
+import 'package:marea/features/profile/data/profile_media_repository.dart';
 import 'package:marea/features/community/data/community_repository.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:marea/app.dart';
@@ -29,6 +31,8 @@ Future<void> main() async {
       controller: AppSessionController(
         authRepository: SupabaseAuthRepository(client),
         communityRepository: SupabaseCommunityRepository(client),
+        showcaseRepository: SupabaseShowcaseRepository(client),
+        mediaRepository: SupabaseProfileMediaRepository(),
         profileRepository: SupabaseProfileRepository(client),
         legalRepository: SupabaseLegalRepository(client),
       ),

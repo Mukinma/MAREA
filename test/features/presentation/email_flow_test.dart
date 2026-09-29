@@ -81,14 +81,14 @@ void main() {
       find.byKey(const Key('login-password')),
       'Password123',
     );
-    await tester.ensureVisible(find.text('Iniciar sesión'));
-    await tester.tap(find.text('Iniciar sesión'));
+    await tester.ensureVisible(find.text('Entrar'));
+    await tester.tap(find.text('Entrar'));
     await tester.pump();
     final recovery = tester.widget<TextButton>(
       find.widgetWithText(TextButton, 'Olvidé mi contraseña'),
     );
     final register = tester.widget<TextButton>(
-      find.widgetWithText(TextButton, 'Crear una cuenta'),
+      find.widgetWithText(TextButton, 'Crear cuenta'),
     );
     final home = tester.widget<TextButton>(
       find.widgetWithText(TextButton, 'Inicio'),
@@ -131,8 +131,8 @@ void main() {
         find.byKey(const Key('login-password')),
         'Password123',
       );
-      await tester.ensureVisible(find.text('Iniciar sesión'));
-      await tester.tap(find.text('Iniciar sesión'));
+      await tester.ensureVisible(find.text('Entrar'));
+      await tester.tap(find.text('Entrar'));
       await tester.pumpAndSettle();
       expect(find.text('Confirmar mi correo'), findsOneWidget);
       await tester.enterText(
@@ -155,8 +155,8 @@ void main() {
       find.byKey(const Key('login-password')),
       'Password123',
     );
-    await tester.ensureVisible(find.text('Iniciar sesión'));
-    await tester.tap(find.text('Iniciar sesión'));
+    await tester.ensureVisible(find.text('Entrar'));
+    await tester.tap(find.text('Entrar'));
     await tester.pumpAndSettle();
     expect(find.text('Confirmar mi correo'), findsNothing);
   });
@@ -187,8 +187,8 @@ void main() {
       expect(find.text('ana@example.com'), findsOneWidget);
       expect(find.byType(MareaTextField), findsOneWidget);
       await tester.enterText(find.byKey(const Key('email-code')), '12345678');
-      await tester.ensureVisible(find.text('Cambiar correo'));
-      await tester.tap(find.text('Cambiar correo'));
+      await tester.ensureVisible(find.text('Usar otro correo'));
+      await tester.tap(find.text('Usar otro correo'));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('email-code')), findsNothing);
       expect(find.text('12345678'), findsNothing);

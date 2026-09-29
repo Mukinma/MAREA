@@ -30,6 +30,7 @@ extension UserCapabilities on UserType {
     ],
     UserType.business => const [
       PostKind.community,
+      PostKind.service,
       PostKind.space,
       PostKind.event,
     ],
@@ -49,13 +50,13 @@ extension UserCapabilities on UserType {
     UserType.entrepreneur =>
       'Presenta tus productos y servicios y encuentra nuevas colaboraciones.',
     UserType.business =>
-      'Comparte tu espacio, organiza eventos y crea oportunidades locales.',
+      'Presenta tus servicios, comparte tu espacio y organiza eventos.',
   };
   String get showcaseLabel => switch (this) {
-    UserType.general => 'Comunidad',
+    UserType.general => 'Publicaciones',
     UserType.creator => 'Portafolio',
     UserType.entrepreneur => 'Catálogo',
-    UserType.business => 'Espacio y eventos',
+    UserType.business => 'Servicios',
   };
 }
 
@@ -67,6 +68,16 @@ class CommunityProfile {
     required this.userType,
     this.bio,
     this.website,
+    this.avatarPath,
+    this.coverPath,
+    this.coverPreset = 'marea',
+    this.contactUrl,
+    this.openToCollaboration = false,
+    this.location,
+    this.locationLatitude,
+    this.locationLongitude,
+    this.locationPrecision,
+    this.businessHours = const {},
   });
   final String id;
   final String fullName;
@@ -74,6 +85,11 @@ class CommunityProfile {
   final UserType userType;
   final String? bio;
   final String? website;
+  final String? avatarPath, coverPath, contactUrl, location, locationPrecision;
+  final String coverPreset;
+  final bool openToCollaboration;
+  final double? locationLatitude, locationLongitude;
+  final Map<String, String?> businessHours;
 
   factory CommunityProfile.fromJson(Map<String, dynamic> json) =>
       CommunityProfile(
@@ -83,6 +99,18 @@ class CommunityProfile {
         userType: UserType.fromDatabase(json['user_type'] as String),
         bio: json['bio'] as String?,
         website: json['website'] as String?,
+        avatarPath: json['avatar_path'] as String?,
+        coverPath: json['cover_path'] as String?,
+        coverPreset: json['cover_preset'] as String? ?? 'marea',
+        contactUrl: json['contact_url'] as String?,
+        openToCollaboration: json['open_to_collaboration'] as bool? ?? false,
+        location: json['location'] as String?,
+        locationLatitude: (json['location_latitude'] as num?)?.toDouble(),
+        locationLongitude: (json['location_longitude'] as num?)?.toDouble(),
+        locationPrecision: json['location_precision'] as String?,
+        businessHours: Map<String, String?>.from(
+          json['business_hours'] as Map? ?? {},
+        ),
       );
 
   String get initials {
@@ -249,6 +277,28 @@ class Mission {
   bool get isFull => acceptedCount >= capacity;
   int get availableSeats => (capacity - acceptedCount).clamp(0, capacity);
   bool get conditionsLocked => conditionsLockedAt != null;
+
+  /// Mirrors the server's participation checks; the RPC remains authoritative.
+  String? applicationRestriction({
+    required String viewerId,
+    required UserType viewerType,
+    DateTime? now,
+  }) {
+    if (authorId == viewerId) return 'Esta es una misión que tú organizas.';
+    if (hidden) return 'Esta misión está oculta por moderación.';
+    if (status == 'cancelled') return 'El organizador canceló esta misión.';
+    if (status == 'completed') return 'Esta misión ya finalizó.';
+    if (status != 'open') return 'El organizador cerró la convocatoria.';
+    if (!startsAt.isAfter(now ?? DateTime.now())) {
+      return 'La fecha de esta convocatoria ya pasó.';
+    }
+    if (isFull) return 'Esta misión ya alcanzó su cupo.';
+    if (targetType != null && targetType != viewerType) {
+      return 'Esta misión busca ${targetType!.databaseValue}. Tu perfil es ${viewerType.databaseValue}.';
+    }
+    return null;
+  }
+
   String get statusLabel => hidden
       ? 'Oculta por moderación'
       : isTerminal
@@ -331,11 +381,13 @@ class ContentReport {
     required this.createdAt,
     this.postId,
     this.missionId,
+    this.showcaseId,
   });
   final String id;
   final String reporterId;
   final String? postId;
   final String? missionId;
+  final String? showcaseId;
   final String reason;
   final String state;
   final DateTime createdAt;
@@ -345,6 +397,7 @@ class ContentReport {
     reporterId: json['reporter_id'] as String,
     postId: json['post_id'] as String?,
     missionId: json['mission_id'] as String?,
+    showcaseId: json['showcase_id'] as String?,
     reason: json['reason'] as String,
     state: json['state'] as String,
     createdAt: DateTime.parse(json['created_at'] as String),

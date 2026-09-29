@@ -1,3 +1,5 @@
+import 'package:marea/shared/widgets/marea_tabs.dart';
+import 'package:marea/shared/widgets/marea_surface.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -33,8 +35,13 @@ String _applicationStatus(String status) => switch (status) {
 };
 
 class MissionsScreen extends StatefulWidget {
-  const MissionsScreen({super.key, required this.controller});
+  const MissionsScreen({
+    super.key,
+    required this.controller,
+    this.initialSection,
+  });
   final AppSessionController controller;
+  final String? initialSection;
   @override
   State<MissionsScreen> createState() => _MissionsScreenState();
 }
@@ -45,6 +52,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
   final _search = TextEditingController();
   String? _category;
   UserType? _target;
+  String? _applicationFilter;
   bool _history = false;
   Timer? _debounce;
   @override
@@ -62,6 +70,14 @@ class _MissionsScreenState extends State<MissionsScreen> {
   @override
   void initState() {
     super.initState();
+    _tab = widget.initialSection == 'own'
+        ? 1
+        : widget.initialSection == 'applications'
+        ? 2
+        : 0;
+    if (widget.initialSection == 'compatible') {
+      _target = widget.controller.profile?.userType;
+    }
     _load();
   }
 
@@ -153,10 +169,14 @@ class _MissionsScreenState extends State<MissionsScreen> {
   @override
   Widget build(BuildContext context) {
     final visible = _missions;
+    final viewer = widget.controller.profile;
+    final applications = _applications
+        .where(
+          (a) => _applicationFilter == null || a.status == _applicationFilter,
+        )
+        .toList();
     return CommunityPage(
       title: 'Misiones',
-      subtitle:
-          'Encuentra una idea, suma tu talento y hazla realidad en comunidad.',
       onRefresh: () => _load(),
       action: FilledButton.icon(
         onPressed: () async {
@@ -171,28 +191,55 @@ class _MissionsScreenState extends State<MissionsScreen> {
         label: const Text('Crear misión'),
       ),
       children: [
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final (index, label) in [
-              'Explorar',
-              'Mis misiones',
-              'Mis postulaciones',
-            ].indexed)
-              ChoiceChip(
-                label: Text(label),
-                selected: _tab == index,
-                onSelected: (_) {
-                  if (_tab == index) return;
-                  setState(() => _tab = index);
-                  _load();
-                },
-              ),
-          ],
+        MareaTabs(
+          options: const {
+            '0': 'Explorar',
+            '1': 'Mis misiones',
+            '2': 'Mis postulaciones',
+          },
+          value: '$_tab',
+          onChanged: (value) {
+            final tab = int.parse(value);
+            if (_tab == tab) return;
+            setState(() => _tab = tab);
+            _load();
+          },
         ),
         const SizedBox(height: 20),
         if (_tab == 0) ...[
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ChoiceChip(
+                label: const Text('Todas'),
+                selected: _target == null,
+                onSelected: (_) {
+                  setState(() => _target = null);
+                  _load();
+                },
+              ),
+              if (viewer != null)
+                ChoiceChip(
+                  avatar: const Icon(Icons.person_outline, size: 18),
+                  label: const Text('Para mi perfil'),
+                  selected: _target == viewer.userType,
+                  onSelected: (_) {
+                    setState(() => _target = viewer.userType);
+                    _load();
+                  },
+                ),
+            ],
+          ),
+          if (_target == viewer?.userType && viewer != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Para ${viewer.userType.databaseValue} y convocatorias para todos.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+          const SizedBox(height: 12),
           TextField(
             controller: _search,
             decoration: const InputDecoration(
@@ -236,6 +283,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
               SizedBox(
                 width: 260,
                 child: DropdownButtonFormField<UserType?>(
+                  key: ValueKey(_target),
                   initialValue: _target,
                   isExpanded: true,
                   decoration: const InputDecoration(
@@ -278,9 +326,31 @@ class _MissionsScreenState extends State<MissionsScreen> {
         ],
         if (_error != null)
           CommunityNotice(message: _error!, onRetry: () => _load()),
+        if (_tab == 2) ...[
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final entry in const <String?, String>{
+                null: 'Todas',
+                'pending': 'Pendientes',
+                'accepted': 'Aceptadas',
+                'rejected': 'No seleccionadas',
+                'withdrawn': 'Retiradas',
+              }.entries)
+                ChoiceChip(
+                  label: Text(entry.value),
+                  selected: _applicationFilter == entry.key,
+                  onSelected: (_) =>
+                      setState(() => _applicationFilter = entry.key),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
         if (_tab == 2)
-          for (final application in _applications)
-            Card(
+          for (final application in applications)
+            MareaCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -326,23 +396,31 @@ class _MissionsScreenState extends State<MissionsScreen> {
             )
         else
           for (final mission in visible)
-            MissionSummary(
-              mission: mission,
-              repository: widget.controller.communityRepository,
-              owner: _tab == 1,
-              onTap: () async {
-                await context.push('/missions/${mission.id}');
-                if (mounted) _load();
-              },
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: MissionSummary(
+                mission: mission,
+                viewerType: viewer?.userType,
+                viewerId: viewer?.id,
+                repository: widget.controller.communityRepository,
+                owner: _tab == 1,
+                onTap: () async {
+                  await context.push('/missions/${mission.id}');
+                  if (mounted) _load();
+                },
+              ),
             ),
         if (!_loading &&
             _error == null &&
-            (_tab == 2 ? _applications.isEmpty : visible.isEmpty))
+            (_tab == 2 ? applications.isEmpty : visible.isEmpty))
           CommunityNotice(
             message: switch (_tab) {
               1 =>
                 'Aún no has creado misiones. Invita a la comunidad a colaborar.',
-              2 => 'Tus postulaciones y sus respuestas aparecerán aquí.',
+              2 =>
+                _applicationFilter == null
+                    ? 'Tus postulaciones y sus respuestas aparecerán aquí.'
+                    : 'No tienes postulaciones en este estado.',
               _ =>
                 'No hay misiones abiertas en esta página. Vuelve pronto o crea la primera.',
             },
@@ -496,15 +574,13 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
         .where((a) => a.applicantId == viewer?.id)
         .firstOrNull;
     final accepted = mission?.acceptedCount ?? 0;
-    final eligible =
-        mission != null &&
-        viewer != null &&
-        !owner &&
-        !mission.hidden &&
-        mission.status == 'open' &&
-        !mission.isFull &&
-        mission.startsAt.isAfter(DateTime.now()) &&
-        (mission.targetType == null || mission.targetType == viewer.userType);
+    final restriction = mission == null || viewer == null
+        ? 'Inicia sesión para postularte.'
+        : mission.applicationRestriction(
+            viewerId: viewer.id,
+            viewerType: viewer.userType,
+          );
+    final eligible = restriction == null;
     return Scaffold(
       backgroundColor: AppColors.paper,
       appBar: AppBar(
@@ -619,6 +695,16 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
             const SizedBox(height: 24),
             if (owner) ...[
               if (!mission.isTerminal)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    mission.conditionsLocked
+                        ? 'Organizas esta misión. Ya recibió postulaciones: fecha, lugar y perfil solicitado quedan fijos; puedes mejorar el texto y aumentar el cupo.'
+                        : 'Organizas esta misión. Puedes editarla y seleccionar participantes. La fecha, el lugar y el perfil solicitado quedan fijos desde la primera postulación.',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              if (!mission.isTerminal)
                 Wrap(
                   spacing: 12,
                   runSpacing: 8,
@@ -685,7 +771,11 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                     'Motivo de cancelación (visible para la comunidad)',
                                 maxLength: 500,
                               );
-                              if (!mounted || !context.mounted || reason == null) return;
+                              if (!mounted ||
+                                  !context.mounted ||
+                                  reason == null) {
+                                return;
+                              }
                               final confirm = await showDialog<bool>(
                                 context: context,
                                 builder: (c) => AlertDialog(
@@ -774,7 +864,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                       'Las personas interesadas en colaborar aparecerán aquí.',
                 ),
               for (final application in _applications)
-                Card(
+                MareaCard(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -854,15 +944,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                   label: const Text('Postularme'),
                 )
               else if (own == null || own.status == 'withdrawn')
-                CommunityNotice(
-                  message:
-                      mission.isFull ||
-                          mission.status != 'open' ||
-                          !mission.startsAt.isAfter(DateTime.now()) ||
-                          mission.hidden
-                      ? 'Esta misión ya no recibe postulaciones.'
-                      : 'Esta misión busca perfiles de tipo ${mission.targetType?.databaseValue ?? 'comunidad'}.',
-                ),
+                CommunityNotice(message: restriction!),
               const SizedBox(height: 16),
               TextButton.icon(
                 onPressed: _busy ? null : _report,

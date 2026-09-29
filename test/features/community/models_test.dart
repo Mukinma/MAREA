@@ -30,6 +30,7 @@ void main() {
       ]);
       expect(UserType.business.postKinds, [
         PostKind.community,
+        PostKind.service,
         PostKind.space,
         PostKind.event,
       ]);
