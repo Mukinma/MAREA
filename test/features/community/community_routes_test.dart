@@ -179,7 +179,7 @@ void main() {
       final path = '/people/${sampleProfile.id}';
       final router = await _open(tester, repo, path);
       await _tap(tester, find.text('Publicaciones'));
-      await _tap(tester, find.byTooltip('Opciones de publicación'));
+      await _tap(tester, find.byTooltip('Acciones'));
       await _tap(tester, find.text('Editar'));
       expect(find.byType(PostComposerScreen), findsOneWidget);
       final title = find.byWidgetPredicate(
@@ -205,13 +205,17 @@ void main() {
     (tester) async {
       final repo = _CommunityFake();
       final router = await _open(tester, repo, '/home');
+      await _tap(tester, find.byTooltip('Acciones'));
       await _tap(tester, find.text('Guardar'));
       expect(repo.savedPosts, contains('post-1'));
       router.go('/explore');
       await tester.pumpAndSettle();
       await _tap(tester, find.text('Guardados'));
       expect(find.text('Proyecto original'), findsOneWidget);
-      await _tap(tester, find.text('Guardado'));
+      await _tap(tester, find.byTooltip('Acciones'));
+      await _tap(tester, find.text('Quitar guardado'));
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
       expect(repo.savedPosts, isEmpty);
       expect(find.text('Proyecto original'), findsNothing);
       expect(tester.takeException(), isNull);

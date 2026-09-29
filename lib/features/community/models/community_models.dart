@@ -142,6 +142,7 @@ class CommunityPost {
     this.price,
     this.imagePath,
     this.hidden = false,
+    this.allowsCollaboration = false,
   });
   final String id;
   final String authorId;
@@ -153,7 +154,7 @@ class CommunityPost {
   final PostCoordinates? coordinates;
   final double? price;
   final String? imagePath;
-  final bool hidden;
+  final bool hidden, allowsCollaboration;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -169,6 +170,7 @@ class CommunityPost {
     price: (json['price'] as num?)?.toDouble(),
     imagePath: json['image_path'] as String?,
     hidden: json['hidden'] as bool? ?? false,
+    allowsCollaboration: json['allows_collaboration'] == true,
     createdAt: DateTime.parse(json['created_at'] as String),
     updatedAt: DateTime.parse(json['updated_at'] as String),
   );
@@ -414,7 +416,9 @@ class PostInput {
     this.coordinates,
     this.price,
     this.imagePath,
+    this.allowsCollaboration = false,
   });
+  final bool allowsCollaboration;
   final PostKind kind;
   final String title;
   final String body;
@@ -452,6 +456,7 @@ class PostInput {
 
   Map<String, dynamic> toJson() => {
     'kind': kind.value,
+    'allows_collaboration': allowsCollaboration,
     'title': title.trim(),
     'body': body.trim(),
     'category': category,

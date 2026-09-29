@@ -27,7 +27,7 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   final _search = TextEditingController();
-  String _query = '', _section = 'posts';
+  String _query = '', _section = 'posts', _savedSection = 'posts';
   String? _category;
   ShowcaseKind? _kind;
   @override
@@ -54,7 +54,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) => CommunityPage(
-    title: 'Explorar',
+    title: _section == 'saved' ? 'Guardados' : 'Explorar',
     children: [
       MareaSurface(
         inset: true,
@@ -91,6 +91,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
         onChanged: (value) => setState(() => _section = value),
       ),
       const SizedBox(height: 20),
+      if (_section == 'saved') ...[
+        MareaTabs(
+          options: const {'posts': 'Publicaciones', 'showcases': 'Fichas'},
+          value: _savedSection,
+          onChanged: (value) => setState(() => _savedSection = value),
+        ),
+        const SizedBox(height: 20),
+      ],
       if (_section != 'people') ...[
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -132,7 +140,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
             ],
           ),
-        if (_section != 'showcases') ...[
+        if (_section != 'showcases' &&
+            (_section != 'saved' || _savedSection == 'posts')) ...[
           if (_section == 'saved')
             Text(
               'Publicaciones guardadas',
@@ -146,7 +155,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
             showHeading: false,
           ),
         ],
-        if (_section == 'showcases' || _section == 'saved') ...[
+        if (_section == 'showcases' ||
+            (_section == 'saved' && _savedSection == 'showcases')) ...[
           const SizedBox(height: 20),
           if (_section == 'saved')
             Text(

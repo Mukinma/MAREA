@@ -121,6 +121,7 @@ void main() {
           json.keys,
           unorderedEquals([
             'kind',
+        'allows_collaboration',
             'title',
             'body',
             'category',

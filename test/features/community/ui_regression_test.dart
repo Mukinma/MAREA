@@ -180,9 +180,13 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final bookmark = find.widgetWithText(TextButton, 'Guardado');
+    final bookmark = find.byTooltip('Acciones');
     await tester.ensureVisible(bookmark);
     await tester.tap(bookmark);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Quitar guardado'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
     expect(repo.saved, isFalse);
     expect(find.text('Pieza original'), findsNothing);

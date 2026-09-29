@@ -1,3 +1,6 @@
+import 'package:marea/core/config/app_config.dart';
+import 'package:marea/features/community/data/social_repository.dart';
+import 'package:marea/features/community/data/notifications_controller.dart';
 import 'dart:async';
 import 'package:marea/features/showcase/data/showcase_repository.dart';
 import 'package:marea/features/community/data/community_repository.dart';
@@ -20,10 +23,23 @@ class AppSessionController extends ChangeNotifier {
     this.mediaRepository,
     this.communityRepository,
     this.showcaseRepository,
+    this.socialRepository,
+    this.publicUrl = 'https://marea-azul.netlify.app/',
   }) : _auth = authRepository,
        _profiles = profileRepository,
        _legal = legalRepository;
   final CommunityRepository? communityRepository;
+  final SocialRepository? socialRepository;
+  final String publicUrl;
+  NotificationsController? _notifications;
+  NotificationsController? get notifications => socialRepository == null
+      ? null
+      : (_notifications ??= NotificationsController(socialRepository!));
+  Uri postUrl(String id) => AppConfig.fromValues(
+    supabaseUrl: '',
+    supabaseAnonKey: '',
+    publicUrl: publicUrl,
+  ).postUrl(id);
   final ShowcaseRepository? showcaseRepository;
   final AuthRepository _auth;
   final ProfileRepository _profiles;
@@ -434,6 +450,7 @@ class AppSessionController extends ChangeNotifier {
       }
     }
     _status = AuthStatus.authenticated;
+    notifications?.setSession(_profile?.id);
     _notify();
   }
 
@@ -451,6 +468,7 @@ class AppSessionController extends ChangeNotifier {
   void _unauthenticated() {
     ++_generation;
     _status = AuthStatus.unauthenticated;
+    _notifications?.setSession(null);
     _profile = null;
     _recovering = false;
     _needsLegal = false;
@@ -460,6 +478,7 @@ class AppSessionController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _notifications?.dispose();
     ++_generation;
     _successTimer?.cancel();
     unawaited(_subscription?.cancel());

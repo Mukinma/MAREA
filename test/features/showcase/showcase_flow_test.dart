@@ -192,9 +192,11 @@ void main() {
     expect(find.text('Quitar de guardados'), findsOneWidget);
     router.go('/explore?section=saved');
     await tester.pumpAndSettle();
-    expect(find.text('Fichas guardadas'), findsOneWidget);
+    await tester.tap(find.text('Fichas').last);
+      await tester.pumpAndSettle();
+      expect(find.text('Fichas guardadas'), findsOneWidget);
     expect(find.text('Servicio guardable'), findsOneWidget);
-    await tap(tester, find.text('Fichas'));
+    await tap(tester, find.text('Fichas').first);
     await tester.enterText(
       find.widgetWithText(TextField, 'Buscar fichas por título'),
       'Sin coincidencias',

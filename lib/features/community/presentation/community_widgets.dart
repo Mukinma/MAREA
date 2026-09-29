@@ -35,19 +35,20 @@ class CommunityPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 16,
-                  runSpacing: 12,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    ?action,
-                  ],
-                ),
+                if (title.isNotEmpty)
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 12,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      ?action,
+                    ],
+                  ),
                 if (subtitle != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
@@ -56,7 +57,7 @@ class CommunityPage extends StatelessWidget {
                       style: const TextStyle(color: AppColors.textSecondary),
                     ),
                   ),
-                const SizedBox(height: 24),
+                if (title.isNotEmpty) const SizedBox(height: 24),
                 ...children,
                 const SizedBox(height: 40),
               ],

@@ -180,6 +180,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Arte'));
+      await tester.ensureVisible(find.text('Conocer y colaborar'));
       await tester.tap(find.text('Conocer y colaborar'));
       await tester.ensureVisible(find.byKey(const Key('setup-save')));
       await tester.tap(find.byKey(const Key('setup-save')));

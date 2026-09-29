@@ -64,8 +64,9 @@ try {
   await db.exec(`select set_config('request.jwt.claim.sub','${ids[5]}',false)`);
   await db.exec("select public.complete_initial_profile('Artista / creador','{}','{}')");
   eq((await db.query('select user_type from public.profiles')).rows[0].user_type,'Artista / creador','legacy account confirms once with empty preferences');
-  await db.exec('reset role; create schema supabase_migrations; create table supabase_migrations.schema_migrations(version text);');
-  await db.query("insert into supabase_migrations.schema_migrations select unnest($1::text[])",[['001','002','003','004','005','006','007','008']]);
+  await db.exec('reset role; create publication supabase_realtime; create schema supabase_migrations; create table supabase_migrations.schema_migrations(version text);');
+  for (const name of ['009_post_reactions','010_post_comments','011_post_collaboration']) await migration(name);
+  await db.query("insert into supabase_migrations.schema_migrations select unnest($1::text[])",[['001','002','003','004','005','006','007','008','009','010','011']]);
   const contract = await readFile(new URL('./backend_contract.sql',import.meta.url),'utf8');
   eq(Object.values((await db.query(contract)).rows[0]).every(value=>value===true),true,'release gate accepts complete backend');
   await db.exec('alter table auth.users disable trigger on_auth_user_created');

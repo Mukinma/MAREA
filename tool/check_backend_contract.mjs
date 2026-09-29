@@ -11,10 +11,10 @@ try {
   const result = JSON.parse(query.stdout);
   row = Array.isArray(result) ? result[0] : result.rows?.[0];
 } catch { /* Fail closed. */ }
-const fields = ['migrations_ready','guide_column_ready','guide_grant_ready','preferences_grants_ready','confirmation_ready','signup_trigger_ready'];
+const fields = ['migrations_ready','guide_column_ready','guide_grant_ready','preferences_grants_ready','confirmation_ready','signup_trigger_ready','social_tables_ready','social_permissions_ready','social_functions_ready','realtime_ready'];
 const missing = fields.filter(field => row?.[field] !== true);
 if (missing.length) {
-  console.error(`Backend is not ready: ${missing.join(', ')}. Apply migrations 001–008 before distributing a build.`);
+  console.error(`Backend is not ready: ${missing.join(', ')}. Apply migrations 001–011 before distributing a build.`);
   process.exit(1);
 }
-console.log('Backend contract ready: migrations, signup, confirmation and guide persistence match the client.');
+console.log('Backend contract ready: migrations, signup, confirmation guide persistence and social contracts match the client.');

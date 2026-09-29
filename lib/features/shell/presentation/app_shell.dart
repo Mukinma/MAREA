@@ -1,3 +1,5 @@
+import 'package:marea/core/session/app_session_controller.dart';
+import 'package:marea/features/community/presentation/notifications_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -11,8 +13,10 @@ class AppShell extends StatelessWidget {
     required this.location,
     required this.child,
     this.onRefresh,
+    this.controller,
     super.key,
   });
+  final AppSessionController? controller;
   final String location;
   final Widget child;
   final RefreshCallback? onRefresh;
@@ -60,18 +64,19 @@ class AppShell extends StatelessWidget {
         return painter.width;
       }
 
-      final brandWidth = 42 + measure('MAREA', size: 19, spacing: 2.2);
+      const brandWidth = 44.0;
       final navigationWidth = _destinations.fold(
         12.0,
         (width, destination) => width + 59 + measure(destination.label),
       );
-      final toolbarPadding = bounds.maxWidth >= 1024 ? 80 : 48;
+      final toolbarPadding = bounds.maxWidth >= 1024 ? 80 : 64;
       final compact =
           !desktop ||
           bounds.maxWidth < 1024 ||
           largeText ||
           bounds.maxWidth <
               brandWidth +
+                  108 +
                   navigationWidth +
                   72 +
                   measure('Crear') +
@@ -97,9 +102,15 @@ class AppShell extends StatelessWidget {
           ? bounds.maxWidth >=
                 brandWidth + 216 + label.width + 56 + toolbarPadding
           : bounds.maxWidth >= 316 + label.width;
-      final content = onRefresh == null
-          ? child
-          : MareaRefreshIndicator(onRefresh: onRefresh!, child: child);
+      // Bound the nested Navigator's BlockSemantics to the content region.
+      // Its active route must not hide the sibling header or dock.
+      final content = Semantics(
+        container: true,
+        explicitChildNodes: true,
+        child: onRefresh == null
+            ? child
+            : MareaRefreshIndicator(onRefresh: onRefresh!, child: child),
+      );
       final navigation = MareaSurface(
         key: Key(desktop ? 'top-navigation' : 'mobile-dock'),
         floating: true,
@@ -134,19 +145,28 @@ class AppShell extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.fromLTRB(
-                    bounds.maxWidth >= 1024 ? 40 : 24,
-                    20,
-                    bounds.maxWidth >= 1024 ? 40 : 24,
+                    bounds.maxWidth >= 1024 ? 24 : 16,
+                    12,
+                    bounds.maxWidth >= 1024 ? 24 : 16,
                     12,
                   ),
-                  child: Row(
-                    children: [
-                      const MareaLogo(compact: true),
-                      const Spacer(),
-                      navigation,
-                      const Spacer(),
-                      create,
-                    ],
+                  child: MareaSurface(
+                    radius: 24,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      children: [
+                        const MareaLogo(compact: true, isotypeOnly: true),
+                        const Spacer(),
+                        navigation,
+                        const Spacer(),
+                        ..._utilities(context),
+                        const SizedBox(width: 8),
+                        create,
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(child: content),
@@ -156,7 +176,30 @@ class AppShell extends StatelessWidget {
         );
       }
       return Scaffold(
-        body: content,
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              ColoredBox(
+                color: AppColors.surface,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    height: 56,
+                    child: Row(
+                      children: [
+                        const MareaLogo(compact: true),
+                        const Spacer(),
+                        ..._utilities(context),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(child: content),
+            ],
+          ),
+        ),
         bottomNavigationBar: SafeArea(
           top: false,
           minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
@@ -172,6 +215,40 @@ class AppShell extends StatelessWidget {
       );
     },
   );
+  List<Widget> _utilities(BuildContext context) => [
+    IconButton(
+      tooltip: 'Guardados',
+      onPressed: () => context.go('/explore?section=saved'),
+      icon: const Icon(
+        Icons.bookmark_border_rounded,
+        semanticLabel: 'Guardados',
+        color: AppColors.textSecondary,
+      ),
+    ),
+    if (controller?.notifications != null)
+      ListenableBuilder(
+        listenable: controller!.notifications!,
+        builder: (context, _) => Semantics(
+          value: controller!.notifications!.unread > 0
+              ? '${controller!.notifications!.unread} sin leer'
+              : 'Sin pendientes',
+          child: IconButton(
+            tooltip: 'Notificaciones',
+            onPressed: () => openNotifications(context, controller!),
+            icon: Badge(
+              isLabelVisible: controller!.notifications!.unread > 0,
+              backgroundColor: AppColors.aqua,
+              smallSize: 7,
+              child: const Icon(
+                Icons.notifications_none_rounded,
+                semanticLabel: 'Notificaciones',
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+        ),
+      ),
+  ];
 }
 
 class _NavigationItem extends StatelessWidget {

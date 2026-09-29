@@ -235,6 +235,7 @@ void main() {
     ); // Only the selected dock item.
     expect(find.byType(BackButton), findsNothing);
     expect(find.byTooltip('Configuración').hitTestable(), findsOneWidget);
+    await tester.ensureVisible(find.text('Entre mareas'));
     expect(find.text('Entre mareas').hitTestable(), findsOneWidget);
     expect(tester.getBottomLeft(find.text('Entre mareas')).dy, lessThan(760));
   });

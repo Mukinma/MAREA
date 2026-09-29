@@ -1,3 +1,4 @@
+import 'package:marea/features/community/presentation/post_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/features/profile/presentation/profile_setup_screen.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
@@ -175,8 +176,11 @@ abstract final class AppRouter {
           ),
         ),
         ShellRoute(
-          builder: (_, state, child) =>
-              AppShell(location: state.uri.path, child: child),
+          builder: (_, state, child) => AppShell(
+            location: state.uri.path,
+            controller: controller,
+            child: child,
+          ),
           routes: [
             GoRoute(
               path: '/home',
@@ -282,6 +286,19 @@ abstract final class AppRouter {
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
+          path: '/posts/:id',
+          builder: (_, state) => PostDetailScreen(
+            key: ValueKey(state.uri.toString()),
+            controller: controller,
+            postId: state.pathParameters['id']!,
+            panel: state.uri.queryParameters['panel'],
+            commentId: state.uri.queryParameters['comment'],
+            interestId: state.uri.queryParameters['interest'],
+            notificationId: state.uri.queryParameters['notification'],
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
           path: '/posts/:id/edit',
           builder: (_, state) => Scaffold(
             appBar: AppBar(title: const Text('Tu publicación')),
@@ -331,6 +348,22 @@ abstract final class AppRouter {
 
 class AppRouteGuard {
   String? _requestedLocation;
+  static String? internalDestination(String? value) {
+    if (value == null ||
+        !value.startsWith('/') ||
+        value.startsWith('//') ||
+        value.contains('\\')) {
+      return null;
+    }
+    final uri = Uri.tryParse(value);
+    if (uri == null ||
+        uri.hasScheme ||
+        uri.hasAuthority ||
+        !RegExp(r'^/posts/[A-Za-z0-9_-]+$').hasMatch(uri.path)) {
+      return null;
+    }
+    return uri.toString();
+  }
 
   String? redirectFor(
     AuthStatus status,
@@ -339,6 +372,12 @@ class AppRouteGuard {
     bool onboarding = false,
     bool legal = false,
   }) {
+    _requestedLocation ??= internalDestination(uri.queryParameters['returnTo']);
+    final post = internalDestination(uri.toString());
+    if (post != null &&
+        (status != AuthStatus.authenticated || recovery || onboarding || legal)) {
+      _requestedLocation = post;
+    }
     final redirect = AppRouter.redirectFor(
       status,
       uri.path,
@@ -346,29 +385,46 @@ class AppRouteGuard {
       onboarding: onboarding,
       legal: legal,
     );
-
     if (status == AuthStatus.initializing) {
       if (redirect == '/' && uri.path != '/') {
         _requestedLocation ??= uri.toString();
       }
       return redirect;
     }
-
-    final requestedLocation = _requestedLocation;
-    if (requestedLocation != null && uri.path == '/') {
-      _requestedLocation = null;
-      final requestedPath = Uri.parse(requestedLocation).path;
-      return AppRouter.redirectFor(
-            status,
-            requestedPath,
-            recovery: recovery,
-            onboarding: onboarding,
-            legal: legal,
-          ) ??
-          requestedLocation;
+    final requested = _requestedLocation;
+    if (requested != null) {
+      if (status == AuthStatus.authenticated &&
+          !recovery &&
+          !onboarding &&
+          !legal &&
+          (uri.path == '/' ||
+              AppRouter._authPaths.contains(uri.path) ||
+              uri.path == '/legal/accept' ||
+              uri.path == '/onboarding')) {
+        _requestedLocation = null;
+        return requested;
+      }
+      if (uri.path == '/') {
+        return AppRouter.redirectFor(
+              status,
+              Uri.parse(requested).path,
+              recovery: recovery,
+              onboarding: onboarding,
+              legal: legal,
+            ) ??
+            requested;
+      }
+      if (redirect != null && internalDestination(requested) != null) {
+        return Uri(
+          path: redirect,
+          queryParameters: {'returnTo': requested},
+        ).toString();
+      }
+      if (redirect == null && internalDestination(requested) != null && uri.queryParameters['returnTo'] != requested && (AppRouter._authPaths.contains(uri.path) || uri.path == '/legal/accept' || uri.path == '/onboarding' || uri.path == '/reset-password')) {
+        return uri.replace(queryParameters: {...uri.queryParameters, 'returnTo': requested}).toString();
+      }
+      return redirect;
     }
-
-    _requestedLocation = null;
     return redirect;
   }
 }
