@@ -147,3 +147,11 @@ Las pruebas remotas requieren dos cuentas temporales y deben comprobar:
 ## Alcance y limitaciones del MVP
 
 Inicio, Explorar, Crear y Misiones utilizan datos persistentes de Supabase. Incluye publicaciones por tipo de perfil, fichas profesionales independientes, fotografías, guardados, búsqueda, perfiles de la comunidad, postulaciones y moderación. Las limitaciones concretas se documentan en [Comunidad y misiones](docs/community.md). No incluye AR.
+
+## Mapa
+
+Descubrimiento geográfico de misiones con clustering, búsqueda, filtros, ubicación puntual y preview integrada al detalle existente. Requiere la migración 012 antes de distribuir. Consulta [Mapa de misiones](docs/map.md).
+
+## Rediseño de misiones
+
+Creación y edición en cuatro pasos, candidaturas en tres, confirmación, borradores privados, guardados, compensación y gestión propia con finalistas y selección atómica. Requiere la migración 013 y el gate de backend antes de distribuir. Consulta [flujos y contrato](docs/missions-redesign.md).

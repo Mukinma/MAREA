@@ -69,7 +69,22 @@ class CollaborationInterest {
       );
 }
 
-enum NotificationKind { reaction, comment, interest }
+enum NotificationKind {
+  reaction('reaction'),
+  comment('comment'),
+  interest('interest'),
+  missionApplication('mission_application'),
+  missionAccepted('mission_accepted'),
+  missionRejected('mission_rejected'),
+  missionWithdrawn('mission_withdrawn'),
+  missionClosed('mission_closed'),
+  missionReopened('mission_reopened'),
+  missionCancelled('mission_cancelled'),
+  missionCompleted('mission_completed');
+
+  const NotificationKind(this.databaseValue);
+  final String databaseValue;
+}
 
 class SocialNotification {
   const SocialNotification({
@@ -80,10 +95,12 @@ class SocialNotification {
     required this.kind,
     required this.postTitle,
     required this.createdAt,
+    this.missionId,
     this.sourceId,
     this.readAt,
   });
-  final String id, recipientId, actorId, postId, postTitle;
+  final String id, recipientId, actorId, postTitle;
+  final String? postId, missionId;
   final String? sourceId;
   final NotificationKind kind;
   final DateTime createdAt;
@@ -95,7 +112,10 @@ class SocialNotification {
         recipientId: j['recipient_id'],
         actorId: j['actor_id'],
         postId: j['post_id'],
-        kind: NotificationKind.values.byName(j['kind']),
+        missionId: j['mission_id'],
+        kind: NotificationKind.values.firstWhere(
+          (k) => k.databaseValue == j['kind'],
+        ),
         sourceId: j['source_id'],
         postTitle: j['post_title'],
         createdAt: DateTime.parse(j['created_at']),

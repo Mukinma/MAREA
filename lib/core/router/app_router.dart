@@ -1,3 +1,5 @@
+import 'package:marea/features/community/presentation/mission_application_screen.dart';
+import 'package:marea/features/community/presentation/mission_management_screen.dart';
 import 'package:marea/features/community/presentation/post_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/features/profile/presentation/profile_setup_screen.dart';
@@ -19,6 +21,7 @@ import 'package:marea/features/profile/presentation/edit_profile_screen.dart';
 import 'package:marea/features/profile/presentation/profile_screen.dart';
 import 'package:marea/features/profile/presentation/settings_screen.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
+import 'package:marea/features/map/presentation/mission_map_screen.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
 import 'package:marea/features/community/presentation/explore_screen.dart';
 import 'package:marea/features/community/presentation/post_composer_screen.dart';
@@ -217,6 +220,13 @@ abstract final class AppRouter {
               ),
             ),
             GoRoute(
+              path: '/map',
+              builder: (_, _) => MissionMapScreen(
+                key: ValueKey(controller.profile?.id),
+                session: controller,
+              ),
+            ),
+            GoRoute(
               path: '/profile',
               builder: (_, _) => ProfileScreen(controller: controller),
             ),
@@ -271,6 +281,47 @@ abstract final class AppRouter {
           path: '/missions/:id/edit',
           builder: (_, state) => MissionComposerScreen(
             key: ValueKey('mission-edit:${state.pathParameters['id']}'),
+            controller: controller,
+            missionId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
+          path: '/missions/drafts/:id/edit',
+          builder: (_, state) => MissionComposerScreen(
+            key: ValueKey('draft:${state.pathParameters['id']}'),
+            controller: controller,
+            draftId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
+          path: '/missions/:id/apply',
+          builder: (_, state) => MissionApplicationScreen(
+            key: ValueKey(
+              'apply:${state.pathParameters['id']}:${controller.profile?.id}',
+            ),
+            controller: controller,
+            missionId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
+          path: '/missions/:id/sent',
+          builder: (_, state) => MissionApplicationSentScreen(
+            key: ValueKey('sent:${state.uri}'),
+            controller: controller,
+            missionId: state.pathParameters['id']!,
+            applicationId: state.uri.queryParameters['application'],
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
+          path: '/missions/:id/manage',
+          builder: (_, state) => MissionManagementScreen(
+            key: ValueKey(
+              'manage:${state.pathParameters['id']}:${controller.profile?.id}',
+            ),
             controller: controller,
             missionId: state.pathParameters['id']!,
           ),
@@ -359,7 +410,9 @@ class AppRouteGuard {
     if (uri == null ||
         uri.hasScheme ||
         uri.hasAuthority ||
-        !RegExp(r'^/posts/[A-Za-z0-9_-]+$').hasMatch(uri.path)) {
+        !RegExp(
+          r'^/(posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
+        ).hasMatch(uri.path)) {
       return null;
     }
     return uri.toString();
@@ -375,7 +428,10 @@ class AppRouteGuard {
     _requestedLocation ??= internalDestination(uri.queryParameters['returnTo']);
     final post = internalDestination(uri.toString());
     if (post != null &&
-        (status != AuthStatus.authenticated || recovery || onboarding || legal)) {
+        (status != AuthStatus.authenticated ||
+            recovery ||
+            onboarding ||
+            legal)) {
       _requestedLocation = post;
     }
     final redirect = AppRouter.redirectFor(
@@ -420,8 +476,18 @@ class AppRouteGuard {
           queryParameters: {'returnTo': requested},
         ).toString();
       }
-      if (redirect == null && internalDestination(requested) != null && uri.queryParameters['returnTo'] != requested && (AppRouter._authPaths.contains(uri.path) || uri.path == '/legal/accept' || uri.path == '/onboarding' || uri.path == '/reset-password')) {
-        return uri.replace(queryParameters: {...uri.queryParameters, 'returnTo': requested}).toString();
+      if (redirect == null &&
+          internalDestination(requested) != null &&
+          uri.queryParameters['returnTo'] != requested &&
+          (AppRouter._authPaths.contains(uri.path) ||
+              uri.path == '/legal/accept' ||
+              uri.path == '/onboarding' ||
+              uri.path == '/reset-password')) {
+        return uri
+            .replace(
+              queryParameters: {...uri.queryParameters, 'returnTo': requested},
+            )
+            .toString();
       }
       return redirect;
     }

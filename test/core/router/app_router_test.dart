@@ -7,6 +7,29 @@ import 'package:marea/core/session/app_session_controller.dart';
 import '../../support/fakes.dart';
 
 void main() {
+  for (final path in [
+    '/missions',
+    '/missions/new',
+    '/missions/m/apply',
+    '/missions/m/manage',
+    '/missions/m/sent?application=a',
+    '/missions/drafts/d/edit',
+  ]) {
+    test('mission destination $path survives expired session', () {
+      final guard = AppRouteGuard();
+      expect(
+        Uri.parse(
+          guard.redirectFor(AuthStatus.unauthenticated, Uri.parse(path))!,
+        ).path,
+        '/login',
+      );
+      expect(
+        guard.redirectFor(AuthStatus.authenticated, Uri.parse('/login')),
+        path,
+      );
+    });
+  }
+
   test(
     'return destination survives a refreshed auth page and rejects external URLs',
     () {

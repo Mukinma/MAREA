@@ -45,6 +45,102 @@ MissionApplication application({
 
 class MissionRepositoryFake implements CommunityRepository {
   Mission value = missionFixture();
+  final drafts = <String, MissionDraft>{};
+  final missionSaves = <String>{};
+  final finalists = <String>{};
+  final publishedDrafts = <String, String>{};
+  @override
+  Future<List<MissionDraft>> missionDrafts() async =>
+      drafts.values.where((d) => !d.isPublished).toList();
+  @override
+  Future<MissionDraft?> missionDraft(String id) async => drafts[id];
+  @override
+  Future<String> saveMissionDraft(
+    Map<String, dynamic> data, {
+    required String id,
+  }) async {
+    if (failSave) throw const AppFailure('Sin conexión. Inténtalo nuevamente.');
+    drafts[id] = MissionDraft(
+      id: id,
+      data: Map.from(data),
+      updatedAt: DateTime.now(),
+    );
+    return id;
+  }
+
+  @override
+  Future<String> publishMissionDraft(String id, MissionInput input) async {
+    if (publishedDrafts.containsKey(id)) return publishedDrafts[id]!;
+    final missionId = await createMission(input);
+    publishedDrafts[id] = missionId;
+    drafts[id] = MissionDraft(
+      id: id,
+      data: input.toJson(),
+      updatedAt: DateTime.now(),
+      publishedMissionId: missionId,
+      publishedAt: DateTime.now(),
+    );
+    return missionId;
+  }
+
+  @override
+  Future<void> deleteMissionDraft(String id) async {
+    drafts.remove(id);
+  }
+
+  @override
+  Future<List<Mission>> savedMissions({
+    String query = '',
+    String? category,
+    UserType? targetType,
+    int offset = 0,
+  }) async => offset == 0 && missionSaves.contains(value.id) ? [value] : [];
+  @override
+  Future<Set<String>> savedMissionIds() async => Set.from(missionSaves);
+  @override
+  Future<void> setMissionSaved(String id, bool saved) async {
+    saved ? missionSaves.add(id) : missionSaves.remove(id);
+  }
+
+  @override
+  Future<String> submitApplication(
+    String id,
+    MissionApplicationInput input,
+  ) async {
+    if (failSave) throw const AppFailure('Sin conexión. Inténtalo nuevamente.');
+    requests = [
+      MissionApplication(
+        id: 'application-1',
+        missionId: id,
+        applicantId: sampleProfile.id,
+        message: input.message,
+        status: 'pending',
+        createdAt: DateTime.now(),
+        availabilityConfirmed: input.availabilityConfirmed,
+        evidence: input.evidence,
+      ),
+    ];
+    return 'application-1';
+  }
+
+  @override
+  Future<Set<String>> missionFinalists(String id) async => Set.from(finalists);
+  @override
+  Future<void> setMissionFinalist(
+    String missionId,
+    String id,
+    bool finalist,
+  ) async {
+    finalist ? finalists.add(id) : finalists.remove(id);
+  }
+
+  @override
+  Future<void> confirmMissionSelection(String id, List<String> ids) async {
+    for (final appId in ids) {
+      await review(appId, 'accepted');
+    }
+  }
+
   List<MissionApplication> requests = [];
   String? reviewed, lastScope, lastQuery, lastCategory;
   UserType? lastTarget;
@@ -123,6 +219,8 @@ class MissionRepositoryFake implements CommunityRepository {
     targetType: i.targetType,
     imagePath: i.imagePath,
     coordinates: i.coordinates,
+    compensationType: i.compensationType,
+    compensationAmountCents: i.compensationAmountCents,
     conditions: i.conditions,
     requirements: i.requirements,
     conditionsLockedAt: value.conditionsLockedAt,

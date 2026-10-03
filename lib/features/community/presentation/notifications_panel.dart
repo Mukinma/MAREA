@@ -89,6 +89,15 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
     NotificationKind.reaction => 'reaccionó a',
     NotificationKind.comment => 'comentó en',
     NotificationKind.interest => 'quiere colaborar en',
+    NotificationKind.missionApplication => 'envió una candidatura a',
+    NotificationKind.missionAccepted => 'aceptó tu candidatura en',
+    NotificationKind.missionRejected =>
+      'revisó tu candidatura sin seleccionarla en',
+    NotificationKind.missionWithdrawn => 'retiró su candidatura de',
+    NotificationKind.missionClosed => 'cerró la convocatoria de',
+    NotificationKind.missionReopened => 'reabrió la convocatoria de',
+    NotificationKind.missionCancelled => 'canceló',
+    NotificationKind.missionCompleted => 'finalizó',
   };
   @override
   Widget build(BuildContext context) => SocialPanelFrame(
@@ -142,6 +151,12 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
                         NotificationKind.comment =>
                           Icons.chat_bubble_outline_rounded,
                         NotificationKind.interest => Icons.handshake_outlined,
+                        NotificationKind.missionAccepted => Icons.task_alt,
+                        NotificationKind.missionRejected =>
+                          Icons.person_off_outlined,
+                        NotificationKind.missionCancelled =>
+                          Icons.cancel_outlined,
+                        _ => Icons.flag_outlined,
                       }, color: AppColors.textSecondary),
                       title: Text(
                         '${_authors[n.actorId]?.fullName ?? 'Cuenta no disponible'} ${_verb(n.kind)} «${n.postTitle}».',
@@ -175,7 +190,7 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
                 CommunityNotice(
                   message: _unreadOnly
                       ? 'Estás al día. No hay notificaciones sin leer.'
-                      : 'Aquí aparecerán las reacciones, comentarios e intereses que recibas.',
+                      : 'Aquí aparecerán las novedades de tu comunidad y tus misiones.',
                 ),
               if (!_loading && _more && _items.isNotEmpty)
                 TextButton(
@@ -204,6 +219,22 @@ Future<void> openNotifications(
     ),
   );
   if (selected == null || !context.mounted) return;
+  if (selected.missionId != null) {
+    try {
+      await controller.socialRepository!.markRead(id: selected.id);
+      await controller.notifications?.refresh();
+    } catch (_) {
+      // Reading acknowledgement can retry; the destination is still useful offline.
+    }
+    if (!context.mounted) return;
+    final organizerEvent =
+        selected.kind == NotificationKind.missionApplication ||
+        selected.kind == NotificationKind.missionWithdrawn;
+    await router.push(
+      '/missions/${selected.missionId}${organizerEvent ? '/manage' : ''}',
+    );
+    return;
+  }
   await router.push(
     Uri(
       path: '/posts/${selected.postId}',

@@ -1,4 +1,3 @@
-import 'package:marea/core/theme/app_depth.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -17,14 +16,14 @@ class MissionSurface extends StatelessWidget {
   final Widget child;
   final double padding;
   @override
-  Widget build(BuildContext context) => Container(
-    padding: EdgeInsets.all(padding),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      boxShadow: AppDepth.raised,
+  Widget build(BuildContext context) => Material(
+    color: Colors.white,
+    shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(24),
+      side: const BorderSide(color: AppColors.border),
     ),
-    child: child,
+    clipBehavior: Clip.antiAlias,
+    child: Padding(padding: EdgeInsets.all(padding), child: child),
   );
 }
 
@@ -119,6 +118,7 @@ class MissionSummary extends StatelessWidget {
   final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) => MissionSurface(
+    padding: 16,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -126,41 +126,39 @@ class MissionSummary extends StatelessWidget {
           Text(
             'ASÍ LA VERÁ LA COMUNIDAD',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              letterSpacing: 1.4,
               color: AppColors.aquaDark,
+              letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
         ],
         if (mission.imagePath != null || bytes != null) ...[
           MissionCover(
             path: mission.imagePath,
             bytes: bytes,
             repository: repository,
+            height: preview ? 220 : 150,
           ),
           const SizedBox(height: 16),
         ],
         Wrap(
           spacing: 8,
-          runSpacing: 6,
+          runSpacing: 8,
           children: [
-            Chip(
-              label: Text(communityCategories[mission.category] ?? 'Otros'),
-              visualDensity: VisualDensity.compact,
+            _badge(
+              communityCategories[mission.category] ?? 'Otros',
+              AppColors.mint,
             ),
-            if (!preview)
-              Chip(
-                label: Text(mission.statusLabel),
-                visualDensity: VisualDensity.compact,
-              ),
+            if (!preview) _badge(mission.statusLabel, AppColors.mist),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           mission.title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            height: 1.15,
+          ),
         ),
         const SizedBox(height: 6),
         Text(
@@ -168,20 +166,14 @@ class MissionSummary extends StatelessWidget {
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 16),
-        Text(
-          mission.body,
-          maxLines: preview ? 5 : 3,
-          overflow: TextOverflow.ellipsis,
+        _line(
+          Icons.schedule_outlined,
+          dateLabel ?? missionDate(mission.startsAt),
         ),
-        const SizedBox(height: 18),
         _line(Icons.place_outlined, mission.location),
-        _line(Icons.schedule, dateLabel ?? missionDate(mission.startsAt)),
+        _line(Icons.payments_outlined, mission.compensationLabel),
         _line(
           Icons.people_outline,
-          mission.targetType?.databaseValue ?? 'Todos los perfiles',
-        ),
-        _line(
-          Icons.confirmation_number_outlined,
           '${mission.availableSeats} de ${mission.capacity} lugares disponibles',
         ),
         if (owner)
@@ -198,24 +190,33 @@ class MissionSummary extends StatelessWidget {
                 ? 'Compatible con tu perfil'
                 : 'Busca otro tipo de perfil',
           ),
-        if (preview && mission.requirements != null) ...[
-          const SizedBox(height: 12),
-          const Text(
-            'Requisitos',
-            style: TextStyle(fontWeight: FontWeight.w700),
+        if (preview) ...[
+          const Divider(height: 28),
+          Text(mission.body),
+          const SizedBox(height: 14),
+          _line(
+            Icons.person_outline,
+            mission.targetType?.databaseValue ?? 'Todos los perfiles',
           ),
-          Text(mission.requirements!),
-        ],
-        if (preview && mission.conditions != null) ...[
-          const SizedBox(height: 12),
-          const Text(
-            'Qué ofrecemos y condiciones',
-            style: TextStyle(fontWeight: FontWeight.w700),
-          ),
-          Text(mission.conditions!),
+          if (mission.requirements != null) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Requisitos',
+              style: TextStyle(fontWeight: FontWeight.w800),
+            ),
+            Text(mission.requirements!),
+          ],
+          if (mission.conditions != null) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Qué ofrecemos y condiciones',
+              style: TextStyle(fontWeight: FontWeight.w800),
+            ),
+            Text(mission.conditions!),
+          ],
         ],
         if (onTap != null) ...[
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
@@ -226,6 +227,21 @@ class MissionSummary extends StatelessWidget {
           ),
         ],
       ],
+    ),
+  );
+  Widget _badge(String text, Color color) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(30),
+    ),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        color: AppColors.brandNavy,
+      ),
     ),
   );
   Widget _line(IconData icon, String text) => Padding(

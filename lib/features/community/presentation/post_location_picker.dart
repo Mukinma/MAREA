@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:marea/core/location/device_location_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:marea/features/community/models/community_models.dart';
@@ -191,27 +191,9 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
       _message = null;
     });
     try {
-      final enabled = await Geolocator.isLocationServiceEnabled().timeout(
-        const Duration(seconds: 10),
-      );
-      if (!_selectionIsCurrent(generation)) return;
-      if (!enabled) throw StateError('location_disabled');
-      var permission = await Geolocator.checkPermission().timeout(
-        const Duration(seconds: 10),
-      );
-      if (!_selectionIsCurrent(generation)) return;
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission().timeout(
-          const Duration(seconds: 30),
-        );
-        if (!_selectionIsCurrent(generation)) return;
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        throw StateError('location_denied');
-      }
-      final position = await Geolocator.getCurrentPosition().timeout(
-        const Duration(seconds: 15),
+      final position = await const GeolocatorDeviceLocationService().current(
+        requestPermission: true,
+        isCurrent: () => _selectionIsCurrent(generation),
       );
       if (!_selectionIsCurrent(generation)) return;
       final point = LatLng(position.latitude, position.longitude);
@@ -261,6 +243,7 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
   }
 
   String _locationErrorMessage(Object error) {
+    if (error is DeviceLocationFailure) return error.message;
     final code = error is StateError ? error.message.toString() : '';
     final details = error.toString().toLowerCase();
     if (code == 'location_disabled') {

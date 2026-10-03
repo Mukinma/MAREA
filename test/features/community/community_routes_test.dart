@@ -7,7 +7,7 @@ import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/explore_screen.dart';
-import 'package:marea/features/community/presentation/missions_screen.dart';
+import 'package:marea/features/community/presentation/mission_management_screen.dart';
 import 'package:marea/features/community/presentation/post_composer_screen.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/profile/presentation/profile_screen.dart';
@@ -229,7 +229,8 @@ void main() {
         ..value = missionFixture(author: sampleProfile.id)
         ..requests = [application()];
       final router = await _open(tester, repo, '/missions/mission-1');
-      await _tap(tester, find.widgetWithText(TextButton, 'Mariana Torres'));
+      await _tap(tester, find.text('Gestionar misión'));
+      await _tap(tester, find.text('Mariana Torres'));
       await tester.pumpAndSettle();
       expect(find.byType(PublicProfileScreen), findsOneWidget);
       expect(
@@ -238,7 +239,7 @@ void main() {
       );
       await _backWithAppBar(tester);
       await tester.pumpAndSettle();
-      expect(find.byType(MissionDetailScreen), findsOneWidget);
+      expect(find.byType(MissionManagementScreen), findsOneWidget);
       expect(find.text('Quiero aportar mi experiencia.'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },

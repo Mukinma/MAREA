@@ -1,7 +1,38 @@
 -- Read-only release gate. No accounts or data are returned or modified.
 select
-  (select count(*) = 11 from supabase_migrations.schema_migrations
-    where version in ('001','002','003','004','005','006','007','008','009','010','011')) as migrations_ready,
+  (select count(*)=4 from pg_class where oid=any(array[to_regclass('public.mission_drafts'),to_regclass('public.mission_saves'),to_regclass('public.mission_finalists'),to_regclass('public.mission_application_operations')]) and relrowsecurity)
+    and exists(select 1 from information_schema.columns where table_schema='public' and table_name='missions' and column_name='compensation_type')
+    and exists(select 1 from information_schema.columns where table_schema='public' and table_name='mission_applications' and column_name='evidence') as mission_tables_ready,
+  (select bool_and(coalesce(has_table_privilege('authenticated',to_regclass(name),'SELECT'),false)
+      and not coalesce(has_table_privilege('authenticated',to_regclass(name),'INSERT'),true)
+      and not coalesce(has_table_privilege('authenticated',to_regclass(name),'UPDATE'),true)
+      and not coalesce(has_table_privilege('authenticated',to_regclass(name),'DELETE'),true)
+      and not coalesce(has_table_privilege('anon',to_regclass(name),'SELECT'),true))
+    from unnest(array['public.mission_drafts','public.mission_saves','public.mission_finalists']) name)
+    and exists(select 1 from pg_policies where schemaname='public' and tablename='mission_drafts' and qual like '%author_id%auth.uid()%')
+    and exists(select 1 from pg_policies where schemaname='public' and tablename='mission_saves' and qual like '%user_id%auth.uid()%')
+    and exists(select 1 from pg_policies where schemaname='public' and tablename='mission_finalists' and qual like '%author_id%auth.uid()%') as mission_permissions_ready,
+  (select bool_and(coalesce(has_function_privilege('authenticated',to_regprocedure(signature),'EXECUTE'),false)
+      and not coalesce(has_function_privilege('anon',to_regprocedure(signature),'EXECUTE'),true))
+    from unnest(array['public.save_mission_draft(uuid,jsonb)','public.publish_mission_draft(uuid,jsonb)','public.delete_mission_draft(uuid)',
+      'public.submit_mission_application(uuid,jsonb)','public.set_mission_saved(uuid,boolean)','public.set_mission_finalist(uuid,uuid,boolean)',
+      'public.confirm_mission_selection(uuid,uuid[])','public.list_saved_missions(text,text,text,integer)']) signature)
+    and exists(select 1 from pg_trigger where tgrelid='public.missions'::regclass and tgfoid=to_regprocedure('public.lock_mission_compensation()') and tgenabled in ('O','A')) as mission_functions_ready,
+  exists(select 1 from information_schema.columns where table_schema='public' and table_name='notifications' and column_name='mission_id')
+    and exists(select 1 from information_schema.columns where table_schema='public' and table_name='notifications' and column_name='post_id' and is_nullable='YES')
+    and exists(select 1 from pg_constraint where conrelid='public.notifications'::regclass and conname='notifications_one_target')
+    and exists(select 1 from pg_trigger where tgrelid='public.mission_applications'::regclass and tgfoid=to_regprocedure('public.notify_mission_application()') and tgenabled in ('O','A'))
+    and exists(select 1 from pg_trigger where tgrelid='public.missions'::regclass and tgfoid=to_regprocedure('public.notify_mission_status()') and tgenabled in ('O','A')) as mission_notifications_ready,
+  (select count(*) = 13 from supabase_migrations.schema_migrations
+    where version in ('001','002','003','004','005','006','007','008','009','010','011','012','013')) as migrations_ready,
+  coalesce(has_function_privilege('authenticated',
+    to_regprocedure('public.list_map_missions(double precision,double precision,double precision,double precision,text,text,timestamp with time zone,timestamp with time zone,double precision,double precision,double precision)'),
+    'EXECUTE'),false)
+    and not coalesce(has_function_privilege('anon',
+      to_regprocedure('public.list_map_missions(double precision,double precision,double precision,double precision,text,text,timestamp with time zone,timestamp with time zone,double precision,double precision,double precision)'),
+      'EXECUTE'),true)
+    and exists(select 1 from pg_indexes where schemaname='public' and indexname='missions_map_coordinates_idx')
+    as map_contract_ready,
   exists(select 1 from information_schema.columns
     where table_schema='public' and table_name='profiles' and column_name='setup_step'
       and data_type='integer' and is_nullable='NO') as guide_column_ready,

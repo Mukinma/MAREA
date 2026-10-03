@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-const ready={migrations_ready:true,guide_column_ready:true,guide_grant_ready:true,preferences_grants_ready:true,confirmation_ready:true,signup_trigger_ready:true,social_tables_ready:true,social_permissions_ready:true,social_functions_ready:true,realtime_ready:true};
+const ready={mission_tables_ready:true,mission_permissions_ready:true,mission_functions_ready:true,mission_notifications_ready:true,map_contract_ready:true,migrations_ready:true,guide_column_ready:true,guide_grant_ready:true,preferences_grants_ready:true,confirmation_ready:true,signup_trigger_ready:true,social_tables_ready:true,social_permissions_ready:true,social_functions_ready:true,realtime_ready:true};
 async function run(fixture,status=0) {
   const directory=await mkdtemp(join(tmpdir(),'marea-contract-'));
   try {
@@ -36,4 +36,14 @@ test('missing social contract blocks release',async()=>{
   const result=await run([{...ready,social_tables_ready:false,social_permissions_ready:false,social_functions_ready:false,realtime_ready:false}]);
   assert.equal(result.status,1);
   assert.match(result.stderr,/social_tables_ready/);
+});
+
+test('missing geographic RPC contract blocks release',async()=>{
+  const result=await run([{...ready,map_contract_ready:false}]);
+  assert.equal(result.status,1);
+  assert.match(result.stderr,/map_contract_ready/);
+});
+
+for (const field of ['mission_tables_ready','mission_permissions_ready','mission_functions_ready','mission_notifications_ready']) test(`missing ${field} blocks release`,async()=>{
+ const result=await run([{...ready,[field]:false}]); assert.equal(result.status,1); assert.match(result.stderr,new RegExp(field));
 });

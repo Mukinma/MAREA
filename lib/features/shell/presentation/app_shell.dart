@@ -1,3 +1,4 @@
+import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/presentation/notifications_panel.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ class AppShell extends StatelessWidget {
       Icons.flag_outlined,
       Icons.flag_rounded,
     ),
+    _Destination('Mapa', '/map', Icons.map_outlined, Icons.map_rounded),
     _Destination(
       'Perfil',
       '/profile',
@@ -82,26 +84,6 @@ class AppShell extends StatelessWidget {
                   measure('Crear') +
                   toolbarPadding +
                   32;
-      final active = _destinations
-          .where((d) => location.startsWith(d.path))
-          .firstOrNull;
-      final label = TextPainter(
-        text: TextSpan(
-          text: active?.label ?? '',
-          style: const TextStyle(
-            fontFamily: 'NunitoSans',
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        textDirection: Directionality.of(context),
-        textScaler: MediaQuery.textScalerOf(context),
-      )..layout();
-      // Reserve four 48px touch targets, dock padding and the separate action.
-      final labelFits = desktop
-          ? bounds.maxWidth >=
-                brandWidth + 216 + label.width + 56 + toolbarPadding
-          : bounds.maxWidth >= 316 + label.width;
       // Bound the nested Navigator's BlockSemantics to the content region.
       // Its active route must not hide the sibling header or dock.
       final content = Semantics(
@@ -123,11 +105,7 @@ class AppShell extends StatelessWidget {
               _NavigationItem(
                 destination: destination,
                 selected: location.startsWith(destination.path),
-                showLabel:
-                    !compact ||
-                    (!largeText &&
-                        labelFits &&
-                        location.startsWith(destination.path)),
+                showLabel: !compact,
                 onTap: () => context.go(destination.path),
               ),
           ],
@@ -136,7 +114,13 @@ class AppShell extends StatelessWidget {
       final create = _CreateAction(
         selected: location.startsWith('/create'),
         expanded: desktop && !compact,
-        onTap: () => context.go('/create'),
+        onTap: () async {
+          if (controller == null) {
+            context.go('/create');
+            return;
+          }
+          await showCreateMenu(context, controller!);
+        },
       );
       if (desktop) {
         return Scaffold(
@@ -180,22 +164,23 @@ class AppShell extends StatelessWidget {
           bottom: false,
           child: Column(
             children: [
-              ColoredBox(
-                color: AppColors.surface,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(
-                    height: 56,
-                    child: Row(
-                      children: [
-                        const MareaLogo(compact: true),
-                        const Spacer(),
-                        ..._utilities(context),
-                      ],
+              if (location != '/map')
+                ColoredBox(
+                  color: AppColors.surface,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SizedBox(
+                      height: 56,
+                      child: Row(
+                        children: [
+                          const MareaLogo(compact: true),
+                          const Spacer(),
+                          ..._utilities(context),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
               Expanded(child: content),
             ],
           ),
@@ -203,13 +188,15 @@ class AppShell extends StatelessWidget {
         bottomNavigationBar: SafeArea(
           top: false,
           minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(child: navigation),
-              const SizedBox(width: 12),
-              create,
-            ],
+          child: SizedBox(
+            height: 68,
+            child: Row(
+              children: [
+                Expanded(child: Center(child: navigation)),
+                const SizedBox(width: 12),
+                create,
+              ],
+            ),
           ),
         ),
       );
@@ -322,21 +309,37 @@ class _NavigationItem extends StatelessWidget {
   );
 }
 
-class _CreateAction extends StatelessWidget {
+class _CreateAction extends StatefulWidget {
   const _CreateAction({
     required this.onTap,
     required this.selected,
     required this.expanded,
   });
-  final VoidCallback onTap;
+  final Future<void> Function() onTap;
   final bool selected, expanded;
+  @override
+  State<_CreateAction> createState() => _CreateActionState();
+}
+
+class _CreateActionState extends State<_CreateAction> {
+  bool _open = false;
+  Future<void> _tap() async {
+    if (_open) return;
+    setState(() => _open = true);
+    try {
+      await widget.onTap();
+    } finally {
+      if (mounted) setState(() => _open = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Semantics(
     label: 'Crear',
     button: true,
-    selected: selected,
+    selected: widget.selected,
     excludeSemantics: true,
-    onTap: onTap,
+    onTap: _tap,
     child: Tooltip(
       message: 'Crear',
       child: DecoratedBox(
@@ -350,17 +353,27 @@ class _CreateAction extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           child: InkWell(
             borderRadius: BorderRadius.circular(28),
-            onTap: onTap,
+            onTap: _tap,
             child: Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: expanded ? 20 : 16,
+                horizontal: widget.expanded ? 20 : 16,
                 vertical: 16,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.add_rounded, color: Colors.white, size: 24),
-                  if (expanded) ...[
+                  AnimatedRotation(
+                    turns: _open ? 0.125 : 0,
+                    duration: MediaQuery.disableAnimationsOf(context)
+                        ? Duration.zero
+                        : const Duration(milliseconds: 180),
+                    child: const Icon(
+                      Icons.add_rounded,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                  if (widget.expanded) ...[
                     const SizedBox(width: 8),
                     const Text(
                       'Crear',

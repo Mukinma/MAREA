@@ -39,6 +39,36 @@ abstract interface class CommunityRepository {
   Future<void> apply(String missionId, String message);
   Future<void> withdraw(String applicationId);
   Future<void> review(String applicationId, String decision);
+  Future<List<MissionDraft>> missionDrafts();
+  Future<MissionDraft?> missionDraft(String id);
+  Future<String> saveMissionDraft(
+    Map<String, dynamic> data, {
+    required String id,
+  });
+  Future<String> publishMissionDraft(String id, MissionInput input);
+  Future<void> deleteMissionDraft(String id);
+  Future<List<Mission>> savedMissions({
+    String query = '',
+    String? category,
+    UserType? targetType,
+    int offset = 0,
+  });
+  Future<Set<String>> savedMissionIds();
+  Future<void> setMissionSaved(String id, bool saved);
+  Future<String> submitApplication(
+    String missionId,
+    MissionApplicationInput input,
+  );
+  Future<Set<String>> missionFinalists(String missionId);
+  Future<void> setMissionFinalist(
+    String missionId,
+    String applicationId,
+    bool finalist,
+  );
+  Future<void> confirmMissionSelection(
+    String missionId,
+    List<String> applicationIds,
+  );
   Future<void> report({
     String? postId,
     String? missionId,
@@ -332,6 +362,151 @@ class SupabaseCommunityRepository implements CommunityRepository {
   });
 
   @override
+  Future<List<MissionDraft>> missionDrafts() => _run(() async {
+    final rows = await _client
+        .from('mission_drafts')
+        .select()
+        .isFilter('published_at', null)
+        .order('updated_at', ascending: false);
+    return rows.map(MissionDraft.fromJson).toList();
+  });
+  @override
+  Future<MissionDraft?> missionDraft(String id) => _run(() async {
+    final row = await _client
+        .from('mission_drafts')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
+    return row == null ? null : MissionDraft.fromJson(row);
+  });
+  @override
+  Future<String> saveMissionDraft(
+    Map<String, dynamic> data, {
+    required String id,
+  }) => _run(
+    () async =>
+        await _client.rpc(
+              'save_mission_draft',
+              params: {'draft_id': id, 'draft_input': data},
+            )
+            as String,
+  );
+  @override
+  Future<String> publishMissionDraft(String id, MissionInput input) =>
+      _run(() async {
+        final error = input.validate();
+        if (error != null) throw AppFailure(error);
+        return await _client.rpc(
+              'publish_mission_draft',
+              params: {'draft_id': id, 'mission_input': input.toJson()},
+            )
+            as String;
+      });
+  @override
+  Future<void> deleteMissionDraft(String id) => _run(() async {
+    final draft = await missionDraft(id);
+    await _client.rpc('delete_mission_draft', params: {'draft_id': id});
+    final image = draft?.data['image_path'] as String?;
+    if (image != null) {
+      try {
+        await removeMissionImage(image);
+      } catch (_) {
+        // Storage refuses removal while another draft or mission references it.
+      }
+    }
+  });
+  @override
+  Future<List<Mission>> savedMissions({
+    String query = '',
+    String? category,
+    UserType? targetType,
+    int offset = 0,
+  }) => _run(() async {
+    final rows =
+        await _client.rpc(
+              'list_saved_missions',
+              params: {
+                'query_text': query.trim(),
+                'category_filter': category,
+                'target_filter': targetType?.databaseValue,
+                'page_offset': max(0, offset),
+              },
+            )
+            as List;
+    return rows
+        .map((row) => Mission.fromJson(Map<String, dynamic>.from(row as Map)))
+        .toList();
+  });
+  @override
+  Future<Set<String>> savedMissionIds() => _run(() async {
+    final rows = await _client.from('mission_saves').select('mission_id');
+    return rows.map((r) => r['mission_id'] as String).toSet();
+  });
+  @override
+  Future<void> setMissionSaved(String id, bool saved) => _run(() async {
+    await _client.rpc(
+      'set_mission_saved',
+      params: {'mission_id': id, 'is_saved': saved},
+    );
+  });
+  @override
+  Future<String> submitApplication(
+    String missionId,
+    MissionApplicationInput input,
+  ) => _run(() async {
+    final error = input.validate();
+    if (error != null) throw AppFailure(error);
+    return await _client.rpc(
+          'submit_mission_application',
+          params: {
+            'mission_id': missionId,
+            'application_input': input.toJson(),
+          },
+        )
+        as String;
+  });
+  @override
+  Future<Set<String>> missionFinalists(String missionId) => _run(() async {
+    final rows = await _client
+        .from('mission_finalists')
+        .select('application_id')
+        .eq('mission_id', missionId);
+    return rows.map((r) => r['application_id'] as String).toSet();
+  });
+  @override
+  Future<void> setMissionFinalist(
+    String missionId,
+    String applicationId,
+    bool finalist,
+  ) => _run(() async {
+    await _client.rpc(
+      'set_mission_finalist',
+      params: {
+        'mission_id': missionId,
+        'application_id': applicationId,
+        'is_finalist': finalist,
+      },
+    );
+  });
+  @override
+  Future<void> confirmMissionSelection(
+    String missionId,
+    List<String> applicationIds,
+  ) => _run(() async {
+    if (applicationIds.isEmpty ||
+        applicationIds.length > 100 ||
+        applicationIds.toSet().length != applicationIds.length) {
+      throw const AppFailure(
+        'Selecciona entre 1 y 100 candidaturas distintas.',
+      );
+    }
+    await _client.rpc(
+      'confirm_mission_selection',
+      params: {'mission_id': missionId, 'application_ids': applicationIds},
+    );
+  });
+
+  @override
   Future<void> report({
     String? postId,
     String? missionId,
@@ -460,6 +635,26 @@ AppFailure communityFailure(Object error) {
     return const AppFailure(
       'Inicia sesión nuevamente para continuar.',
       kind: AppFailureKind.invalidSession,
+    );
+  }
+  if (message.contains('mission_compensation_locked')) {
+    return const AppFailure(
+      'La compensación queda fija desde la primera candidatura.',
+    );
+  }
+  if (message.contains('invalid_application_evidence')) {
+    return const AppFailure(
+      'Revisa las muestras: deben ser fichas propias publicadas o enlaces HTTPS válidos.',
+    );
+  }
+  if (message.contains('application_operation_conflict')) {
+    return const AppFailure(
+      'Este envío ya se guardó con otros datos. Consulta Mis candidaturas.',
+    );
+  }
+  if (message.contains('draft_already_published')) {
+    return const AppFailure(
+      'Este borrador ya fue publicado. Abre la misión desde Mis misiones.',
     );
   }
   if (message.contains('mission_unavailable')) {

@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
+import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/features/community/presentation/missions_screen.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import '../../support/fakes.dart';
@@ -20,15 +21,19 @@ Future<GoRouter> openRoute(
   MissionRepositoryFake repo,
   String path, {
   GlobalKey? captureKey,
+  UserType? userType,
+  SocialRepository? socialRepository,
 }) async {
   final profile = FakeProfileRepository()
     ..value = sampleProfile.copyWith(
       onboardingStatus: OnboardingStatus.skipped,
+      userType: userType,
     );
   final session = AppSessionController(
     authRepository: FakeAuthRepository(),
     profileRepository: profile,
     communityRepository: repo,
+    socialRepository: socialRepository,
   );
   await session.initialize();
   final router = AppRouter.create(session)..go(path);
@@ -50,7 +55,12 @@ Future<GoRouter> openRoute(
   return router;
 }
 
-Finder field(String label) => find.ancestor(of: find.byWidgetPredicate((w) => w is TextField && w.decoration?.labelText == label), matching: find.byType(TextFormField));
+Finder field(String label) => find.ancestor(
+  of: find.byWidgetPredicate(
+    (w) => w is TextField && w.decoration?.labelText == label,
+  ),
+  matching: find.byType(TextFormField),
+);
 Future<void> fill(WidgetTester tester, String label, String text) async {
   await tester.ensureVisible(field(label));
   await tester.enterText(field(label), text);
@@ -70,18 +80,39 @@ Future<void> validComposer(WidgetTester tester) async {
     'Descripción',
     'Una colaboración para transformar el barrio.',
   );
+  await tapVisible(tester, find.text('Continuar'));
+  await tapVisible(tester, find.text('Continuar'));
   await fill(tester, 'Lugar', 'Centro cultural');
   FocusManager.instance.primaryFocus?.unfocus();
   await tapVisible(tester, find.text('Seleccionar fecha'));
   // The next month always provides a future date, independent of the test clock.
-  await tester.tap(find.byTooltip(MaterialLocalizations.of(tester.element(find.byType(DatePickerDialog))).nextMonthTooltip));
+  await tester.tap(
+    find.byTooltip(
+      MaterialLocalizations.of(
+        tester.element(find.byType(DatePickerDialog)),
+      ).nextMonthTooltip,
+    ),
+  );
   await tester.pumpAndSettle();
   await tester.tap(find.text('15').last);
-  await tester.tap(find.text(MaterialLocalizations.of(tester.element(find.byType(Dialog).last)).okButtonLabel));
+  await tester.tap(
+    find.text(
+      MaterialLocalizations.of(
+        tester.element(find.byType(Dialog).last),
+      ).okButtonLabel,
+    ),
+  );
   await tester.pumpAndSettle();
   await tapVisible(tester, find.text('Seleccionar hora'));
-  await tester.tap(find.text(MaterialLocalizations.of(tester.element(find.byType(Dialog).last)).okButtonLabel));
+  await tester.tap(
+    find.text(
+      MaterialLocalizations.of(
+        tester.element(find.byType(Dialog).last),
+      ).okButtonLabel,
+    ),
+  );
   await tester.pumpAndSettle();
+  await tapVisible(tester, find.text('Continuar'));
 }
 
 Future<void> capture(WidgetTester tester, GlobalKey key, String name) async {
@@ -105,7 +136,8 @@ void main() {
       fonts.addFont(rootBundle.load('assets/fonts/NunitoSans-$weight.ttf'));
     }
     await fonts.load();
-    final icons = FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
+    final icons = FontLoader('MaterialIcons')
+      ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
     await icons.load();
   });
   testWidgets(
@@ -119,9 +151,9 @@ void main() {
         ),
         findsNothing,
       );
-      await tapVisible(tester, find.text('Publicar misión'));
+      await tapVisible(tester, find.text('Continuar'));
       expect(find.text('Escribe al menos 3 caracteres.'), findsOneWidget);
-      expect(find.text('Selecciona la fecha y la hora.'), findsOneWidget);
+      expect(field('Lugar'), findsNothing);
       final editable = tester.widget<EditableText>(
         find.descendant(
           of: field('Título de la misión'),
@@ -153,25 +185,22 @@ void main() {
   testWidgets(
     'network failure keeps form and double submission sends only once',
     (tester) async {
-      final repo = MissionRepositoryFake()
-        ..failSave = true
-        ..saveGate = Completer<void>();
+      final repo = MissionRepositoryFake()..saveGate = Completer<void>();
       await openRoute(tester, repo, '/missions/new');
       await validComposer(tester);
       await tester.tap(find.text('Publicar misión'));
       await tester.pump();
       expect(repo.creations, 1);
       expect(find.text('Guardando…'), findsOneWidget);
+      // A repeated tap while pending cannot publish a second mission.
+      await tester.tap(find.text('Guardando…'));
+      await tester.pump();
+      expect(repo.creations, 1);
+      repo.failSave = true;
       repo.saveGate!.complete();
       await tester.pumpAndSettle();
       expect(find.text('Sin conexión. Inténtalo nuevamente.'), findsOneWidget);
-      expect(
-        tester
-            .widget<TextFormField>(field('Título de la misión'))
-            .controller!
-            .text,
-        'Nueva misión publicada',
-      );
+      expect(find.text('Nueva misión publicada'), findsWidgets);
       repo.failSave = false;
       repo.saveGate = null;
       await tapVisible(tester, find.text('Publicar misión'));
@@ -182,8 +211,8 @@ void main() {
   testWidgets('dirty cancel confirms and can continue editing', (tester) async {
     await openRoute(tester, MissionRepositoryFake(), '/missions/new');
     await fill(tester, 'Título de la misión', 'No perder esta idea');
-    await tapVisible(tester, find.text('Cancelar'));
-    expect(find.text('¿Salir sin guardar?'), findsOneWidget);
+    await tapVisible(tester, find.byTooltip('Cerrar'));
+    expect(find.text('¿Qué hacemos con tu idea?'), findsOneWidget);
     await tester.tap(find.text('Seguir editando'));
     await tester.pumpAndSettle();
     expect(
@@ -201,8 +230,11 @@ void main() {
         ..value = missionFixture(author: sampleProfile.id, locked: true);
       final original = repo.value.startsAt;
       await openRoute(tester, repo, '/missions/mission-1/edit');
-      expect(tester.widget<TextFormField>(field('Lugar')).enabled, isFalse);
       await fill(tester, 'Título de la misión', 'Título corregido');
+      await tapVisible(tester, find.text('Continuar'));
+      await tapVisible(tester, find.text('Continuar'));
+      expect(tester.widget<TextFormField>(field('Lugar')).enabled, isFalse);
+      await tapVisible(tester, find.text('Continuar'));
       await tapVisible(tester, find.text('Guardar cambios'));
       expect(repo.saved!.startsAt, original);
       expect(repo.updates, 1);
@@ -216,8 +248,12 @@ void main() {
       ..value = missionFixture(author: sampleProfile.id, status: 'closed')
       ..requests = [application()];
     await openRoute(tester, repo, '/missions/mission-1');
-    await tapVisible(tester, find.text('Aceptar'));
+    await tapVisible(tester, find.text('Gestionar misión'));
+    await tapVisible(tester, find.byType(Checkbox));
+    await tapVisible(tester, find.text('Confirmar selección (1)'));
+    await tapVisible(tester, find.text('Confirmar participantes'));
     expect(repo.reviewed, 'accepted');
+    await tapVisible(tester, find.text('Aceptadas 1'));
     expect(find.text('Aceptada'), findsOneWidget);
   });
   testWidgets('withdraw retains history and permits reapplying', (
@@ -231,7 +267,7 @@ void main() {
     await tapVisible(tester, find.text('Retirar postulación'));
     expect(repo.requests.single.status, 'withdrawn');
     expect(find.text('Tu postulación: retirada.'), findsOneWidget);
-    expect(find.text('Postularme'), findsOneWidget);
+    expect(find.text('Quiero participar'), findsOneWidget);
   });
   testWidgets(
     'unavailable applications stay in history without exposing others',
@@ -243,7 +279,7 @@ void main() {
           application(applicant: sampleProfile.id, status: 'withdrawn'),
         ];
       await openRoute(tester, repo, '/missions');
-      await tapVisible(tester, find.text('Mis postulaciones'));
+      await tapVisible(tester, find.text('Mis candidaturas'));
       expect(find.text('Misión no disponible'), findsOneWidget);
       expect(find.textContaining('Postulación retirada'), findsOneWidget);
       expect(find.textContaining('Postulación pendiente'), findsNothing);
@@ -264,7 +300,12 @@ void main() {
       expect(repo.lastScope, 'history');
     },
   );
-  for (final size in [const Size(390, 844), const Size(1440, 900)]) {
+  for (final size in [
+    const Size(360, 800),
+    const Size(390, 844),
+    const Size(834, 1000),
+    const Size(1440, 900),
+  ]) {
     for (final path in ['/missions', '/missions/new', '/missions/mission-1']) {
       testWidgets('integrated $path at ${size.width}', (tester) async {
         tester.view.physicalSize = size;
@@ -291,15 +332,17 @@ void main() {
           if (size.width < 960) {
             tester.view.viewInsets = const FakeViewPadding(bottom: 300);
             await tester.pumpAndSettle();
-            expect(find.text('Publicar misión').hitTestable(), findsOneWidget);
+            expect(find.text('Continuar').hitTestable(), findsOneWidget);
             tester.view.resetViewInsets();
-            FocusManager.instance.primaryFocus?.unfocus();
-            await tapVisible(tester, find.text('Ver vista previa'));
-            expect(find.text('ASÍ LA VERÁ LA COMUNIDAD'), findsOneWidget);
-            await capture(tester, key, 'integrated-preview-mobile');
-          } else {
-            expect(find.text('ASÍ LA VERÁ LA COMUNIDAD'), findsOneWidget);
           }
+          FocusManager.instance.primaryFocus?.unfocus();
+          await validComposer(tester);
+          expect(find.text('Nueva misión publicada'), findsOneWidget);
+          await capture(
+            tester,
+            key,
+            'integrated-preview-${size.width.toInt()}',
+          );
         }
         expect(tester.takeException(), isNull);
       });

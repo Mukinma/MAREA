@@ -12,6 +12,7 @@ class CommunityPage extends StatelessWidget {
     this.onRefresh,
     this.action,
     this.maxWidth = 960,
+    this.scrollController,
     super.key,
   });
   final String title;
@@ -20,9 +21,11 @@ class CommunityPage extends StatelessWidget {
   final Future<void> Function()? onRefresh;
   final Widget? action;
   final double maxWidth;
+  final ScrollController? scrollController;
   @override
   Widget build(BuildContext context) {
     final body = ListView(
+      controller: scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(
         horizontal: MediaQuery.sizeOf(context).width < 600 ? 20 : 32,

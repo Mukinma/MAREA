@@ -27,7 +27,7 @@ Los cuatro tipos tienen los mismos permisos para organizar misiones. El tipo sol
 | Retirar una postulación pendiente o aceptada | Su participante, antes de la fecha y mientras la misión no sea terminal |
 | Ocultar o restaurar contenido reportado | Administrador; este rol no concede gestión de misiones ajenas |
 
-Desde Herramientas del perfil se puede crear contenido y encontrar colaboraciones compatibles. “Para mi perfil” consulta en servidor convocatorias dirigidas al tipo actual y convocatorias para todos. Esto indica compatibilidad de tipo; la postulación también depende de cupo, fecha, estado y ausencia de una solicitud activa o rechazada. Mis postulaciones permite filtrar pendientes, aceptadas, no seleccionadas y retiradas. Una retirada conserva el historial y permite volver a postularse si la convocatoria sigue disponible.
+Desde Herramientas del perfil se puede crear contenido y encontrar colaboraciones compatibles. “Para mi perfil” consulta en servidor convocatorias dirigidas al tipo actual y convocatorias para todos. Esto indica compatibilidad de tipo; la postulación también depende de cupo, fecha, estado y ausencia de una solicitud activa o rechazada. Mis candidaturas permite filtrar pendientes, aceptadas, no seleccionadas y retiradas. Una retirada conserva el historial y permite volver a postularse si la convocatoria sigue disponible.
 
 La revisión de permisos se ejecuta con roles autenticados en PostgreSQL aislado: 20 combinaciones de organizador y perfil solicitado, los cuatro tipos de participante, propiedad, acceso anónimo y ciclo de convocatoria. No modifica cuentas ni contenido del proyecto remoto.
 
@@ -47,9 +47,9 @@ Inicio, Explorar, Crear, Misiones y Perfil mantienen la navegación principal. C
 
 - Publicar título, descripción y categoría, con fotografía opcional desde la galería; editar y eliminar publicaciones propias. Las publicaciones pueden incluir una ubicación seleccionada en el mapa, buscada por dirección, elegida manualmente o tomada de la ubicación actual tras una acción explícita.
 - Explorar publicaciones mediante búsqueda y categorías, guardar y quitar guardados, visitar perfiles con sus publicaciones y misiones.
-- Crear misiones con ubicación escrita, fecha y hora, cupo y tipo de participante buscado. Todos los perfiles pueden crear oportunidades.
-- Postularse con un mensaje, consultar el estado y retirar la postulación. No es posible postularse a una misión propia, fuera de fecha, cerrada o incompatible con el tipo solicitado.
-- Revisar postulaciones propias como organizador, consultar perfiles, aceptar o rechazar y cerrar/reabrir una convocatoria antes de su fecha. La base de datos serializa la selección para respetar el cupo.
+- Crear y editar misiones en cuatro pasos con portada opcional, requisitos, condiciones, compensación, ubicación escrita/punto en mapa, fecha, hora, cupo y perfil solicitado. Todos los perfiles pueden crear; los borradores privados se retoman en Mis misiones.
+- Presentar una candidatura en tres pasos con motivación, disponibilidad confirmada y hasta tres muestras opcionales, consultar confirmación/estado y retirar la candidatura. No es posible postularse a una misión propia, fuera de fecha, cerrada o incompatible con el tipo solicitado.
+- Gestionar candidaturas en una pantalla privada: consultar perfiles y muestras, marcar finalistas internos, revisar y confirmar un grupo sin superar el cupo, rechazar individualmente y cerrar/reabrir antes de la fecha. La selección es atómica.
 - Reportar publicaciones, fichas o misiones. El administrador revisa el contenido, lo oculta y puede restaurarlo desde el historial de reportes.
 
 ## Datos y permisos
@@ -79,7 +79,7 @@ Las pruebas PostgreSQL se ejecutan en una base aislada con roles `anon` y `authe
 
 ## Alcance de esta entrega
 
-Los posts admiten una fotografía y una ubicación opcional. Las misiones se cierran o reabren; sus detalles no se editan después de publicar. El contacto disponible es el enlace voluntario del perfil y el mensaje de postulación; esta entrega no incorpora pedidos, reservas, pagos, chat privado, comentarios, algoritmo de recomendaciones ni AR. La ubicación de publicaciones usa mapas de OpenStreetMap y búsqueda de Nominatim. Android declara permisos de ubicación y Web solicita permiso al navegador solo cuando la persona pulsa `Usar mi ubicación actual`; no se obtiene ubicación al abrir el formulario ni se guarda automáticamente. La opción aproximada redondea las coordenadas antes de persistirlas. Las misiones mantienen ubicación textual.
+Los posts admiten una fotografía y una ubicación opcional. Las misiones se editan con restricciones desde la primera candidatura y conservan cierre/reapertura, cancelación y finalización. El contacto disponible es el enlace voluntario del perfil y el mensaje de postulación; esta entrega no incorpora pedidos, reservas, pagos, chat privado, comentarios, algoritmo de recomendaciones ni AR. La ubicación de publicaciones usa mapas de OpenStreetMap y búsqueda de Nominatim. Android declara permisos de ubicación y Web solicita permiso al navegador solo cuando la persona pulsa `Usar mi ubicación actual`; no se obtiene ubicación al abrir el formulario ni se guarda automáticamente. La opción aproximada redondea las coordenadas antes de persistirlas. Las misiones mantienen ubicación textual y admiten un punto opcional en el mapa. Ver [rediseño de misiones](missions-redesign.md) para flujos, privacidad, compensación y verificación.
 
 ## Regresión de fotografías Web
 

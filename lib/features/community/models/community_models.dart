@@ -1,3 +1,5 @@
+import 'mission_experience.dart';
+export 'mission_experience.dart';
 import 'package:marea/features/profile/models/profile.dart';
 
 const communityCategories = {...ProfilePreferences.interests, 'otros': 'Otros'};
@@ -237,6 +239,8 @@ class Mission {
     required this.capacity,
     required this.createdAt,
     this.targetType,
+    this.compensationType,
+    this.compensationAmountCents,
     this.imagePath,
     this.coordinates,
     this.requirements,
@@ -259,6 +263,10 @@ class Mission {
   final DateTime startsAt;
   final int capacity;
   final UserType? targetType;
+  final String? compensationType;
+  final int? compensationAmountCents;
+  String get compensationLabel =>
+      missionCompensationLabel(compensationType, compensationAmountCents);
   final String status;
   final bool hidden;
   final DateTime createdAt;
@@ -338,6 +346,9 @@ class Mission {
     pendingCount: (json['pending_count'] as num?)?.toInt() ?? 0,
     organizerName: json['organizer_name'] as String?,
     organizerUsername: json['organizer_username'] as String?,
+    compensationType: json['compensation_type'] as String?,
+    compensationAmountCents: (json['compensation_amount_cents'] as num?)
+        ?.toInt(),
     targetType: json['target_type'] == null
         ? null
         : UserType.fromDatabase(json['target_type'] as String),
@@ -355,11 +366,15 @@ class MissionApplication {
     required this.message,
     required this.status,
     required this.createdAt,
+    this.availabilityConfirmed,
+    this.evidence = const [],
   });
   final String id;
   final String missionId;
   final String applicantId;
   final String message;
+  final bool? availabilityConfirmed;
+  final List<MissionEvidence> evidence;
   final String status;
   final DateTime createdAt;
 
@@ -369,6 +384,13 @@ class MissionApplication {
         missionId: json['mission_id'] as String,
         applicantId: json['applicant_id'] as String,
         message: json['message'] as String,
+        availabilityConfirmed: json['availability_confirmed'] as bool?,
+        evidence: (json['evidence'] as List? ?? [])
+            .map(
+              (e) =>
+                  MissionEvidence.fromJson(Map<String, dynamic>.from(e as Map)),
+            )
+            .toList(),
         status: json['status'] as String,
         createdAt: DateTime.parse(json['created_at'] as String),
       );
@@ -481,6 +503,8 @@ class MissionInput {
     required this.startsAt,
     required this.capacity,
     this.targetType,
+    this.compensationType,
+    this.compensationAmountCents,
     this.imagePath,
     this.coordinates,
     this.requirements,
@@ -493,6 +517,8 @@ class MissionInput {
   final DateTime startsAt;
   final int capacity;
   final UserType? targetType;
+  final String? compensationType;
+  final int? compensationAmountCents;
 
   final String? imagePath;
   final PostCoordinates? coordinates;
@@ -500,6 +526,11 @@ class MissionInput {
   final String? conditions;
 
   String? validate({DateTime? now, bool allowPast = false}) {
+    final compensationError = validateMissionCompensation(
+      compensationType,
+      compensationAmountCents,
+    );
+    if (compensationError != null) return compensationError;
     final contentError = _contentError(title, body, category);
     if (contentError != null) return contentError;
     if (location.trim().isEmpty || location.trim().length > 180) {
@@ -531,6 +562,8 @@ class MissionInput {
     'starts_at': startsAt.toUtc().toIso8601String(),
     'capacity': capacity,
     'target_type': targetType?.databaseValue,
+    'compensation_type': compensationType,
+    'compensation_amount_cents': compensationAmountCents,
     'image_path': _optionalText(imagePath),
     'requirements': _optionalText(requirements),
     'conditions': _optionalText(conditions),

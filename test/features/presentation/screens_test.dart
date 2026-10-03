@@ -139,7 +139,7 @@ void main() {
   });
 
   for (final width in [390.0, 1366.0]) {
-    testWidgets('shell exposes five labelled actions at $width', (
+    testWidgets('shell exposes six labelled actions at $width', (
       tester,
     ) async {
       tester.view.physicalSize = Size(width, 844);
@@ -154,6 +154,7 @@ void main() {
         'Explorar',
         'Crear',
         'Misiones',
+        'Mapa',
         'Perfil',
       ]) {
         expect(find.byTooltip(label).hitTestable(), findsOneWidget);

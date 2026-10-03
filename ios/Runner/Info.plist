@@ -26,6 +26,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>MAREA usa tu ubicación para mostrar misiones cercanas cuando exploras el mapa.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Elige una foto para tu avatar o portada de MAREA. Solo se usa la imagen que seleccionas.</string>
 	<key>UIApplicationSceneManifest</key>

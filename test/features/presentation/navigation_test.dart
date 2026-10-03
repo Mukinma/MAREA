@@ -39,11 +39,41 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('mobile navigation reserves space for the create action', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: const AppShell(
+          location: '/home',
+          child: SizedBox.expand(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final navigationRect = tester.getRect(
+      find.byKey(const Key('mobile-dock')),
+    );
+    final createRect = tester.getRect(
+      find.byKey(const Key('create-destination')),
+    );
+    expect(navigationRect.right, lessThanOrEqualTo(createRect.left));
+  });
+
   const destinations = {
     'Inicio': '/home',
     'Explorar': '/explore',
     'Crear': '/create',
     'Misiones': '/missions',
+    'Mapa': '/map',
     'Perfil': '/profile',
   };
 

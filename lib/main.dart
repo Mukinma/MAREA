@@ -1,5 +1,6 @@
 import 'package:marea/features/community/data/social_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:marea/features/map/data/mission_map_repository.dart';
 import 'package:marea/features/showcase/data/showcase_repository.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
 import 'package:marea/features/community/data/community_repository.dart';
@@ -32,6 +33,7 @@ Future<void> main() async {
       controller: AppSessionController(
         authRepository: SupabaseAuthRepository(client),
         communityRepository: SupabaseCommunityRepository(client),
+        missionMapRepository: SupabaseMissionMapRepository(client),
         socialRepository: SupabaseSocialRepository(client),
         publicUrl: config.publicUrl,
         showcaseRepository: SupabaseShowcaseRepository(client),

@@ -2,6 +2,7 @@ import 'package:marea/core/config/app_config.dart';
 import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/features/community/data/notifications_controller.dart';
 import 'dart:async';
+import 'package:marea/features/map/data/mission_map_repository.dart';
 import 'package:marea/features/showcase/data/showcase_repository.dart';
 import 'package:marea/features/community/data/community_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -22,6 +23,7 @@ class AppSessionController extends ChangeNotifier {
     LegalRepository? legalRepository,
     this.mediaRepository,
     this.communityRepository,
+    this.missionMapRepository,
     this.showcaseRepository,
     this.socialRepository,
     this.publicUrl = 'https://marea-azul.netlify.app/',
@@ -29,6 +31,7 @@ class AppSessionController extends ChangeNotifier {
        _profiles = profileRepository,
        _legal = legalRepository;
   final CommunityRepository? communityRepository;
+  final MissionMapRepository? missionMapRepository;
   final SocialRepository? socialRepository;
   final String publicUrl;
   NotificationsController? _notifications;
