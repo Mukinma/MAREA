@@ -1,3 +1,4 @@
+import 'package:marea/features/notifications/presentation/notification_settings.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:flutter/material.dart';
@@ -123,6 +124,17 @@ class SettingsScreen extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: AppSpacing.lg),
+                            if (controller.push != null) ...[
+                              _SettingsCard(
+                                title: 'Notificaciones',
+                                children: [
+                                  NotificationSettings(
+                                    controller: controller.push!,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
+                            ],
                             SessionFeedback(controller: controller),
                             _SettingsCard(
                               title: 'Sesión',

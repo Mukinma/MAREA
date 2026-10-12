@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/features/profile/presentation/profile_experience.dart';
 import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:marea/shared/widgets/profile_image.dart';
@@ -292,7 +293,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
     ),
     body: _profile == null
         ? _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(child: MareaSkeleton(kind: SkeletonKind.list))
               : CommunityNotice(
                   message: _error ?? 'Este perfil ya no está disponible.',
                   onRetry: _load,

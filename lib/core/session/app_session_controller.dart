@@ -1,3 +1,10 @@
+import 'package:marea/features/location/data/location_repository.dart';
+import 'package:marea/features/community/data/mission_social_repository.dart';
+import 'package:marea/features/home_feed/data/home_feed_repository.dart';
+import 'package:marea/features/home_feed/data/stories_repository.dart';
+import 'package:marea/features/tours/data/tour_local_store.dart';
+import 'package:marea/features/tours/data/tour_repository.dart';
+import 'package:marea/features/notifications/data/push_controller.dart';
 import 'package:marea/core/config/app_config.dart';
 import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/features/community/data/notifications_controller.dart';
@@ -23,16 +30,28 @@ class AppSessionController extends ChangeNotifier {
     LegalRepository? legalRepository,
     this.mediaRepository,
     this.communityRepository,
+    this.homeFeedRepository,
+    this.storiesRepository,
     this.missionMapRepository,
+    this.tourRepository,
     this.showcaseRepository,
     this.socialRepository,
+    this.missionSocialRepository,
+    this.locationRepository,
+    this.push,
     this.publicUrl = 'https://marea-azul.netlify.app/',
   }) : _auth = authRepository,
        _profiles = profileRepository,
        _legal = legalRepository;
   final CommunityRepository? communityRepository;
+  final HomeFeedRepository? homeFeedRepository;
+  final StoriesRepository? storiesRepository;
   final MissionMapRepository? missionMapRepository;
+  final TourRepository? tourRepository;
   final SocialRepository? socialRepository;
+  final MissionSocialRepository? missionSocialRepository;
+  final LocationRepository? locationRepository;
+  final PushController? push;
   final String publicUrl;
   NotificationsController? _notifications;
   NotificationsController? get notifications => socialRepository == null
@@ -58,6 +77,13 @@ class AppSessionController extends ChangeNotifier {
       _needsLegal = false;
   int _generation = 0;
   int _profileRevision = 0;
+  int _homeFeedRevision = 0;
+  int get homeFeedRevision => _homeFeedRevision;
+  void refreshHomeFeed() {
+    _homeFeedRevision++;
+    notifyListeners();
+  }
+
   AppFailure? _failure;
   String? _success;
   Timer? _successTimer;
@@ -271,6 +297,7 @@ class AppSessionController extends ChangeNotifier {
   Future<bool> signOut() async =>
       await _run(() async {
         ++_generation;
+        await push?.endSession();
         await _auth.signOut();
         _unauthenticated();
         return true;
@@ -279,7 +306,16 @@ class AppSessionController extends ChangeNotifier {
   Future<bool> deleteAccount() async =>
       await _run(() async {
         ++_generation;
+        await push?.endSession();
+        final tourAccount = profile?.id;
         await _auth.deleteAccount();
+        if (tourAccount != null) {
+          try {
+            await TourLocalStore().removeAccount(tourAccount);
+          } catch (_) {
+            /* The account is already deleted; session must still end. */
+          }
+        }
         _unauthenticated();
         return true;
       }) ??
@@ -482,6 +518,7 @@ class AppSessionController extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _notifications?.dispose();
+    push?.dispose();
     ++_generation;
     _successTimer?.cancel();
     unawaited(_subscription?.cancel());

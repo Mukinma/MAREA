@@ -1,3 +1,6 @@
+import 'package:marea/features/home_feed/presentation/story_moderation.dart';
+import 'package:go_router/go_router.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 import 'package:marea/features/community/presentation/mission_widgets.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +70,21 @@ class _ModerationScreenState extends State<ModerationScreen> {
                 'Revisa el contenido antes de ocultarlo. Los reportes revisados se conservan para poder restaurarlo.',
             onRefresh: _loading ? null : () => _load(reset: true),
             children: [
+              if (widget.controller.storiesRepository != null)
+                StoryModeration(
+                  repository: widget.controller.storiesRepository!,
+                ),
+              if (widget.controller.tourRepository != null)
+                ListTile(
+                  leading: const Icon(Icons.view_in_ar_outlined),
+                  title: const Text('Espacios y recorridos'),
+                  subtitle: const Text(
+                    'Acreditar responsables y revisar versiones enviadas.',
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/tours/requests'),
+                ),
+
               if (_reports.isEmpty && !_loading && _error == null)
                 const CommunityNotice(message: 'No hay reportes para revisar.'),
               for (final report in _reports)
@@ -78,7 +96,8 @@ class _ModerationScreenState extends State<ModerationScreen> {
                 ),
               if (_error != null)
                 CommunityNotice(message: _error!, onRetry: () => _load()),
-              if (_loading) const Center(child: CircularProgressIndicator()),
+              if (_loading)
+                const Center(child: MareaSkeleton(kind: SkeletonKind.list)),
               if (_more && !_loading && _error == null)
                 TextButton(
                   onPressed: _load,

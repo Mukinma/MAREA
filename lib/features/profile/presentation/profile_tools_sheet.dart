@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -11,7 +12,7 @@ Future<String?> showProfileTools(
   required CommunityProfile profile,
   required AppSessionController controller,
   required bool admin,
-}) => showModalBottomSheet<String>(
+}) => showMareaBottomSheet<String>(
   context: context,
   isScrollControlled: true,
   useRootNavigator: true,
@@ -129,6 +130,20 @@ class _ProfileTools extends StatelessWidget {
                   'Gestiona borradores, fotografías y fichas de tu ${type.showcaseLabel.toLowerCase()}.',
                   '/showcase/new?kind=${kind.name}',
                 ),
+            if (controller.tourRepository != null && type != UserType.general)
+              action(
+                Icons.panorama_photosphere_outlined,
+                'Tus recorridos 360°',
+                'Captura posiciones del local, conecta panoramas y prepara AR.',
+                '/tours',
+              ),
+            if (controller.tourRepository != null)
+              action(
+                Icons.approval_outlined,
+                'Solicitudes de recorridos',
+                'Autoriza contenido y revisa propuestas.',
+                '/tours/requests',
+              ),
             const Divider(height: 28),
             action(
               Icons.auto_awesome_outlined,

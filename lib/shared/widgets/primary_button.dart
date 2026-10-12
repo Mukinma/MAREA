@@ -8,12 +8,21 @@ class PrimaryButton extends StatelessWidget {
     super.key,
     this.isLoading = false,
     this.icon,
+    this.loadingLabel,
   });
 
   final String label;
+  final String? loadingLabel;
   final VoidCallback? onPressed;
   final bool isLoading;
   final IconData? icon;
+
+  String get _busyLabel => switch (label) {
+    'Guardar' || 'Guardar cambios' => 'Guardando…',
+    'Publicar' || 'Crear publicación' => 'Publicando…',
+    'Enviar' => 'Enviando…',
+    _ => '$label…',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +34,11 @@ class PrimaryButton extends StatelessWidget {
       child: FilledButton(
         onPressed: isLoading ? null : onPressed,
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 180),
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 180),
           child: isLoading
-              ? const SizedBox.square(
-                  key: ValueKey('loading'),
-                  dimension: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2.2),
-                )
+              ? Text(loadingLabel ?? _busyLabel, key: const ValueKey('loading'))
               : Row(
                   key: const ValueKey('label'),
                   mainAxisSize: MainAxisSize.min,

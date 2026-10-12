@@ -1,0 +1,117 @@
+// Real PostgreSQL/WASM behavior. No hosted database is contacted.
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const {PGlite}=await import(process.env.MAREA_PGLITE_MODULE || '@electric-sql/pglite');
+const db=new PGlite();
+const a='11111111-1111-4111-8111-111111111111', b='22222222-2222-4222-8222-222222222222', admin='33333333-3333-4333-8333-333333333333';
+const c='88888888-8888-4888-8888-888888888888', cpost='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', cpoint='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+const scene='44444444-4444-4444-8444-444444444444', zone='55555555-5555-4555-8555-555555555555', frame='66666666-6666-4666-8666-666666666666';
+let n=0;
+const eq=(actual,want,label)=>{assert.deepEqual(actual,want,label);n++;};
+const scalar=async(sql,params=[])=>Object.values((await db.query(sql,params)).rows[0])[0];
+const reject=async(sql,params=[],label='must reject')=>{await assert.rejects(db.query(sql,params),undefined,label);n++;};
+const login=async(id)=>{await db.exec('reset role; set role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);};
+const system=async()=>db.exec('reset role');
+try {
+await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
+create schema auth; create schema storage; grant usage on schema public,auth,storage to anon,authenticated,service_role;
+create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+create table public.profiles(id uuid primary key,role text default 'user');
+create table public.account_deletion_requests(user_id uuid primary key references public.profiles(id));
+create table public.profile_media_operations(id uuid,user_id uuid,expires_at timestamptz);
+create function public.community_is_admin() returns boolean language sql security definer as $$select exists(select 1 from public.profiles where id=auth.uid() and role='admin')$$;
+create function public.community_active_account() returns uuid language plpgsql security definer as $$begin
+perform pg_advisory_xact_lock(hashtextextended(auth.uid()::text,0));
+if auth.uid() is null or not exists(select 1 from public.profiles where id=auth.uid()) or exists(select 1 from public.account_deletion_requests where user_id=auth.uid()) then raise exception 'account_required'; end if; return auth.uid();end$$;
+create table public.posts(id uuid primary key,author_id uuid,title text,kind text,hidden boolean default false);
+create table public.missions(id uuid primary key,author_id uuid,title text,hidden boolean default false);
+create table public.showcase_items(id uuid primary key,owner_id uuid,title text,status text,hidden boolean default false,available boolean default true);
+create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
+create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text,unique(bucket_id,name));
+alter table storage.objects enable row level security;
+grant select,insert,update,delete on storage.objects to authenticated;
+create function storage.foldername(name text) returns text[] language sql immutable as $$select string_to_array(name,'/')$$;
+insert into public.profiles values('${a}','user'),('${b}','user'),('${admin}','admin'),('${c}','user');`);
+const migration=await readFile(new URL('../supabase/migrations/015_tours.sql',import.meta.url),'utf8').catch(()=> '');
+await db.exec('set search_path = pg_catalog');
+await db.exec(migration);
+await db.exec('set search_path = public,pg_catalog');
+eq(await scalar("select has_function_privilege('authenticated','public.tours_claim_jobs()','EXECUTE')"),false,'service grants independent of search path');
+await db.query('insert into public.posts(id,author_id,title,kind) values($1,$2,$3,$4)',[zone,a,'Espacio propio','space']);await login(a);
+const ownTour=await scalar('select tours_save(null,$1,$2,$3)',['Espacio propio',{id:zone,name:'Propio',context:'Responsable'}, {zones:[],ar_order:[]}]);eq(ownTour.space.verified,false,'own post does not prove responsibility');
+const tourId='99999999-9999-4999-8999-999999999999';let t=await scalar('select tours_save($1,$2,$3,$4)',[tourId,'Prueba',{}, {zones:[],ar_order:[]}]);eq((await scalar('select tours_save($1,$2,$3,$4)',[tourId,'Prueba',{}, {zones:[],ar_order:[]}])).id,t.id,'lost save response retry preserves tour identity');
+eq(t.owner_id,a,'server sets author');
+await reject('select tours_claim_jobs()');
+await reject('insert into public.tours(owner_id,title) values($1,$2)',[a,'forged']);
+await reject('select tours_save($1,$2,$3,$4)',[t.id,'Prueba',{}, {zones:[{id:zone,scenes:[{id:scene,job_id:frame,panorama_path:'https://evil.test/a.jpg'}]}]}]);
+await login(b);eq(await scalar('select tours_get($1,true)',[t.id]),null,'foreign edit private');await reject('select tours_save($1,$2,$3,$4)',[t.id,'Hijack',{},{}]);
+await login(a);
+let cap=await scalar('select tours_capture_begin($1,$2,$3)',[t.id,scene,'import']);
+const manifest={mode:'import',frames:[{id:frame,path:`${a}/${cap.id}/${frame}.jpg`,width:4096,height:2048,yaw:0,pitch:0,roll:0,hfov:360,vfov:180,target_id:frame}]};
+await system();await db.query('insert into storage.objects(bucket_id,name) values($1,$2)',['tour-inputs',manifest.frames[0].path]);await login(a);
+let job=await scalar('select tours_capture_submit($1,$2)',[cap.id,manifest]);
+eq((await scalar('select tours_capture_submit($1,$2)',[cap.id,manifest])).id,job.id,'submit idempotent');
+await reject('select tours_capture_submit($1,$2)',[cap.id,{...manifest,frames:[]}]);
+await reject('insert into storage.objects(bucket_id,name) values($1,$2)',['tour-inputs',`${a}/${cap.id}/77777777-7777-4777-8777-777777777777.jpg`]);
+await system();let lease=(await scalar('select tours_claim_jobs()'))[0];eq(lease.id,job.id,'claims job');eq((await scalar('select tours_claim_jobs()')).length,0,'same lease not redispatched');
+eq(await scalar('select tours_job_is_current($1,$2)',[job.id,lease.lease_id]),true,'current lease');await login(a);eq((await scalar('select tours_job_get($1)',[job.id])).state,'running','client running state');await system();
+await system();eq(await scalar('select tours_begin_output_write($1,$2)',[job.id,lease.lease_id]),true,'current output write reserved');
+await login(a);await db.query('select tours_job_cancel($1)',[job.id]);await system();
+eq(await scalar('select request_account_deletion($1)',[a]),false,'deletion waits for network output write');await db.query('delete from public.account_deletion_requests where user_id=$1',[a]);await db.query('update public.tours set paused=false where owner_id=$1',[a]);await db.query('select tours_end_output_write($1,$2)',[job.id,lease.lease_id]);
+const cleanup=await scalar('select tours_claim_cleanup()');eq(cleanup.length,1,'cancelled residue cleanup reserved');
+eq(await scalar('select tours_renew_cleanup($1,$2)',[cleanup[0].id,cleanup[0].lease_id]),true,'current cleanup reservation renewed before delete');
+await login(a);await reject('select tours_renew_cleanup($1,$2)',[cleanup[0].id,cleanup[0].lease_id]);await system();
+await db.query("update private.tour_output_writes set expires_at=clock_timestamp()-interval '1 second' where job_id=$1",[cleanup[0].id]);
+eq(await scalar('select tours_renew_cleanup($1,$2)',[cleanup[0].id,cleanup[0].lease_id]),false,'expired cleanup cannot renew');
+const cleanupAgain=await scalar('select tours_claim_cleanup()');
+eq(await scalar('select tours_renew_cleanup($1,$2)',[cleanup[0].id,cleanup[0].lease_id]),false,'older cleanup cannot adopt new reservation');
+await db.query("update private.tour_jobs set state='succeeded' where id=$1",[cleanup[0].id]);
+eq(await scalar('select tours_renew_cleanup($1,$2)',[cleanupAgain[0].id,cleanupAgain[0].lease_id]),false,'cleanup cannot delete a newer ready result');
+await db.query("update private.tour_jobs set state='cancelled' where id=$1",[cleanup[0].id]);
+await db.query('select tours_finish_cleanup($1,$2,true)',[cleanupAgain[0].id,cleanupAgain[0].lease_id]);
+
+eq(await scalar('select tours_finish_job($1,$2,$3,$4,$5)',[job.id,lease.lease_id,'succeeded',{},null]),false,'cancelled completion cannot resurrect');
+// Queue caps and expiry recovery, total attempts limit.
+for(let i=0;i<3;i++){await login(a);cap=await scalar('select tours_capture_begin($1,$2,$3)',[t.id,scene,'import']);let m={...manifest,frames:[{...manifest.frames[0],path:`${a}/${cap.id}/${frame}.jpg`}]};await system();await db.query('insert into storage.objects(bucket_id,name) values($1,$2)',['tour-inputs',m.frames[0].path]);await login(a);await db.query('select tours_capture_submit($1,$2)',[cap.id,m]);}
+await system();let leases=await scalar('select tours_claim_jobs()');eq(leases.length,2,'two global slots');eq((await scalar('select tours_claim_jobs()')).length,0,'global slots retained');
+await db.exec("update private.tour_jobs set lease_until=clock_timestamp()-interval '1 second' where state='processing'");
+let recovered=await scalar('select tours_claim_jobs()');eq(recovered.length,2,'expired leases recovered');eq(await scalar('select tours_finish_job($1,$2,$3,$4,$5)',[leases[0].id,leases[0].lease_id,'failed',null,'invalid_image']),false,'stale lease rejected');
+await db.exec("update private.tour_jobs set lease_until=clock_timestamp()-interval '1 second',attempts=3 where state='processing'");await scalar('select tours_claim_jobs()');eq(await scalar("select count(*)::int from private.tour_jobs where state='failed' and attempts=3"),2,'third expired attempt terminal');
+const broken=await scalar("select id from private.tour_jobs where state='failed' limit 1");await db.query("update private.tour_jobs set error_code='incomplete_sphere_coverage' where id=$1",[broken]);await login(a);eq((await scalar('select tours_job_get($1)',[broken])).state,'needs_recapture','missing coverage is actionable recapture state');await system();
+// A successful job is the only provenance for scene paths.
+let current=(await db.query("select id,lease_id from private.tour_jobs where state='processing'")).rows[0];
+const prefix=`${a}/jobs/${current.id}`, result={panorama_path:`${prefix}/panorama.jpg`,preview_path:`${prefix}/preview.jpg`,thumbnail_path:`${prefix}/thumbnail.jpg`};
+for(const path of Object.values(result))await db.query('insert into storage.objects(bucket_id,name) values($1,$2)',['tour-assets',path]);
+eq(await scalar('select tours_finish_job($1,$2,$3,$4,$5)',[current.id,current.lease_id,'succeeded',result,null]),true,'valid service output');
+eq(await scalar('select tours_finish_job($1,$2,$3,$4,$5)',[current.id,current.lease_id,'succeeded',result,null]),true,'finish response retry is idempotent for same committed lease');
+eq((await scalar('select tours_completion_receipt($1,$2)',[current.id,current.lease_id])).committed,true,'exact lease receipt survives lost response');eq((await scalar('select tours_completion_receipt($1,$2)',[current.id,frame])).committed,false,'old lease cannot adopt ready result');
+await login(a);await reject('select tours_completion_receipt($1,$2)',[current.id,current.lease_id],'receipt is backend only');await system();
+await login(a);eq((await scalar('select tours_job_get($1)',[current.id])).state,'ready','client ready state');t=await scalar('select tours_attach_result($1,$2,$3)',[t.id,scene,current.id]);
+let doc=t.document;eq(doc.zones.flatMap(z=>z.scenes)[0].job_id,current.id,'attach verified output');
+const point='77777777-7777-4777-8777-777777777777';doc.zones[0].scenes[0].points=[{id:point,name:'Reubicar',yaw:null,pitch:null,needs_review:true}];
+t=await scalar('select tours_save($1,$2,$3,$4)',[t.id,'Prueba',{},doc]);eq(t.document.zones[0].scenes[0].points[0].needs_review,true,'review invalidation preserved');
+
+doc.zones[0].scenes[0].points[0]={id:point,name:'Solo en lista',yaw:null,pitch:null,needs_review:false};
+t=await scalar('select tours_save($1,$2,$3,$4)',[t.id,'Prueba',{},doc]);eq(t.document.zones[0].scenes[0].points[0].yaw,null,'intentional list-only point accepted');
+await reject('select tours_save($1,$2,$3,$4)',[t.id,'Prueba',{}, {...doc,zones:[{...doc.zones[0],scenes:[{...doc.zones[0].scenes[0],points:[{id:point,name:'Parcial',yaw:0,pitch:null}]}]}]}],'partial angular pair rejected');
+doc.zones[0].scenes[0].points[0].needs_review=true;
+await reject('select tours_submit($1)',[t.id]);
+await system();const space=frame;await db.query('insert into public.posts(id,author_id,title,kind) values($1,$2,$3,$4)',[space,b,'Espacio','space']);await login(b);eq(await scalar("select count(*)::int from storage.objects where bucket_id in ('tour-inputs','tour-assets')"),0,'unrelated user cannot read draft media');await system();await db.query('insert into public.posts(id,author_id,title,kind) values($1,$2,$3,$4)',[cpost,c,'Contenido ajeno','art']);const evidence=`${a}/references/${frame}.jpg`;await db.query('insert into storage.objects(bucket_id,name) values($1,$2)',['tour-assets',evidence]);await login(a);
+t=await scalar('select tours_save($1,$2,$3,$4)',[t.id,'Prueba',{id:space,name:'Espacio',location_label:'Centro',latitude:19,longitude:-99,context:'Permiso solicitado',evidence_paths:[evidence],verified:true},doc]);
+eq(t.space.verified,false,'client cannot approve space');await reject('select tours_submit($1)',[t.id], 'pending position review blocks publication');doc.zones[0].scenes[0].points[0]={id:point,name:'Revisado',description:'Descripción independiente',yaw:0,pitch:0,needs_review:false,link:{kind:'post',id:space,status:'approved',owner_id:a,title:'Spoof'},ar:{reference_path:evidence,width_cm:20,reference_version:frame,tested_version:frame}};doc.zones[0].scenes[0].points.push({id:cpoint,name:'Otro',description:'Lectura',yaw:0,pitch:0,link:{kind:'post',id:cpost}});doc.ar_order=[point];t=await scalar('select tours_save($1,$2,$3,$4)',[t.id,'Prueba',t.space,doc]);await scalar('select tours_link_request($1,$2)',[t.id,cpoint]);t=await scalar('select tours_submit($1)',[t.id]);const rev=t.revision_id;eq(t.document.zones[0].scenes[0].points[0].ar.tested_version,null,'client cannot fabricate AR test');eq(t.document.zones[0].scenes[0].points[0].link.status,'pending','client cannot grant link permission');
+const draft=await scalar('select tours_save($1,$2,$3,$4)',[t.id,'Nueva edición',t.space,doc]);assert.notEqual(draft.revision_id,rev);n++;eq(draft.state,'draft','editing submitted snapshot creates new draft');
+await login(c);const linkRequests=await scalar('select tours_requests()');eq(linkRequests.find(r=>r.kind==='link').evidence_paths,[],'link reviewer cannot see evidence paths');eq(linkRequests.find(r=>r.kind==='link').captures,[],'link reviewer cannot see capture manifests');eq(await scalar("select count(*)::int from storage.objects where bucket_id in ('tour-inputs','tour-assets')"),0,'link reviewer cannot read raw or spatial media');
+await login(b);let requests=await scalar('select tours_requests()');eq(requests[0].tour.id,t.id,'review snapshot is Tour envelope');eq(await scalar("select count(*)::int from storage.objects where bucket_id='tour-inputs'"),1,'reviewer can inspect exact referenced capture');eq(await scalar('select count(*)::int from storage.objects where name=$1',[evidence]),1,'space reviewer reads evidence');let request=requests.find(r=>r.kind==='space');assert.ok(request);n++;
+await db.query('select tours_review($1,true,null)',[request.id]);await login(admin);requests=await scalar('select tours_requests()');request=requests.find(r=>r.kind==='publication');await db.query('select tours_review($1,true,null)',[request.id]);
+await login(b);t=await scalar('select tours_get($1)',[t.id]);eq(t.public_revision_id,rev,'approved frozen revision visible');eq(t.document.zones[0].scenes[0].points[0].link,null,'pending link excluded from frozen public revision');eq(t.document.zones[0].scenes[0].points[0].ar,null,'untested AR excluded,360 still publishes');eq(t.document.ar_order,[],'untested AR omitted from public sequence');eq(await scalar('select count(*)::int from storage.objects where name=$1',[evidence]),0,'evidence never becomes public');eq(await scalar("select count(*)::int from storage.objects where bucket_id='tour-inputs'"),0,'raw inputs remain private after review');eq(t.title,'Prueba','publication snapshot');eq(t.space.context,undefined,'private space justification redacted');eq(t.space.evidence_paths,undefined,'private space evidence redacted');eq(await scalar('select tours_progress($1,$2,$3)',[t.id,rev,{scene_id:scene,visited:[],skipped:[],revision_id:rev}]),{scene_id:scene,visited:[],skipped:[],revision_id:rev},'progress current frontend contract');
+await login(a);eq((await scalar('select tours_public_list($1)',[a]))[0].title,'Prueba','own public profile keeps approved title while editing');const liveDraft=await scalar('select tours_get($1,true)',[t.id]);liveDraft.document.zones[0].scenes[0].points[0].link={kind:'post',id:zone};await scalar('select tours_save($1,$2,$3,$4)',[t.id,liveDraft.title,liveDraft.space,liveDraft.document]);const next=await scalar('select tours_submit($1)',[t.id]);
+await system();await db.query('update public.posts set hidden=true where id=$1',[zone]);await login(b);eq((await scalar('select tours_get($1)',[t.id])).document.zones[0].scenes[0].points[0].link,null,'withdrawn public link redacted on read');await system();await db.query('update public.posts set hidden=false where id=$1',[zone]);await login(a);
+eq(next.state,'published','exact server verified space can publish next valid revision');await login(b);eq(await scalar('select tours_progress($1,$2)',[t.id,next.revision_id]),{revision_id:rev},'new revision returns old revision marker without stale IDs');await reject('select tours_progress($1,$2,$3)',[t.id,next.revision_id,{scene_id:frame,visited:[],skipped:[],revision_id:next.revision_id}],'foreign scene progress rejected');await system();await db.query('insert into private.tour_permissions(tour_id,kind,target_id,owner_id) values($1,$2,$3,$4)',[t.id,'post',cpost,c]);await db.query("update public.tour_requests set status='approved' where tour_id=$1 and kind='link'",[t.id]);await login(c);const granted=(await scalar('select tours_requests()')).find(r=>r.kind==='link');eq(granted.status,'approved','content author can manage granted permission');await scalar('select tours_permission_revoke($1)',[granted.id]);await system();eq(await scalar('select count(*)::int from private.tour_permissions where tour_id=$1 and kind=$2 and target_id=$3',[t.id,'post',cpost]),0,'revoke removes exact content permission');await login(a);await reject('select tours_permission_revoke($1)',[granted.id],'requester cannot revoke third party grant');
+await login(a);const changed=await scalar('select tours_save($1,$2,$3,$4)',[t.id,'Scope changed',{...next.space,latitude:20},next.document]);eq(changed.space.verified,false,'changing location invalidates prior approval');await db.query('select tours_pause($1,true)',[t.id]);await login(b);eq(await scalar('select tours_get($1)',[t.id]),null,'pause revokes public reads');
+await login(b);const grantedSpace=(await scalar('select tours_requests()')).find(r=>r.kind==='space'&&r.status==='approved');await scalar('select tours_permission_revoke($1)',[grantedSpace.id]);await login(a);await reject('select tours_pause($1,false)',[t.id],'resuming requires live responsibility');await login(b);eq(await scalar('select tours_get($1)',[t.id]),null,'owner cannot bypass revoked responsibility by unpausing');
+await login(a);let retryCap=await scalar('select tours_capture_begin($1,$2,$3)',[t.id,scene,'import']);let retryManifest={...manifest,frames:[{...manifest.frames[0],path:`${a}/${retryCap.id}/${frame}.jpg`}]};await system();await db.query('insert into storage.objects(bucket_id,name) values($1,$2)',['tour-inputs',retryManifest.frames[0].path]);await login(a);const retryJob=await scalar('select tours_capture_submit($1,$2)',[retryCap.id,retryManifest]);await reject('select tours_attach_result($1,$2,$3)',[t.id,scene,current.id],'old result cannot replace a newly confirmed capture');await system();
+for(let attempt=1;attempt<=3;attempt++){const claimed=(await scalar('select tours_claim_jobs()'))[0];eq(claimed.id,retryJob.id,'retry preserves job identity');eq(await scalar('select tours_finish_job($1,$2,$3,$4,$5)',[retryJob.id,claimed.lease_id,'retry',null,'network']),true,'transient finish accepted');await db.query('update private.tour_jobs set scheduled_at=clock_timestamp() where id=$1',[retryJob.id]);}
+await login(a);let terminal=await scalar('select tours_job_get($1)',[retryJob.id]);eq(terminal.state,'failed','third transient attempt terminal');eq(terminal.attempts,3,'only three total attempts');await system();eq((await scalar('select tours_claim_jobs()')).length,0,'no fourth attempt');
+await system();await db.query('select request_account_deletion($1)',[a]);eq(await scalar('select tours_job_is_current($1,$2)',[current.id,current.lease_id]),false,'deletion blocks leases');await login(a);await reject('select tours_capture_begin($1,$2,$3)',[t.id,scene,'import']);
+console.log(`${n} tour database assertions passed (isolated PostgreSQL; no deployment).`);
+} finally {await db.close();}

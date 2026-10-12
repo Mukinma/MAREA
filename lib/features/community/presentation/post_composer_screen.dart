@@ -1,3 +1,5 @@
+import 'package:marea/features/location/models/location_models.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +26,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
       _price = TextEditingController();
   PostKind? _kind;
   PostCoordinates? _coordinates;
+  LocationCity? _city;
   String _category = 'otros';
   Uint8List? _image;
   String? _imagePath, _originalImagePath, _imageUrl, _error;
@@ -59,6 +62,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
       _body.text = post.body;
       _location.text = post.location ?? '';
       _coordinates = post.coordinates;
+      _city = post.city;
       _price.text = post.price?.toString() ?? '';
       _kind = post.kind;
       _allowsCollaboration = post.allowsCollaboration;
@@ -113,15 +117,18 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
         : PostLocationSelection(
             label: _location.text.trim(),
             coordinates: _coordinates!,
+            city: _city,
           );
     final selection = await showCommunityLocationPicker(
       context,
       initial: current,
+      repository: widget.controller.locationRepository,
     );
     if (!mounted || selection == null) return;
     setState(() {
       _location.text = selection.label;
       _coordinates = selection.coordinates;
+      _city = selection.city;
       _dirty = true;
     });
   }
@@ -145,6 +152,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
     final category = _category;
     final location = _location.text.trim();
     final coordinates = _coordinates;
+    final city = _city;
     final price = kind == PostKind.product || kind == PostKind.service
         ? double.tryParse(_price.text.replaceAll(',', '.'))
         : null;
@@ -158,6 +166,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
       category: category,
       location: location.isEmpty ? null : location,
       coordinates: coordinates,
+      city: city,
       price: price,
       imagePath: imagePath,
       allowsCollaboration: allowsCollaboration,
@@ -295,7 +304,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
             ),
           ),
           if (_loading)
-            const Center(child: CircularProgressIndicator())
+            const Center(child: MareaSkeleton(kind: SkeletonKind.form))
           else if (widget.postId != null && _kind == null)
             CommunityNotice(
               message: _error ?? 'No encontramos la publicación.',
@@ -499,15 +508,12 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                   const SizedBox(height: 24),
                   FilledButton.icon(
                     onPressed: _busy ? null : _save,
-                    icon: _busy
-                        ? const SizedBox.square(
-                            dimension: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.send_outlined),
+                    icon: const Icon(Icons.send_outlined),
                     label: Text(
                       _busy
-                          ? 'Guardando…'
+                          ? (widget.postId == null
+                                ? 'Publicando…'
+                                : 'Guardando…')
                           : widget.postId == null
                           ? 'Publicar'
                           : 'Guardar cambios',

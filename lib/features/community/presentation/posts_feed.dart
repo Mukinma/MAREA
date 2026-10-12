@@ -1,4 +1,11 @@
+import 'package:marea/features/home_feed/presentation/feed_city_label.dart';
+import 'package:marea/features/location/data/location_repository.dart';
+import 'package:marea/features/home_feed/presentation/home_feed_screen.dart';
+import 'package:marea/shared/widgets/marea_panel.dart';
+import 'package:marea/shared/widgets/marea_action_button.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/core/config/app_config.dart';
+import 'reaction_button.dart';
 import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/features/community/models/post_social.dart';
 import 'package:marea/features/community/presentation/social_panels.dart';
@@ -15,49 +22,11 @@ import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/community/presentation/post_location_picker.dart';
 import 'package:marea/features/profile/models/profile.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({required this.controller, super.key});
   final AppSessionController controller;
-
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final _postsFeedKey = GlobalKey<_PostsFeedState>();
-
-  Future<void> _refresh() =>
-      _postsFeedKey.currentState?.reload() ?? Future<void>.value();
-
-  @override
-  Widget build(BuildContext context) {
-    final profile = widget.controller.profile;
-    return CommunityPage(
-      title: '',
-      maxWidth: 820,
-      onRefresh: _refresh,
-      children: [
-        if (profile?.role == ProfileRole.admin)
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: () async {
-                await context.push('/moderation');
-                if (mounted) _refresh();
-              },
-              icon: const Icon(Icons.shield_outlined),
-              label: const Text('Moderación'),
-            ),
-          ),
-        PostsFeed(
-          key: _postsFeedKey,
-          controller: widget.controller,
-          showHeading: false,
-          showRefresh: false,
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => HomeFeedScreen(controller: controller);
 }
 
 class PostsFeed extends StatefulWidget {
@@ -76,10 +45,10 @@ class PostsFeed extends StatefulWidget {
   final String query;
   final bool savedOnly, showHeading, showRefresh;
   @override
-  State<PostsFeed> createState() => _PostsFeedState();
+  State<PostsFeed> createState() => PostsFeedState();
 }
 
-class _PostsFeedState extends State<PostsFeed> {
+class PostsFeedState extends State<PostsFeed> {
   final _posts = <CommunityPost>[];
   final _authors = <String, CommunityProfile>{};
   final _stats = <String, PostSocialStats>{};
@@ -95,13 +64,13 @@ class _PostsFeedState extends State<PostsFeed> {
   }
 
   @override
-  void didUpdateWidget(PostsFeed old) {
-    super.didUpdateWidget(old);
-    if (old.authorId != widget.authorId ||
-        old.query != widget.query ||
-        old.category != widget.category ||
-        old.savedOnly != widget.savedOnly ||
-        old.controller != widget.controller) {
+  void didUpdateWidget(PostsFeed oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.authorId != widget.authorId ||
+        oldWidget.query != widget.query ||
+        oldWidget.category != widget.category ||
+        oldWidget.savedOnly != widget.savedOnly ||
+        oldWidget.controller != widget.controller) {
       _load(reset: true);
     }
   }
@@ -120,7 +89,6 @@ class _PostsFeedState extends State<PostsFeed> {
     setState(() {
       _loading = true;
       _error = null;
-      if (reset) {}
     });
     try {
       final posts = await repo.posts(
@@ -232,10 +200,10 @@ class _PostsFeedState extends State<PostsFeed> {
           message: _error!,
           onRetry: () => _load(reset: _posts.isEmpty),
         ),
-      if (_loading)
+      if (_loading && _posts.isEmpty)
         const Padding(
           padding: EdgeInsets.all(24),
-          child: Center(child: CircularProgressIndicator()),
+          child: Center(child: MareaSkeleton(kind: SkeletonKind.post)),
         )
       else if (_error == null && _posts.isEmpty)
         CommunityNotice(
@@ -268,6 +236,8 @@ class PostCard extends StatefulWidget {
     this.mediaRepository,
     this.stats,
     this.onStats,
+    this.homePresentation = false,
+    this.locationRepository,
     this.moderator = false,
     this.publicUrl = 'https://marea-azul.netlify.app/',
     super.key,
@@ -277,11 +247,12 @@ class PostCard extends StatefulWidget {
   final CommunityRepository repository;
   final SocialRepository? socialRepository;
   final ProfileMediaRepository? mediaRepository;
+  final LocationRepository? locationRepository;
   final PostSocialStats? stats;
   final ValueChanged<PostSocialStats>? onStats;
   final String? viewerId;
   final String publicUrl;
-  final bool saved, moderator;
+  final bool saved, moderator, homePresentation;
   final Future<void> Function() onChanged;
   final ValueChanged<bool>? onSaved, onSaveSettled;
   @override
@@ -307,6 +278,7 @@ class _PostCardState extends State<PostCard> {
   }
 
   void _loadImage() {
+    _homeImageFailed = false;
     _url = widget.post.imagePath == null
         ? null
         : widget.repository.imageUrl(widget.post.imagePath!);
@@ -316,12 +288,15 @@ class _PostCardState extends State<PostCard> {
   void didUpdateWidget(PostCard old) {
     super.didUpdateWidget(old);
     _saved = widget.saved;
-    if (old.viewerId != widget.viewerId) {
+    if (old.viewerId != widget.viewerId || old.post.id != widget.post.id) {
+      ++_reactionGeneration;
+      _reacting = false;
+      _stats = widget.stats;
       _draft.clear();
       _draft.operationId = null;
       _draft.submitted = null;
     }
-    if (old.stats != widget.stats) _stats = widget.stats;
+    if (old.stats != widget.stats && !_reacting) _stats = widget.stats;
     if (old.post.imagePath != widget.post.imagePath) _loadImage();
   }
 
@@ -346,10 +321,75 @@ class _PostCardState extends State<PostCard> {
     if (_stats != null) widget.onStats?.call(_stats!);
   }
 
-  Future<void> _react(PostReaction? value) async => _action(() async {
-    await widget.socialRepository!.setReaction(widget.post.id, value);
-    await _refreshStats();
-  }, reload: false);
+  PostReaction? _desiredReaction;
+  bool _reacting = false;
+  int _reactionRevision = 0, _reactionGeneration = 0;
+
+  PostSocialStats _withReaction(PostSocialStats before, PostReaction? value) =>
+      PostSocialStats(
+        postId: before.postId,
+        reactionCount:
+            (before.reactionCount +
+                    (before.myReaction == null && value != null ? 1 : 0) -
+                    (before.myReaction != null && value == null ? 1 : 0))
+                .clamp(0, 1 << 31),
+        commentCount: before.commentCount,
+        myReaction: value,
+        interestSent: before.interestSent,
+      );
+
+  Future<void> _react(PostReaction? value) async {
+    _desiredReaction = value;
+    ++_reactionRevision;
+    final before = _stats;
+    final optimistic = _withReaction(
+      _stats ?? PostSocialStats(postId: widget.post.id),
+      value,
+    );
+    setState(() => _stats = optimistic);
+    widget.onStats?.call(optimistic);
+    if (_reacting) return;
+    _reacting = true;
+    final generation = _reactionGeneration;
+    final social = widget.socialRepository!;
+    final postId = widget.post.id;
+    // Serialize writes. A later tap updates the UI immediately and is sent next.
+    var confirmed = before ?? PostSocialStats(postId: widget.post.id);
+    while (mounted && generation == _reactionGeneration) {
+      final revision = _reactionRevision;
+      final target = _desiredReaction;
+      try {
+        await social.setReaction(postId, target);
+        confirmed = _withReaction(confirmed, target);
+      } catch (error) {
+        if (!mounted || generation != _reactionGeneration) break;
+        if (revision == _reactionRevision) {
+          setState(() => _stats = confirmed);
+          widget.onStats?.call(confirmed);
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(communityError(error))));
+        }
+      }
+      if (!mounted || generation != _reactionGeneration) break;
+      if (revision == _reactionRevision) {
+        // A successful write is authoritative; a failed refresh must not undo it.
+        try {
+          final rows = await social.stats([postId]);
+          if (mounted &&
+              generation == _reactionGeneration &&
+              revision == _reactionRevision &&
+              rows[widget.post.id] != null) {
+            setState(() => _stats = rows[widget.post.id]);
+            widget.onStats?.call(_stats!);
+          }
+        } catch (_) {}
+        if (revision == _reactionRevision) break;
+      }
+    }
+    if (generation == _reactionGeneration) _reacting = false;
+  }
+
   Future<void> _comments() async {
     if (_panel || widget.socialRepository == null) return;
     _panel = true;
@@ -464,6 +504,420 @@ class _PostCardState extends State<PostCard> {
     }
   }
 
+  Future<void> _options() async {
+    final value = await showMareaBottomSheet<String>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!widget.post.hidden)
+              ListTile(
+                leading: Icon(
+                  _saved
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_border_rounded,
+                ),
+                title: Text(_saved ? 'Quitar guardado' : 'Guardar'),
+                onTap: () => Navigator.pop(context, 'save'),
+              ),
+            ListTile(
+              leading: const Icon(Icons.open_in_new_rounded),
+              title: const Text('Ver detalles'),
+              onTap: () => Navigator.pop(context, 'details'),
+            ),
+            if (widget.post.authorId == widget.viewerId) ...[
+              ListTile(
+                leading: const Icon(Icons.edit_outlined),
+                title: const Text('Editar'),
+                onTap: () => Navigator.pop(context, 'edit'),
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: AppColors.error,
+                ),
+                title: const Text(
+                  'Eliminar',
+                  style: TextStyle(color: AppColors.error),
+                ),
+                onTap: () => Navigator.pop(context, 'delete'),
+              ),
+            ] else
+              ListTile(
+                leading: const Icon(Icons.flag_outlined),
+                title: const Text('Reportar'),
+                onTap: () => Navigator.pop(context, 'report'),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (value != null && mounted) await _option(value);
+  }
+
+  Widget _homeActions() {
+    final post = widget.post;
+    final enabled = !_busy && !post.hidden && widget.viewerId != null;
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        if (widget.socialRepository != null) ...[
+          ReactionButton(
+            inline: true,
+            selected: _stats?.myReaction,
+            count: _stats?.reactionCount ?? 0,
+            enabled: enabled,
+            onSelected: _react,
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                tooltip: 'Comentarios',
+                onPressed: enabled ? _comments : null,
+                icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+              ),
+              Text(
+                '${_stats?.commentCount ?? 0}',
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ],
+        IconButton(
+          tooltip: 'Compartir',
+          onPressed: enabled
+              ? () => sharePost(
+                  context,
+                  AppConfig.fromValues(
+                    supabaseUrl: '',
+                    supabaseAnonKey: '',
+                    publicUrl: widget.publicUrl,
+                  ).postUrl(post.id),
+                )
+              : null,
+          icon: const Icon(Icons.shortcut_rounded, size: 22),
+        ),
+        IconButton(
+          tooltip: _saved ? 'Quitar guardado' : 'Guardar',
+          onPressed: enabled ? () => _save(!_saved) : null,
+          icon: Icon(
+            _saved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+            size: 20,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _homeContent(double width) {
+    final post = widget.post;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
+          onTap: _openHomePost,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                post.title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  height: 1.12,
+                  color: AppColors.brandNavy,
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (post.location != null || post.coordinates != null)
+          FeedCityLabel(
+            contentKind: 'post',
+            contentId: post.id,
+            city: post.city,
+            coordinates: post.coordinates,
+            repository: widget.locationRepository,
+            onTap: () => post.coordinates == null
+                ? _openHomePost()
+                : showPostLocationViewer(
+                    context,
+                    label: post.location ?? 'Ubicación',
+                    coordinates: post.coordinates!,
+                  ),
+          ),
+        Text(
+          post.body,
+          maxLines: _expanded ? null : 3,
+          overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 12,
+            height: 1.3,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        if (_homeBodyTruncated(width))
+          TextButton(
+            onPressed: () => setState(() => _expanded = !_expanded),
+            child: Text(_expanded ? 'Ver menos' : 'Ver más'),
+          ),
+        if (post.price != null)
+          Text(
+            '\$${post.price!.toStringAsFixed(2)} MXN',
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+        const SizedBox(height: 5),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppColors.mist,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            communityCategories[post.category] ?? 'Otros',
+            style: const TextStyle(fontSize: 10, color: AppColors.brandNavy),
+          ),
+        ),
+      ],
+    );
+  }
+
+  double _homePhotoHeight(double width) {
+    TextPainter measure(String text, TextStyle style, {int? maxLines}) =>
+        TextPainter(
+          text: TextSpan(text: text, style: style),
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+          maxLines: maxLines,
+        )..layout(maxWidth: width);
+    final title = measure(
+      widget.post.title,
+      const TextStyle(
+        fontFamily: 'NunitoSans',
+        fontSize: 18,
+        height: 1.12,
+        fontWeight: FontWeight.w800,
+      ),
+    );
+    final body = measure(
+      widget.post.body,
+      const TextStyle(fontFamily: 'NunitoSans', fontSize: 12, height: 1.3),
+      maxLines: _expanded ? null : 3,
+    );
+    return (title.height < 48 ? 48 : title.height) +
+        ((widget.post.location != null || widget.post.coordinates != null)
+            ? 48
+            : 0) +
+        body.height +
+        (_homeBodyTruncated(width) ? 48 : 0) +
+        30;
+  }
+
+  bool _homeBodyTruncated(double width) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: widget.post.body,
+        style: const TextStyle(
+          fontFamily: 'NunitoSans',
+          fontSize: 12,
+          height: 1.3,
+        ),
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 3,
+    )..layout(maxWidth: width);
+    return painter.didExceedMaxLines;
+  }
+
+  Future<void> _openHomePost() async {
+    await context.push('/posts/${widget.post.id}');
+    if (mounted) await widget.onChanged();
+  }
+
+  bool _homeImageFailed = false;
+  Widget _homePhoto(String url) => InkWell(
+    onTap: _openHomePost,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Image.network(
+        url,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && !_homeImageFailed) {
+              setState(() => _homeImageFailed = true);
+            }
+          });
+          return const SizedBox.shrink();
+        },
+      ),
+    ),
+  );
+
+  Widget _homeCard() {
+    final post = widget.post;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => context.push('/people/${post.authorId}'),
+                      borderRadius: BorderRadius.circular(12),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 36,
+                              height: 36,
+                              child: ClipOval(
+                                child: ProfileImage(
+                                  path: widget.author?.avatarPath,
+                                  repository: widget.mediaRepository,
+                                  fallback: CircleAvatar(
+                                    backgroundColor: AppColors.mint,
+                                    child: Text(widget.author?.initials ?? 'M'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    widget.author?.fullName ??
+                                        'Perfil de MAREA',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${socialDate(post.createdAt)} · ${post.kind.label}',
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Acciones',
+                    onPressed: _busy ? null : _options,
+                    icon: const Icon(Icons.more_horiz),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              FutureBuilder<String>(
+                future: _url,
+                builder: (_, snapshot) => LayoutBuilder(
+                  builder: (context, bounds) {
+                    final hasPhoto =
+                        post.imagePath != null &&
+                        !_homeImageFailed &&
+                        !snapshot.hasError;
+                    final enlarged =
+                        MediaQuery.textScalerOf(context).scale(12) > 18;
+                    if (!hasPhoto) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _homeContent(bounds.maxWidth),
+                          _homeActions(),
+                        ],
+                      );
+                    }
+                    final photo = snapshot.hasData
+                        ? _homePhoto(snapshot.data!)
+                        : const MareaSkeleton(kind: SkeletonKind.image);
+                    if (enlarged) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          AspectRatio(aspectRatio: 1.93, child: photo),
+                          _homeContent(bounds.maxWidth),
+                          _homeActions(),
+                        ],
+                      );
+                    }
+                    final photoWidth = (bounds.maxWidth - 10) * .56;
+                    final inlineActions =
+                        bounds.maxWidth - photoWidth - 10 >= 270;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: photoWidth,
+                              height:
+                                  _homePhotoHeight(
+                                    bounds.maxWidth - photoWidth - 10,
+                                  ) +
+                                  (inlineActions ? 48 : 0),
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  minHeight: 130,
+                                ),
+                                child: photo,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _homeContent(
+                                    bounds.maxWidth - photoWidth - 10,
+                                  ),
+                                  if (inlineActions) _homeActions(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (!inlineActions) _homeActions(),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _rail() {
     final stats = _stats;
     final active = stats?.myReaction;
@@ -474,52 +928,14 @@ class _PostCardState extends State<PostCard> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (widget.socialRepository != null && !widget.post.hidden) ...[
-            Container(
-              decoration: BoxDecoration(
-                color: active == null ? Colors.transparent : AppColors.mint,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: PopupMenuButton<String>(
-                enabled: enabled,
-                tooltip: active?.label ?? 'Reaccionar',
-                onSelected: (value) => _react(
-                  value == 'remove' || value == active?.name
-                      ? null
-                      : PostReaction.values.byName(value),
-                ),
-                icon: Icon(
-                  active == PostReaction.inspire
-                      ? Icons.auto_awesome_outlined
-                      : active == PostReaction.support
-                      ? Icons.volunteer_activism_outlined
-                      : active == null
-                      ? Icons.favorite_border_rounded
-                      : Icons.favorite_rounded,
-                  color: active == null
-                      ? AppColors.textSecondary
-                      : AppColors.textPrimary,
-                ),
-                itemBuilder: (_) => [
-                  for (final reaction in PostReaction.values)
-                    CheckedPopupMenuItem(
-                      value: reaction.name,
-                      checked: active == reaction,
-                      child: Text(reaction.label),
-                    ),
-                  if (active != null)
-                    const PopupMenuItem(
-                      value: 'remove',
-                      child: Text('Retirar reacción'),
-                    ),
-                ],
-              ),
-            ),
-            Text(
-              '${stats?.reactionCount ?? 0}',
-              style: const TextStyle(color: AppColors.textSecondary),
+            ReactionButton(
+              selected: active,
+              count: stats?.reactionCount ?? 0,
+              enabled: enabled,
+              onSelected: _react,
             ),
             const SizedBox(height: 8),
-            IconButton(
+            MareaActionButton(
               tooltip: 'Comentarios',
               onPressed: enabled ? _comments : null,
               icon: const Icon(
@@ -533,7 +949,7 @@ class _PostCardState extends State<PostCard> {
             ),
             const SizedBox(height: 8),
           ],
-          IconButton(
+          MareaActionButton(
             tooltip: 'Compartir',
             onPressed: enabled
                 ? () async {
@@ -559,43 +975,26 @@ class _PostCardState extends State<PostCard> {
             ),
           ),
           const SizedBox(height: 8),
-          PopupMenuButton<String>(
-            enabled: !_busy,
+          MareaActionButton(
             tooltip: 'Acciones',
-            onSelected: _option,
-            icon: const Icon(
-              Icons.more_horiz_rounded,
-              color: AppColors.textSecondary,
+            onPressed: _busy ? null : _options,
+            icon: Icon(
+              _saved ? Icons.bookmark_rounded : Icons.more_horiz_rounded,
+              color: _saved ? AppColors.aquaDark : AppColors.textSecondary,
             ),
-            itemBuilder: (_) => [
-              if (!widget.post.hidden)
-                PopupMenuItem(
-                  value: 'save',
-                  child: Text(_saved ? 'Quitar guardado' : 'Guardar'),
-                ),
-              const PopupMenuItem(
-                value: 'details',
-                child: Text('Ver detalles'),
-              ),
-              if (widget.post.authorId == widget.viewerId) ...[
-                const PopupMenuItem(value: 'edit', child: Text('Editar')),
-                const PopupMenuItem(value: 'delete', child: Text('Eliminar')),
-              ] else
-                const PopupMenuItem(value: 'report', child: Text('Reportar')),
-            ],
           ),
           const Text(
-            'Acciones',
+            'Más',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
           ),
           if (_busy)
             const Padding(
               padding: EdgeInsets.all(8),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
+              child: Text(
+                'Guardando…',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 11),
               ),
             ),
         ],
@@ -609,23 +1008,25 @@ class _PostCardState extends State<PostCard> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          post.title,
-          style: const TextStyle(
-            fontSize: 21,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-            height: 1.25,
+        if (!widget.homePresentation || post.imagePath == null)
+          Text(
+            post.title,
+            style: const TextStyle(
+              fontSize: 21,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+              height: 1.25,
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
+        if (!widget.homePresentation || post.imagePath == null)
+          const SizedBox(height: 10),
         Text(
           post.body,
           maxLines: _expanded ? null : 3,
           overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 16,
-            height: 1.5,
+          style: TextStyle(
+            fontSize: widget.homePresentation ? 14 : 16,
+            height: widget.homePresentation ? 1.35 : 1.5,
             color: AppColors.textPrimary,
           ),
         ),
@@ -634,10 +1035,10 @@ class _PostCardState extends State<PostCard> {
             final painter = TextPainter(
               text: TextSpan(
                 text: post.body,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'NunitoSans',
-                  fontSize: 16,
-                  height: 1.5,
+                  fontSize: widget.homePresentation ? 14 : 16,
+                  height: widget.homePresentation ? 1.35 : 1.5,
                 ),
               ),
               textDirection: Directionality.of(context),
@@ -736,11 +1137,14 @@ class _PostCardState extends State<PostCard> {
               ? Image.network(
                   snapshot.data!,
                   fit: BoxFit.contain,
+                  loadingBuilder: (_, child, progress) => progress == null
+                      ? child
+                      : const MareaSkeleton(kind: SkeletonKind.image),
                   errorBuilder: (_, _, _) => _imageError(),
                 )
               : snapshot.hasError
               ? _imageError()
-              : const Center(child: CircularProgressIndicator()),
+              : const Center(child: MareaSkeleton(kind: SkeletonKind.image)),
         ),
       ),
     ),
@@ -771,6 +1175,7 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final post = widget.post;
+    if (widget.homePresentation) return _homeCard();
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 820),

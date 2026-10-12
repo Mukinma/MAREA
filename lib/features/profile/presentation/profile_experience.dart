@@ -1,3 +1,5 @@
+import 'package:marea/features/home_feed/presentation/follow_button.dart';
+import 'package:marea/features/tours/presentation/tour_management_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -169,6 +171,12 @@ class _ProfileExperienceState extends State<ProfileExperience> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (widget.controller.tourRepository != null)
+          ProfileTourCard(
+            key: ValueKey('tours:${profile.id}:$_revision'),
+            controller: widget.controller,
+            profileId: profile.id,
+          ),
         if (options.length > 1)
           MareaTabs(options: options, value: _section, onChanged: _select)
         else
@@ -277,6 +285,7 @@ class _ProfileExperienceState extends State<ProfileExperience> {
 
   @override
   Widget build(BuildContext context) => SafeArea(
+    bottom: false,
     child: MareaRefreshIndicator(
       onRefresh: _refresh,
       child: LayoutBuilder(
@@ -310,6 +319,16 @@ class _ProfileExperienceState extends State<ProfileExperience> {
                 const SizedBox(height: 12),
                 _shortcuts(wide),
               ],
+              if (!widget.owner &&
+                  widget.controller.homeFeedRepository != null &&
+                  widget.controller.profile?.id != widget.profile.id) ...[
+                const SizedBox(height: 12),
+                FollowButton(
+                  repository: widget.controller.homeFeedRepository!,
+                  authorId: widget.profile.id,
+                  onChanged: widget.controller.refreshHomeFeed,
+                ),
+              ],
             ],
           );
           return SingleChildScrollView(
@@ -320,7 +339,7 @@ class _ProfileExperienceState extends State<ProfileExperience> {
               wide ? 24 : 16,
               wide ? 24 : 12,
               wide ? 24 : 16,
-              32,
+              32 + MediaQuery.paddingOf(context).bottom,
             ),
             child: Center(
               child: ConstrainedBox(

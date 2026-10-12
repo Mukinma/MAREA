@@ -1,0 +1,43 @@
+{
+  "image": "sha256:c5915bcde169804be9899c0f7420d13bddf7afb9d12819a5300efe557b04e04c",
+  "platform": "linux/amd64",
+  "cpu_limit": 4,
+  "memory_limit": "8Gi nominal",
+  "timeout_seconds": 900,
+  "max_global_jobs": 2,
+  "fixture_kind": "synthetic geometry; no phone or physical AR",
+  "dependencies": [
+    "enblend\t4.2-10+b1",
+    "hugin-tools\t2022.0.0+dfsg-2",
+    "certifi==2026.7.22",
+    "charset-normalizer==3.5.2",
+    "idna==3.20",
+    "numpy==2.2.6",
+    "pillow==11.3.0",
+    "requests==2.32.5",
+    "urllib3==2.8.0"
+  ],
+  "verified_tools": [
+    "cpfind",
+    "cpclean",
+    "autooptimiser",
+    "pano_modify",
+    "nona",
+    "enblend --no-optimize --wrap=horizontal"
+  ],
+  "verification": {
+    "hosted_checks": 57,
+    "photographs": 26,
+    "full_panorama": [
+      4096,
+      2048
+    ],
+    "worker_seconds": 162.279,
+    "runner_seconds": 166.751,
+    "container_exit": 0,
+    "incomplete": "incomplete_sphere_coverage",
+    "blank": "disconnected_control_points",
+    "viewer": "320px; A-B-A; point detail",
+    "physical_capture_or_ar": false
+  }
+}

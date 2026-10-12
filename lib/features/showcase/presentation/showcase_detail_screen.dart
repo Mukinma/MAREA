@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
@@ -321,15 +322,18 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
         leading: const ProfileBackButton(),
         title: Text(item?.kind.label ?? 'Ficha'),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
+      body: _loading && item == null
+          ? const Center(child: MareaSkeleton(kind: SkeletonKind.detail))
           : _error != null
           ? CommunityNotice(message: _error!, onRetry: _load)
           : item == null || repo == null
           ? const CommunityNotice(message: 'Esta ficha ya no está disponible.')
           : _detailBody(item, owner),
       bottomNavigationBar:
-          _loading || _error != null || item == null || repo == null
+          (_loading && item == null) ||
+              _error != null ||
+              item == null ||
+              repo == null
           ? null
           : owner
           ? ProfileActionBar(

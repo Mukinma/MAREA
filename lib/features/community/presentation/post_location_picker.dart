@@ -1,34 +1,43 @@
-import 'dart:convert';
+import 'package:marea/features/location/data/location_repository.dart';
+import 'package:marea/features/location/models/location_models.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
+import 'package:marea/shared/widgets/marea_panel.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:marea/core/location/device_location_service.dart';
-import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:marea/features/community/models/community_models.dart';
 
 const _defaultCenter = LatLng(19.4326, -99.1332);
 
 class PostLocationSelection {
-  const PostLocationSelection({required this.label, required this.coordinates});
+  const PostLocationSelection({
+    required this.label,
+    required this.coordinates,
+    this.city,
+  });
 
   final String label;
   final PostCoordinates coordinates;
+  final LocationCity? city;
 }
 
 Future<PostLocationSelection?> showCommunityLocationPicker(
   BuildContext context, {
   PostLocationSelection? initial,
-}) => showPostLocationPicker(context, initial: initial);
+  LocationRepository? repository,
+}) => showPostLocationPicker(context, initial: initial, repository: repository);
 
 Future<PostLocationSelection?> showPostLocationPicker(
   BuildContext context, {
   PostLocationSelection? initial,
-}) => showModalBottomSheet<PostLocationSelection>(
+  LocationRepository? repository,
+}) => showMareaBottomSheet<PostLocationSelection>(
   context: context,
   isScrollControlled: true,
   useSafeArea: true,
-  builder: (_) => _PostLocationPicker(initial: initial),
+  builder: (_) => _PostLocationPicker(initial: initial, repository: repository),
 );
 
 Future<void> showPostLocationViewer(
@@ -40,15 +49,10 @@ Future<void> showPostLocationViewer(
   builder: (_) => _PostLocationViewer(label: label, coordinates: coordinates),
 );
 
-class _SearchPlace {
-  const _SearchPlace({required this.label, required this.point});
-
-  final String label;
-  final LatLng point;
-}
-
 class _PostLocationPicker extends StatefulWidget {
-  const _PostLocationPicker({this.initial});
+  const _PostLocationPicker({this.initial, this.repository});
+
+  final LocationRepository? repository;
 
   final PostLocationSelection? initial;
 
@@ -62,10 +66,12 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
   late PostLocationPrecision _precision;
   late String _label;
   final _mapController = MapController();
-  List<_SearchPlace> _results = [];
+  List<LocationPlace> _results = [];
+  LocationCity? _city;
   bool _searching = false;
   bool _locating = false;
   bool _mapReady = false;
+  bool _cityLookupFailed = false;
   int _searchGeneration = 0;
   int _selectionGeneration = 0;
   String? _message;
@@ -80,6 +86,7 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
         : LatLng(initial.coordinates.latitude, initial.coordinates.longitude);
     _precision = initial?.coordinates.precision ?? PostLocationPrecision.exact;
     _label = initial?.label ?? '';
+    _city = initial?.city;
   }
 
   @override
@@ -108,36 +115,13 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
       _message = null;
     });
     try {
-      final response = await http
-          .get(
-            Uri.https('nominatim.openstreetmap.org', '/search', {
-              'q': query,
-              'format': 'jsonv2',
-              'limit': '5',
-              'countrycodes': 'mx',
-            }),
-            headers: const {
-              'Accept-Language': 'es-MX',
-              'User-Agent': 'MAREA/1.0',
-            },
-          )
-          .timeout(const Duration(seconds: 10));
-      if (response.statusCode != 200) throw StateError('search_failed');
-      final rows = jsonDecode(response.body) as List<dynamic>;
-      final results = rows.map((row) {
-        final value = Map<String, dynamic>.from(row as Map);
-        return _SearchPlace(
-          label: value['display_name'] as String,
-          point: LatLng(
-            double.parse(value['lat'] as String),
-            double.parse(value['lon'] as String),
-          ),
-        );
-      }).toList();
+      final repository = widget.repository;
+      if (repository == null) throw StateError('geocoding_unavailable');
+      final results = await repository.search(query);
       if (!mounted || generation != _searchGeneration) return;
       setState(() {
         _results = results
-            .where((result) => _validPoint(result.point))
+            .where((result) => result.coordinates.isValid)
             .toList();
         _message = _results.isEmpty
             ? 'No encontramos lugares con ese nombre.'
@@ -201,11 +185,10 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
       setState(() {
         _point = point;
         _label = _pointLabel(point);
+        _city = null;
       });
       _moveMap(point);
-      final address = await _reverseGeocode(point);
-      if (!_selectionIsCurrent(generation)) return;
-      if (address != null) setState(() => _label = _boundedLabel(address));
+      await _resolvePoint(_geocodingPoint(), generation);
     } catch (error) {
       if (_selectionIsCurrent(generation)) {
         setState(() => _message = _locationErrorMessage(error));
@@ -217,28 +200,40 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
     }
   }
 
-  Future<String?> _reverseGeocode(LatLng point) async {
+  Future<void> _resolvePoint(
+    LatLng point,
+    int generation, {
+    bool replaceLabel = true,
+  }) async {
+    final repository = widget.repository;
+    if (repository == null) return;
+    if (_selectionIsCurrent(generation)) {
+      setState(() => _cityLookupFailed = false);
+    }
     try {
-      final response = await http
-          .get(
-            Uri.https('nominatim.openstreetmap.org', '/reverse', {
-              'lat': point.latitude.toString(),
-              'lon': point.longitude.toString(),
-              'format': 'jsonv2',
-              'zoom': '18',
-            }),
-            headers: const {
-              'Accept-Language': 'es-MX',
-              'User-Agent': 'MAREA/1.0',
-            },
-          )
-          .timeout(const Duration(seconds: 10));
-      if (response.statusCode != 200) return null;
-      final value = jsonDecode(response.body) as Map<String, dynamic>;
-      final label = value['display_name'] as String?;
-      return label?.trim().isEmpty ?? true ? null : label;
+      final place = await repository.reverse(
+        PostCoordinates(
+          latitude: point.latitude,
+          longitude: point.longitude,
+          precision: PostLocationPrecision.exact,
+        ),
+      );
+      if (!_selectionIsCurrent(generation)) return;
+      if (place != null) {
+        setState(() {
+          _city = place.city;
+          if (replaceLabel) _label = _boundedLabel(place.label);
+          _message = null;
+        });
+      }
     } catch (_) {
-      return null;
+      if (_selectionIsCurrent(generation)) {
+        setState(() {
+          _cityLookupFailed = true;
+          _message =
+              'No pudimos consultar la dirección. Puedes usar el punto o reintentar.';
+        });
+      }
     }
   }
 
@@ -277,18 +272,28 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
     );
   }
 
-  void _selectPoint(LatLng point, {String? label}) {
+  LatLng _geocodingPoint() {
+    final point = _coordinates();
+    return LatLng(point.latitude, point.longitude);
+  }
+
+  void _selectPoint(LatLng point, {String? label, LocationCity? city}) {
     if (!_validPoint(point)) return;
-    ++_selectionGeneration;
+    final generation = ++_selectionGeneration;
     ++_searchGeneration;
     setState(() {
       _point = point;
+      _city = _precision == PostLocationPrecision.exact ? city : null;
+      _cityLookupFailed = false;
       _label = label == null ? _pointLabel(point) : _boundedLabel(label);
       _results = [];
       _locating = false;
       _searching = false;
       _message = null;
     });
+    if (_city == null) {
+      _resolvePoint(_geocodingPoint(), generation, replaceLabel: label == null);
+    }
   }
 
   @override
@@ -340,15 +345,9 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                 ),
                 const SizedBox(width: 8),
                 IconButton.filledTonal(
-                  tooltip: 'Buscar',
-                  onPressed: _findPlaces,
-                  icon: _searching
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.arrow_forward),
+                  tooltip: _searching ? 'Buscando…' : 'Buscar',
+                  onPressed: _searching ? null : _findPlaces,
+                  icon: const Icon(Icons.arrow_forward),
                 ),
               ],
             ),
@@ -366,8 +365,16 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                     leading: const Icon(Icons.place_outlined),
                     title: Text(result.label, maxLines: 2),
                     onTap: () {
-                      _selectPoint(result.point, label: result.label);
-                      _moveMap(result.point);
+                      final point = LatLng(
+                        result.coordinates.latitude,
+                        result.coordinates.longitude,
+                      );
+                      _selectPoint(
+                        point,
+                        label: result.label,
+                        city: result.city,
+                      );
+                      _moveMap(point);
                     },
                   );
                 },
@@ -441,7 +448,7 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                         onPressed: _locating ? null : _useCurrentLocation,
                         tooltip: 'Usar mi ubicación actual',
                         child: _locating
-                            ? const CircularProgressIndicator()
+                            ? const MareaSkeleton(kind: SkeletonKind.list)
                             : const Icon(Icons.my_location),
                       ),
                     ),
@@ -461,6 +468,15 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
+                if (_cityLookupFailed)
+                  TextButton.icon(
+                    onPressed: () => _resolvePoint(
+                      _geocodingPoint(),
+                      ++_selectionGeneration,
+                    ),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Reintentar ubicación'),
+                  ),
                 const SizedBox(height: 4),
                 SegmentedButton<PostLocationPrecision>(
                   segments: const [
@@ -476,8 +492,18 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                     ),
                   ],
                   selected: {_precision},
-                  onSelectionChanged: (value) =>
-                      setState(() => _precision = value.first),
+                  onSelectionChanged: (value) {
+                    final generation = ++_selectionGeneration;
+                    setState(() {
+                      _precision = value.first;
+                      _city = null;
+                    });
+                    _resolvePoint(
+                      _geocodingPoint(),
+                      generation,
+                      replaceLabel: false,
+                    );
+                  },
                 ),
                 const SizedBox(height: 8),
                 FilledButton.icon(
@@ -491,6 +517,7 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                                 ? 'Zona aproximada'
                                 : _label,
                             coordinates: _coordinates(),
+                            city: _city,
                           ),
                         ),
                   icon: const Icon(Icons.check),

@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -444,7 +445,7 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
           ),
         ],
         body: _loading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: MareaSkeleton(kind: SkeletonKind.form))
             : ListView(
                 key: ValueKey(_step),
                 padding: const EdgeInsets.all(20),
@@ -1206,7 +1207,7 @@ class _MissionApplicationSentScreenState
       future: _future,
       builder: (_, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: MareaSkeleton(kind: SkeletonKind.form));
         }
         if (snapshot.hasError) {
           return CommunityNotice(

@@ -24,6 +24,7 @@ class MissionMapCanvas extends StatefulWidget {
     required this.onClusterTap,
     required this.tileRevision,
     required this.onTileError,
+    this.tourMarkers = const [],
     super.key,
   });
   final MapController controller;
@@ -32,6 +33,7 @@ class MissionMapCanvas extends StatefulWidget {
   final void Function(MapCamera, bool) onPositionChanged;
   final ValueChanged<String> onMissionTap;
   final List<Mission> missions;
+  final List<Marker> tourMarkers;
   final String? selectedId;
   final DevicePosition? position;
   final MapTileConfiguration tiles;
@@ -129,6 +131,8 @@ class _MissionMapCanvasState extends State<MissionMapCanvas> {
             builder: (_, group) => MissionMapCluster(count: group.length),
           ),
         ),
+        if (widget.tourMarkers.isNotEmpty)
+          MarkerLayer(markers: widget.tourMarkers),
         if (position != null)
           MarkerLayer(
             markers: [

@@ -80,7 +80,8 @@ enum NotificationKind {
   missionClosed('mission_closed'),
   missionReopened('mission_reopened'),
   missionCancelled('mission_cancelled'),
-  missionCompleted('mission_completed');
+  missionCompleted('mission_completed'),
+  mareaMessage('marea_message');
 
   const NotificationKind(this.databaseValue);
   final String databaseValue;
@@ -99,8 +100,8 @@ class SocialNotification {
     this.sourceId,
     this.readAt,
   });
-  final String id, recipientId, actorId, postTitle;
-  final String? postId, missionId;
+  final String id, recipientId, postTitle;
+  final String? actorId, postId, missionId;
   final String? sourceId;
   final NotificationKind kind;
   final DateTime createdAt;

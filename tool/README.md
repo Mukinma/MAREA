@@ -23,8 +23,8 @@ flutter build web -t lib/main.dart --dart-define-from-file=config/supabase.produ
 flutter build apk --debug -t lib/main.dart --dart-define-from-file=config/supabase.production.json
 ```
 
-El gate consulta el historial 001–013, la columna/grants de `setup_step`, las
-preferencias editables y los contratos de registro, confirmación y experiencia social.
+El gate consulta el historial 001–014, la columna/grants de `setup_step`, las
+preferencias editables y los contratos de registro, confirmación, experiencia social y push Android.
 Comprueba tablas, RLS, grants, RPC, triggers y publicación Realtime de notificaciones. Si falla, no
 distribuir el build. No consulta datos de cuentas ni modifica el proyecto remoto.
 La 008 recupera una sola vez elecciones guardadas por el cliente mínimo antes de
@@ -82,3 +82,51 @@ La migración 012 añade el RPC geográfico y su índice; el gate comprueba ambo
 ## Rediseño de misiones
 
 check_missions_redesign_database.mjs verifica privacidad, borradores, compensación, muestras, finalistas, selección y avisos en PostgreSQL aislado. check_live_missions_flow.mjs --run prueba persistencia y concurrencia con usuarios temporales propios y limpieza final en el proyecto conectado. Véase [misiones](../docs/missions-redesign.md).
+
+## Interacciones y avisos Android
+
+Reacciones con toque/mantener/deslizar, paneles coordinados y esqueletos están incluidos. La migración 014 y la función `send-push` preparan FCM sin reemplazar Supabase. La activación externa, cron, Vault, credenciales y pruebas en celular se describen en [notificaciones Android](../docs/android-push.md). Mantener la bandera de envíos desactivada hasta completar esas verificaciones.
+
+Recorridos360: `check_tours_database.mjs` comprueba permisos/RLS, snapshots, cola,
+leases, GC, aprobación de alcance, progress y límites de reintentos en PostgreSQL
+local. `check_tours_migrations.mjs` aplica001–015 y ejecuta los17 flags reales del
+release gate. Usan `MAREA_PGLITE_MODULE` igual que el resto de pruebas; nunca
+contactan producción. Worker, configuración y límites de validación real están
+explicados en `processing/tours/README.md`.
+
+## Inicio e historias
+
+Las migraciones 016–019 incorporan feed combinado, seguimiento privado, historias
+y recibos de publicación que sobreviven a la limpieza. Ejecutar
+`node tool/check_home_feed_contract.mjs` además del gate existente antes de distribuir.
+`check_home_feed_database.mjs` valida el contrato en PostgreSQL aislado usando
+`MAREA_PGLITE_MODULE`. `check_live_home_feed.mjs --run` verifica Supabase con cuentas
+temporales `.invalid`, limpia sus recursos y conserva solo un journal de IDs si
+la limpieza necesita recuperación. Sin `--run` no modifica datos.
+
+La limpieza horaria y su configuración están documentadas en
+`supabase/functions/story-cleanup/README.md`; el progreso y la verificación final,
+en `docs/implementation/home-feed-redesign-progress.md`.
+
+## Corrección del feed, ciudades y acciones de misiones
+
+Las migraciones020–021 incorporan conversación/reacciones de misiones y ciudad
+persistida. Después de validar las migraciones, desplegar la función `geocoding`
+y ejecutar `node tool/check_feed_correction_contract.mjs`. El contrato comprueba
+RLS, permisos de RPC, escrituras privadas y campos de ciudad.
+
+`check_mission_social_database.mjs`, `check_location_full_database.mjs` y
+`check_location_city_provenance.mjs` usan PostgreSQL aislado mediante
+`MAREA_PGLITE_MODULE`. El segundo aplica020+021 junto con el esquema anterior.
+`node --test supabase/functions/geocoding/*test.mjs` verifica parser, caché,
+respuestas atrasadas y presupuesto del lease global. La configuración del
+proveedor permanece privada en `geocoding_provider`; el cliente usa Supabase
+y muestra «Ver ubicación» cuando falta ciudad, conservando las coordenadas.
+
+`node tool/check_live_feed_correction.mjs --run` es una comprobación voluntaria
+del proyecto conectado: crea tres usuarios `.invalid`, verifica ocho reintentos
+simultáneos del mismo comentario, permisos, notificaciones, ranking y cascadas,
+y elimina sus recursos al terminar. Nunca imprimir claves. Si la limpieza
+falla conserva un journal de IDs con permisos0600 para recuperación.
+
+El registro de entrega está en `docs/implementation/feed-correction-progress.md`.

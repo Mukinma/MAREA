@@ -1,3 +1,11 @@
+import 'package:marea/features/home_feed/presentation/story_composer.dart';
+import 'package:marea/features/tours/presentation/tour_management_screen.dart';
+import 'package:marea/features/tours/presentation/tour_editor_screen.dart';
+import 'package:marea/features/tours/presentation/tour_visit_screen.dart';
+import 'package:marea/features/tours/presentation/tour_ar_screen.dart';
+import 'package:marea/features/tours/presentation/tour_discovery_screen.dart';
+import 'package:marea/features/tours/capture/tour_capture_screen.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/features/community/presentation/mission_application_screen.dart';
 import 'package:marea/features/community/presentation/mission_management_screen.dart';
 import 'package:marea/features/community/presentation/post_detail_screen.dart';
@@ -10,7 +18,8 @@ import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/auth/presentation/email_code_screen.dart';
-import 'package:marea/features/auth/presentation/welcome_screen.dart';
+import 'package:marea/features/auth/data/mobile_intro_store.dart';
+import 'package:marea/features/auth/presentation/welcome_entry_screen.dart';
 import 'package:marea/features/auth/presentation/security_screen.dart';
 import 'package:marea/features/legal/legal_screens.dart';
 import 'package:marea/features/profile/presentation/onboarding_screen.dart';
@@ -75,7 +84,9 @@ abstract final class AppRouter {
   }) => AnimatedBuilder(
     animation: controller,
     builder: (_, _) => controller.profile == null
-        ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+        ? const Scaffold(
+            body: Center(child: MareaSkeleton(kind: SkeletonKind.profile)),
+          )
         : ProfileSetupScreen(
             key: ValueKey(controller.profile!.id),
             controller: controller,
@@ -83,9 +94,13 @@ abstract final class AppRouter {
           ),
   );
 
-  static GoRouter create(AppSessionController controller) {
+  static GoRouter create(
+    AppSessionController controller, {
+    MobileIntroStore? mobileIntroStore,
+  }) {
     final rootKey = GlobalKey<NavigatorState>();
     final guard = AppRouteGuard();
+    final introStore = mobileIntroStore ?? SharedPreferencesMobileIntroStore();
     return GoRouter(
       navigatorKey: rootKey,
       initialLocation: '/',
@@ -101,7 +116,10 @@ abstract final class AppRouter {
           const Scaffold(body: Center(child: Text('Esta página no existe.'))),
       routes: [
         GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
-        GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
+        GoRoute(
+          path: '/welcome',
+          builder: (_, _) => WelcomeEntryScreen(store: introStore),
+        ),
         GoRoute(
           path: '/terms',
           builder: (_, _) =>
@@ -233,6 +251,10 @@ abstract final class AppRouter {
           ],
         ),
         GoRoute(
+          path: '/stories/new',
+          builder: (_, _) => StoryComposer(controller: controller),
+        ),
+        GoRoute(
           parentNavigatorKey: rootKey,
           path: '/posts/new',
           builder: (_, _) => Scaffold(
@@ -330,9 +352,12 @@ abstract final class AppRouter {
           parentNavigatorKey: rootKey,
           path: '/missions/:id',
           builder: (_, state) => MissionDetailScreen(
-            key: ValueKey(state.pathParameters['id']),
+            key: ValueKey(state.uri.toString()),
             controller: controller,
             missionId: state.pathParameters['id']!,
+            panel: state.uri.queryParameters['panel'],
+            commentId: state.uri.queryParameters['comment'],
+            notificationId: state.uri.queryParameters['notification'],
           ),
         ),
         GoRoute(
@@ -375,6 +400,82 @@ abstract final class AppRouter {
           ),
         ),
         GoRoute(
+          path: '/tours',
+          parentNavigatorKey: rootKey,
+          builder: (_, _) => TourManagementScreen(
+            key: ValueKey(controller.profile?.id),
+            controller: controller,
+          ),
+        ),
+        GoRoute(
+          path: '/tours/new',
+          parentNavigatorKey: rootKey,
+          builder: (_, _) => TourEditorScreen(
+            key: ValueKey('new-tour:${controller.profile?.id}'),
+            controller: controller,
+          ),
+        ),
+        GoRoute(
+          path: '/tours/requests',
+          parentNavigatorKey: rootKey,
+          builder: (_, _) => TourRequestsScreen(
+            key: ValueKey(controller.profile?.id),
+            controller: controller,
+          ),
+        ),
+        GoRoute(
+          path: '/tours/nearby',
+          parentNavigatorKey: rootKey,
+          builder: (_, _) => TourDiscoveryScreen(
+            key: ValueKey(controller.profile?.id),
+            controller: controller,
+          ),
+        ),
+        GoRoute(
+          path: '/tours/:id/edit',
+          parentNavigatorKey: rootKey,
+          builder: (_, s) => TourEditorScreen(
+            key: ValueKey(
+              '${controller.profile?.id}:${s.pathParameters['id']}',
+            ),
+            controller: controller,
+            tourId: s.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          path: '/tours/:id/capture',
+          parentNavigatorKey: rootKey,
+          builder: (_, s) => TourCaptureScreen(
+            key: ValueKey('${controller.profile?.id}:${s.uri}'),
+            controller: controller,
+            tourId: s.pathParameters['id']!,
+            sceneId: s.uri.queryParameters['scene'] ?? '',
+            importOnly: s.uri.queryParameters['import'] == 'true',
+          ),
+        ),
+        GoRoute(
+          path: '/tours/:id/ar',
+          parentNavigatorKey: rootKey,
+          builder: (_, s) => TourARScreen(
+            key: ValueKey('${controller.profile?.id}:${s.uri}'),
+            controller: controller,
+            tourId: s.pathParameters['id']!,
+            preview: s.uri.queryParameters['preview'] == 'true',
+            pointId: s.uri.queryParameters['point'],
+          ),
+        ),
+        GoRoute(
+          path: '/tours/:id',
+          parentNavigatorKey: rootKey,
+          builder: (_, s) => TourVisitScreen(
+            key: ValueKey('${controller.profile?.id}:${s.uri}'),
+            controller: controller,
+            tourId: s.pathParameters['id']!,
+            preview: s.uri.queryParameters['preview'] == 'true',
+            pointId: s.uri.queryParameters['point'],
+          ),
+        ),
+        GoRoute(
           parentNavigatorKey: rootKey,
           path: '/moderation',
           builder: (_, _) => ModerationScreen(controller: controller),
@@ -411,7 +512,7 @@ class AppRouteGuard {
         uri.hasScheme ||
         uri.hasAuthority ||
         !RegExp(
-          r'^/(posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
+          r'^/(tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar))?)?|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
         ).hasMatch(uri.path)) {
       return null;
     }

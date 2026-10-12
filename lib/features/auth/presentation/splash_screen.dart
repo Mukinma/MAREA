@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/app_spacing.dart';
@@ -24,9 +25,9 @@ class SplashScreen extends StatelessWidget {
               MareaLogo(showTagline: true),
               SizedBox(height: AppSpacing.xxl),
               SizedBox(
-                width: 28,
-                height: 28,
-                child: CircularProgressIndicator(strokeWidth: 3),
+                width: 220,
+                height: 16,
+                child: MareaSkeleton(compact: true),
               ),
             ],
           ),

@@ -1,92 +1,190 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/theme/app_colors.dart';
-import 'package:marea/shared/widgets/marea_logo.dart';
-import 'package:marea/shared/widgets/creative_artwork.dart';
-import 'package:marea/shared/widgets/marea_surface.dart';
-import 'package:marea/shared/widgets/primary_button.dart';
 import 'package:marea/features/legal/legal_screens.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.paper,
-    body: SafeArea(
-      child: LayoutBuilder(
-        builder: (context, bounds) {
-          final wide = bounds.maxWidth >= 1024;
-          final actions = Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+
+  Widget _brand() => Semantics(
+    label: 'MAREA. Conecta. Crea. Explora.',
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset('assets/brand/MAREA.png', width: 58, height: 58),
+        const SizedBox(width: 12),
+        Flexible(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Tu comunidad\ncreativa.',
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontSize: wide ? 58 : 38,
-                  height: 1.1,
-                ),
+              Image.asset(
+                'assets/brand/MAREA_LOGOTIPO.png',
+                width: 190,
+                height: 45,
+                fit: BoxFit.contain,
               ),
-              const SizedBox(height: 32),
-              PrimaryButton(
-                key: const Key('welcome-register'),
-                label: 'Crear cuenta',
-                onPressed: () => context.go('/register'),
-              ),
-              const SizedBox(height: 16),
-              MareaSurface(
-                radius: 16,
-                child: OutlinedButton(
-                  key: const Key('welcome-login'),
-                  onPressed: () => context.go('/login'),
-                  child: const Text('Iniciar sesión'),
-                ),
+              const Text(
+                'Conecta. Crea. Explora.',
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
               ),
             ],
-          );
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(wide ? 48 : 20),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1180),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const MareaLogo(),
-                    SizedBox(height: wide ? 64 : 36),
-                    MareaSurface(
-                      floating: true,
-                      radius: 36,
-                      padding: EdgeInsets.all(wide ? 48 : 24),
-                      child: wide
-                          ? Row(
-                              children: [
-                                Expanded(flex: 4, child: actions),
-                                const SizedBox(width: 64),
-                                const Expanded(
-                                  flex: 5,
-                                  child: CreativeArtwork(),
-                                ),
-                              ],
-                            )
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                const CreativeArtwork(),
-                                const SizedBox(height: 32),
-                                actions,
-                              ],
-                            ),
-                    ),
-                    const SizedBox(height: 28),
-                    const LegalLinks(),
-                  ],
+          ),
+        ),
+      ],
+    ),
+  );
+
+  Widget _hero(double width, {bool wide = false}) => SizedBox(
+    width: width,
+    height: width * (wide ? 1.28 : 1.32),
+    child: Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          'assets/onboarding/bienvenida.webp',
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
+          excludeFromSemantics: true,
+        ),
+        Positioned(top: wide ? 44 : 58, left: 24, right: 24, child: _brand()),
+      ],
+    ),
+  );
+
+  Widget _actions(BuildContext context, {required bool wide}) => Padding(
+    padding: EdgeInsets.symmetric(horizontal: wide ? 40 : 28),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text.rich(
+          const TextSpan(
+            children: [
+              TextSpan(text: 'Tu ciudad\ntambién '),
+              TextSpan(
+                text: 'crea.',
+                style: TextStyle(color: Color(0xFF00BDCF)),
+              ),
+            ],
+          ),
+          style: TextStyle(
+            fontSize: wide
+                ? 56
+                : MediaQuery.sizeOf(context).width < 390
+                ? 38
+                : 42,
+            height: 1.02,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF070D45),
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Conecta con artistas, emprendedores\ny negocios que hacen la ciudad más viva.',
+          style: TextStyle(
+            fontSize: 16,
+            height: 1.4,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 26),
+        FilledButton(
+          key: const Key('welcome-register'),
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFF005CB8),
+            shape: const StadiumBorder(),
+            minimumSize: const Size(48, 52),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          ),
+          onPressed: () => context.go('/register'),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  'Crear cuenta',
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                 ),
               ),
+              SizedBox(width: 16),
+              Icon(Icons.arrow_forward, size: 24),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton(
+          key: const Key('welcome-login'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.actionBlue,
+            side: const BorderSide(color: Color(0xFF006AFF)),
+            shape: const StadiumBorder(),
+            minimumSize: const Size(48, 52),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          ),
+          onPressed: () => context.go('/login'),
+          child: const Text(
+            'Iniciar sesión',
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+          ),
+        ),
+        const SizedBox(height: 12),
+        const LegalLinks(compact: true),
+        const SizedBox(height: 16),
+      ],
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFFF7FCFF),
+    body: LayoutBuilder(
+      builder: (context, bounds) {
+        final wide = bounds.maxWidth >= 1024;
+        return SingleChildScrollView(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1280),
+              child: wide
+                  ? SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(28),
+                                child: LayoutBuilder(
+                                  builder: (_, b) =>
+                                      _hero(b.maxWidth, wide: true),
+                                ),
+                              ),
+                            ),
+                            Expanded(child: _actions(context, wide: true)),
+                          ],
+                        ),
+                      ),
+                    )
+                  : ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 600),
+                      child: LayoutBuilder(
+                        builder: (_, b) => Stack(
+                          children: [
+                            _hero(b.maxWidth),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: b.maxWidth * 1.32 - 70,
+                              ),
+                              child: _actions(context, wide: false),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     ),
   );
 }

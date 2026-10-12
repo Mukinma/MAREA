@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marea/app.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -12,6 +13,11 @@ import '../../support/fakes.dart';
 import '../../support/test_app.dart';
 
 void main() {
+  setUp(
+    () => SharedPreferences.setMockInitialValues({
+      'marea.mobile_intro.seen': true,
+    }),
+  );
   testWidgets(
     'welcome leads to registration and requires both unchecked declarations',
     (tester) async {

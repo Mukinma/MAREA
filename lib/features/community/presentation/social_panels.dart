@@ -1,3 +1,5 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
+import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
@@ -24,7 +26,7 @@ Future<T?> showSocialPanel<T>(BuildContext context, Widget child) {
             ),
           ),
         )
-      : showModalBottomSheet<T>(
+      : showMareaBottomSheet<T>(
           context: context,
           isScrollControlled: true,
           useSafeArea: true,
@@ -268,13 +270,7 @@ class _CommentsPanelState extends State<CommentsPanel> {
           alignment: Alignment.centerRight,
           child: FilledButton.icon(
             onPressed: _sending ? null : _send,
-            icon: _sending
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.send_outlined),
+            icon: const Icon(Icons.send_outlined),
             label: Text(_sending ? 'Enviando…' : 'Enviar'),
           ),
         ),
@@ -340,10 +336,10 @@ class _CommentsPanelState extends State<CommentsPanel> {
             message: _error!,
             onRetry: () => _load(reset: _comments.isEmpty),
           ),
-        if (_loading)
+        if (_loading && _comments.isEmpty)
           const Padding(
             padding: EdgeInsets.all(20),
-            child: Center(child: CircularProgressIndicator()),
+            child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
           ),
         if (!_loading && _comments.isEmpty && _error == null)
           const CommunityNotice(
@@ -463,7 +459,7 @@ Future<void> sharePost(
   final position = origin == null
       ? null
       : origin.localToGlobal(Offset.zero) & origin.size;
-  final option = await showModalBottomSheet<String>(
+  final option = await showMareaBottomSheet<String>(
     context: context,
     useSafeArea: true,
     builder: (ctx) => Column(

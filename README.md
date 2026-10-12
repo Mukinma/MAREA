@@ -14,7 +14,7 @@ La ampliación de bienvenida, consentimiento legal (México, 18+), recuperación
 - `supabase_flutter` para Auth, PostgreSQL y Edge Functions
 - Android Kotlin, application ID `com.marea.app`, `minSdk 24`
 
-No hay backend adicional, Docker, librería externa de estado ni AR. La aplicación usa Supabase Storage privado para avatar, portada y fotografías de contenido. Se retiró la entrada de demostración: `lib/main.dart` es la única aplicación ejecutable y los repositorios falsos se limitan a pruebas automatizadas.
+Supabase sigue siendo el backend; Firebase Cloud Messaging sólo transporta notificaciones a Android. Ver [configuración de avisos Android](docs/android-push.md). No se requiere Docker, librería externa de estado ni AR. La aplicación usa Supabase Storage privado para avatar, portada y fotografías de contenido. Se retiró la entrada de demostración: `lib/main.dart` es la única aplicación ejecutable y los repositorios falsos se limitan a pruebas automatizadas.
 
 ## Estructura importante
 
@@ -146,7 +146,7 @@ Las pruebas remotas requieren dos cuentas temporales y deben comprobar:
 
 ## Alcance y limitaciones del MVP
 
-Inicio, Explorar, Crear y Misiones utilizan datos persistentes de Supabase. Incluye publicaciones por tipo de perfil, fichas profesionales independientes, fotografías, guardados, búsqueda, perfiles de la comunidad, postulaciones y moderación. Las limitaciones concretas se documentan en [Comunidad y misiones](docs/community.md). No incluye AR.
+Inicio, Explorar, Crear y Misiones utilizan datos persistentes de Supabase. Incluye publicaciones por tipo de perfil, fichas profesionales independientes, fotografías, guardados, búsqueda, perfiles de la comunidad, postulaciones y moderación. Las limitaciones concretas se documentan en [Comunidad y misiones](docs/community.md). El módulo de recorridos 360° y AR se incorpora con la migración 015 y requiere completar el piloto descrito abajo antes de distribuirlo.
 
 ## Mapa
 
@@ -155,3 +155,11 @@ Descubrimiento geográfico de misiones con clustering, búsqueda, filtros, ubica
 ## Rediseño de misiones
 
 Creación y edición en cuatro pasos, candidaturas en tres, confirmación, borradores privados, guardados, compensación y gestión propia con finalistas y selección atómica. Requiere la migración 013 y el gate de backend antes de distribuir. Consulta [flujos y contrato](docs/missions-redesign.md).
+
+## Recorridos 360° y AR
+
+Editor desde Crear y perfil profesional, captura esférica guiada Android/iOS o importación GPano, visita por panoramas y conexiones, referencias AR con ancho físico, solicitudes y revisión de espacios. Supabase mantiene originales y borradores privados; Cloud Run Jobs procesa con Hugin/Enblend. Negocios conservan Servicios.
+
+La implementación local, las pruebas ejecutadas y las verificaciones pendientes están en [entrega y piloto](docs/implementation/tours-360-delivery.md). Consultar [diseño y seis láminas](docs/ar-experience-design.md), [canales nativos](docs/implementation/tours-native.md) y [despliegue del procesador](processing/tours/README.md). No se han aplicado migraciones ni desplegado estos servicios en producción; las pruebas físicas de captura y AR siguen pendientes.
+
+Para los recorridos360°, consultar [el piloto Docker + Supabase](docs/implementation/tours-local-pilot-report.md) y [los comandos del procesador local](processing/tours/README.md). Cloud Run espera verificación de facturación; las pruebas físicas de cámara/AR corresponden al propietario del dispositivo.

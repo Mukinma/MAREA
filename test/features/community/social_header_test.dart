@@ -40,7 +40,15 @@ void main() {
       await tester.pumpAndSettle();
       router.go('/home');
       await tester.pumpAndSettle();
-      expect(find.bySemanticsLabel('Guardados'), findsOneWidget);
+      if (width < 600) {
+        expect(find.bySemanticsLabel('Explorar'), findsOneWidget);
+        expect(find.byTooltip('Mensajes (próximamente)'), findsOneWidget);
+        router.go('/explore?section=saved');
+        await tester.pumpAndSettle();
+        expect(find.byTooltip('Guardados'), findsOneWidget);
+      } else {
+        expect(find.bySemanticsLabel('Guardados'), findsOneWidget);
+      }
       expect(find.bySemanticsLabel('Notificaciones'), findsOneWidget);
       expect(tester.takeException(), isNull);
       semantics.dispose();

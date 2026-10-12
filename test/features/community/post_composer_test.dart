@@ -1,3 +1,4 @@
+import 'package:marea/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -63,7 +64,7 @@ void main() {
           ),
         ],
       );
-      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpWidget(MaterialApp.router(theme: AppTheme.light(), routerConfig: router));
       await tester.pumpAndSettle();
       final location = find.widgetWithText(TextFormField, 'Ubicación (opcional)');
       await tester.ensureVisible(location);

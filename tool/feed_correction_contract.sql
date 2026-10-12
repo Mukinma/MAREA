@@ -1,0 +1,7 @@
+select
+ (select count(*)=2 from supabase_migrations.schema_migrations where version in ('020','021')) migrations_ready,
+ (select count(*)=5 and bool_and(relrowsecurity) from pg_class where oid in ('public.mission_reactions'::regclass,'public.mission_comments'::regclass,'public.mission_comment_operations'::regclass,'public.geocoding_provider'::regclass,'public.geocoding_cache'::regclass)) rls_ready,
+ has_function_privilege('authenticated','public.mission_social_stats(uuid[])','execute') and has_function_privilege('authenticated','public.create_mission_comment(uuid,text,uuid)','execute') and not has_function_privilege('anon','public.create_mission_comment(uuid,text,uuid)','execute') social_rpc_ready,
+ not has_table_privilege('authenticated','public.mission_comment_operations','select') and not has_table_privilege('authenticated','public.mission_reactions','insert') and not has_table_privilege('authenticated','public.mission_comments','insert') private_writes_ready,
+ not has_function_privilege('authenticated','public.claim_geocoding_request(uuid)','execute') and not has_table_privilege('anon','public.geocoding_cache','select') and not has_table_privilege('authenticated','public.geocoding_provider','select') provider_private,
+ (select count(*)=2 from information_schema.columns where table_schema='public' and table_name in ('posts','missions') and column_name='location_city') city_ready;

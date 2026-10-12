@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -91,7 +92,9 @@ class _ProfileState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) return const Center(child: CircularProgressIndicator());
+    if (isLoading) {
+      return const Center(child: MareaSkeleton(kind: SkeletonKind.profile));
+    }
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),

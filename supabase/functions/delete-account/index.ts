@@ -1,4 +1,5 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { clearTourStorage } from "./tour-storage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -49,7 +50,7 @@ Deno.serve(async (request) => {
   if (requestError) return jsonResponse(500, {error: 'account_deletion_failed'});
   if (!ready) return jsonResponse(409, {error: 'media_operation_in_progress_retry_deletion'});
   // All uploads are now blocked. Failed attempts resume from this marker.
-  for (const bucketName of ['profile-media', 'post-images', 'mission-images', 'showcase-media']) {
+  for (const bucketName of ['profile-media', 'post-images', 'mission-images', 'showcase-media', 'story-images']) {
     const bucket = adminClient.storage.from(bucketName);
     for (let batch = 0; batch < 100; batch++) {
       const {data: files, error: listError} = await bucket.list(data.user.id, {limit: 100});
@@ -58,6 +59,11 @@ Deno.serve(async (request) => {
       const {error: removeError} = await bucket.remove(files.map(file => `${data.user.id}/${file.name}`));
       if (removeError) return jsonResponse(500, {error: 'storage_cleanup_failed_retry_deletion'});
       if (batch === 99) return jsonResponse(503, {error: 'storage_cleanup_incomplete_retry_deletion'});
+    }
+  }
+  for (const bucketName of ["tour-inputs", "tour-assets"]) {
+    if (!await clearTourStorage(adminClient.storage.from(bucketName), data.user.id)) {
+      return jsonResponse(503, {error: "storage_cleanup_incomplete_retry_deletion"});
     }
   }
   const { error: deleteError } = await adminClient.auth.admin.deleteUser(

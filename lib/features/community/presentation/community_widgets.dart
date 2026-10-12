@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/errors/app_failure.dart';
@@ -30,7 +31,7 @@ class CommunityPage extends StatelessWidget {
       padding: EdgeInsets.symmetric(
         horizontal: MediaQuery.sizeOf(context).width < 600 ? 20 : 32,
         vertical: 24,
-      ),
+      ).copyWith(bottom: 24 + MediaQuery.paddingOf(context).bottom),
       children: [
         Center(
           child: ConstrainedBox(
@@ -70,6 +71,7 @@ class CommunityPage extends StatelessWidget {
       ],
     );
     return SafeArea(
+      bottom: false,
       child: onRefresh == null
           ? body
           : MareaRefreshIndicator(onRefresh: onRefresh!, child: body),
@@ -227,6 +229,8 @@ class CommunityLoad<T> extends StatefulWidget {
 
 class _CommunityLoadState<T> extends State<CommunityLoad<T>> {
   late Future<T> _future = widget.load();
+  late T _value;
+  bool _hasValue = false;
   Future<void> _reload() async {
     if (!mounted) return;
     final next = widget.load();
@@ -244,20 +248,31 @@ class _CommunityLoadState<T> extends State<CommunityLoad<T>> {
   Widget build(BuildContext context) => FutureBuilder<T>(
     future: _future,
     builder: (context, snapshot) {
-      if (snapshot.connectionState != ConnectionState.done) {
+      if (snapshot.connectionState == ConnectionState.done &&
+          !snapshot.hasError) {
+        _value = snapshot.data as T;
+        _hasValue = true;
+      }
+      if (snapshot.connectionState != ConnectionState.done && !_hasValue) {
         return const Padding(
           padding: EdgeInsets.all(32),
-          child: Center(child: CircularProgressIndicator()),
+          child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
         );
       }
       if (snapshot.hasError) {
-        return CommunityNotice(
+        final notice = CommunityNotice(
           message: communityError(snapshot.error!),
           icon: Icons.cloud_off_outlined,
           onRetry: _reload,
         );
+        return _hasValue
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [notice, widget.builder(_value, _reload)],
+              )
+            : notice;
       }
-      return widget.builder(snapshot.data as T, _reload);
+      return widget.builder(_value, _reload);
     },
   );
 }
