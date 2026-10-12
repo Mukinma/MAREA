@@ -70,5 +70,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>MAREA usa la cámara para capturar recorridos 360° y reconocer imágenes de las paradas AR.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>MAREA usa la orientación del teléfono para guiar fotografías de una esfera completa.</string>
 </dict>
 </plist>

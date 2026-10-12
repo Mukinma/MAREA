@@ -1,5 +1,30 @@
 -- Read-only release gate. No accounts or data are returned or modified.
 select
+  (select count(*)=4 from pg_class where oid=any(array[to_regclass('public.tours'),to_regclass('public.tour_revisions'),to_regclass('public.tour_requests'),to_regclass('public.tour_progress')]) and relrowsecurity)
+    and (select count(*)=2 from storage.buckets where id in ('tour-inputs','tour-assets') and not public)
+    and (select bool_and(coalesce(has_function_privilege('authenticated',to_regprocedure(signature),'EXECUTE'),false) and not coalesce(has_function_privilege('anon',to_regprocedure(signature),'EXECUTE'),true)) from unnest(array[
+     'public.tours_list(uuid,double precision,double precision)','public.tours_get(uuid,boolean)','public.tours_save(uuid,text,jsonb,jsonb)','public.tours_submit(uuid)',
+     'public.tours_public_list(uuid)','public.tours_permission_revoke(uuid)','public.tours_pause(uuid,boolean)','public.tours_requests()','public.tours_review(uuid,boolean,text)','public.tours_link_search(text)','public.tours_link_request(uuid,uuid)',
+     'public.tours_progress(uuid,uuid,jsonb)','public.tours_capture_begin(uuid,uuid,text)','public.tours_capture_submit(uuid,jsonb)','public.tours_job_get(uuid)',
+     'public.tours_job_cancel(uuid)','public.tours_attach_result(uuid,uuid,uuid)','public.tours_ar_report_test(uuid,uuid,uuid,text,integer)']) signature)
+    and (select bool_and(not coalesce(has_function_privilege('authenticated',to_regprocedure(signature),'EXECUTE'),true) and coalesce(has_function_privilege('service_role',to_regprocedure(signature),'EXECUTE'),false)) from unnest(array[
+     'public.tours_completion_receipt(uuid,uuid)','public.tours_claim_jobs()','public.tours_job_is_current(uuid,uuid)','public.tours_job_context(uuid,uuid)','public.tours_finish_job(uuid,uuid,text,jsonb,text)',
+     'public.tours_begin_output_write(uuid,uuid)','public.tours_end_output_write(uuid,uuid)','public.tours_claim_cleanup()','public.tours_finish_cleanup(uuid,uuid,boolean)']) signature)
+    and not coalesce(has_table_privilege('authenticated',to_regclass('private.tour_jobs'),'SELECT'),true)
+    and exists(select 1 from pg_policies where schemaname='storage' and policyname='Tour inputs permitted reads')
+    and exists(select 1 from pg_policies where schemaname='storage' and policyname='Tour assets permitted reads') as tours_contract_ready,
+  (select count(*)=2 from pg_class where oid=any(array[to_regclass('public.notification_preferences'),to_regclass('public.notification_devices')]) and relrowsecurity)
+    and to_regclass('private.push_queue') is not null
+    and to_regprocedure('public.register_notification_device(uuid,text,boolean)') is not null
+    and to_regprocedure('public.set_notification_preferences(boolean,boolean)') is not null
+    and to_regprocedure('public.record_notification_activity(text)') is not null
+    and to_regprocedure('public.unregister_notification_device(uuid)') is not null
+    and to_regprocedure('public.claim_push_jobs(integer)') is not null
+    and to_regprocedure('public.push_job_is_current(uuid,uuid)') is not null
+    and not coalesce(has_table_privilege('authenticated',to_regclass('public.notification_devices'),'SELECT'),true)
+    and not coalesce(has_table_privilege('authenticated',to_regclass('private.push_queue'),'SELECT'),true)
+    and not coalesce(has_function_privilege('authenticated',to_regprocedure('public.claim_push_jobs(integer)'),'EXECUTE'),true)
+    and exists(select 1 from pg_constraint where conrelid='public.notifications'::regclass and conname='notifications_one_target' and pg_get_constraintdef(oid) like '%marea_message%') as push_contract_ready,
   (select count(*)=4 from pg_class where oid=any(array[to_regclass('public.mission_drafts'),to_regclass('public.mission_saves'),to_regclass('public.mission_finalists'),to_regclass('public.mission_application_operations')]) and relrowsecurity)
     and exists(select 1 from information_schema.columns where table_schema='public' and table_name='missions' and column_name='compensation_type')
     and exists(select 1 from information_schema.columns where table_schema='public' and table_name='mission_applications' and column_name='evidence') as mission_tables_ready,
@@ -23,8 +48,8 @@ select
     and exists(select 1 from pg_constraint where conrelid='public.notifications'::regclass and conname='notifications_one_target')
     and exists(select 1 from pg_trigger where tgrelid='public.mission_applications'::regclass and tgfoid=to_regprocedure('public.notify_mission_application()') and tgenabled in ('O','A'))
     and exists(select 1 from pg_trigger where tgrelid='public.missions'::regclass and tgfoid=to_regprocedure('public.notify_mission_status()') and tgenabled in ('O','A')) as mission_notifications_ready,
-  (select count(*) = 13 from supabase_migrations.schema_migrations
-    where version in ('001','002','003','004','005','006','007','008','009','010','011','012','013')) as migrations_ready,
+  (select count(*) = 15 from supabase_migrations.schema_migrations
+    where version in ('001','002','003','004','005','006','007','008','009','010','011','012','013','014','015')) as migrations_ready,
   coalesce(has_function_privilege('authenticated',
     to_regprocedure('public.list_map_missions(double precision,double precision,double precision,double precision,text,text,timestamp with time zone,timestamp with time zone,double precision,double precision,double precision)'),
     'EXECUTE'),false)

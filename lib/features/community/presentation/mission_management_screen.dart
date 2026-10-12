@@ -1,3 +1,5 @@
+import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -308,9 +310,9 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                 ],
               ),
             ],
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
+      body: _loading && mission == null
+          ? const Center(child: MareaSkeleton(kind: SkeletonKind.list))
+          : MareaRefreshIndicator(
               onRefresh: _load,
               child: ListView(
                 padding: const EdgeInsets.all(20),
@@ -438,17 +440,12 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
           : FilledButton.icon(
               onPressed: _busy || _selection.isEmpty ? null : _confirmSelection,
               style: FilledButton.styleFrom(backgroundColor: AppColors.success),
-              icon: _busy
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.check),
-              label: Text('Confirmar selección (${_selection.length})'),
+              icon: const Icon(Icons.check),
+              label: Text(
+                _busy
+                    ? 'Confirmando…'
+                    : 'Confirmar selección (${_selection.length})',
+              ),
             ),
     );
   }

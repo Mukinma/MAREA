@@ -1,8 +1,16 @@
+import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
+import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:marea/shared/widgets/marea_tabs.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/config/app_config.dart';
+import 'package:marea/features/community/models/mission_social.dart';
+import 'package:marea/features/community/presentation/mission_social_actions.dart';
+import 'package:marea/features/community/presentation/mission_social_panels.dart';
+import 'package:marea/features/community/presentation/social_panels.dart';
 import 'package:marea/features/community/presentation/mission_widgets.dart';
 import 'package:marea/features/community/presentation/post_location_picker.dart';
 export 'mission_composer_screen.dart';
@@ -177,7 +185,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
 
   Future<void> _filters() async {
     var target = _target;
-    final result = await showModalBottomSheet<Map<String, UserType?>>(
+    final result = await showMareaBottomSheet<Map<String, UserType?>>(
       context: context,
       isScrollControlled: true,
       builder: (c) => SafeArea(
@@ -578,10 +586,15 @@ class _MissionsScreenState extends State<MissionsScreen> {
                 },
                 icon: Icons.explore_outlined,
               ),
-            if (_loading)
+            if (_loading &&
+                (_tab == 1 && _draftView
+                    ? _drafts.isEmpty
+                    : _tab == 2
+                    ? _applications.isEmpty
+                    : _missions.isEmpty))
               const Padding(
                 padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
               ),
             if (_more && !_loading)
               TextButton(
@@ -600,9 +613,13 @@ class MissionDetailScreen extends StatefulWidget {
     super.key,
     required this.controller,
     required this.missionId,
+    this.panel,
+    this.commentId,
+    this.notificationId,
   });
   final AppSessionController controller;
   final String missionId;
+  final String? panel, commentId, notificationId;
   @override
   State<MissionDetailScreen> createState() => _MissionDetailScreenState();
 }
@@ -612,6 +629,9 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
   int _generation = 0;
   String? _error;
   Mission? _mission;
+  MissionSocialStats? _socialStats;
+  final _commentDraft = CommentDraft();
+  bool _destinationOpened = false;
   List<MissionApplication> _applications = [];
   Map<String, CommunityProfile> _profiles = {};
   @override
@@ -624,8 +644,64 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
   void didUpdateWidget(covariant MissionDetailScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.missionId != widget.missionId ||
-        oldWidget.controller != widget.controller) {
+        oldWidget.controller != widget.controller ||
+        oldWidget.panel != widget.panel ||
+        oldWidget.commentId != widget.commentId ||
+        oldWidget.notificationId != widget.notificationId) {
+      _destinationOpened = false;
+      _socialStats = null;
       _load();
+    }
+  }
+
+  @override
+  void dispose() {
+    _generation++;
+    _commentDraft.dispose();
+    super.dispose();
+  }
+
+  Future<void> _refreshSocialStats() async {
+    final generation = _generation;
+    final rows = await widget.controller.missionSocialRepository?.stats([
+      widget.missionId,
+    ]);
+    if (mounted && generation == _generation) {
+      setState(() => _socialStats = rows?[widget.missionId]);
+    }
+  }
+
+  Future<void> _markSocialNoticeRead() async {
+    if (widget.notificationId == null) return;
+    await widget.controller.socialRepository?.markRead(
+      id: widget.notificationId,
+    );
+    await widget.controller.notifications?.refresh();
+  }
+
+  Future<void> _openSocialDestination() async {
+    final social = widget.controller.missionSocialRepository;
+    final mission = _mission;
+    if (mission == null || mission.hidden) return;
+    try {
+      if (widget.panel == 'comments' && social != null) {
+        await showMissionCommentsPanel(
+          context,
+          mission: mission,
+          repository: social,
+          community: widget.controller.communityRepository!,
+          viewerId: widget.controller.profile?.id,
+          draft: _commentDraft,
+          commentId: widget.commentId,
+          moderator: widget.controller.profile?.role == ProfileRole.admin,
+          onReady: _markSocialNoticeRead,
+          onChanged: _refreshSocialStats,
+        );
+      } else if (widget.panel != 'comments') {
+        await _markSocialNoticeRead();
+      }
+    } catch (error) {
+      if (mounted) setState(() => _error = communityError(error));
     }
   }
 
@@ -659,13 +735,23 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
               }.toList(),
             );
       final saved = await repo.savedMissionIds();
+      final socialStats = mission == null || mission.hidden
+          ? null
+          : await widget.controller.missionSocialRepository?.stats([missionId]);
       if (!mounted || generation != _generation) return;
       setState(() {
         _saved = saved.contains(missionId);
         _mission = mission;
+        _socialStats = socialStats?[missionId];
         _applications = applications;
         _profiles = {for (final profile in profiles) profile.id: profile};
       });
+      if (mission != null && !_destinationOpened) {
+        _destinationOpened = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && generation == _generation) _openSocialDestination();
+        });
+      }
     } catch (error) {
       if (mounted && generation == _generation) {
         setState(
@@ -766,7 +852,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
         ],
       ),
       body: _loading && mission == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: MareaSkeleton(kind: SkeletonKind.list))
           : mission == null
           ? Center(
               child: CommunityNotice(
@@ -774,7 +860,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                 onRetry: _error == null ? null : _load,
               ),
             )
-          : RefreshIndicator(
+          : MareaRefreshIndicator(
               onRefresh: _load,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -913,6 +999,29 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                               ],
                             ),
                           ),
+                          if (widget.controller.missionSocialRepository !=
+                                  null &&
+                              !mission.hidden)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: MissionSocialActions(
+                                mission: mission,
+                                repository:
+                                    widget.controller.missionSocialRepository!,
+                                community:
+                                    widget.controller.communityRepository!,
+                                viewerId: viewer?.id,
+                                moderator: viewer?.role == ProfileRole.admin,
+                                config: AppConfig.fromValues(
+                                  supabaseUrl: '',
+                                  supabaseAnonKey: '',
+                                  publicUrl: widget.controller.publicUrl,
+                                ),
+                                stats: _socialStats,
+                                onStats: (stats) =>
+                                    setState(() => _socialStats = stats),
+                              ),
+                            ),
                           _section(context, 'La misión', mission.body),
                           if (mission.requirements != null)
                             _section(

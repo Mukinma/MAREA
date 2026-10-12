@@ -1,160 +1,197 @@
-# MAREA · Diseño de la experiencia AR
+# MAREA · Recorridos 360° del local y experiencias AR
 
-Fecha: 30 de septiembre de 2026. Estado: diseño conceptual aprobado, prototipo para evaluación. La validación con personas está pendiente.
+6 de octubre de 2026. **Diseño actualizado e implementación en el checkout; pendiente de validación óptica, AR físico y piloto de infraestructura.** Las láminas son referencias de diseño, no evidencia de pruebas ni aprobación del producto. El prototipo HTML anterior no existe en este repositorio; no se enlaza.
 
-## Propósito y alcance
+## Experiencias y alcance
 
-**La ciudad se convierte en escenario.** AR conecta espacios físicos con la identidad, creatividad y oportunidades publicadas en MAREA. La persona debe entender qué encontró, dónde está, quién lo publicó y qué puede hacer.
+Un negocio muestra su local desde casa y ofrece información al visitarlo físicamente. Son dos entradas al mismo recorrido:
 
-Dirección acordada: **equilibrada**. Pistas discretas durante la exploración; identidad y contenido expresivos al seleccionar. Publicación con **control mixto**: responsables verificados publican en sus espacios; colaboradores solicitan autorización; MAREA revisa espacios sin responsable y disputas.
+| Entrada | Comportamiento | Permisos |
+|---|---|---|
+| **Explorar el local · 360°** | Mirar alrededor por arrastre en panoramas completos **360° × 180°**, cambiar de posición mediante conexiones y consultar puntos. | No solicita cámara ni ubicación. Sensores de visualización opcionales en móvil. |
+| **Recorrer con cámara** | Elegir una parada, reconocer su imagen física, mostrar una señal espacial discreta y una ficha estable. | Cámara cuando se elige escanear. Sin compatibilidad o permiso, usar lista y panoramas. |
 
-Esta entrega define UX/UI y un [prototipo interactivo](design-experiments/marea-ar-prototype.html), un fragmento para visualizar en Codex. No integra cámara, sensores, reconocimiento, modelos 3D, permisos del sistema ni Supabase. Todos los ejemplos son ficticios y las acciones de publicación son simuladas. La aplicación actual continúa sin AR.
+Cada panorama corresponde a **una posición fija**, no a todo el local. Para crearlo se toman varias fotos girando el teléfono alrededor de su lente, manteniendo su posición, con techo y piso. Después se mueve a otra posición y repite. Las conexiones entre posiciones forman la visita; no hay reconstrucción navegable en 3D ni flechas precisas de navegación por el suelo.
 
-## Arquitectura de la experiencia
+El ejemplo ficticio consistente es **Café Marea**, Roma Norte, CDMX: Entrada (Puerta, Vestíbulo), Barra (Frente a barra), Mural (Frente al mural), Terraza (Centro de terraza). No se carga este ejemplo como contenido de producción.
+
+## Base existente e integración
+
+| Base existente | Incorporación del módulo |
+|---|---|
+| Sesión, perfiles y capacidades profesionales | Repositorios de recorridos, captura local y procesamiento integrados en `AppSessionController`. Crear desde perfil profesional; ser Negocio no acredita un local. |
+| Ubicación, horarios y contacto | Recuperar del perfil; confirmar o completar. Usar el selector de ubicación existente. |
+| Obras, productos, servicios, publicaciones y misiones | Referencias hacia los detalles actuales, sin duplicar su contenido ni permisos. **Negocios conservan Servicios; Productos corresponde a emprendimientos.** |
+| Crear y herramientas del perfil propio | Entrada a administración de recorridos y solicitudes. |
+| Perfil público | Tarjeta «Explorar el local · 360°» para versiones disponibles. |
+| Moderación | Entrada a «Espacios y recorridos», con acreditación y revisión de la versión enviada. |
+| Mapa de misiones | Consulta adicional de recorridos vigentes y capa separada; mantiene consultas y filtros de misiones. |
+| Enlaces internos | `/tours/:id`, `/tours/:id?point=:point`, `/tours/:id/ar?point=:point`. El destino se conserva tras autenticación. Compartir esos enlaces permite generar un QR externo; un QR abre contenido y **no posiciona AR**. |
+
+Módulo: `lib/features/tours/`. Contratos y secuencia de implementación: [plan técnico](implementation/tours-360-plan.md). Integraciones: [canales nativos](implementation/tours-native.md). Operación: [procesador y despliegue](../processing/tours/README.md).
+
+## Estructura compartida
+
+**Espacio → zonas → posiciones 360° → puntos → contenido vinculado.** Un recorrido/versionado contiene conexiones, inicio, orden de paradas y vigencia.
+
+| Entidad | Información y reglas |
+|---|---|
+| Espacio | Nombre, ubicación pública, contexto y evidencia privada de responsabilidad; permiso del responsable independiente del autor de contenido. Primera acreditación manual/admin. |
+| Recorrido y versión | Título, inicio, conexiones, paradas, vigencia; versión pública activa, borrador editable y snapshot enviado separados. |
+| Zona | Nombre, descripción y varias posiciones. Las cuatro zonas del ejemplo son sugerencias. |
+| Posición 360° | Panorama completo, variantes/miniatura, orientación inicial, puntos y conexiones. Cada conexión tiene destino, nombre e indicación escrita. |
+| Punto | Nombre y explicación; ángulos yaw/pitch opcionales. «Solo en lista» es válido. Colocarlo en el panorama no crea un anclaje físico. |
+| Activador AR | Imagen reconocible o distintivo único imprimible; ancho físico obligatorio, versión de referencia y prueba de reconocimiento. Cambiar referencia/ancho invalida la prueba. |
+| Captura | Archivos aceptados, orientación relativa, dimensiones reales, FOV disponible y manifiesto; revisión enviada inmutable. |
+| Trabajo | Cola privada, lease, intentos, resultado y errores; una ejecución antigua o cancelada no sustituye otra captura. |
+| Progreso | Privado por cuenta/versión: posición, visitadas, saltadas y pendientes. Saltar no equivale a visitar. Completar desde la lista registra lectura, no certifica presencia física. |
+
+Los ángulos normalizan yaw en `[-180°,180°)` y pitch en `[-90°,90°]`; la costura 359°/0° y los polos no son bordes de una fotografía plana. Reemplazar un panorama exige revisar puntos y conexiones antes de publicar.
+
+## Flujo del negocio
 
 ```mermaid
-flowchart LR
-  M[Mapa] --> D[Descubrir en cámara]
-  P[Perfil / obra / misión] --> E[Experiencia específica]
-  D <--> S[Escanear]
-  D --> F[Ficha estable]
-  S --> R[Elemento reconocido]
-  R --> F
-  F --> T[Detalle completo]
-  T --> F
-  F --> D
-  D --> L[Lista accesible]
-  L --> F
-  E --> F
+flowchart TD
+  Crear[Crear / perfil propio] --> Admin[Administración]
+  Admin --> Local[Local: confirmar datos y aportar contexto]
+  Local --> Zonas[Zonas y posiciones: elegir inicio]
+  Zonas --> Captura[Captura guiada desde una posición]
+  Zonas --> Importar[Importar esfera GPano completa]
+  Captura --> LocalFiles[Tomas aceptadas en dispositivo]
+  Importar --> LocalFiles
+  LocalFiles --> Subida[Subida privada reanudable]
+  Subida --> Cola[Confirmar manifiesto y crear trabajo]
+  Cola --> Procesar[Cloud Run: Hugin / Enblend]
+  Procesar --> Resultado{Resultado}
+  Resultado -->|Necesita recaptura| Captura
+  Resultado -->|Listo| Revisar[Revisar esfera, costura, techo y piso]
+  Revisar --> Puntos[Puntos y contenido vinculado]
+  Puntos --> AR[Preparar referencia y probar AR en local]
+  Puntos --> Conexiones[Conectar posiciones y ordenar paradas]
+  AR --> Conexiones
+  Conexiones --> Preview[Vista previa privada]
+  Preview --> Enviar[Revisión final / enviar]
+  Enviar --> Revision[Acreditación espacial y publicación]
+  Revision -->|Cambios| Local
+  Revision --> Publico[Versión pública activa]
 ```
 
-### Entradas y regreso
+El asistente funcional agrupa **Local → Zonas y posiciones → Puntos y AR → Conexiones → Vista previa → Publicación**. La captura/subida/procesamiento es una pantalla subordinada a cada posición; no se pierde el contexto del asistente al regresar.
 
-- Mapa: acción «Explorar en AR». Usa la posición actual del visitante, no el centro consultado. Si difieren, explica «La cámara explorará donde te encuentras» antes de continuar. Conserva zona, búsqueda y filtros originales al regresar; no simula que la persona está en la zona remota.
-- Perfil, obra o misión: acción «Ver experiencia AR» solo cuando hay contenido asociado. Si necesita presencia física, muestra lugar, explicación y «Ver en mapa». El contenido informativo sigue disponible a distancia.
-- Distintivo: la persona elige «Escanear». Reconocer selecciona el elemento, pero no abre el detalle, un enlace externo ni reproduce medios automáticamente.
-- Detalle: regreso devuelve a la ficha seleccionada con sus filtros y modo. Salir de cámara devuelve a su entrada original. El prototipo permite recorrer esas entradas sin navegar por la app real.
+### Captura, subida y procesamiento
 
-### Modos y permisos
+- Cámara posterior principal a 1×, sin cambiar lente ni zoom. Una foto de calibración proporciona la proporción real del JPEG con EXIF aplicado; no cuenta como toma aceptada. El FOV nativo no usa un número constante de respaldo.
+- Objetivos calculados según FOV, con al menos 40 % de solapamiento, anillos verticales y tomas cenital/nadir. Orientación nativa guía, pero las coincidencias reales entre imágenes deciden la unión final.
+- Mostrar objetivo pendiente, estabilidad y número de tomas aceptadas. Repetir elimina una toma confirmada. Al interrumpir, conservar únicamente las tomas aceptadas. Retomar comprueba la misma cámara/FOV y requiere volver a la misma posición y alinear la primera foto antes de reiniciar yaw. Si la lente cambió, ofrecer empezar otra captura con confirmación, conservando la versión publicada.
+- Android/iOS guardan archivos y sesión por cuenta en almacenamiento local. **Web importa panoramas y administra; no realiza captura guiada ni tracking.** Mantener abierta la importación web durante la subida: al cerrar, los bytes no se conservan y se ofrece elegir nuevamente el archivo e iniciar otra captura, nunca una reanudación ficticia.
+- Importación: JPEG completo equirectangular con metadatos GPano de esfera completa, dimensiones/área coherentes y revisión visual. Una foto horizontal o solo proporción 2:1 no basta.
+- Subida TUS privada de 6 MiB por fragmento, URL/offset persistidos, HEAD al retomar, validación de host y sesión actual. El manifiesto se confirma solo tras subir todos los archivos. Nunca iniciar el procesamiento de una captura incompleta.
+- Hugin genera PTO, detecta/limpia coincidencias, optimiza geometría/fotometría y remapea a canvas equirectangular completo; Enblend mezcla. Comprobar grafo de coincidencias conectado y cobertura alpha real sin huecos. No inventar techo, suelo ni zonas faltantes.
+- Resultados: JPEG **4096×2048**, preview **2048×1024**, miniatura **512×256**, con GPano. Revisión humana de costura, reflejos, ventanas, objetos cercanos y patrones repetidos antes de usar.
+- Estados de captura, subida, trabajo y publicación son independientes. Cola: `queued`, `running`, `ready`, `needs_recapture`, `failed`, `cancelled`. Hasta dos trabajos activos globales, lease y dos reintentos adicionales únicamente por fallos transitorios.
 
-| Modo | Intención | Ayuda | Información de posición |
+### Publicación, permisos y mantenimiento
+
+Guardar cambios locales antes de sincronizar. Un envío cuya respuesta se pierde se consulta antes de volver a enviarlo; no crear otra versión sin cambios. Editar después del envío crea otro borrador; la revisión conserva su snapshot. Aprobar cambia la versión activa de forma atómica y no sobreescribe un borrador más nuevo.
+
+Contexto/evidencia espacial y fotos originales son privados. El revisor de contenido ajeno recibe solo el vínculo a autorizar; no ve evidencia del local ni capturas. Responsable espacial y administrador de publicación tienen acceso al envío pertinente. Solo recursos de versiones vigentes están disponibles al visitante; URLs firmadas tienen duración limitada (600 s).
+
+Vínculos pendientes y AR sin prueba se excluyen de la versión pública sin eliminar la preparación del borrador. Una prueba AR es un reporte de reconocimiento del usuario asociado a referencia/ancho/version exactos; no es una acreditación administrativa. La primera autorización del local la decide un administrador. La responsabilidad acreditada sobre el mismo alcance permite siguientes publicaciones válidas; cambiar ubicación/contexto/evidencia exige revisión.
+
+Un contenido retirado/oculto o cuyo permiso desaparece se filtra al leer la versión pública. Conservar la explicación independiente del punto; omitir puntos puramente dependientes. Cambiar mobiliario: revisar conexiones, panoramas y referencias afectados. Pausar permite retirar el recorrido de descubrimiento mientras se actualiza. Vigencia temporal usa inicio/fin coherentes; los selectores muestran hora de este dispositivo y guardan UTC. La versión actual no infiere una zona horaria del local.
+
+Eliminación de cuenta bloquea/cancela trabajos, pausa recorridos, espera escrituras en curso y elimina recursivamente originales/recursos. Una respuesta perdida al finalizar un trabajo se reconcilia con un recibo de lease comprometido antes de limpiar archivos; nunca borrar un panorama posiblemente confirmado por un fallo de red.
+
+## Flujo de visita
+
+```mermaid
+flowchart TD
+  Perfil[Perfil / enlace interno / mapa] --> Presentacion[Presentación pública vigente]
+  Presentacion --> Esfera[Explorar el local 360°]
+  Esfera --> Punto[Detalle del punto]
+  Esfera <--> Posicion[Conexiones y lista de posiciones]
+  Presentacion --> Paradas[Recorrer con cámara: paradas]
+  Paradas --> Escaneo[Escanear referencia elegida]
+  Escaneo --> Ficha[Ficha estable + señal reconocida]
+  Ficha -->|Tracking perdido| Reencuadrar[Retirar señal / conservar lectura]
+  Reencuadrar --> Escaneo
+  Paradas <--> Lista[Lista alternativa sin cámara]
+  Lista --> Punto
+  Ficha --> Punto
+  Punto <--> Detalle[Detalle existente del contenido]
+  Punto --> Siguiente[Continuar / saltar / siguiente]
+  Siguiente --> Paradas
+  Paradas --> Fin[Finalizar / volver al perfil]
+```
+
+La visita a distancia comienza sin permisos. La lista de zonas/posiciones/puntos permite navegar sin gestos espaciales, teclado y lector de pantalla. Conexiones visibles cambian de panorama; su nombre e indicación aparecen también en la lista. Regresar del detalle mantiene el panorama/posición de origen.
+
+Al visitar físicamente, elegir parada y ver referencia/indicación, luego escanear si se desea. ARCore/ARKit muestran una señal junto a una imagen realmente reconocida y una ficha legible. Perder tracking retira la señal espacial y conserva la lectura. Abrir detalle, ir a segundo plano o cambiar parada detiene la cámara; una descarga pendiente no puede reactivar una sesión cancelada. Captura y AR son mutuamente excluyentes.
+
+Sin AR o con permiso rechazado, «Leer detalle» y «Continuar recorrido» completan una parada desde la lista. Se puede saltar, consultar la lista y finalizar. Progreso se guarda localmente por cuenta/versión antes de RPC; una subida fallida deja una salida pendiente para sincronizar al volver. Una nueva versión informa antes de reiniciar, sin copiar IDs antiguos.
+
+Descubrimiento cercano conserva la idea original: localizar experiencias vigentes, dirección/distancia aproximadas y acceso al mapa. Eso no equivale a reconocer un activador en el local ni proporciona navegación interior precisa. Rechazar ubicación no bloquea una visita ya elegida.
+
+## Fichas de pantalla y láminas
+
+Cada lámina tiene cuatro referencias móviles. Algunas fichas se realizan dentro de una misma pantalla funcional, diálogo o ruta; no obligan a crear 24 rutas. Se mantienen Nunito Sans, navy, azul, aqua, superficies claras y relieve moderado. Controles táctiles mínimos de **48 px**, nombres explícitos para lector y alternativas sin arrastre.
+
+| ID · Pantalla | Propósito e información | Acción principal | Regreso y estados |
 |---|---|---|---|
-| Descubrir | Encontrar contenido cercano | «Mira a tu alrededor» | Dirección y distancia aproximadas; no identificación de fachadas |
-| Escanear | Reconocer un activador registrado | «Encuadra la imagen o distintivo registrado» | Reconocimiento explícito; no exige ubicación si el contenido no la necesita |
-| Ver en el espacio | Colocar una obra o producto | «Elige dónde colocar la obra» | Experiencia enfocada, separada del descubrimiento |
+| 01 Administración | Lista propia, versión pública y borrador/revisión. | Crear/continuar recorrido. | Perfil/Crear; vacía, carga, error, pausa. |
+| 02 Crear recorrido | Explicar 360°, AR opcional y título. | Continuar. | Administración; borrador local y nombre faltante. |
+| 03 Confirmar local | Datos recuperados, ubicación, contexto y evidencia privada. | Guardar/continuar. | Crear; faltantes, evidencia fallida, sin acreditación. |
+| 04 Zonas y posiciones | Varias posiciones por zona, orden e inicio. | Agregar posición/capturar. | Local; vacía, posición sin panorama. |
+| 05 Guía de captura | Posición fija, giro sobre lente, solapamiento, techo/piso. | Abrir cámara/importar esfera. | Posición; permiso rechazado, lente desconocida, web. |
+| 06 Cámara guiada | Objetivo, estabilidad, orientación y tomas aceptadas. | Aceptar/repetir. | Posición; interrupción, realineación obligatoria. |
+| 07 Subida y procesamiento | Tomás locales, offset de subida y estado del trabajo. | Confirmar subida/reintentar. | Posición; subida fallida, cola, timeout, cancelar. |
+| 08 Revisar posición | Esfera lista, costura, techo/suelo y conexiones. | Usar panorama/revisar. | Posición; fallo de unión/recaptura. |
+| 09 Marcar punto | Visor angular, nombre y explicación. | Colocar aquí/solo en lista. | Editor; seam, polos, coordenadas por revisar. |
+| 10 Vincular contenido | Búsqueda, autor y estado del permiso. | Solicitar vínculo. | Punto; sin resultados, pendiente, retirado. |
+| 11 Preparar activador | Referencia única, ancho físico y distintivo compartible. | Guardar/preparar prueba. | Punto; archivo ilegible, ancho inválido. |
+| 12 Probar AR | Cámara en local, reconocimiento sostenido y ficha. | Guardar prueba de referencia. | Punto; no compatible, tracking perdido, reflejos. |
+| 13 Conexiones y paradas | Destinos, nombre, indicación, inicio y orden. | Conectar/ordenar. | Editor; destino inválido, panorama reemplazado. |
+| 14 Vista previa privada | Explorar 360° y probar AR por separado. | Revisar experiencia. | Editor; pendientes excluidos en publicación. |
+| 15 Revisión final | Esferas listas, vigencia, responsables, permisos pendientes. | Publicar/enviar a revisión. | Editor; problemas específicos, respuesta perdida. |
+| 16 Estado de publicación | Borrador, snapshot enviado y pública activa. | Ver solicitud/editar/pausar. | Administración; aprobado, cambios, expiración. |
+| 17 Perfil público | Servicios y contenidos existentes; tarjeta del recorrido. | Explorar el local. | Perfil anterior; sin recorrido vigente. |
+| 18 Presentación | Zonas/posiciones, inicio y AR opcional. | Empezar visita 360°. | Perfil; retirada/pausada, versión actualizada. |
+| 19 Visita 360° | Panorama, puntos y conexiones; lista equivalente. | Mirar/ir a otra posición. | Zonas/presentación; imagen fallida, sin sensores. |
+| 20 Detalle de punto | Explicación independiente y vínculo disponible. | Ver contenido/continuar. | Misma posición/parada; contenido retirado. |
+| 21 Descubrimiento | Recorridos vigentes y orientación aproximada. | Abrir recorrido. | Mapa; ubicación rechazada, sin resultados. |
+| 22 Escaneo | Referencia de parada, cámara y pista de encuadre. | Reconocer/leer sin cámara. | Lista; permiso, reflejos, no compatible. |
+| 23 Parada y progreso | Ficha estable, señal confirmada, visitadas/saltadas. | Continuar/siguiente. | Lista/perfil; tracking perdido, offline. |
+| 24 Lista alternativa | Paradas con estado, referencia e indicación escrita. | Elegir/leer/completar/saltar. | Presentación/perfil; finalizada, retomar versión. |
 
-Primera entrada: explicación breve de para qué se necesita cada permiso y opción de seguir en mapa/lista. Solicitar cámara al elegir usarla; solicitar ubicación para Descubrir. Rechazar ubicación no bloquea el escaneo de un activador no geográfico. No solicitar acceso en segundo plano.
+Láminas: [01 Preparar](../output/imagegen/ar/01-preparar-360.png), [02 Capturar](../output/imagegen/ar/02-capturar-360.png), [03 Agregar contenido](../output/imagegen/ar/03-agregar-contenido-360.png), [04 Publicar](../output/imagegen/ar/04-publicar-360.png), [05 Visitar a distancia](../output/imagegen/ar/05-visitar-a-distancia-360.png), [06 Visitar presencialmente](../output/imagegen/ar/06-visitar-presencialmente-360.png). [Índice, prompts y revisión visual](../output/imagegen/ar/README.md).
 
-La cámara y los sensores se pausan al salir, enviar la app a segundo plano o abrir un detalle de lectura. Regresar a la cámara puede necesitar recuperar orientación o reconocimiento; nunca presenta el último reconocimiento como vigente sin confirmarlo.
+## Recuperación y accesibilidad
 
-## Pantallas y componentes
+| Situación | Respuesta |
+|---|---|
+| Cámara/ubicación denegada | Importación o lista sin cámara; ubicación solo para descubrimiento. |
+| Captura interrumpida | Retomar tomas confirmadas por cuenta; realinear con primera toma. |
+| Archivo web perdido | Explicar límite del navegador y ofrecer nueva selección/subida. |
+| Cuenta cambiada | Detener cámara/sensores/AR y nuevas subidas/RPC; archivos permanecen bajo cuenta original. |
+| Subida fallida | Conservar checkpoint y originales locales móviles; confirmar por HEAD. |
+| Trabajo duplicado/lease viejo | CAS de lease y revisión inmutable; ninguna publicación desde una ejecución antigua. |
+| Techo/piso ausentes o coincidencias desconectadas | `needs_recapture`, motivo específico; repetir/capturar lo faltante. |
+| Borrador no guardado | Guardado inmediato y serializado; al salir, esperar escritura, ofrecer reintento/descarte explícito si falla. |
+| Panorama reemplazado | Marcar puntos/conexiones para revisar; bloquear publicación hasta recolocar. |
+| Referencia ilegible/reflectante | Otra referencia/distintivo, volver a probar, alternativa por lista. |
+| Tracking perdido | Retirar señal; mantener lectura y reencuadrar. |
+| Contenido vencido/retirado | Resolver disponibilidad al consultar y conservar texto independiente. |
+| Progreso sin red | Guardado privado local y sincronización pendiente por versión. |
+| Texto ampliado/320 px/teclado | Listas desplazables, chips envueltos, botones con altura mínima y acciones de orden alternativas al arrastre. |
 
-### Cámara
+## Implementación y validación de entrega
 
-- Arriba: regreso, título y filtro; debajo, selector Descubrir/Escanear con selección textual visible.
-- Centro: entorno despejado. Indicadores de categoría, nombre corto y distancia precedida de «≈». La ciudad no se oscurece con una capa general permanente.
-- Abajo: ayuda contextual o ficha seleccionada; accesos a mapa y lista fuera de la zona tapada por la ficha.
-- La navegación social se oculta dentro de la cámara y reaparece al salir.
+Código y migraciones aditivas están preparados en el checkout. Cloud Run: `marea-f6a92`, `us-central1`, 4 vCPU, 8 GiB, 900 s; límite global de dos trabajos impuesto transaccionalmente en Supabase. Edge coordina, sin ejecutar Hugin. Credenciales de Google/service role quedan en backend.
 
-**Indicadores:** límite inicial de cinco puntos individuales para validar, no cuota que se deba llenar. Agrupar superposición con una etiqueta como «Bazar · 3 proyectos». Tocar el grupo abre sus participantes en una lista estable. Un espacio reúne eventos, promociones y misiones; una obra independiente conserva su punto. Cercanía, filtro e interés explícito guían relevancia; no se define publicidad pagada ni ranking comercial.
+Validación automatizada cubre modelo angular, cobertura del plan, reanudación TUS/cambio de cuenta, persistencia/progreso, edición/envío con respuesta perdida, RPC/RLS/versionado, procesamiento de importación GPano real con fixture sintético, cancelación y recibo de finalización ambiguo. Las compilaciones no acreditan captura óptica ni reconocimiento real.
 
-**Selección:** tocar resalta el indicador y abre una ficha inferior. La ficha permanece estable al mover el teléfono. Cerrar restablece exploración. Ninguna tarjeta aparece simplemente por pasar frente a un negocio.
+**Gates pendientes antes del piloto:** fotografías reales de celular → subida privada → contenedor Hugin/Enblend → revisión → publicación → visor; escenas de poca textura, ventanas, cercanía y patrones repetidos; consumo real de memoria/tiempo/coste; facturación/IAM/secretos y alertas; AR en Android/iOS físicos, orientación/calibración y lifecycle. Docker/Hugin en ejecución y gcloud no estaban disponibles durante esta sesión. No se afirma desplegado ni probado físicamente.
 
-**Filtros:** Todo, Lugares, Obras, Misiones y Eventos. Los emprendimientos con punto propio se incluyen en Lugares; dentro de un bazar se muestran como participantes. Se comparten entre cámara y su lista; no sobrescriben filtros del mapa original. Filtrar sin resultados ofrece «Mostrar todo».
+Criterio final de producto: capturar, recuperar tras interrupción, procesar esfera completa, revisar, acreditar, publicar, explorar y reconocer una parada con dispositivos físicos. **Hasta cumplir esos gates, la implementación queda pendiente de aceptación del piloto.** Evolución posterior: reconstrucción navegable en 3D; la esfera 360° forma parte de esta versión.
 
-### Ficha breve y detalle
-
-La ficha usa categoría, imagen cuando existe, título, autor/responsable, lugar o distancia, un destacado vigente y una acción principal. No inventar imágenes cuando el contenido no tiene fotografía. Cerrar y Guardar son secundarios. Guardado es una interacción local simulada en el prototipo.
-
-| Contenido | Destacado | Acción principal | Detalle |
-|---|---|---|---|
-| Negocio | Actividad o información vigente | Ver perfil | Horarios, catálogo/servicios, contacto voluntario, eventos y misiones |
-| Emprendimiento | Proyecto o producto | Ver catálogo | Productos y vínculo temporal con su espacio |
-| Obra | Título y autor | Conocer la obra | Historia, autor, medios disponibles y portafolio |
-| Misión | Oportunidad, compensación y fecha | Ver misión | Condiciones y participación existentes |
-| Evento | Actividad, fecha y lugar | Ver información | Programa y participantes disponibles |
-
-«Espacio verificado» identifica al lugar; «Publicado por…» identifica al autor. No usar la misma insignia para ambas cosas. La distancia no es una ruta ni un tiempo de llegada. Seguir artistas, comprar, reservar o reproducir medios solo tendrán controles cuando exista esa función en el producto.
-
-### Experiencia enfocada
-
-Desde una obra compatible: «Ver en el espacio» abre un modo específico. Antes de colocar: guía y acción «Colocar aquí». Después: ajuste de tamaño y giro, «Restablecer», «Volver a colocar» y «Salir». No modifica la obra original ni publica el resultado. El prototipo usa una representación ilustrativa; no demuestra detección real ni precisión física.
-
-### Perfil y administración
-
-Perfil propio profesional: apartado «Experiencia AR» con experiencias, estado, espacio y vigencia. Acción «Crear experiencia». Perfil visitante: contenidos públicos y entrada a cada experiencia. Perfil general puede descubrir; no recibe editor profesional.
-
-Editor en cuatro pasos con regreso que conserva datos:
-
-1. **Contenido:** elegir un elemento existente compatible; título y destacado breve. No duplicar el catálogo ni exigir un archivo técnico.
-2. **Espacio o activador:** espacio propio, espacio ajeno o temporal. Diferenciar encontrar por ubicación, reconocer activador y contenido que puede verse desde cualquier lugar. Para reconocimiento, la imagen/distintivo se registra como un elemento único: el logo genérico de MAREA no identifica por sí solo a qué negocio pertenece.
-3. **Vigencia y acción:** inicio/fin opcionales para contenidos permanentes, fin obligatorio para participación temporal; acción determinada por el contenido. Evitar fechas invertidas o vacías en temporales. Mostrar horario local y zona del lugar cuando difiera de la del visitante.
-4. **Vista previa:** revisar indicador y ficha; nombre del lugar y autor visibles; resumen de vigencia y aprobación. Botón «Publicar» en espacio propio verificado o «Solicitar vinculación» en espacio ajeno/sin verificar. Guardar borrador sin publicar.
-
-La autorización corresponde a la asociación de ese contenido con ese espacio y su vigencia. No permite editar el lugar ni contenido de terceros. Cambiar espacio, activador o contenido de una experiencia aprobada solicita nueva revisión; mantiene la versión pública anterior hasta aprobación o permite pausarla.
-
-| Estado | Qué ve el autor | Qué ve el visitante |
-|---|---|---|
-| Borrador | Continuar, previsualizar, eliminar borrador | No aparece |
-| Pendiente de aprobación | Responsable de revisión, solicitud y opción de retirar | No aparece |
-| Publicado | Previsualizar, editar, pausar | Descubrible solo durante su vigencia |
-| Pausado | Reanudar durante vigencia o editar | No aparece en descubrimiento; enlace explica pausa |
-| Finalizado | Consultar y crear una nueva experiencia | Fuera del descubrimiento; detalle indica finalización |
-| Requiere cambios | Motivo concreto, corregir y reenviar | No aparece |
-
-Revisor: ve autor, espacio, contenido, vigencia y preview. Puede aprobar o pedir cambios con motivo. Cuando no hay responsable verificado o existe una disputa, MAREA resuelve. Un reporte de visitante solicita motivo; no retira contenido automáticamente por un reporte aislado.
-
-## Estados y microcopy
-
-| Estado | Mensaje | Acción útil |
-|---|---|---|
-| Permisos pendientes | «Usa la cámara para descubrir tu entorno» | Continuar / Seguir en mapa |
-| Cámara rechazada | «La cámara no está disponible» | Reintentar / Ver lista; Ajustes si el rechazo es permanente |
-| Ubicación rechazada | «Activa tu ubicación para descubrir lo cercano» | Reintentar / Escanear / Volver al mapa |
-| Buscando puntos | «Buscando experiencias cercanas…» | Ver lista / Volver al mapa |
-| Sin contenido | «Todavía no hay experiencias aquí» | Ver mapa / Escanear |
-| Orientación imprecisa | «La dirección es aproximada» | Ver lista; no prometer alineación exacta |
-| Reconocido | «Imagen reconocida» | Abrir ficha; elegir abrir el detalle |
-| Reconocimiento perdido | «La imagen ya no está en el encuadre» | Mantener ficha / Volver a escanear |
-| Sin conexión | «No podemos actualizar las experiencias» | Reintentar / Ver información disponible; identificar su antigüedad |
-| Vencida | «Esta experiencia finalizó» | Ver autor / Volver al mapa |
-| No compatible | «Puedes descubrir este contenido en el mapa» | Ver mapa / Ver lista |
-
-Con datos previamente disponibles, un fallo conserva la lectura e indica que no se ha actualizado. Nunca mantiene «activo hoy», cupo disponible o reconocimiento conseguido como información recién confirmada. En el prototipo el estado sin conexión no demuestra caché ni funcionamiento offline real.
-
-## Lenguaje visual y accesibilidad
-
-- Nunito Sans; títulos 20–24 px, cuerpo 16 px, anotaciones 12–14 px. Tokens y geometría del [sistema visual existente](design-system.md).
-- Navy `#0B255E`, acción azul `#0D4397`, aqua `#22C5C1`, fondo Paper `#FAF9F6`, texto `#102149`. Categorías en lavanda, durazno, rosa y menta con etiquetas e iconos.
-- Fichas opacas, relieve moderado y radios 20–28 px. Aqua funciona como acento; no usar texto blanco sobre aqua como CTA pequeño.
-- Controles táctiles de al menos 48 px. Nombre accesible en botones de icono, foco visible y contenido esencial disponible sin hover.
-- Abrir filtros o una ficha modal bloquea interacción con el fondo; cerrar devuelve el foco al control de origen. Escape cierra paneles o vuelve al nivel anterior. La lista permite completar el recorrido sin orientación física ni cámara.
-- Movimiento funcional 150–300 ms, respetando reducción de movimiento. Reconocimiento y selección se anuncian una vez, sin lectura continua de sensores.
-- Referencia: [UI elements de Google ARCore](https://developers.google.com/ar/design/interaction/ui). La representación geográfica aproximada y el reconocimiento visual se distinguen siguiendo sus [conceptos de posicionamiento geoespacial](https://developers.google.com/ar/develop/geospatial) y [referencias de imágenes](https://developers.google.com/ar/develop/augmented-images).
-
-## Prototipo y validación
-
-El selector «Recorrido» está fuera de la interfaz del producto: sirve para cambiar de escenario de evaluación. «Simular reconocimiento» tampoco será un botón de producción. El editor, guardados y aprobación solo cambian el estado local de la visualización; nada se publica.
-
-Escenarios: mapa, descubrir, escanear, perfil, editor, administración, revisión, permisos, búsqueda, zona vacía, orientación imprecisa, reconocimiento perdido, sin conexión y experiencia vencida. Desde fichas se accede a detalles y a colocación simulada. El bazar permite abrir y distinguir tres participantes.
-
-### Guion de evaluación con personas
-
-No explicar cómo resolver las tareas. Pedir que describan qué esperan antes de tocar. Registrar errores, dudas y si creen que el indicador identifica exactamente la fachada.
-
-1. Encuentra qué ocurre hoy en Café Marea y quién publica la información; entra y vuelve sin perder contexto.
-2. Encuentra la misión de muralismo; identifica compensación, fecha y acción siguiente.
-3. Reconoce «Marea Nocturna», identifica a su autora y continúa leyendo cuando se pierde el reconocimiento.
-4. Encuentra Barro Vivo dentro del bazar; distingue puesto, recinto y autor.
-5. Rechaza ubicación; consigue consultar contenido por otra vía. Rechaza cámara; usa la lista.
-6. Publica una experiencia en tu espacio verificado. Luego solicita vinculación a uno ajeno y explica quién debe aprobar.
-7. Recibe un pedido de cambios, identifica el motivo, corrige y reenvía. Pausa y reanuda una experiencia vigente.
-8. Consulta una experiencia finalizada y evita confundirla con una oportunidad activa.
-
-Objetivo inicial: cada tarea se completa sin intervención del facilitador y la persona identifica contenido, espacio, autor y acción. Las confusiones de precisión, vigencia o autorización requieren ajustar el diseño antes del desarrollo.
-
-### Entrega posterior a desarrollo
-
-Este documento define comportamiento de producto; no selecciona SDK, dependencia Flutter, esquema de base de datos, presupuesto ni calendario. El mapa actual contiene misiones; habrá que diseñar la representación compartida de espacios, obras, eventos y experiencias. Los posts de evento existentes no constituyen por sí solos agenda, programa ni caducidad estructurada. La revisión espacial, activadores únicos y capacidades reales de dispositivos requieren evaluación técnica posterior.
-
-La inspección del prototipo verifica navegación y presentación simuladas. No sustituye pruebas de reconocimiento, precisión de orientación, permisos nativos, cobertura en ciudad, accesibilidad con lectores de pantalla reales ni validación con usuarios.
+Fuentes primarias: [TUS de Supabase](https://supabase.com/docs/guides/storage/uploads/resumable-uploads), [límites Edge](https://supabase.com/docs/guides/functions/limits), [scripting Hugin](https://hugin.sourceforge.io/docs/manual/Panorama_scripting_in_a_nutshell.html), [ejecución Cloud Run Jobs](https://docs.cloud.google.com/run/docs/execute/jobs).

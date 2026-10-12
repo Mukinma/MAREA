@@ -166,7 +166,10 @@ abstract final class AppFailureMapper {
         message.contains('connection')) {
       return const AppFailure('No pudimos conectarnos. Inténtalo nuevamente.');
     }
-    if (message.contains('jwt') || message.contains('session')) {
+    if (message.contains('jwt') ||
+        message.contains('session') ||
+        message.contains('refresh_token_not_found') ||
+        message.contains('invalid refresh token')) {
       return const AppFailure(
         'Tu sesión ya no es válida. Inicia sesión nuevamente.',
         kind: AppFailureKind.invalidSession,

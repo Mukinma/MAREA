@@ -1,3 +1,5 @@
+import 'package:marea/features/notifications/models/notification_destination.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -48,7 +50,11 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
       final authors = rows.isEmpty
           ? <CommunityProfile>[]
           : await widget.controller.communityRepository!.profiles(
-              ids: rows.map((n) => n.actorId).toSet().toList(),
+              ids: rows
+                  .map((n) => n.actorId)
+                  .whereType<String>()
+                  .toSet()
+                  .toList(),
             );
       if (!mounted || generation != _generation) return;
       setState(() {
@@ -98,6 +104,7 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
     NotificationKind.missionReopened => 'reabrió la convocatoria de',
     NotificationKind.missionCancelled => 'canceló',
     NotificationKind.missionCompleted => 'finalizó',
+    NotificationKind.mareaMessage => '',
   };
   @override
   Widget build(BuildContext context) => SocialPanelFrame(
@@ -146,6 +153,7 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(12),
                       leading: Icon(switch (n.kind) {
+                        NotificationKind.mareaMessage => Icons.waves_rounded,
                         NotificationKind.reaction =>
                           Icons.favorite_border_rounded,
                         NotificationKind.comment =>
@@ -159,7 +167,9 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
                         _ => Icons.flag_outlined,
                       }, color: AppColors.textSecondary),
                       title: Text(
-                        '${_authors[n.actorId]?.fullName ?? 'Cuenta no disponible'} ${_verb(n.kind)} «${n.postTitle}».',
+                        n.kind == NotificationKind.mareaMessage
+                            ? n.postTitle
+                            : '${_authors[n.actorId]?.fullName ?? 'Cuenta no disponible'} ${_verb(n.kind)} «${n.postTitle}».',
                       ),
                       subtitle: Text(socialDate(n.createdAt)),
                       trailing: n.isUnread
@@ -181,10 +191,10 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
                   message: _error!,
                   onRetry: () => _load(reset: _items.isEmpty),
                 ),
-              if (_loading)
+              if (_loading && _items.isEmpty)
                 const Padding(
                   padding: EdgeInsets.all(20),
-                  child: Center(child: CircularProgressIndicator()),
+                  child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
                 ),
               if (!_loading && _error == null && _items.isEmpty)
                 CommunityNotice(
@@ -219,37 +229,9 @@ Future<void> openNotifications(
     ),
   );
   if (selected == null || !context.mounted) return;
-  if (selected.missionId != null) {
-    try {
-      await controller.socialRepository!.markRead(id: selected.id);
-      await controller.notifications?.refresh();
-    } catch (_) {
-      // Reading acknowledgement can retry; the destination is still useful offline.
-    }
-    if (!context.mounted) return;
-    final organizerEvent =
-        selected.kind == NotificationKind.missionApplication ||
-        selected.kind == NotificationKind.missionWithdrawn;
-    await router.push(
-      '/missions/${selected.missionId}${organizerEvent ? '/manage' : ''}',
-    );
-    return;
-  }
-  await router.push(
-    Uri(
-      path: '/posts/${selected.postId}',
-      queryParameters: {
-        'notification': selected.id,
-        if (selected.kind == NotificationKind.comment) ...{
-          'panel': 'comments',
-          if (selected.sourceId != null) 'comment': selected.sourceId!,
-        },
-        if (selected.kind == NotificationKind.interest) ...{
-          'panel': 'interest',
-          if (selected.sourceId != null) 'interest': selected.sourceId!,
-        },
-      },
-    ).toString(),
-  );
-  await controller.notifications?.refresh();
+  try {
+    await controller.socialRepository!.markRead(id: selected.id);
+    await controller.notifications?.refresh();
+  } catch (_) {}
+  if (context.mounted) await router.push(notificationDestination(selected));
 }

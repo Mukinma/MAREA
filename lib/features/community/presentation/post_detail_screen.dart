@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -190,8 +191,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       title: '',
       maxWidth: 820,
       children: [
-        if (_loading)
-          const Center(child: CircularProgressIndicator())
+        if (_loading && _post == null)
+          const Center(child: MareaSkeleton(kind: SkeletonKind.detail))
         else if (_post == null && _error == null)
           const CommunityNotice(
             message: 'Esta publicación fue retirada o ya no está disponible.',

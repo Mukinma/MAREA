@@ -1,3 +1,5 @@
+import 'package:marea/features/location/models/location_models.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -48,6 +50,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
   DateTime? _date;
   TimeOfDay? _time;
   PostCoordinates? _coordinates;
+  LocationCity? _city;
   Uint8List? _image;
   String? _imagePath, _savedDraftImage, _error;
   Mission? _original;
@@ -124,6 +127,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
           'body': m.body,
           'category': m.category,
           'location': m.location,
+          'location_city': m.city?.toJson(),
           'capacity': m.capacity,
           'requirements': m.requirements,
           'conditions': m.conditions,
@@ -175,6 +179,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
     _target = type == null ? null : UserType.fromDatabase(type);
     _imagePath = data['image_path'] as String?;
     _coordinates = PostCoordinates.fromJson(data);
+    _city = LocationCity.fromJson(data['location_city']);
     _compensation = data['compensation_type'] as String?;
     final cents = (data['compensation_amount_cents'] as num?)?.toInt();
     _amount.text =
@@ -330,16 +335,19 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
   Future<void> _pickPlace() async {
     final result = await showCommunityLocationPicker(
       context,
+      repository: widget.controller.locationRepository,
       initial: _coordinates == null
           ? null
           : PostLocationSelection(
               label: _location.text,
               coordinates: _coordinates!,
+              city: _city,
             ),
     );
     if (!mounted || result == null) return;
     setState(() {
       _coordinates = result.coordinates;
+      _city = result.city;
       _location.text = result.label;
       _dirty = true;
     });
@@ -389,6 +397,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
     'requirements': _requirements.text,
     'conditions': _conditions.text,
     'location': _location.text,
+    'location_city': _city?.toJson(coordinates: _coordinates),
     'starts_at': _start?.toUtc().toIso8601String(),
     'starts_date': _date == null
         ? null
@@ -496,6 +505,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
     capacity: int.tryParse(_capacity.text) ?? 0,
     targetType: _target,
     coordinates: _coordinates,
+    city: _city,
     imagePath: _imagePath,
     requirements: _requirements.text,
     conditions: _conditions.text,
@@ -696,7 +706,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: MareaSkeleton(kind: SkeletonKind.form))
           : _unavailable
           ? Center(
               child: CommunityNotice(
@@ -1322,13 +1332,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: const StadiumBorder(),
       ),
-      icon: _busy
-          ? const SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Icon(Icons.arrow_forward_rounded, size: 20),
+      icon: const Icon(Icons.arrow_forward_rounded, size: 20),
       label: Text(
         _busy
             ? 'Guardando…'

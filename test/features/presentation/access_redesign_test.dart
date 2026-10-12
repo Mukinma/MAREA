@@ -205,7 +205,9 @@ void main() {
           ],
         );
         addTearDown(router.dispose);
-        await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+        await tester.pumpWidget(
+          MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+        );
         await tester.pumpAndSettle();
         expect(find.byKey(const Key('register-email')), findsNothing);
         await tester.ensureVisible(

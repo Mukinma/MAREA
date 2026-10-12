@@ -1,3 +1,4 @@
+import 'package:marea/features/tours/models/tour_models.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -40,6 +41,9 @@ class _MissionMapScreenState extends State<MissionMapScreen>
     vsync: this,
     duration: const Duration(milliseconds: 260),
   );
+  List<TourRecord> _tours = [];
+  bool _showTours = false;
+  int _tourGeneration = 0;
   int _tileRevision = 0;
   int _cameraGestureGeneration = 0;
   bool _tileError = false, _tileErrorScheduled = false;
@@ -116,10 +120,63 @@ class _MissionMapScreenState extends State<MissionMapScreen>
     if (mounted && _ready) _state.updateViewport(_bounds());
   }
 
+  Future<void> _loadTours() async {
+    if (!_showTours || !_ready || widget.session.tourRepository == null) return;
+    final generation = ++_tourGeneration;
+    final center = _map.camera.center;
+    try {
+      final tours = await widget.session.tourRepository!.list(
+        latitude: center.latitude,
+        longitude: center.longitude,
+      );
+      if (!mounted || generation != _tourGeneration || !_showTours) return;
+      final bounds = _bounds();
+      setState(
+        () => _tours = tours.where((t) {
+          final lat = t.space['latitude'], lng = t.space['longitude'];
+          return lat is num &&
+              lng is num &&
+              lat >= bounds.south &&
+              lat <= bounds.north &&
+              (bounds.west <= bounds.east
+                  ? lng >= bounds.west && lng <= bounds.east
+                  : lng >= bounds.west || lng <= bounds.east);
+        }).toList(),
+      );
+    } catch (e) {
+      if (mounted && generation == _tourGeneration) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No pudimos cargar los recorridos de esta zona.'),
+          ),
+        );
+      }
+    }
+  }
+
+  List<Marker> get _tourMarkers => !_showTours
+      ? []
+      : [
+          for (final t in _tours)
+            Marker(
+              width: 48,
+              height: 48,
+              point: LatLng(
+                (t.space['latitude'] as num).toDouble(),
+                (t.space['longitude'] as num).toDouble(),
+              ),
+              child: IconButton.filled(
+                tooltip: 'Explorar ${t.space['name']}',
+                icon: const Icon(Icons.panorama_photosphere_outlined),
+                onPressed: () => context.push('/tours/${t.id}'),
+              ),
+            ),
+        ];
   void _onReady() {
     _ready = true;
     _captureViewport();
     unawaited(_state.search());
+    unawaited(_loadTours());
   }
 
   void _onPositionChanged(MapCamera camera, bool hasGesture) {
@@ -158,6 +215,7 @@ class _MissionMapScreenState extends State<MissionMapScreen>
       if (!mounted) return;
       _captureViewport();
       await _state.search();
+      await _loadTours();
     } on TickerCanceled {
       // A manual gesture owns the camera immediately.
     } on DeviceLocationFailure catch (failure) {
@@ -242,6 +300,7 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                   _state.select(null);
                 },
                 missions: _state.page.missions,
+                tourMarkers: _tourMarkers,
                 selectedId: selected?.id,
                 onMissionTap: (id) {
                   FocusScope.of(context).unfocus();
@@ -271,6 +330,25 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                         onSubmitted: _submit,
                         onFilters: _filters,
                       ),
+                      if (widget.session.tourRepository != null)
+                        Wrap(
+                          spacing: 8,
+                          children: [
+                            FilterChip(
+                              label: const Text('Locales 360°'),
+                              selected: _showTours,
+                              onSelected: (show) {
+                                setState(() => _showTours = show);
+                                _tourGeneration++;
+                                if (show) _loadTours();
+                              },
+                            ),
+                            TextButton(
+                              onPressed: () => context.push('/tours/nearby'),
+                              child: const Text('Descubrir cerca'),
+                            ),
+                          ],
+                        ),
                       const SizedBox(height: 8),
                       MapQuickFilters(
                         filters: _state.filters,
@@ -346,18 +424,14 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                 color: AppColors.surface,
                 radius: 24,
                 child: IconButton(
-                  tooltip: 'Centrar en mi ubicación',
+                  tooltip: _locating
+                      ? 'Buscando ubicación…'
+                      : 'Centrar en mi ubicación',
                   onPressed: _locating ? null : () => _locate(explicit: true),
-                  icon: _locating
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(
-                          Icons.my_location_rounded,
-                          color: AppColors.actionBlue,
-                        ),
+                  icon: const Icon(
+                    Icons.my_location_rounded,
+                    color: AppColors.actionBlue,
+                  ),
                 ),
               ),
             ),

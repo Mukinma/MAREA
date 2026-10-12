@@ -43,6 +43,18 @@ void main() {
     );
   });
 
+  test('requires a new login when the persisted refresh token is gone', () {
+    final failure = AppFailureMapper.fromMessage(
+      'AuthApiException(message: Invalid Refresh Token: Refresh Token Not Found, '
+      'statusCode: 400, code: refresh_token_not_found)',
+    );
+    expect(failure.kind, AppFailureKind.invalidSession);
+    expect(
+      failure.message,
+      'Tu sesión ya no es válida. Inicia sesión nuevamente.',
+    );
+  });
+
   test('does not leak unknown technical errors', () {
     final failure = AppFailureMapper.fromMessage('PostgrestException 42501');
     expect(failure.message, 'Algo salió mal. Inténtalo nuevamente.');

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'marea_skeleton.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
@@ -85,12 +86,17 @@ class _ProfileImageState extends State<ProfileImage> {
             ],
           );
         }
-        if (!snapshot.hasData) return widget.fallback;
+        if (!snapshot.hasData) {
+          return const MareaSkeleton(kind: SkeletonKind.image);
+        }
         return Image.network(
           snapshot.data!,
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
+          loadingBuilder: (_, child, progress) => progress == null
+              ? child
+              : const MareaSkeleton(kind: SkeletonKind.image),
           errorBuilder: (_, _, _) => widget.fallback,
         );
       },

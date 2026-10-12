@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -70,13 +71,19 @@ class _ShowcasePhotoState extends State<ShowcasePhoto> {
             height: widget.height,
             width: double.infinity,
             fit: BoxFit.cover,
+            loadingBuilder: (_, child, progress) => progress == null
+                ? child
+                : SizedBox(
+                    height: widget.height,
+                    child: const MareaSkeleton(kind: SkeletonKind.image),
+                  ),
             errorBuilder: (_, _, _) => _fallback(),
           )
         : snapshot.hasError
         ? _fallback()
         : SizedBox(
             height: widget.height,
-            child: const Center(child: CircularProgressIndicator()),
+            child: const Center(child: MareaSkeleton(kind: SkeletonKind.image)),
           ),
   );
 }
@@ -133,7 +140,6 @@ class _ShowcaseListState extends State<ShowcaseList> {
     setState(() {
       _loading = true;
       _error = null;
-      if (reset) _items.clear();
     });
     try {
       if (repo == null) throw StateError('showcase repository missing');
@@ -144,10 +150,11 @@ class _ShowcaseListState extends State<ShowcaseList> {
         kind: widget.kind,
         management: widget.management,
         savedOnly: widget.savedOnly,
-        offset: _items.length,
+        offset: reset ? 0 : _items.length,
       );
       if (!mounted || generation != _generation) return;
       setState(() {
+        if (reset) _items.clear();
         _items.addAll(page);
         _more = page.length == 30;
       });
@@ -266,10 +273,10 @@ class _ShowcaseListState extends State<ShowcaseList> {
           );
         },
       ),
-      if (_loading)
+      if (_loading && _items.isEmpty)
         const Padding(
           padding: EdgeInsets.all(24),
-          child: Center(child: CircularProgressIndicator()),
+          child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
         ),
       if (_error != null)
         CommunityNotice(

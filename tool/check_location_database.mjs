@@ -1,0 +1,35 @@
+import { readFileSync, existsSync } from 'node:fs';
+import assert from 'node:assert/strict';
+const { PGlite } = await import(process.env.MAREA_PGLITE_MODULE || '@electric-sql/pglite');
+const db = new PGlite();
+await db.exec(`create role anon; create role authenticated; create role service_role; create schema auth;
+create function auth.uid() returns uuid language sql as $$select null::uuid$$;
+create table public.posts(id uuid primary key, hidden boolean default false, location_latitude double precision, location_longitude double precision, location_city jsonb);
+create table public.missions(id uuid primary key, hidden boolean default false, location_latitude double precision, location_longitude double precision);
+create table public.mission_drafts(id uuid primary key, data jsonb);
+create function public.create_mission(mission_input jsonb) returns uuid language sql as $$select null::uuid$$;
+create function public.update_mission(mission_id uuid, mission_input jsonb) returns void language sql as $$select$$;
+create function public.save_mission_draft(draft_id uuid, draft_input jsonb) returns uuid language sql as $$select draft_id$$;
+alter table public.posts drop column location_city;`);
+const path = 'supabase/migrations/021_content_cities.sql';
+if (existsSync(path)) await db.exec(readFileSync(path,'utf8'));
+assert.equal((await db.query(`select column_name from information_schema.columns where table_name='posts' and column_name='location_city'`)).rows.length,1,'content city must persist independently of the full location');
+const first = (await db.query(`select public.claim_geocoding_request('00000000-0000-0000-0000-000000000001') as ok`)).rows[0].ok;
+assert.equal(first,true);
+assert.equal((await db.query(`select public.claim_geocoding_request('00000000-0000-0000-0000-000000000002') as ok`)).rows[0].ok,false,'concurrent workers cannot issue upstream requests');
+await db.query(`select public.finish_geocoding_request('00000000-0000-0000-0000-000000000002')`);
+assert.equal((await db.query(`select public.claim_geocoding_request('00000000-0000-0000-0000-000000000003') as ok`)).rows[0].ok,false,'a different worker cannot release the lock');
+await db.query(`select public.finish_geocoding_request('00000000-0000-0000-0000-000000000001')`);
+assert.equal((await db.query(`select public.claim_geocoding_request('00000000-0000-0000-0000-000000000004') as ok`)).rows[0].ok,false,'requests remain spaced after release');
+for (const role of ['anon','authenticated']) {
+  await db.exec(`set role ${role}`);
+  await assert.rejects(db.query(`select public.claim_geocoding_request('00000000-0000-0000-0000-000000000005')`),/permission denied/);
+  await assert.rejects(db.query(`select * from public.geocoding_cache`),/permission denied/);
+  await db.exec('reset role');
+}
+await db.exec(`insert into public.posts(id,location_latitude,location_longitude,location_city) values('00000000-0000-0000-0000-000000000099',19,-99,'{"name":"City"}'); update public.posts set location_latitude=20 where id='00000000-0000-0000-0000-000000000099';`);
+assert.equal((await db.query(`select location_city from public.posts`)).rows[0].location_city,null,'moving a point clears its stale city');
+await assert.rejects(db.exec(`update public.posts set location_city='{"name":""}'`),/check constraint/);
+await assert.rejects(db.exec(`update public.posts set location_city='{}'`),/check constraint/);
+console.log('Location SQL: city storage, point invalidation, exclusive global throttle and role isolation passed');
+await db.close();

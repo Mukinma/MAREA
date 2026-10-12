@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 import 'dart:typed_data';
@@ -499,17 +500,12 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
                 _busy || _loading || (widget.itemId != null && _kind == null)
                 ? null
                 : _save,
-            icon: _busy
-                ? const SizedBox.square(
-                    dimension: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.check),
+            icon: const Icon(Icons.check),
             label: Text(_busy ? 'Guardando…' : 'Guardar ficha'),
           ),
         ),
         body: _loading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: MareaSkeleton(kind: SkeletonKind.form))
             : widget.itemId != null && _kind == null
             ? CommunityNotice(
                 message: _error ?? 'Ficha no disponible.',

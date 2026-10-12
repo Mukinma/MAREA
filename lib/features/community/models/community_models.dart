@@ -1,3 +1,4 @@
+import 'package:marea/features/location/models/location_models.dart';
 import 'mission_experience.dart';
 export 'mission_experience.dart';
 import 'package:marea/features/profile/models/profile.dart';
@@ -141,6 +142,7 @@ class CommunityPost {
     required this.updatedAt,
     this.location,
     this.coordinates,
+    this.city,
     this.price,
     this.imagePath,
     this.hidden = false,
@@ -154,6 +156,7 @@ class CommunityPost {
   final String category;
   final String? location;
   final PostCoordinates? coordinates;
+  final LocationCity? city;
   final double? price;
   final String? imagePath;
   final bool hidden, allowsCollaboration;
@@ -169,6 +172,7 @@ class CommunityPost {
     category: json['category'] as String,
     location: json['location'] as String?,
     coordinates: PostCoordinates.fromJson(json),
+    city: LocationCity.fromJson(json['location_city']),
     price: (json['price'] as num?)?.toDouble(),
     imagePath: json['image_path'] as String?,
     hidden: json['hidden'] as bool? ?? false,
@@ -243,6 +247,7 @@ class Mission {
     this.compensationAmountCents,
     this.imagePath,
     this.coordinates,
+    this.city,
     this.requirements,
     this.conditions,
     this.conditionsLockedAt,
@@ -272,6 +277,7 @@ class Mission {
   final DateTime createdAt;
   final String? imagePath;
   final PostCoordinates? coordinates;
+  final LocationCity? city;
   final String? requirements;
   final String? conditions;
   final DateTime? conditionsLockedAt;
@@ -336,6 +342,7 @@ class Mission {
     capacity: json['capacity'] as int,
     imagePath: json['image_path'] as String?,
     coordinates: PostCoordinates.fromJson(json),
+    city: LocationCity.fromJson(json['location_city']),
     requirements: json['requirements'] as String?,
     conditions: json['conditions'] as String?,
     conditionsLockedAt: json['conditions_locked_at'] == null
@@ -436,6 +443,7 @@ class PostInput {
     required this.category,
     this.location,
     this.coordinates,
+    this.city,
     this.price,
     this.imagePath,
     this.allowsCollaboration = false,
@@ -447,6 +455,7 @@ class PostInput {
   final String category;
   final String? location;
   final PostCoordinates? coordinates;
+  final LocationCity? city;
   final double? price;
   final String? imagePath;
 
@@ -482,6 +491,10 @@ class PostInput {
     'title': title.trim(),
     'body': body.trim(),
     'category': category,
+    if (city != null || coordinates != null)
+      'location_city': coordinates == null
+          ? null
+          : city?.toJson(coordinates: coordinates),
     'location': _optionalText(location),
     if (coordinates != null) ...coordinates!.toJson(),
     if (coordinates == null) ...{
@@ -507,6 +520,7 @@ class MissionInput {
     this.compensationAmountCents,
     this.imagePath,
     this.coordinates,
+    this.city,
     this.requirements,
     this.conditions,
   });
@@ -522,6 +536,7 @@ class MissionInput {
 
   final String? imagePath;
   final PostCoordinates? coordinates;
+  final LocationCity? city;
   final String? requirements;
   final String? conditions;
 
@@ -558,6 +573,9 @@ class MissionInput {
     'title': title.trim(),
     'body': body.trim(),
     'category': category,
+    'location_city': coordinates == null
+        ? null
+        : city?.toJson(coordinates: coordinates),
     'location': location.trim(),
     'starts_at': startsAt.toUtc().toIso8601String(),
     'capacity': capacity,

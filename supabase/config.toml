@@ -5,3 +5,18 @@ verify_jwt = true
 
 [functions.profile-media]
 verify_jwt = true
+
+[functions.send-push]
+# Authenticated by a server-only worker secret, never a user JWT.
+verify_jwt = false
+
+[functions.tour-dispatch]
+# Server-only shared secret plus Google IAM; no authenticated user can dispatch.
+verify_jwt = false
+
+[functions.story-cleanup]
+# Authenticated by a server-only worker secret kept in Vault.
+verify_jwt = false
+
+[functions.geocoding]
+verify_jwt = false

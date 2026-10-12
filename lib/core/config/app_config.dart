@@ -31,17 +31,21 @@ class AppConfig {
   final String supabaseUrl;
   final String supabaseAnonKey;
   final String publicUrl;
-  Uri postUrl(String id) {
+  Uri postUrl(String id) => _contentUrl('posts', id);
+  Uri missionUrl(String id) => _contentUrl('missions', id);
+
+  Uri _contentUrl(String kind, String id) {
     final origin = Uri.parse(publicUrl);
     if (!{'http', 'https'}.contains(origin.scheme) ||
         origin.host.isEmpty ||
         origin.userInfo.isNotEmpty) {
       throw StateError('APP_PUBLIC_URL debe ser una URL pública HTTP o HTTPS.');
     }
-    return origin.replace(
-      pathSegments: ['posts', id],
-      query: null,
-      fragment: null,
+    return Uri(
+      scheme: origin.scheme,
+      host: origin.host,
+      port: origin.hasPort ? origin.port : null,
+      pathSegments: [kind, id],
     );
   }
 

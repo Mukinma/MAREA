@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marea/app.dart';
 import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -7,6 +9,24 @@ import 'package:marea/core/session/app_session_controller.dart';
 import '../../support/fakes.dart';
 
 void main() {
+  test(
+    'tour and point destinations survive authentication with their query',
+    () {
+      for (final route in [
+        '/tours/cafe?point=mural',
+        '/tours/cafe/ar?point=mural',
+        '/tours/cafe/edit',
+        '/tours/cafe/capture?scene=bar',
+      ]) {
+        expect(AppRouteGuard.internalDestination(route), route);
+      }
+      expect(
+        AppRouteGuard.internalDestination('https://other.test/tours/cafe'),
+        isNull,
+      );
+    },
+  );
+
   for (final path in [
     '/missions',
     '/missions/new',
@@ -172,6 +192,7 @@ void main() {
   testWidgets('cold start leaves splash after session initialization', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({'marea.mobile_intro.seen': true});
     final auth = FakeAuthRepository()..user = null;
     final controller = AppSessionController(
       authRepository: auth,
@@ -179,7 +200,7 @@ void main() {
     );
 
     await tester.pumpWidget(MareaApp(controller: controller));
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(MareaSkeleton), findsOneWidget);
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('welcome-register')), findsOneWidget);

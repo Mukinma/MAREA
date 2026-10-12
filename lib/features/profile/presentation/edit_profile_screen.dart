@@ -593,6 +593,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     onTap: () async {
                       final value = await showCommunityLocationPicker(
                         context,
+                        repository: widget.controller.locationRepository,
                         initial: _location == null || _coordinates == null
                             ? null
                             : PostLocationSelection(

@@ -19,6 +19,7 @@ abstract final class AppTheme {
 
     final base = ThemeData(
       useMaterial3: true,
+      splashFactory: InkRipple.splashFactory,
       brightness: Brightness.light,
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.paper,

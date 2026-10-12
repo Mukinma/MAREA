@@ -40,7 +40,7 @@ await db.exec(`insert into public.mission_applications(mission_id,applicant_id,m
 try { await db.exec(await readFile(new URL('../supabase/migrations/005_mission_lifecycle.sql',import.meta.url),'utf8')); } catch (e) { if (e.code !== 'ENOENT') throw e; }
 
 
-for (const name of ['006_profile_experience','007_minimal_registration','008_recover_minimal_registration','009_post_reactions','010_post_comments','011_post_collaboration','012_mission_map','013_missions_redesign']) await db.exec(await readFile(new URL(`../supabase/migrations/${name}.sql`,import.meta.url),'utf8'));
+for (const name of ['006_profile_experience','007_minimal_registration','008_recover_minimal_registration','009_post_reactions','010_post_comments','011_post_collaboration','012_mission_map','013_missions_redesign','014_android_push','015_tours']) await db.exec(await readFile(new URL(`../supabase/migrations/${name}.sql`,import.meta.url),'utf8'));
 
 await db.exec(`update public.profiles set initial_profile_completed_at=now()`);
 await login(a);
@@ -181,7 +181,7 @@ await login(admin); await db.exec(`select public.moderate_content('${paged[0]}',
 await login(b); check((await db.query("select * from public.list_saved_missions(query_text=>'Guardada',category_filter=>'musica')")).rows.length,1,'hidden saved mission omitted');
 await rpc('set_mission_saved',[m,false]); check(await scalar(`select count(*)::int from public.mission_saves where mission_id='${m}'`),0,'unsave remains possible for historical mission');
 await system();
-await db.exec(`create schema supabase_migrations;create table supabase_migrations.schema_migrations(version text primary key);insert into supabase_migrations.schema_migrations select lpad(i::text,3,'0') from generate_series(1,13) i`);
+await db.exec(`create schema supabase_migrations;create table supabase_migrations.schema_migrations(version text primary key);insert into supabase_migrations.schema_migrations select lpad(i::text,3,'0') from generate_series(1,15) i`);
 const gate=(await db.query(await readFile(new URL('./backend_contract.sql',import.meta.url),'utf8'))).rows[0];
 for(const key of ['migrations_ready','mission_tables_ready','mission_permissions_ready','mission_functions_ready','mission_notifications_ready']) check(gate[key],true,`real SQL gate ${key}`);
 

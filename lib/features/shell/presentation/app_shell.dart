@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/presentation/notifications_panel.dart';
@@ -160,6 +161,7 @@ class AppShell extends StatelessWidget {
         );
       }
       return Scaffold(
+        extendBody: true,
         body: SafeArea(
           bottom: false,
           child: Column(
@@ -173,9 +175,24 @@ class AppShell extends StatelessWidget {
                       height: 56,
                       child: Row(
                         children: [
-                          const MareaLogo(compact: true),
-                          const Spacer(),
-                          ..._utilities(context),
+                          if (location == '/home') ...[
+                            ..._utilities(context).skip(1),
+                            const Expanded(
+                              child: Center(child: MareaLogo(compact: true)),
+                            ),
+                            const IconButton(
+                              tooltip: 'Mensajes (próximamente)',
+                              onPressed: null,
+                              icon: Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                color: AppColors.brandNavy,
+                              ),
+                            ),
+                          ] else ...[
+                            const MareaLogo(compact: true),
+                            const Spacer(),
+                            ..._utilities(context),
+                          ],
                         ],
                       ),
                     ),
@@ -185,17 +202,23 @@ class AppShell extends StatelessWidget {
             ],
           ),
         ),
-        bottomNavigationBar: SafeArea(
-          top: false,
-          minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-          child: SizedBox(
-            height: 68,
-            child: Row(
-              children: [
-                Expanded(child: Center(child: navigation)),
-                const SizedBox(width: 12),
-                create,
-              ],
+        bottomNavigationBar: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {},
+          child: MareaPanelAwareDock(
+            child: SafeArea(
+              top: false,
+              minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+              child: SizedBox(
+                height: 68,
+                child: Row(
+                  children: [
+                    Expanded(child: Center(child: navigation)),
+                    const SizedBox(width: 12),
+                    create,
+                  ],
+                ),
+              ),
             ),
           ),
         ),

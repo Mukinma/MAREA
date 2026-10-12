@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/map/models/mission_map_models.dart';
@@ -5,7 +6,7 @@ import 'package:marea/features/map/models/mission_map_models.dart';
 Future<MissionMapFilters?> showMapFilterSheet(
   BuildContext context,
   MissionMapFilters initial,
-) => showModalBottomSheet<MissionMapFilters>(
+) => showMareaBottomSheet<MissionMapFilters>(
   context: context,
   isScrollControlled: true,
   useSafeArea: true,

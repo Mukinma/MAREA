@@ -1,3 +1,5 @@
+import 'package:marea/features/profile/models/profile.dart';
+import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -45,6 +47,13 @@ class CreationChoices extends StatelessWidget {
           })
         >[
           (
+            title: 'Crear historia',
+            description: 'Comparte una foto o texto durante 24 horas.',
+            path: '/stories/new',
+            icon: Icons.add_circle_outline,
+            color: AppColors.mint,
+          ),
+          (
             title: 'Crear misión',
             description: 'Convoca a tu comunidad para hacer algo juntos.',
             path: '/missions/new',
@@ -59,6 +68,16 @@ class CreationChoices extends StatelessWidget {
             icon: Icons.dynamic_feed_outlined,
             color: AppColors.peach,
           ),
+          if (controller.tourRepository != null &&
+              controller.profile?.userType != null &&
+              controller.profile!.userType != UserType.general)
+            (
+              title: 'Crear recorrido 360°',
+              description: 'Muestra tu local y añade puntos con AR.',
+              path: '/tours/new',
+              icon: Icons.panorama_photosphere_outlined,
+              color: AppColors.mint,
+            ),
           for (final kind
               in controller.profile?.userType.showcaseKinds ?? <ShowcaseKind>[])
             (
@@ -188,7 +207,7 @@ Future<void> showCreateMenu(
     ),
   );
   final path = width < 600
-      ? await showModalBottomSheet<String>(
+      ? await showMareaBottomSheet<String>(
           context: context,
           isScrollControlled: true,
           showDragHandle: true,
@@ -218,5 +237,8 @@ Future<void> showCreateMenu(
             ),
           ),
         );
-  if (path != null && context.mounted) await router.push(path);
+  if (path != null && context.mounted) {
+    await router.push(path);
+    controller.refreshHomeFeed();
+  }
 }

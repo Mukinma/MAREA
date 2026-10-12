@@ -1,3 +1,4 @@
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -340,6 +341,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               : () async {
                   final selection = await showCommunityLocationPicker(
                     context,
+                    repository: widget.controller.locationRepository,
                     initial: _location == null || _coordinates == null
                         ? null
                         : PostLocationSelection(
@@ -444,7 +446,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     builder: (context, _) {
       final profile = widget.controller.profile;
       if (profile == null || profile.id != _accountId) {
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        return const Scaffold(
+          body: Center(child: MareaSkeleton(kind: SkeletonKind.profile)),
+        );
       }
       return PopScope(
         canPop: !_busy,
