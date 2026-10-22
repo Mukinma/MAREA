@@ -1,0 +1,13 @@
+{
+  "status": "BLOQUEADO_NO_IMPLEMENTADO",
+  "reason": "Cold backup export lost subsecond mtime; restored tree mismatch",
+  "A_DDL_executed": false,
+  "Auth_started": false,
+  "functional_cases_executed": 0,
+  "new_execution_authorized": false,
+  "baseline_a_snapshot_sha256": "c7c2df0c77ec2b582cb919044e8c8f7736374474f6fd7ffd2fa4765ba544c827",
+  "executed_source_sha256": "68a0e42e317313ad9b51dfeb480c42c3daf40621074e246cbea22b88e90825f8",
+  "blocked_executor_sha256": "0fafe71013d372b14b9b2c278ea3bb22bbead5f6a58ae42f44c139708f404e31",
+  "archive_sha256": "a73bffaa89fd1803f711239c412a2a7bcb94b13e2a7aeea149f0f96af775fb8f",
+  "manifest_sha256": "dac3401a77973efe80552829b9133d1cc7600b1e1bf049e6ccf48efd8f509091"
+}

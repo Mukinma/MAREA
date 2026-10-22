@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-19T19:28:55.565185+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "preflight_HTTP": 204,
+      "unauthorized_POST_HTTP": 401,
+      "legacy_CORS_headers_preserved": true,
+      "data_unchanged": true
+    },
+    "b": {
+      "result": "PASS",
+      "preflight_HTTP": 204,
+      "unauthorized_POST_HTTP": 401,
+      "legacy_CORS_headers_preserved": true,
+      "data_unchanged": true
+    }
+  },
+  "scope": "server browser-preflight contract; no Flutter binary claim"
+}

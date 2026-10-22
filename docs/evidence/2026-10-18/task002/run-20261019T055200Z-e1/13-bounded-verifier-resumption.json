@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-19T05:54:32.787065+00:00",
+  "result": "PASS",
+  "preconditions_still_valid": true,
+  "cause": "regclass uses visible name users under search_path; comparator qualified-name assumption",
+  "fix": "Resolve relation text from the same auth.users OID; permit only two triggers joined to persons FK",
+  "sql_or_schema_changed_to_fix": false,
+  "new_scope": false,
+  "first_failure_retained": true,
+  "comparator_regression_red_then_green": true,
+  "A_existing_commit_verified_readonly": true,
+  "B_still_exact_initial_state": true
+}

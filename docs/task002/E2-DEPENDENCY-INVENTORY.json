@@ -1,0 +1,3528 @@
+{
+  "scope": "DESK_ANALYSIS_ONLY_NO_DB_DOCKER_OR_PRODUCT_MUTATION",
+  "normative": "SRS-5.1.1",
+  "E2_executed": false,
+  "E1_preserved": true,
+  "sources": {
+    "a": {
+      "snapshot_file_sha256": "9b376c555c85193e34349e537a633be3e263446dbee5d5447d43c13e3816565e",
+      "derived_from": "E1 frozen private after snapshot; no fresh database query",
+      "legacy_rows": 100,
+      "persons": 6,
+      "catalog_tables": 108,
+      "constraints": 370,
+      "FK": 102,
+      "profile_incoming_FK": [
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_captures_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "private.tour_captures",
+          "schema": "private",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_jobs_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "private.tour_jobs",
+          "schema": "private",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_output_writes_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "private.tour_output_writes",
+          "schema": "private",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_permissions_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "private.tour_permissions",
+          "schema": "private",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (reporter_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "content_reports_reporter_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "content_reports",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (viewer_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "home_feed_snapshots_viewer_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "home_feed_snapshots",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (applicant_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_application_operations_applicant_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_application_operations",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (applicant_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_applications_applicant_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_applications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_comment_operations_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_comment_operations",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_comments_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_comments",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_drafts_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_drafts",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_reactions_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_reactions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_saves_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_saves",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "missions_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "missions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notification_devices_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "notification_devices",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notification_preferences_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "notification_preferences",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (actor_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notifications_actor_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "notifications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (recipient_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notifications_recipient_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "notifications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (applicant_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "post_collaboration_interests_applicant_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "post_collaboration_interests",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "post_comments_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "post_comments",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "post_reactions_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "post_reactions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "post_saves_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "post_saves",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "posts_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "posts",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "profile_follows_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "profile_follows",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (follower_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "profile_follows_follower_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "profile_follows",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "showcase_items_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "showcase_items",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "showcase_saves_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "showcase_saves",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "stories_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "stories",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "story_publications_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "story_publications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (reporter_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "story_reports_reporter_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "story_reports",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (viewer_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "story_views_viewer_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "story_views",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_progress_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tour_progress",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (requester_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_requests_requester_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tour_requests",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (reviewer_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_requests_reviewer_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tour_requests",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_revisions_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tour_revisions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tours_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tours",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        }
+      ],
+      "mission_incoming_FK": [
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "content_reports_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "content_reports",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_application_operations_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_application_operations",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_applications_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_applications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_comment_operations_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_comment_operations",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_comments_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_comments",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (published_mission_id) REFERENCES missions(id) ON DELETE SET NULL",
+          "delete_action": "n",
+          "name": "mission_drafts_published_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_drafts",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_finalists_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_finalists",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_reactions_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_reactions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_saves_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_saves",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notifications_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "notifications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        }
+      ],
+      "auth_lifecycle_FK": [
+        {
+          "definition": "FOREIGN KEY (auth_user_id) REFERENCES users(id) ON DELETE SET NULL",
+          "delete_action": "n",
+          "name": "persons_auth_user_id_fkey",
+          "referenced_relation": "users",
+          "relation": "collaboration.persons",
+          "schema": "collaboration",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "account_deletion_requests_user_id_fkey",
+          "referenced_relation": "users",
+          "relation": "account_deletion_requests",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "profiles_id_fkey",
+          "referenced_relation": "users",
+          "relation": "profiles",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        }
+      ],
+      "policies": [
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Private applications",
+          "qual": "((applicant_id = uid()) OR (EXISTS ( SELECT 1\n   FROM missions\n  WHERE ((missions.id = mission_applications.mission_id) AND (missions.author_id = uid())))))",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "mission_applications",
+          "with_check": null
+        },
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Private mission drafts",
+          "qual": "(author_id = uid())",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "mission_drafts",
+          "with_check": null
+        },
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Organizer finalists",
+          "qual": "(EXISTS ( SELECT 1\n   FROM missions m\n  WHERE ((m.id = mission_finalists.mission_id) AND (m.author_id = uid()))))",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "mission_finalists",
+          "with_check": null
+        },
+        {
+          "cmd": "INSERT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Create own missions",
+          "qual": null,
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "missions",
+          "with_check": "(author_id = uid())"
+        },
+        {
+          "cmd": "DELETE",
+          "permissive": "PERMISSIVE",
+          "policyname": "Delete own missions",
+          "qual": "(author_id = uid())",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "missions",
+          "with_check": null
+        },
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Visible missions",
+          "qual": "((NOT hidden) OR (author_id = uid()) OR community_is_admin())",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "missions",
+          "with_check": null
+        },
+        {
+          "cmd": "DELETE",
+          "permissive": "PERMISSIVE",
+          "policyname": "Delete own unused mission images",
+          "qual": "((bucket_id = 'mission-images'::text) AND ((storage.foldername(name))[1] = (uid())::text) AND (NOT (EXISTS ( SELECT 1\n   FROM missions m\n  WHERE (m.image_path = objects.name)))) AND (NOT (EXISTS ( SELECT 1\n   FROM mission_drafts d\n  WHERE ((d.published_at IS NULL) AND ((d.data ->> 'image_path'::text) = objects.name))))))",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "storage",
+          "tablename": "objects",
+          "with_check": null
+        },
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Read visible mission images",
+          "qual": "((bucket_id = 'mission-images'::text) AND (((storage.foldername(name))[1] = (uid())::text) OR (EXISTS ( SELECT 1\n   FROM missions m\n  WHERE (m.image_path = objects.name)))))",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "storage",
+          "tablename": "objects",
+          "with_check": null
+        },
+        {
+          "cmd": "INSERT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Upload own mission images",
+          "qual": null,
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "storage",
+          "tablename": "objects",
+          "with_check": "((bucket_id = 'mission-images'::text) AND (name ~ (('^'::text || (uid())::text) || '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'::text)))"
+        }
+      ],
+      "application_grants": [
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "is_grantable": "NO",
+          "privilege_type": "SELECT",
+          "table_catalog": "postgres",
+          "table_name": "mission_applications",
+          "table_schema": "public",
+          "with_hierarchy": "YES"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "is_grantable": "NO",
+          "privilege_type": "SELECT",
+          "table_catalog": "postgres",
+          "table_name": "mission_finalists",
+          "table_schema": "public",
+          "with_hierarchy": "YES"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "is_grantable": "NO",
+          "privilege_type": "DELETE",
+          "table_catalog": "postgres",
+          "table_name": "missions",
+          "table_schema": "public",
+          "with_hierarchy": "NO"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "is_grantable": "NO",
+          "privilege_type": "SELECT",
+          "table_catalog": "postgres",
+          "table_name": "missions",
+          "table_schema": "public",
+          "with_hierarchy": "YES"
+        }
+      ],
+      "routines": [
+        {
+          "signature": "private.schedule_marea_messages(timestamp with time zone)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "d645b9b7da3ca1d0b36ecfdb36280faf70fd405e065507d9238f2ad5fd0c3aa1",
+          "calls": [
+            "private.schedule_marea_messages",
+            "public.notifications"
+          ]
+        },
+        {
+          "signature": "private.tour_link(text,uuid,uuid,uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres}",
+          "definition_sha256": "1a5596802ec9ef25dee2cceda27da967ed7f81ffdab40da4d83dc0deb80a9714",
+          "calls": [
+            "private.tour_link"
+          ]
+        },
+        {
+          "signature": "private.tour_space_verified(uuid,uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres}",
+          "definition_sha256": "908378342debf3fa437dc059671861b1074e0337d8bf453ca1568ff25d5aaf01",
+          "calls": [
+            "private.tour_space_verified"
+          ]
+        },
+        {
+          "signature": "private.tour_visible(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres}",
+          "definition_sha256": "a7548f32fead6a0c78f6e05a674c4b7fc12a2992f4d45902f74882e37334454f",
+          "calls": [
+            "private.tour_visible"
+          ]
+        },
+        {
+          "signature": "apply_to_mission(uuid,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "879b2519d07ee82094379275205aa2881c74e45511068faf2256dacb7a280aaf",
+          "calls": [
+            "public.apply_to_mission",
+            "public.community_active_account"
+          ]
+        },
+        {
+          "signature": "claim_push_jobs(integer)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "1228b6425ad4d44666596e7af123ae1597abe65443e631dd3f637bc75541802c",
+          "calls": [
+            "private.schedule_marea_messages",
+            "public.claim_push_jobs"
+          ]
+        },
+        {
+          "signature": "confirm_mission_selection(uuid,uuid[])",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "15bc8f9f17853ca6f3d064f316bdf609ecf89fa95c480a8d5b7f5cad0489eb9d",
+          "calls": [
+            "public.community_active_account",
+            "public.confirm_mission_selection",
+            "public.review_application"
+          ]
+        },
+        {
+          "signature": "create_mission_before_city(jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "af24de7203a8dd88bc871b84ad952b534103b6379039d919cd04545c78fe9d7c",
+          "calls": [
+            "public.create_mission_before_city",
+            "public.create_mission_legacy"
+          ]
+        },
+        {
+          "signature": "create_mission_comment(uuid,text,uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "fbacaf763448096d71cb7c1e9ed2625f98d0e8075faa00780943379eb96e12a7",
+          "calls": [
+            "public.community_active_account",
+            "public.create_mission_comment",
+            "public.mission_comment_operations",
+            "public.mission_comments",
+            "public.notifications",
+            "public.social_mission"
+          ]
+        },
+        {
+          "signature": "create_mission_legacy(jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "96ca3b1ee17b438eb7aca87585e9090eb57688ad9ea50eb32e26c7342e311031",
+          "calls": [
+            "public.community_active_account",
+            "public.create_mission_legacy",
+            "public.missions"
+          ]
+        },
+        {
+          "signature": "create_mission(jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "03018ac094c1db4431186703c3e8de9d69a40b9214b761f3ca11f74ea874db1e",
+          "calls": [
+            "public.create_mission",
+            "public.create_mission_before_city"
+          ]
+        },
+        {
+          "signature": "delete_mission_comment(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "578d7b7e2260ef187ea9d68ef2fbea89258712bb90b5866b62153254a20ab4c6",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.delete_mission_comment"
+          ]
+        },
+        {
+          "signature": "delete_mission_draft(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "eb4f743b7ac568c19a1b642f7a8869e774c1427069404d0cb0d7e5de54460876",
+          "calls": [
+            "public.community_active_account",
+            "public.delete_mission_draft"
+          ]
+        },
+        {
+          "signature": "delete_post_comment(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "12b833a2d0fc568b6977e5f87cf71876c147ac2ef2b27f5ffa887d6c8a2211ed",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.delete_post_comment"
+          ]
+        },
+        {
+          "signature": "delete_story(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "dee9404447f74345489d9f9b09b7c176e9bbac3b9862e1c2f65aaae4fdd7a46a",
+          "calls": [
+            "public.community_active_account",
+            "public.delete_story"
+          ]
+        },
+        {
+          "signature": "guard_mission_image_operation()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "bcdb8009368a7f49c61458c14fb9748cad5f12a274273b18b1789fc40e630c37",
+          "calls": [
+            "public.guard_mission_image_operation"
+          ]
+        },
+        {
+          "signature": "handle_new_user()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "b8bff5b6314809113bcf57f75d4af5cbb9bf0ff229db9d95a1b6e99ddb4a13ea",
+          "calls": [
+            "public.handle_new_user",
+            "public.legal_acceptances",
+            "public.profiles",
+            "public.registration_policy"
+          ]
+        },
+        {
+          "signature": "home_feed_candidates(jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "6628ec4073c6d53c4ade89ad4a455f11babca0b1cf3bbaffa6215269893df4f0",
+          "calls": [
+            "public.home_feed_candidates"
+          ]
+        },
+        {
+          "signature": "home_feed(jsonb,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "5284475cb4fc3a8634f19b9cf799009dbde1c10cda84903c7ad81e6f32ca4ad5",
+          "calls": [
+            "public.community_active_account",
+            "public.home_feed",
+            "public.home_feed_candidates",
+            "public.home_feed_snapshots"
+          ]
+        },
+        {
+          "signature": "list_map_missions(double precision,double precision,double precision,double precision,text,text,timestamp with time zone,timestamp with time zone,double precision,double precision,double precision)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "93e648ee4f5fd66f6ccbc5daed54acd6032e49e8e62dfb70206aa54a911f581d",
+          "calls": [
+            "public.community_active_account",
+            "public.list_map_missions"
+          ]
+        },
+        {
+          "signature": "list_missions(uuid,text,text,text,text,integer,uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "f1ab364691dd69115caaeb11dabc82a121183c1a44e24953e2a32b9b01bf81e8",
+          "calls": [
+            "public.community_is_admin",
+            "public.list_missions"
+          ]
+        },
+        {
+          "signature": "list_saved_missions(text,text,text,integer)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "3d94f3d11e2c6f9cfc0910e66b163e1c9ea53c1c8b234917e8ffd0ec1530b4c4",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.list_saved_missions"
+          ]
+        },
+        {
+          "signature": "lock_mission_compensation()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "0456d0c15d572ec57ddbb43216fce1920b4b9ce0ec0523e9a4cd389c374cbe64",
+          "calls": [
+            "public.lock_mission_compensation"
+          ]
+        },
+        {
+          "signature": "mission_social_stats(uuid[])",
+          "security_definer": false,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "fcecd6ae314711ff8e2db20a6cd8e70eae6f7e0aa6ffdd4b17b208431c2baf24",
+          "calls": [
+            "public.mission_social_stats",
+            "public.mission_social_visible"
+          ]
+        },
+        {
+          "signature": "mission_social_visible(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "ae81843ecc810573a51d978e56081ed8a70a49e154409181e7d0d4b6908e04a7",
+          "calls": [
+            "public.mission_social_visible"
+          ]
+        },
+        {
+          "signature": "moderate_content(uuid,text,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "354533936a40eaaecfbc36b7065a212da60bab01b26288e3269e43b74e317018",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.moderate_content"
+          ]
+        },
+        {
+          "signature": "moderate_story(uuid,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "a250a7e811021355c34ed60e7a113ac326d3391cd40c42f15b374f711539e371",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.moderate_story"
+          ]
+        },
+        {
+          "signature": "notify_mission_application()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "6da20da216c64c7afdc69f7073ac5df11c01f09b92405bc691cfc8630d5fd7ba",
+          "calls": [
+            "public.notifications",
+            "public.notify_mission_application"
+          ]
+        },
+        {
+          "signature": "notify_mission_reaction()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "6583c2d7588d45a699340517364dd65bdc6cbbb536a41ca9697d35fd53969b5d",
+          "calls": [
+            "public.notifications",
+            "public.notify_mission_reaction"
+          ]
+        },
+        {
+          "signature": "notify_mission_status()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "b57c33efd436e5603d2fbbd5b91f0eb6bd97bc74e3313f2e6ced598f60f9f961",
+          "calls": [
+            "public.notifications",
+            "public.notify_mission_status"
+          ]
+        },
+        {
+          "signature": "publish_mission_draft(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "3d146194023355b82e473fefd162cfcd5f813dc5b7bef19cfc13805edd7c6ac7",
+          "calls": [
+            "public.community_active_account",
+            "public.create_mission",
+            "public.publish_mission_draft"
+          ]
+        },
+        {
+          "signature": "register_notification_device(uuid,text,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "03f56cc4a2a06e034e8faebfa5dffe74acf6c7adbbf6f8fb432cbab950077fed",
+          "calls": [
+            "public.community_active_account",
+            "public.notification_devices",
+            "public.register_notification_device"
+          ]
+        },
+        {
+          "signature": "reported_stories()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "bc720b8aff5bb1876361fb85a03355b15fee2bb0b7b2633ca23c8718166b04b0",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.reported_stories"
+          ]
+        },
+        {
+          "signature": "request_account_deletion(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "5558f65a5ef15b538aa0f117a9d53db93d7534ff1abc66c77f122bed033115f0",
+          "calls": [
+            "public.account_deletion_requests",
+            "public.request_account_deletion"
+          ]
+        },
+        {
+          "signature": "retract_mission_comment_notification()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "dc409ef4ee11a19f65f92980ebd1eb0eb7db869064f8b2e107e0c214b2466af3",
+          "calls": [
+            "public.retract_mission_comment_notification"
+          ]
+        },
+        {
+          "signature": "review_application(uuid,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "1b1d3bbf176cfb323b0ce8d16f71d54311a3bf520391cd13a982d14f2182baa8",
+          "calls": [
+            "public.community_active_account",
+            "public.review_application"
+          ]
+        },
+        {
+          "signature": "save_mission_draft_before_city(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "cfb38df63b3e110515ffe37c3aa47d109eabdee09c2ed453cb0d65d67fb913bf",
+          "calls": [
+            "public.community_active_account",
+            "public.mission_drafts",
+            "public.save_mission_draft_before_city"
+          ]
+        },
+        {
+          "signature": "save_mission_draft(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "7dc7f0d26803fb3931624a7a1ef5a8fd15bc076614b6a91a5075a8a090155425",
+          "calls": [
+            "public.save_mission_draft",
+            "public.save_mission_draft_before_city",
+            "public.valid_content_city"
+          ]
+        },
+        {
+          "signature": "set_mission_finalist(uuid,uuid,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "adfee6b558941a1a5c5f1aab9db0951819810f522fc685b854d356f5c67e1bb3",
+          "calls": [
+            "public.community_active_account",
+            "public.mission_finalists",
+            "public.set_mission_finalist"
+          ]
+        },
+        {
+          "signature": "set_mission_reaction(uuid,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "2609c58197a453288fac5a5ff5c6017949ab7447016749ecbe8c380f3148220d",
+          "calls": [
+            "public.community_active_account",
+            "public.mission_reactions",
+            "public.set_mission_reaction",
+            "public.social_mission"
+          ]
+        },
+        {
+          "signature": "set_mission_saved(uuid,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "9a4ba80e5f0b10011e6e7d742a67253b8d043099b1249b3ee29cf99dfa1e14f4",
+          "calls": [
+            "public.community_active_account",
+            "public.mission_saves",
+            "public.set_mission_saved"
+          ]
+        },
+        {
+          "signature": "set_mission_status(uuid,text,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "47e5754802b0a389ac4a594253cd4807369ef979a210ab10af9c819db29bed93",
+          "calls": [
+            "public.community_active_account",
+            "public.set_mission_status"
+          ]
+        },
+        {
+          "signature": "social_mission(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "91ef5e349e08d9208086e738b4469c03483cb19cec849daeba8b2f291e28636c",
+          "calls": [
+            "public.community_active_account",
+            "public.social_mission"
+          ]
+        },
+        {
+          "signature": "submit_mission_application(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "13e4e073dcf448310acf52385aeaed2a1049ea3de706385e6be81623a69f6f60",
+          "calls": [
+            "public.apply_to_mission",
+            "public.community_active_account",
+            "public.mission_application_operations",
+            "public.submit_mission_application"
+          ]
+        },
+        {
+          "signature": "timestamp_mission_acceptance()",
+          "security_definer": false,
+          "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "bb1494c336e3c13470ce0b0f76c20dd9780960f56938935466b87fd022cb3f54",
+          "calls": [
+            "public.timestamp_mission_acceptance"
+          ]
+        },
+        {
+          "signature": "tours_link_search(text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "79a80fd9c4d024f9caf2d1e3443968f7fde2655f34b177dca2f54f48f2d8690b",
+          "calls": [
+            "public.community_active_account",
+            "public.tours_link_search"
+          ]
+        },
+        {
+          "signature": "tours_pause(uuid,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "84cc3f57212b0eeadf3babb8f0cf61b6692fb0d3942be9909618d4f52ac1a856",
+          "calls": [
+            "private.tour_json",
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.tours_pause"
+          ]
+        },
+        {
+          "signature": "tours_permission_revoke(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "7e05713bfdaf47a719b216847c3dfa333e10cff1a729e131347930ae0d8b9b1a",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.tours_permission_revoke"
+          ]
+        },
+        {
+          "signature": "tours_review(uuid,boolean,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "96713ce73a2140a160ca04a3e1997beef7597ae2caaac3cadf5b49af5704bb29",
+          "calls": [
+            "private.tour_document",
+            "private.tour_link",
+            "private.tour_permissions",
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.tours_review"
+          ]
+        },
+        {
+          "signature": "update_mission_before_city(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "58c1929be141c69dc50a6d1930a2b2bbdc5d8f4e2ad97982f9c3bce7d7da100a",
+          "calls": [
+            "public.update_mission_before_city",
+            "public.update_mission_legacy"
+          ]
+        },
+        {
+          "signature": "update_mission_legacy(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "a7160247f2ac30df495bb478356a0b489f94e3c6194aad0bd0eeb3c0a7f7f7bc",
+          "calls": [
+            "public.community_active_account",
+            "public.update_mission_legacy"
+          ]
+        },
+        {
+          "signature": "update_mission(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "ecc8a5314dc062a14bb4027798f7c45a6f0bac19db2f819e8f5f132738e4b4f7",
+          "calls": [
+            "public.update_mission",
+            "public.update_mission_before_city"
+          ]
+        },
+        {
+          "signature": "validate_community_content()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "f2c627c3095ab68a581e021a5b85ffd0b77dcae1d474d992e79b3fde06f80ad2",
+          "calls": [
+            "public.community_active_account",
+            "public.validate_community_content"
+          ]
+        },
+        {
+          "signature": "validate_mission_lifecycle()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "998f48b3e61539da045d1af9daf4193611efb9f108744b6ea8e9eb52625266d3",
+          "calls": [
+            "public.validate_mission_lifecycle"
+          ]
+        },
+        {
+          "signature": "version_mission_event()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "42e6ebf78b61797cf96fc2a2b5924b4099611990bc074c18e0010adaed2290b4",
+          "calls": [
+            "public.version_mission_event"
+          ]
+        },
+        {
+          "signature": "withdraw_application(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "67106521359ebe5ac75112ce0e7fff8a55538905c658d6b4fd46aff2e9fdc376",
+          "calls": [
+            "public.community_active_account",
+            "public.withdraw_application"
+          ]
+        }
+      ],
+      "auth_triggers": [
+        {
+          "definition": "CREATE TRIGGER set_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION set_profile_updated_at()",
+          "enabled": "O",
+          "internal": false,
+          "name": "set_profiles_updated_at",
+          "relation": "profiles"
+        },
+        {
+          "definition": "CREATE TRIGGER validate_profile_media BEFORE INSERT OR UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION validate_profile_media()",
+          "enabled": "O",
+          "internal": false,
+          "name": "validate_profile_media",
+          "relation": "profiles"
+        },
+        {
+          "definition": "CREATE TRIGGER validate_profile_presentation BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION validate_profile_presentation()",
+          "enabled": "O",
+          "internal": false,
+          "name": "validate_profile_presentation",
+          "relation": "profiles"
+        },
+        {
+          "definition": "CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user()",
+          "enabled": "O",
+          "internal": false,
+          "name": "on_auth_user_created",
+          "relation": "users"
+        }
+      ],
+      "storage_objects_identity_columns": [
+        {
+          "column_name": "owner",
+          "data_type": "uuid",
+          "is_nullable": "YES"
+        },
+        {
+          "column_name": "owner_id",
+          "data_type": "text",
+          "is_nullable": "YES"
+        }
+      ],
+      "storage_objects_FK": [
+        {
+          "definition": "FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id)",
+          "delete_action": "a",
+          "name": "objects_bucketId_fkey",
+          "referenced_relation": "storage.buckets",
+          "relation": "storage.objects",
+          "schema": "storage",
+          "type": "f",
+          "validated": true
+        }
+      ]
+    },
+    "b": {
+      "snapshot_file_sha256": "3c67a57adebbc1a7ab528b0dde80021e11d654c7cc540ddcdf3d33878e5ad39d",
+      "derived_from": "E1 frozen private after snapshot; no fresh database query",
+      "legacy_rows": 100,
+      "persons": 6,
+      "catalog_tables": 108,
+      "constraints": 370,
+      "FK": 102,
+      "profile_incoming_FK": [
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_captures_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "private.tour_captures",
+          "schema": "private",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_jobs_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "private.tour_jobs",
+          "schema": "private",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_output_writes_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "private.tour_output_writes",
+          "schema": "private",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_permissions_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "private.tour_permissions",
+          "schema": "private",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (reporter_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "content_reports_reporter_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "content_reports",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (viewer_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "home_feed_snapshots_viewer_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "home_feed_snapshots",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (applicant_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_application_operations_applicant_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_application_operations",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (applicant_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_applications_applicant_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_applications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_comment_operations_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_comment_operations",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_comments_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_comments",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_drafts_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_drafts",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_reactions_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_reactions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_saves_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "mission_saves",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "missions_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "missions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notification_devices_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "notification_devices",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notification_preferences_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "notification_preferences",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (actor_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notifications_actor_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "notifications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (recipient_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notifications_recipient_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "notifications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (applicant_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "post_collaboration_interests_applicant_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "post_collaboration_interests",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "post_comments_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "post_comments",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "post_reactions_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "post_reactions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "post_saves_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "post_saves",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "posts_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "posts",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "profile_follows_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "profile_follows",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (follower_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "profile_follows_follower_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "profile_follows",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "showcase_items_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "showcase_items",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "showcase_saves_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "showcase_saves",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "stories_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "stories",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "story_publications_author_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "story_publications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (reporter_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "story_reports_reporter_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "story_reports",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (viewer_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "story_views_viewer_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "story_views",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_progress_user_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tour_progress",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (requester_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_requests_requester_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tour_requests",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (reviewer_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_requests_reviewer_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tour_requests",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tour_revisions_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tour_revisions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "tours_owner_id_fkey",
+          "referenced_relation": "profiles",
+          "relation": "tours",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        }
+      ],
+      "mission_incoming_FK": [
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "content_reports_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "content_reports",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_application_operations_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_application_operations",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_applications_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_applications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_comment_operations_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_comment_operations",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_comments_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_comments",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (published_mission_id) REFERENCES missions(id) ON DELETE SET NULL",
+          "delete_action": "n",
+          "name": "mission_drafts_published_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_drafts",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_finalists_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_finalists",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_reactions_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_reactions",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "mission_saves_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "mission_saves",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "notifications_mission_id_fkey",
+          "referenced_relation": "missions",
+          "relation": "notifications",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        }
+      ],
+      "auth_lifecycle_FK": [
+        {
+          "definition": "FOREIGN KEY (auth_user_id) REFERENCES users(id) ON DELETE SET NULL",
+          "delete_action": "n",
+          "name": "persons_auth_user_id_fkey",
+          "referenced_relation": "users",
+          "relation": "collaboration.persons",
+          "schema": "collaboration",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "account_deletion_requests_user_id_fkey",
+          "referenced_relation": "users",
+          "relation": "account_deletion_requests",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        },
+        {
+          "definition": "FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE",
+          "delete_action": "c",
+          "name": "profiles_id_fkey",
+          "referenced_relation": "users",
+          "relation": "profiles",
+          "schema": "public",
+          "type": "f",
+          "validated": true
+        }
+      ],
+      "policies": [
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Private applications",
+          "qual": "((applicant_id = uid()) OR (EXISTS ( SELECT 1\n   FROM missions\n  WHERE ((missions.id = mission_applications.mission_id) AND (missions.author_id = uid())))))",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "mission_applications",
+          "with_check": null
+        },
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Private mission drafts",
+          "qual": "(author_id = uid())",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "mission_drafts",
+          "with_check": null
+        },
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Organizer finalists",
+          "qual": "(EXISTS ( SELECT 1\n   FROM missions m\n  WHERE ((m.id = mission_finalists.mission_id) AND (m.author_id = uid()))))",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "mission_finalists",
+          "with_check": null
+        },
+        {
+          "cmd": "INSERT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Create own missions",
+          "qual": null,
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "missions",
+          "with_check": "(author_id = uid())"
+        },
+        {
+          "cmd": "DELETE",
+          "permissive": "PERMISSIVE",
+          "policyname": "Delete own missions",
+          "qual": "(author_id = uid())",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "missions",
+          "with_check": null
+        },
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Visible missions",
+          "qual": "((NOT hidden) OR (author_id = uid()) OR community_is_admin())",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "public",
+          "tablename": "missions",
+          "with_check": null
+        },
+        {
+          "cmd": "DELETE",
+          "permissive": "PERMISSIVE",
+          "policyname": "Delete own unused mission images",
+          "qual": "((bucket_id = 'mission-images'::text) AND ((storage.foldername(name))[1] = (uid())::text) AND (NOT (EXISTS ( SELECT 1\n   FROM missions m\n  WHERE (m.image_path = objects.name)))) AND (NOT (EXISTS ( SELECT 1\n   FROM mission_drafts d\n  WHERE ((d.published_at IS NULL) AND ((d.data ->> 'image_path'::text) = objects.name))))))",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "storage",
+          "tablename": "objects",
+          "with_check": null
+        },
+        {
+          "cmd": "SELECT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Read visible mission images",
+          "qual": "((bucket_id = 'mission-images'::text) AND (((storage.foldername(name))[1] = (uid())::text) OR (EXISTS ( SELECT 1\n   FROM missions m\n  WHERE (m.image_path = objects.name)))))",
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "storage",
+          "tablename": "objects",
+          "with_check": null
+        },
+        {
+          "cmd": "INSERT",
+          "permissive": "PERMISSIVE",
+          "policyname": "Upload own mission images",
+          "qual": null,
+          "roles": [
+            "authenticated"
+          ],
+          "schemaname": "storage",
+          "tablename": "objects",
+          "with_check": "((bucket_id = 'mission-images'::text) AND (name ~ (('^'::text || (uid())::text) || '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'::text)))"
+        }
+      ],
+      "application_grants": [
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "is_grantable": "NO",
+          "privilege_type": "SELECT",
+          "table_catalog": "postgres",
+          "table_name": "mission_applications",
+          "table_schema": "public",
+          "with_hierarchy": "YES"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "is_grantable": "NO",
+          "privilege_type": "SELECT",
+          "table_catalog": "postgres",
+          "table_name": "mission_finalists",
+          "table_schema": "public",
+          "with_hierarchy": "YES"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "is_grantable": "NO",
+          "privilege_type": "DELETE",
+          "table_catalog": "postgres",
+          "table_name": "missions",
+          "table_schema": "public",
+          "with_hierarchy": "NO"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "is_grantable": "NO",
+          "privilege_type": "SELECT",
+          "table_catalog": "postgres",
+          "table_name": "missions",
+          "table_schema": "public",
+          "with_hierarchy": "YES"
+        }
+      ],
+      "routines": [
+        {
+          "signature": "private.schedule_marea_messages(timestamp with time zone)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "d645b9b7da3ca1d0b36ecfdb36280faf70fd405e065507d9238f2ad5fd0c3aa1",
+          "calls": [
+            "private.schedule_marea_messages",
+            "public.notifications"
+          ]
+        },
+        {
+          "signature": "private.tour_link(text,uuid,uuid,uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres}",
+          "definition_sha256": "1a5596802ec9ef25dee2cceda27da967ed7f81ffdab40da4d83dc0deb80a9714",
+          "calls": [
+            "private.tour_link"
+          ]
+        },
+        {
+          "signature": "private.tour_space_verified(uuid,uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres}",
+          "definition_sha256": "908378342debf3fa437dc059671861b1074e0337d8bf453ca1568ff25d5aaf01",
+          "calls": [
+            "private.tour_space_verified"
+          ]
+        },
+        {
+          "signature": "private.tour_visible(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres}",
+          "definition_sha256": "a7548f32fead6a0c78f6e05a674c4b7fc12a2992f4d45902f74882e37334454f",
+          "calls": [
+            "private.tour_visible"
+          ]
+        },
+        {
+          "signature": "apply_to_mission(uuid,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "879b2519d07ee82094379275205aa2881c74e45511068faf2256dacb7a280aaf",
+          "calls": [
+            "public.apply_to_mission",
+            "public.community_active_account"
+          ]
+        },
+        {
+          "signature": "claim_push_jobs(integer)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "1228b6425ad4d44666596e7af123ae1597abe65443e631dd3f637bc75541802c",
+          "calls": [
+            "private.schedule_marea_messages",
+            "public.claim_push_jobs"
+          ]
+        },
+        {
+          "signature": "confirm_mission_selection(uuid,uuid[])",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "15bc8f9f17853ca6f3d064f316bdf609ecf89fa95c480a8d5b7f5cad0489eb9d",
+          "calls": [
+            "public.community_active_account",
+            "public.confirm_mission_selection",
+            "public.review_application"
+          ]
+        },
+        {
+          "signature": "create_mission_before_city(jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "af24de7203a8dd88bc871b84ad952b534103b6379039d919cd04545c78fe9d7c",
+          "calls": [
+            "public.create_mission_before_city",
+            "public.create_mission_legacy"
+          ]
+        },
+        {
+          "signature": "create_mission_comment(uuid,text,uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "fbacaf763448096d71cb7c1e9ed2625f98d0e8075faa00780943379eb96e12a7",
+          "calls": [
+            "public.community_active_account",
+            "public.create_mission_comment",
+            "public.mission_comment_operations",
+            "public.mission_comments",
+            "public.notifications",
+            "public.social_mission"
+          ]
+        },
+        {
+          "signature": "create_mission_legacy(jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "96ca3b1ee17b438eb7aca87585e9090eb57688ad9ea50eb32e26c7342e311031",
+          "calls": [
+            "public.community_active_account",
+            "public.create_mission_legacy",
+            "public.missions"
+          ]
+        },
+        {
+          "signature": "create_mission(jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "03018ac094c1db4431186703c3e8de9d69a40b9214b761f3ca11f74ea874db1e",
+          "calls": [
+            "public.create_mission",
+            "public.create_mission_before_city"
+          ]
+        },
+        {
+          "signature": "delete_mission_comment(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "578d7b7e2260ef187ea9d68ef2fbea89258712bb90b5866b62153254a20ab4c6",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.delete_mission_comment"
+          ]
+        },
+        {
+          "signature": "delete_mission_draft(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "eb4f743b7ac568c19a1b642f7a8869e774c1427069404d0cb0d7e5de54460876",
+          "calls": [
+            "public.community_active_account",
+            "public.delete_mission_draft"
+          ]
+        },
+        {
+          "signature": "delete_post_comment(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "12b833a2d0fc568b6977e5f87cf71876c147ac2ef2b27f5ffa887d6c8a2211ed",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.delete_post_comment"
+          ]
+        },
+        {
+          "signature": "delete_story(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "dee9404447f74345489d9f9b09b7c176e9bbac3b9862e1c2f65aaae4fdd7a46a",
+          "calls": [
+            "public.community_active_account",
+            "public.delete_story"
+          ]
+        },
+        {
+          "signature": "guard_mission_image_operation()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "bcdb8009368a7f49c61458c14fb9748cad5f12a274273b18b1789fc40e630c37",
+          "calls": [
+            "public.guard_mission_image_operation"
+          ]
+        },
+        {
+          "signature": "handle_new_user()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "b8bff5b6314809113bcf57f75d4af5cbb9bf0ff229db9d95a1b6e99ddb4a13ea",
+          "calls": [
+            "public.handle_new_user",
+            "public.legal_acceptances",
+            "public.profiles",
+            "public.registration_policy"
+          ]
+        },
+        {
+          "signature": "home_feed_candidates(jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "6628ec4073c6d53c4ade89ad4a455f11babca0b1cf3bbaffa6215269893df4f0",
+          "calls": [
+            "public.home_feed_candidates"
+          ]
+        },
+        {
+          "signature": "home_feed(jsonb,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "5284475cb4fc3a8634f19b9cf799009dbde1c10cda84903c7ad81e6f32ca4ad5",
+          "calls": [
+            "public.community_active_account",
+            "public.home_feed",
+            "public.home_feed_candidates",
+            "public.home_feed_snapshots"
+          ]
+        },
+        {
+          "signature": "list_map_missions(double precision,double precision,double precision,double precision,text,text,timestamp with time zone,timestamp with time zone,double precision,double precision,double precision)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "93e648ee4f5fd66f6ccbc5daed54acd6032e49e8e62dfb70206aa54a911f581d",
+          "calls": [
+            "public.community_active_account",
+            "public.list_map_missions"
+          ]
+        },
+        {
+          "signature": "list_missions(uuid,text,text,text,text,integer,uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "f1ab364691dd69115caaeb11dabc82a121183c1a44e24953e2a32b9b01bf81e8",
+          "calls": [
+            "public.community_is_admin",
+            "public.list_missions"
+          ]
+        },
+        {
+          "signature": "list_saved_missions(text,text,text,integer)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "3d94f3d11e2c6f9cfc0910e66b163e1c9ea53c1c8b234917e8ffd0ec1530b4c4",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.list_saved_missions"
+          ]
+        },
+        {
+          "signature": "lock_mission_compensation()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "0456d0c15d572ec57ddbb43216fce1920b4b9ce0ec0523e9a4cd389c374cbe64",
+          "calls": [
+            "public.lock_mission_compensation"
+          ]
+        },
+        {
+          "signature": "mission_social_stats(uuid[])",
+          "security_definer": false,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "fcecd6ae314711ff8e2db20a6cd8e70eae6f7e0aa6ffdd4b17b208431c2baf24",
+          "calls": [
+            "public.mission_social_stats",
+            "public.mission_social_visible"
+          ]
+        },
+        {
+          "signature": "mission_social_visible(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "ae81843ecc810573a51d978e56081ed8a70a49e154409181e7d0d4b6908e04a7",
+          "calls": [
+            "public.mission_social_visible"
+          ]
+        },
+        {
+          "signature": "moderate_content(uuid,text,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "354533936a40eaaecfbc36b7065a212da60bab01b26288e3269e43b74e317018",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.moderate_content"
+          ]
+        },
+        {
+          "signature": "moderate_story(uuid,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "a250a7e811021355c34ed60e7a113ac326d3391cd40c42f15b374f711539e371",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.moderate_story"
+          ]
+        },
+        {
+          "signature": "notify_mission_application()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "6da20da216c64c7afdc69f7073ac5df11c01f09b92405bc691cfc8630d5fd7ba",
+          "calls": [
+            "public.notifications",
+            "public.notify_mission_application"
+          ]
+        },
+        {
+          "signature": "notify_mission_reaction()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "6583c2d7588d45a699340517364dd65bdc6cbbb536a41ca9697d35fd53969b5d",
+          "calls": [
+            "public.notifications",
+            "public.notify_mission_reaction"
+          ]
+        },
+        {
+          "signature": "notify_mission_status()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "b57c33efd436e5603d2fbbd5b91f0eb6bd97bc74e3313f2e6ced598f60f9f961",
+          "calls": [
+            "public.notifications",
+            "public.notify_mission_status"
+          ]
+        },
+        {
+          "signature": "publish_mission_draft(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "3d146194023355b82e473fefd162cfcd5f813dc5b7bef19cfc13805edd7c6ac7",
+          "calls": [
+            "public.community_active_account",
+            "public.create_mission",
+            "public.publish_mission_draft"
+          ]
+        },
+        {
+          "signature": "register_notification_device(uuid,text,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "03f56cc4a2a06e034e8faebfa5dffe74acf6c7adbbf6f8fb432cbab950077fed",
+          "calls": [
+            "public.community_active_account",
+            "public.notification_devices",
+            "public.register_notification_device"
+          ]
+        },
+        {
+          "signature": "reported_stories()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "bc720b8aff5bb1876361fb85a03355b15fee2bb0b7b2633ca23c8718166b04b0",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.reported_stories"
+          ]
+        },
+        {
+          "signature": "request_account_deletion(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "5558f65a5ef15b538aa0f117a9d53db93d7534ff1abc66c77f122bed033115f0",
+          "calls": [
+            "public.account_deletion_requests",
+            "public.request_account_deletion"
+          ]
+        },
+        {
+          "signature": "retract_mission_comment_notification()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "dc409ef4ee11a19f65f92980ebd1eb0eb7db869064f8b2e107e0c214b2466af3",
+          "calls": [
+            "public.retract_mission_comment_notification"
+          ]
+        },
+        {
+          "signature": "review_application(uuid,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "1b1d3bbf176cfb323b0ce8d16f71d54311a3bf520391cd13a982d14f2182baa8",
+          "calls": [
+            "public.community_active_account",
+            "public.review_application"
+          ]
+        },
+        {
+          "signature": "save_mission_draft_before_city(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "cfb38df63b3e110515ffe37c3aa47d109eabdee09c2ed453cb0d65d67fb913bf",
+          "calls": [
+            "public.community_active_account",
+            "public.mission_drafts",
+            "public.save_mission_draft_before_city"
+          ]
+        },
+        {
+          "signature": "save_mission_draft(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "7dc7f0d26803fb3931624a7a1ef5a8fd15bc076614b6a91a5075a8a090155425",
+          "calls": [
+            "public.save_mission_draft",
+            "public.save_mission_draft_before_city",
+            "public.valid_content_city"
+          ]
+        },
+        {
+          "signature": "set_mission_finalist(uuid,uuid,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "adfee6b558941a1a5c5f1aab9db0951819810f522fc685b854d356f5c67e1bb3",
+          "calls": [
+            "public.community_active_account",
+            "public.mission_finalists",
+            "public.set_mission_finalist"
+          ]
+        },
+        {
+          "signature": "set_mission_reaction(uuid,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "2609c58197a453288fac5a5ff5c6017949ab7447016749ecbe8c380f3148220d",
+          "calls": [
+            "public.community_active_account",
+            "public.mission_reactions",
+            "public.set_mission_reaction",
+            "public.social_mission"
+          ]
+        },
+        {
+          "signature": "set_mission_saved(uuid,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "9a4ba80e5f0b10011e6e7d742a67253b8d043099b1249b3ee29cf99dfa1e14f4",
+          "calls": [
+            "public.community_active_account",
+            "public.mission_saves",
+            "public.set_mission_saved"
+          ]
+        },
+        {
+          "signature": "set_mission_status(uuid,text,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "47e5754802b0a389ac4a594253cd4807369ef979a210ab10af9c819db29bed93",
+          "calls": [
+            "public.community_active_account",
+            "public.set_mission_status"
+          ]
+        },
+        {
+          "signature": "social_mission(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "91ef5e349e08d9208086e738b4469c03483cb19cec849daeba8b2f291e28636c",
+          "calls": [
+            "public.community_active_account",
+            "public.social_mission"
+          ]
+        },
+        {
+          "signature": "submit_mission_application(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "13e4e073dcf448310acf52385aeaed2a1049ea3de706385e6be81623a69f6f60",
+          "calls": [
+            "public.apply_to_mission",
+            "public.community_active_account",
+            "public.mission_application_operations",
+            "public.submit_mission_application"
+          ]
+        },
+        {
+          "signature": "timestamp_mission_acceptance()",
+          "security_definer": false,
+          "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "bb1494c336e3c13470ce0b0f76c20dd9780960f56938935466b87fd022cb3f54",
+          "calls": [
+            "public.timestamp_mission_acceptance"
+          ]
+        },
+        {
+          "signature": "tours_link_search(text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "79a80fd9c4d024f9caf2d1e3443968f7fde2655f34b177dca2f54f48f2d8690b",
+          "calls": [
+            "public.community_active_account",
+            "public.tours_link_search"
+          ]
+        },
+        {
+          "signature": "tours_pause(uuid,boolean)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "84cc3f57212b0eeadf3babb8f0cf61b6692fb0d3942be9909618d4f52ac1a856",
+          "calls": [
+            "private.tour_json",
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.tours_pause"
+          ]
+        },
+        {
+          "signature": "tours_permission_revoke(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "7e05713bfdaf47a719b216847c3dfa333e10cff1a729e131347930ae0d8b9b1a",
+          "calls": [
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.tours_permission_revoke"
+          ]
+        },
+        {
+          "signature": "tours_review(uuid,boolean,text)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "96713ce73a2140a160ca04a3e1997beef7597ae2caaac3cadf5b49af5704bb29",
+          "calls": [
+            "private.tour_document",
+            "private.tour_link",
+            "private.tour_permissions",
+            "public.community_active_account",
+            "public.community_is_admin",
+            "public.tours_review"
+          ]
+        },
+        {
+          "signature": "update_mission_before_city(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "58c1929be141c69dc50a6d1930a2b2bbdc5d8f4e2ad97982f9c3bce7d7da100a",
+          "calls": [
+            "public.update_mission_before_city",
+            "public.update_mission_legacy"
+          ]
+        },
+        {
+          "signature": "update_mission_legacy(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "a7160247f2ac30df495bb478356a0b489f94e3c6194aad0bd0eeb3c0a7f7f7bc",
+          "calls": [
+            "public.community_active_account",
+            "public.update_mission_legacy"
+          ]
+        },
+        {
+          "signature": "update_mission(uuid,jsonb)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "ecc8a5314dc062a14bb4027798f7c45a6f0bac19db2f819e8f5f132738e4b4f7",
+          "calls": [
+            "public.update_mission",
+            "public.update_mission_before_city"
+          ]
+        },
+        {
+          "signature": "validate_community_content()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "f2c627c3095ab68a581e021a5b85ffd0b77dcae1d474d992e79b3fde06f80ad2",
+          "calls": [
+            "public.community_active_account",
+            "public.validate_community_content"
+          ]
+        },
+        {
+          "signature": "validate_mission_lifecycle()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "998f48b3e61539da045d1af9daf4193611efb9f108744b6ea8e9eb52625266d3",
+          "calls": [
+            "public.validate_mission_lifecycle"
+          ]
+        },
+        {
+          "signature": "version_mission_event()",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition_sha256": "42e6ebf78b61797cf96fc2a2b5924b4099611990bc074c18e0010adaed2290b4",
+          "calls": [
+            "public.version_mission_event"
+          ]
+        },
+        {
+          "signature": "withdraw_application(uuid)",
+          "security_definer": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+          "definition_sha256": "67106521359ebe5ac75112ce0e7fff8a55538905c658d6b4fd46aff2e9fdc376",
+          "calls": [
+            "public.community_active_account",
+            "public.withdraw_application"
+          ]
+        }
+      ],
+      "auth_triggers": [
+        {
+          "definition": "CREATE TRIGGER set_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION set_profile_updated_at()",
+          "enabled": "O",
+          "internal": false,
+          "name": "set_profiles_updated_at",
+          "relation": "profiles"
+        },
+        {
+          "definition": "CREATE TRIGGER validate_profile_media BEFORE INSERT OR UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION validate_profile_media()",
+          "enabled": "O",
+          "internal": false,
+          "name": "validate_profile_media",
+          "relation": "profiles"
+        },
+        {
+          "definition": "CREATE TRIGGER validate_profile_presentation BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION validate_profile_presentation()",
+          "enabled": "O",
+          "internal": false,
+          "name": "validate_profile_presentation",
+          "relation": "profiles"
+        },
+        {
+          "definition": "CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user()",
+          "enabled": "O",
+          "internal": false,
+          "name": "on_auth_user_created",
+          "relation": "users"
+        }
+      ],
+      "storage_objects_identity_columns": [
+        {
+          "column_name": "owner",
+          "data_type": "uuid",
+          "is_nullable": "YES"
+        },
+        {
+          "column_name": "owner_id",
+          "data_type": "text",
+          "is_nullable": "YES"
+        }
+      ],
+      "storage_objects_FK": [
+        {
+          "definition": "FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id)",
+          "delete_action": "a",
+          "name": "objects_bucketId_fkey",
+          "referenced_relation": "storage.buckets",
+          "relation": "storage.objects",
+          "schema": "storage",
+          "type": "f",
+          "validated": true
+        }
+      ]
+    }
+  },
+  "source_refs": [
+    {
+      "path": "docs/MAREA_SRS.md",
+      "sha256": "4a1c28594e68d26180390b9aea3affce18a619039ad25ad1c8c528dc3d2f4388"
+    },
+    {
+      "path": "docs/evidence/2026-10-13/task001/run-20261013T174515Z/REPORT.md",
+      "sha256": "9fc972b55202962df31e29ebdd6ca388ccde6cb1ca6e10188ecc1058f5fb6205"
+    },
+    {
+      "path": "docs/evidence/2026-10-18/task002/run-20261019T055200Z-e1/04-transactional-execution.json",
+      "sha256": "a1cb8ab7daf3c03cf3adaa68d14b9f5f41eda26cff1e26c1075c6fcd68bc55f0"
+    },
+    {
+      "path": "docs/evidence/2026-10-18/task002/run-20261019T055200Z-e1/06-legacy-and-storage-conservation.json",
+      "sha256": "f09d805dede1b9de48491abfe54222215fd05b79a38449c799315b652b05cadf"
+    },
+    {
+      "path": "docs/evidence/2026-10-18/task002/run-20261019T055200Z-e1/24-final-verification.json",
+      "sha256": "e270b895e784395e25f303e402c8917b74143aa3bd6fba38140ff4c94ba03336"
+    },
+    {
+      "path": "docs/evidence/2026-10-18/task002/run-20261019T055200Z-e1/REPORT.md",
+      "sha256": "f44e2d3d3b520f1f6dd7f2297dd076e45c053739d42558514adddb1f9b596cb2"
+    },
+    {
+      "path": "docs/task002/E-DIAGNOSTIC-REPORT.md",
+      "sha256": "bd0fab50498407dc677d116407fcc63932937409374ef37e49588d45d51549cb"
+    },
+    {
+      "path": "docs/task002/E-PROPOSED-REFERENCE.sql",
+      "sha256": "70b1955074b1b2e8f640247d6e352cc4ca7d5f341114d10a5b5889ee6f029068"
+    },
+    {
+      "path": "docs/task002/E-STRUCTURAL-REVIEW.md",
+      "sha256": "322799287561dd63fc224296d179d87159c7ab082281839d2cac51981a104875"
+    },
+    {
+      "path": "docs/task002/E1-ADDITIVE-PROPOSAL.sql",
+      "sha256": "c0bd95c94fdde1fb55b17533debc939cae9c7fa8c7d77d2b194e8862978cedde"
+    },
+    {
+      "path": "docs/task002/U0-FUNCTIONAL-DESIGN.md",
+      "sha256": "c1da17e29421301d24c45a1aa6f1a7731f3e15a60e770e1da4ff5e2e3a1ddf58"
+    },
+    {
+      "path": "lib/core/router/app_router.dart",
+      "sha256": "81a85574597555552086f9bdd2c4f8c3dfea6be4d28119eddf8d210335d419e8"
+    },
+    {
+      "path": "lib/core/session/app_session_controller.dart",
+      "sha256": "89b25440f01805f379ad289808db95517a8c1520a246eaf5d21fa0069c0437e4"
+    },
+    {
+      "path": "lib/features/auth/data/auth_repository.dart",
+      "sha256": "701a83b27d397a201e46f38eaf3067dd5584bbabf6f52e38a7a9b0abb40e4336"
+    },
+    {
+      "path": "lib/features/auth/data/mobile_intro_store.dart",
+      "sha256": "f108f6ccda98704d98dbf9941ca974c98b2a8c54bf9bef23d1237343657d53dc"
+    },
+    {
+      "path": "lib/features/community/data/community_repository.dart",
+      "sha256": "910831a552b3881a6188e12df4da7293310d37dba7757f43e2966633374c6cc1"
+    },
+    {
+      "path": "lib/features/community/data/mission_social_repository.dart",
+      "sha256": "ce5c4ab1ec6844bed7bc5ffff9368d05d5d0f8da35767b5b8fe244c14e99a451"
+    },
+    {
+      "path": "lib/features/community/data/notifications_controller.dart",
+      "sha256": "acf8c5db2a9294893f1162f86d9f0a9fef256aea648553468ba2fb8485e3fe2e"
+    },
+    {
+      "path": "lib/features/community/data/social_repository.dart",
+      "sha256": "b053ee226ecf10ce1fac5f9324772e08fe826720ebbeca98535d78817ac6234d"
+    },
+    {
+      "path": "lib/features/community/models/community_models.dart",
+      "sha256": "dde0f6642d27e4308ad75ab422b9dfc75399de8a6eac74d9c20f72aa0aaceda9"
+    },
+    {
+      "path": "lib/features/community/models/mission_experience.dart",
+      "sha256": "6d6fc0208b2dcc1d5d53ce8b8f59e20645a6c07afed42ee7569d03e590102118"
+    },
+    {
+      "path": "lib/features/community/models/mission_social.dart",
+      "sha256": "7a5c60eb155698a5dad3c3f65da7a6fa35ab701adc4d4d82901e021789638553"
+    },
+    {
+      "path": "lib/features/community/models/post_social.dart",
+      "sha256": "01476302ac7f28396c25d38c79d227e7ebe36d4630e90b931bc4aebded138be4"
+    },
+    {
+      "path": "lib/features/community/presentation/community_widgets.dart",
+      "sha256": "b251e9099a2fa526fa74557401b6c274975a4784acf83708c20616b2d81c8d28"
+    },
+    {
+      "path": "lib/features/community/presentation/explore_screen.dart",
+      "sha256": "3aaa103a44d91d30c8f75da70addcaa4bc83b2945e1d776f388194241686c399"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_application_screen.dart",
+      "sha256": "814c9778a082c569451eb955745639da28d6633ed8f34d27265c70089d21438f"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_composer_screen.dart",
+      "sha256": "f0a72df9ea68d6ef388887e15cc4ae227a66ab393017090851d7cb0cc6a38c38"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_management_screen.dart",
+      "sha256": "bfb79a6589c6f454f1ecd36575edbe7684e2bd8d8bd579ee1879a012225b1fbc"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_social_actions.dart",
+      "sha256": "0d2cb307faed4b32e530d52220c16f235dba3de4afbb0282346c60cd0e0c9649"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_social_panels.dart",
+      "sha256": "401a9fd435564a88e4bac2a58f59469718b2b02b67dd04d33ecfe13084cf4d3a"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_widgets.dart",
+      "sha256": "144768c24429ebaa6bda9701bc8bed71df4b8c68fdce4851540aa783c4ca7311"
+    },
+    {
+      "path": "lib/features/community/presentation/missions_screen.dart",
+      "sha256": "0995f0512bac7155c92b87441efda90bb69de90611a6f511b541b2335a1e5839"
+    },
+    {
+      "path": "lib/features/community/presentation/moderation_screen.dart",
+      "sha256": "66c34ee6c35357512f04b63c083d3d87fcdc092b873ac6efd8aea853ae0be376"
+    },
+    {
+      "path": "lib/features/community/presentation/notifications_panel.dart",
+      "sha256": "05c2d8d67ac5a3ccf9fdf97dfd2c533eebd4b6485f06fcb2366c5956d9513d01"
+    },
+    {
+      "path": "lib/features/community/presentation/post_composer_screen.dart",
+      "sha256": "25dae39a505b083411d125c708c3155a8870241e2fc83180221e7d86ce3db9e2"
+    },
+    {
+      "path": "lib/features/community/presentation/post_detail_screen.dart",
+      "sha256": "2a9c28c0fff54dcdbfcf6f171df799132e0cda7ce6ad741a8cb074fb2e6e6f5d"
+    },
+    {
+      "path": "lib/features/community/presentation/post_location_picker.dart",
+      "sha256": "5ba5c31c1e78c2b51aef565bd82cb352b9ecff88264936e2b4d86c73c22ce617"
+    },
+    {
+      "path": "lib/features/community/presentation/posts_feed.dart",
+      "sha256": "455d1fd865cbcf8e9db85a29c556bda24105292fdd19f0020ce4d4cc1b880eed"
+    },
+    {
+      "path": "lib/features/community/presentation/reaction_button.dart",
+      "sha256": "613cfdff934da8a14f5aab556a569cff6c020f8dbda303e4f9bb2d17b32df9ad"
+    },
+    {
+      "path": "lib/features/community/presentation/social_panels.dart",
+      "sha256": "9b06925d4bd9c0239e2eefd601a9916a00e6e282b3dbb6251e4f3b52557d1d94"
+    },
+    {
+      "path": "lib/features/home_feed/data/home_feed_repository.dart",
+      "sha256": "a12db067b8e6da7732df698745ccf154d21ee40c4778a1a4911f9a3a7db7b1b6"
+    },
+    {
+      "path": "lib/features/home_feed/data/stories_repository.dart",
+      "sha256": "629f0233a5fa31abe7c1689c13a3f8f433a2eb912048875d4182cc219f330f1c"
+    },
+    {
+      "path": "lib/features/home_feed/models/home_feed_models.dart",
+      "sha256": "1c268a7117c6ae2d343e316d520dadcf725612578460051b4d69ea5fc4df4f82"
+    },
+    {
+      "path": "lib/features/home_feed/models/story.dart",
+      "sha256": "68e2ef5ae5ba839706875efd6408fa4a07aa4f7098d29545f6d35b92fd6b912d"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/feed_city_label.dart",
+      "sha256": "b1bbe57288646c33cb95f72ca753b5704384a852b3860bddc74d1c37332613b0"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/follow_button.dart",
+      "sha256": "4e1fafde0a7a666f9b448673e7e99f9ed66a1e2110a6c88352865326d6625bd6"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/home_feed_screen.dart",
+      "sha256": "036c00583e8854b7cc4210182738a9655e014dfc5df4e24fd049831e51632983"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/mission_feed_card.dart",
+      "sha256": "628e011872a48f6ac7a1b2bc003fb74578e8cc1d2afdbb5e1efa8f1c7572b4fa"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/stories_rail.dart",
+      "sha256": "f3e9f599bf5237fb63f2b930590518d2e33d9e6400b98bad15c4b07c7175b5a0"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/story_composer.dart",
+      "sha256": "81583b849a26c23afd950e6a26f405e6d83225ade4a0beb0178722ec294bb2e8"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/story_moderation.dart",
+      "sha256": "1079e71b564de7665b48055e0628f22270538a9ef4a5959dc971d07c3025fd92"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/story_viewer.dart",
+      "sha256": "a9bff00e2b919161a762d34292996c9da0393fddfc67ffa989a20eb5a7115635"
+    },
+    {
+      "path": "lib/features/map/application/mission_map_controller.dart",
+      "sha256": "2b74cc1f66ad68d43e56f7de611f97b6743f709403720fc84dd0287e3755da8f"
+    },
+    {
+      "path": "lib/features/map/data/mission_map_repository.dart",
+      "sha256": "49cd8c61a275a07ca0ff7db20760ec0dee014bb0aa64b5338664bf88ea492343"
+    },
+    {
+      "path": "lib/features/map/models/mission_map_models.dart",
+      "sha256": "df559abfbe9effd277787a2daf8cdb4c4cbb45f9fc1b2e64b4872cac959d4ad7"
+    },
+    {
+      "path": "lib/features/map/presentation/map_filter_sheet.dart",
+      "sha256": "96c2806338c6fdd50eb50399ed24225c32ed234ab16a0146a55c5ed4df8f7dcf"
+    },
+    {
+      "path": "lib/features/map/presentation/map_search_bar.dart",
+      "sha256": "cefea241ee0cdc8c36bdb909ec4ca894629b0a1614f39a096633e55055747341"
+    },
+    {
+      "path": "lib/features/map/presentation/mission_map_canvas.dart",
+      "sha256": "d60da9557483180644d6daf1f68447ea74fa57ba0bccc261e6e09bdf4a612a70"
+    },
+    {
+      "path": "lib/features/map/presentation/mission_map_marker.dart",
+      "sha256": "28eea4d1807531458500c94a2b61d90c8cc5dea647ef913e5f4d8ddb66f0801e"
+    },
+    {
+      "path": "lib/features/map/presentation/mission_map_preview.dart",
+      "sha256": "a749c328f585c4ded4ebd5f7ca3a9c343b9451c9ec011cd8466fe7d8aa3aa539"
+    },
+    {
+      "path": "lib/features/map/presentation/mission_map_screen.dart",
+      "sha256": "0ad3d3264b474b1c617c7905514ebbedf515dfd43d5ba422f258ce6c5ef9d801"
+    },
+    {
+      "path": "supabase/functions/delete-account/index.ts",
+      "sha256": "2c2aaa8c2260bde57c82aa3b4490377b7eb4d2627f14257ab68358ebdd944c92"
+    },
+    {
+      "path": "supabase/functions/delete-account/tour-storage.ts",
+      "sha256": "05f8cf64b863117e34f7de86e98af2182a16dca562229f3fc5587591dcc5663a"
+    },
+    {
+      "path": "supabase/functions/delete-account/tour-storage_test.ts",
+      "sha256": "61cafe351b91c281a269da444344982972fb8984e599cc2e4534887193e83a7b"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "sha256": "e7ebaaf2ba761ebb4f11cfb296f6238a8af9d936c256d1b782e8a7c663a0267a"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "sha256": "9d7d4a29eaabd1fd5a2b61ecc519c52caa9f69d94bfb28e9abf6761c1967757b"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "sha256": "f9c89743d848a50165d40ef3e77f4acf0a01489484dd5bf8d94dfd9b16225e15"
+    },
+    {
+      "path": "supabase/migrations/004_post_locations.sql",
+      "sha256": "3128b9ed33f17d7a1f8193c589deea23d2252979fd32d29f6a1811f664a01b74"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "sha256": "6b3ea999f9fbf1500a879de4a39298d567c9ab3354e6422b1abaeef4a614da05"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "sha256": "68c3bf4240c9c5b8e25a3af865509ad82077f55187c5ab3a2cea4f622059ea62"
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "sha256": "b814f167a162fb68a17706019d728a44540f45984eefdd00de8728de37a65a85"
+    },
+    {
+      "path": "supabase/migrations/008_recover_minimal_registration.sql",
+      "sha256": "ed690d80e841729aa2838e33f5d10d3f73c3ee4b0934f92f88ddbefad07d2577"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "sha256": "4130e3c3f625e2f9f1933d03283bcf3b24ff82e94062feb6b2c92fe2312c9082"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "sha256": "30011ce1cd24dae9ab31bfb0bcf11e1b40ba3e3f2b86e9dc668a3b296c4bbeba"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "sha256": "4196274a5be5237be41ac33570c01f79dac1fc2495383781dff08ed0ecb17166"
+    },
+    {
+      "path": "supabase/migrations/012_mission_map.sql",
+      "sha256": "ee9bbb15491bf45c60d948ed3675de6f691a4ea17f25d7de987628df8b3b7a59"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "sha256": "528da9f709a30ca04302a258cc681b2aa8f5bae277b2cc94f8d7ba2ed0e8b26c"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "sha256": "435a15056e800118941e2f74b5db19ac185fca3798a3a2b4ec57632534c83fb5"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "sha256": "f4f296347d3f0660b729a2c31a5bdd9d8378e06750541318e41045158b86936e"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "sha256": "61bcfbc453b3d6c8ccd78af2dc7657e657c18cb3b89e2737b071f8707f6d0c5b"
+    },
+    {
+      "path": "supabase/migrations/017_story_cleanup_schedule.sql",
+      "sha256": "75cdbbba9abd17a339844906927dbf6c29bef1b8c21d884452eade96e59bfe90"
+    },
+    {
+      "path": "supabase/migrations/018_story_publication_retries.sql",
+      "sha256": "5d857433c18c80cdf446db6a23d3b30b2c7609213e3f13a29786b1cd239730bf"
+    },
+    {
+      "path": "supabase/migrations/019_story_receipt_upgrade.sql",
+      "sha256": "4c728670e50c9cacf8cb8d6b6cb643e759430554d6cc40ef5c189b77188594e7"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "sha256": "3e8ba895e0f168cf154e409c3a8fb7dd859e064b28ae7f48ea2390e1c029608e"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "sha256": "9a57c562f63b13af12125156fb159720cffc0a8008254f36c2deeecac4f43d49"
+    }
+  ],
+  "source_anchors": [
+    {
+      "path": "lib/features/auth/data/auth_repository.dart",
+      "line": 141,
+      "source": "final response = await _client.functions.invoke("
+    },
+    {
+      "path": "lib/features/community/data/community_repository.dart",
+      "line": 322,
+      "source": "var request = _client.from('mission_applications').select();"
+    },
+    {
+      "path": "lib/features/community/data/community_repository.dart",
+      "line": 367,
+      "source": ".from('mission_drafts')"
+    },
+    {
+      "path": "lib/features/community/data/community_repository.dart",
+      "line": 376,
+      "source": ".from('mission_drafts')"
+    },
+    {
+      "path": "lib/features/community/data/community_repository.dart",
+      "line": 442,
+      "source": "final rows = await _client.from('mission_saves').select('mission_id');"
+    },
+    {
+      "path": "lib/features/community/data/community_repository.dart",
+      "line": 471,
+      "source": ".from('mission_finalists')"
+    },
+    {
+      "path": "lib/features/community/data/community_repository.dart",
+      "line": 604,
+      "source": "() => _client.storage.from('mission-images').createSignedUrl(path, 600),"
+    },
+    {
+      "path": "lib/features/community/data/mission_social_repository.dart",
+      "line": 72,
+      "source": ".from('mission_comments')"
+    },
+    {
+      "path": "lib/features/community/data/mission_social_repository.dart",
+      "line": 83,
+      "source": ".from('mission_comments')"
+    },
+    {
+      "path": "lib/features/community/data/social_repository.dart",
+      "line": 138,
+      "source": "var query = client.from('notifications').select();"
+    },
+    {
+      "path": "lib/features/community/data/social_repository.dart",
+      "line": 149,
+      "source": ".from('notifications')"
+    },
+    {
+      "path": "lib/features/community/data/social_repository.dart",
+      "line": 165,
+      "source": ".from('notifications')"
+    },
+    {
+      "path": "lib/features/community/models/community_models.dart",
+      "line": 303,
+      "source": "if (authorId == viewerId) return 'Esta es una misión que tú organizas.';"
+    },
+    {
+      "path": "lib/features/community/models/community_models.dart",
+      "line": 352,
+      "source": "acceptedCount: (json['accepted_count'] as num?)?.toInt() ?? 0,"
+    },
+    {
+      "path": "lib/features/community/models/post_social.dart",
+      "line": 77,
+      "source": "missionAccepted('mission_accepted'),"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_management_screen.dart",
+      "line": 71,
+      "source": "if (mission == null || mission.authorId != viewer.id) {"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_management_screen.dart",
+      "line": 397,
+      "source": "'accepted': 'Aceptadas',"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_management_screen.dart",
+      "line": 459,
+      "source": "'accepted' => 'Aceptada',"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_social_panels.dart",
+      "line": 240,
+      "source": "if (c.authorId == widget.viewerId ||"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_social_panels.dart",
+      "line": 241,
+      "source": "widget.mission.authorId == widget.viewerId ||"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_widgets.dart",
+      "line": 182,
+      "source": "'${mission.pendingCount} pendientes · ${mission.acceptedCount} aceptadas',"
+    },
+    {
+      "path": "lib/features/community/presentation/mission_widgets.dart",
+      "line": 187,
+      "source": "mission.authorId == viewerId"
+    },
+    {
+      "path": "lib/features/community/presentation/missions_screen.dart",
+      "line": 34,
+      "source": "'accepted' => 'Aceptada',"
+    },
+    {
+      "path": "lib/features/community/presentation/missions_screen.dart",
+      "line": 139,
+      "source": "authorId: _tab == 1 ? viewer.id : null,"
+    },
+    {
+      "path": "lib/features/community/presentation/missions_screen.dart",
+      "line": 458,
+      "source": "'accepted': 'Aceptadas',"
+    },
+    {
+      "path": "lib/features/community/presentation/missions_screen.dart",
+      "line": 816,
+      "source": "final owner = mission?.authorId == viewer?.id;"
+    },
+    {
+      "path": "lib/features/community/presentation/notifications_panel.dart",
+      "line": 99,
+      "source": "NotificationKind.missionAccepted => 'aceptó tu candidatura en',"
+    },
+    {
+      "path": "lib/features/community/presentation/posts_feed.dart",
+      "line": 529,
+      "source": "if (widget.post.authorId == widget.viewerId) ...["
+    },
+    {
+      "path": "lib/features/community/presentation/posts_feed.dart",
+      "line": 1094,
+      "source": "post.authorId != widget.viewerId &&"
+    },
+    {
+      "path": "lib/features/community/presentation/social_panels.dart",
+      "line": 309,
+      "source": "if (c.authorId == widget.viewerId ||"
+    },
+    {
+      "path": "lib/features/community/presentation/social_panels.dart",
+      "line": 310,
+      "source": "widget.post.authorId == widget.viewerId ||"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/story_viewer.dart",
+      "line": 281,
+      "source": "value: story.authorId == widget.viewerId"
+    },
+    {
+      "path": "lib/features/home_feed/presentation/story_viewer.dart",
+      "line": 285,
+      "source": "story.authorId == widget.viewerId"
+    },
+    {
+      "path": "supabase/functions/delete-account/index.ts",
+      "line": 53,
+      "source": "for (const bucketName of ['profile-media', 'post-images', 'mission-images', 'showcase-media', 'story-images']) {"
+    },
+    {
+      "path": "supabase/functions/delete-account/index.ts",
+      "line": 64,
+      "source": "for (const bucketName of [\"tour-inputs\", \"tour-assets\"]) {"
+    },
+    {
+      "path": "supabase/functions/delete-account/index.ts",
+      "line": 69,
+      "source": "const { error: deleteError } = await adminClient.auth.admin.deleteUser("
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 111,
+      "source": "create or replace function public.handle_new_user()"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 80,
+      "source": "create or replace function public.handle_new_user() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 169,
+      "source": "create function public.request_account_deletion(owner_id uuid) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 107,
+      "source": "create policy \"Visible missions\" on public.missions for select to authenticated using(not hidden or author_id=auth.uid() or public.community_is_admin());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 108,
+      "source": "create policy \"Create own missions\" on public.missions for insert to authenticated with check(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 109,
+      "source": "create policy \"Delete own missions\" on public.missions for delete to authenticated using(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 110,
+      "source": "create policy \"Private applications\" on public.mission_applications for select to authenticated using(applicant_id=auth.uid() or exists(select 1 from public.missions where id=mission_id and author_id=auth.uid()));"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 112,
+      "source": "create policy \"Report visible content\" on public.content_reports for insert to authenticated with check(reporter_id=auth.uid() and (exists(select 1 from public.posts where id=post_id) or exists(select 1 from public.missions where id=mission_id)));"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 158,
+      "source": "create function public.set_mission_status(mission_id uuid,new_status text) returns void"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 169,
+      "source": "create function public.apply_to_mission(mission_id uuid,application_message text) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 36,
+      "source": "create function public.validate_mission_lifecycle() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 54,
+      "source": "create trigger validate_mission_lifecycle before insert or update on public.missions for each row execute function public.validate_mission_lifecycle();"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 56,
+      "source": "create function public.create_mission(mission_input jsonb) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 66,
+      "source": "create function public.update_mission(mission_id uuid,mission_input jsonb) returns void"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 80,
+      "source": "create function public.set_mission_status(mission_id uuid,new_status text,cancellation_reason text default null) returns void"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 97,
+      "source": "create or replace function public.apply_to_mission(mission_id uuid,application_message text) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 148,
+      "source": "create function public.list_missions(author_filter uuid default null,query_text text default '',category_filter text default null,target_filter text default null,scope_filter text default 'all',page_offset int default 0,mission_filter uuid default null)"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 156,
+      "source": "select to_jsonb(m)||jsonb_build_object('accepted_count',(select count(*) from public.mission_applications a where a.mission_id=m.id and a.status='accepted'),"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 179,
+      "source": "create policy \"Read visible mission images\" on storage.objects for select to authenticated"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 181,
+      "source": "create policy \"Upload own mission images\" on storage.objects for insert to authenticated"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 183,
+      "source": "create policy \"Delete own unused mission images\" on storage.objects for delete to authenticated"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 185,
+      "source": "create function public.guard_mission_image_operation() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 207,
+      "source": "create trigger guard_mission_images before insert or update or delete on storage.objects for each row execute function public.guard_mission_image_operation();"
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "line": 52,
+      "source": "create or replace function public.handle_new_user() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/012_mission_map.sql",
+      "line": 7,
+      "source": "create function public.list_map_missions("
+    },
+    {
+      "path": "supabase/migrations/012_mission_map.sql",
+      "line": 39,
+      "source": "where a.mission_id=m.id and a.status='accepted') as accepted_count"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 11,
+      "source": "create function public.lock_mission_compensation() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 18,
+      "source": "create trigger lock_mission_compensation before update on public.missions for each row execute function public.lock_mission_compensation();"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 20,
+      "source": "alter function public.create_mission(jsonb) rename to create_mission_legacy;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 21,
+      "source": "alter function public.update_mission(uuid,jsonb) rename to update_mission_legacy;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 23,
+      "source": "create function public.create_mission(mission_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 32,
+      "source": "create function public.update_mission(mission_id uuid,mission_input jsonb) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 66,
+      "source": "create policy \"Private mission drafts\" on public.mission_drafts for select to authenticated using(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 67,
+      "source": "create policy \"Private mission saves\" on public.mission_saves for select to authenticated using(user_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 68,
+      "source": "create policy \"Organizer finalists\" on public.mission_finalists for select to authenticated using(exists(select 1 from public.missions m where m.id=mission_id and m.author_id=auth.uid()));"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 69,
+      "source": "create function public.save_mission_draft(draft_id uuid,draft_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 118,
+      "source": "create function public.publish_mission_draft(draft_id uuid,mission_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 132,
+      "source": "create function public.delete_mission_draft(draft_id uuid) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 140,
+      "source": "create function public.set_mission_saved(mission_id uuid,is_saved boolean) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 165,
+      "source": "create function public.submit_mission_application(mission_id uuid,application_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 195,
+      "source": "create function public.set_mission_finalist(mission_id uuid,application_id uuid,is_finalist boolean) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 210,
+      "source": "create function public.confirm_mission_selection(mission_id uuid,application_ids uuid[]) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 233,
+      "source": "create function public.version_mission_event() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 246,
+      "source": "create trigger mission_event_version before update on public.missions for each row execute function public.version_mission_event();"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 247,
+      "source": "create trigger application_event_version before insert or update on public.mission_applications for each row execute function public.version_mission_event();"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 248,
+      "source": "create function public.notify_mission_application() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 265,
+      "source": "create trigger mission_application_notification after insert or update on public.mission_applications for each row execute function public.notify_mission_application();"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 266,
+      "source": "create function public.notify_mission_status() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 279,
+      "source": "create trigger mission_status_notification after update on public.missions for each row execute function public.notify_mission_status();"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 284,
+      "source": "create policy \"Delete own unused mission images\" on storage.objects for delete to authenticated"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 288,
+      "source": "create or replace function public.guard_mission_image_operation() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 312,
+      "source": "create function public.list_saved_missions(query_text text default '',category_filter text default null,target_filter text default null,page_offset int default 0)"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 317,
+      "source": "return query select to_jsonb(m)||jsonb_build_object('accepted_count',(select count(*) from public.mission_applications a where a.mission_id=m.id and a.status='accepted'),"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 81,
+      "source": "create function public.register_notification_device(installation uuid,fcm_token text,permission_granted boolean) returns void"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 205,
+      "source": "when 'mission_application' then 'envió una candidatura a' when 'mission_accepted' then 'aceptó tu candidatura en'"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 414,
+      "source": "create or replace function public.request_account_deletion(owner_id uuid) returns boolean language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 536,
+      "source": "create function public.tours_permission_revoke(p_request uuid) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 155,
+      "source": "update public.mission_applications set accepted_at=created_at where status='accepted';"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 156,
+      "source": "create function public.timestamp_mission_acceptance() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 162,
+      "source": "else new.accepted_at:=old.accepted_at; end if;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 177,
+      "source": "union select 'mission',a.mission_id,a.applicant_id from public.mission_applications a where a.status='accepted' and a.accepted_at>=now()-interval '7 days'"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 181,
+      "source": "select 'mission',m.id,m.created_at,to_jsonb(m)||jsonb_build_object('accepted_count',(select count(*) from public.mission_applications a where a.mission_id=m.id and a.status='accepted'),'organizer_name',p.full_name,'organizer_username',p.username),m.author_id,m.category,m.location_latitude,m.location_longitude"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 39,
+      "source": "create function public.mission_social_visible(mission_uuid uuid) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 48,
+      "source": "create policy \"Visible mission reactions\" on public.mission_reactions for select to authenticated"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 50,
+      "source": "create policy \"Visible mission conversation\" on public.mission_comments for select to authenticated"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 53,
+      "source": "create function public.social_mission(mission_uuid uuid) returns public.missions"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 65,
+      "source": "create function public.notify_mission_reaction() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 87,
+      "source": "create function public.set_mission_reaction(mission_uuid uuid,reaction_type text) returns void"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 100,
+      "source": "create function public.create_mission_comment(mission_uuid uuid,comment_body text,operation_uuid uuid) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 124,
+      "source": "create function public.retract_mission_comment_notification() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 134,
+      "source": "create function public.delete_mission_comment(comment_uuid uuid) returns void"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 144,
+      "source": "create function public.mission_social_stats(mission_ids uuid[]) returns table("
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 168,
+      "source": "union select 'mission',a.mission_id,a.applicant_id from public.mission_applications a where a.status='accepted' and a.accepted_at>=now()-interval '7 days'"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 174,
+      "source": "select 'mission',m.id,m.created_at,to_jsonb(m)||jsonb_build_object('accepted_count',(select count(*) from public.mission_applications a where a.mission_id=m.id and a.status='accepted'),'organizer_name',p.full_name,'organizer_username',p.username),m.author_id,m.category,m.location_latitude,m.location_longitude"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 37,
+      "source": "alter function public.create_mission(jsonb) rename to create_mission_before_city;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 38,
+      "source": "alter function public.update_mission(uuid,jsonb) rename to update_mission_before_city;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 39,
+      "source": "alter function public.save_mission_draft(uuid,jsonb) rename to save_mission_draft_before_city;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 41,
+      "source": "create function public.create_mission(mission_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 47,
+      "source": "create function public.update_mission(mission_id uuid,mission_input jsonb) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 54,
+      "source": "create function public.save_mission_draft(draft_id uuid,draft_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    }
+  ],
+  "limitations": [
+    "Historical local synthetic snapshots only",
+    "No new runtime or real-data inventory",
+    "No executable migration or implementation validation",
+    "Storage owner/owner_id API-level deletion restriction documented externally; installed runtime behavior NOT queried or tested in this desk analysis"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-20T05:54:25.392136+00:00",
+  "result": "PASS",
+  "source": "b",
+  "pending_initial_profile_operator_denied": true,
+  "real_existing_complete_initial_profile_RPC_used_in_rollback": true,
+  "actual_Negocio_profile_without_any_membership": true,
+  "permission_denied_by_org_membership_42501": true,
+  "transactional_SET_ROLE_fixture_not_Auth_reauthentication_or_transport_proof": true,
+  "all_profile_role_binding_rows_catalog_sequences_rollback_exact": true
+}

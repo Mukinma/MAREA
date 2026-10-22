@@ -1,0 +1,111 @@
+{
+  "at": "2026-10-14T01:13:43.067Z",
+  "result": "PASS_CHECKPOINT_N_T_ONLY",
+  "commands": [
+    {
+      "command": "node tool/traceability/cli.mjs validate",
+      "exit_code": 0,
+      "output": "Integridad aprobada: 684 registros, 282 evidencias."
+    },
+    {
+      "command": "node tool/traceability/cli.mjs check",
+      "exit_code": 0,
+      "output": "Integridad y documentos consistentes."
+    },
+    {
+      "command": "node tool/traceability/cli.mjs render",
+      "exit_code": 0,
+      "output": "Generación completa: 0 archivos modificados."
+    }
+  ],
+  "source_files_checked": 401,
+  "old_collections_and_task001_preserved": true,
+  "old_requirement_assessments_and_history_preserved": true,
+  "manual_view_prose_preserved": true,
+  "srs_sha256": "4a1c28594e68d26180390b9aea3affce18a619039ad25ad1c8c528dc3d2f4388",
+  "normative_adoption": "PENDIENTE_COMPATIBILIDAD_LOCAL",
+  "tool_tests": {
+    "total": 34,
+    "pass": 34,
+    "fail": 0,
+    "receipt": "docs/evidence/2026-10-13/task002/run-20261014T003000Z/14-T-verification.json"
+  },
+  "canonical": {
+    "requirements": 684,
+    "RF": 313,
+    "evidence": 282,
+    "historical_evidence": 275,
+    "TC_pending": 21,
+    "pending_normative_review": 144
+  },
+  "staging_lib_supabase_unchanged": true,
+  "E": "PROPOSAL_INCOMPLETE_FOR_EXECUTION_APPROVAL",
+  "U0": "PROPOSED_28_INTERFACES_PENDING_USER_APPROVAL",
+  "new_evidence_current": true,
+  "head": "989e5b5845deff0afd13703a067a7d7a3775d3bc",
+  "commits_created": false,
+  "product_modified": false,
+  "flutter_modified": false,
+  "migrations_executed": false,
+  "remote_modified": false,
+  "complete_requirement_validation": false,
+  "TASK002_complete": false,
+  "artifact_refs": [
+    {
+      "path": "docs/MAREA_SRS.md",
+      "sha256": "4a1c28594e68d26180390b9aea3affce18a619039ad25ad1c8c528dc3d2f4388"
+    },
+    {
+      "path": "docs/MAREA_REQUIREMENTS_STATUS.yaml",
+      "sha256": "78c15c716a23bd96291174f40727f613e76267fdbc72da0ee3657f9547b64e12"
+    },
+    {
+      "path": "docs/MAREA_TRACKING.md",
+      "sha256": "55afb0a5046ee04bac888a5e96d4a6b6f72e6b1193286342ca3fd3caf4d7d5b5"
+    },
+    {
+      "path": "docs/MAREA_AUDIT_REPORT.md",
+      "sha256": "0fb89f0cc3f65ffa529653a23806be1b04e92dcf3f3c13bb228fda1c426a18bd"
+    },
+    {
+      "path": "docs/MAREA_TRACEABILITY.md",
+      "sha256": "7def46db10782582dbd14318c4b8c54e780cf8af015aa3ffbc5efb5621fc37e2"
+    },
+    {
+      "path": "docs/MAREA_CHANGELOG.md",
+      "sha256": "b361a8473525c6f59230c63da86da8985276b3036005322975f28dd88a81f360"
+    },
+    {
+      "path": "docs/task002/E-STRUCTURAL-REVIEW.md",
+      "sha256": "eb6f59067126e597a4123c3239dbb0bfcfdefb48d32d3f848c13b4917e5038b3"
+    },
+    {
+      "path": "docs/task002/E-PREFLIGHT.sql",
+      "sha256": "dbc074f63c9a25f2c6cde28d6097cb7aafe6b2c226eb16c3ea9bc28cf37b9ab9"
+    },
+    {
+      "path": "docs/task002/E-PROPOSED-REFERENCE.sql",
+      "sha256": "70b1955074b1b2e8f640247d6e352cc4ca7d5f341114d10a5b5889ee6f029068"
+    },
+    {
+      "path": "docs/task002/U0-FUNCTIONAL-DESIGN.md",
+      "sha256": "8164cfcaf54a888d16edfcb7f425a4a99f1881a384490c6abec626c657fa3cd4"
+    },
+    {
+      "path": "docs/task002/U0/index.html",
+      "sha256": "f9747ef4bc5d4423e82317eb8b97aaa1fe17d106a5df2831e81fb9bcfb94d766"
+    },
+    {
+      "path": "docs/task002/U0/screens.json",
+      "sha256": "d670d87286b99e1a284a94a54902a889936f837194daa25fd3fc3eee72a3ddbc"
+    },
+    {
+      "path": "docs/task002/U0/preview-offer-panel.png",
+      "sha256": "d96c798123d4fac05c589716871756f43f735050d8cc99d42b917caac6eedf49"
+    },
+    {
+      "path": "docs/evidence/2026-10-13/task002/run-20261014T003000Z/REPORT.md",
+      "sha256": "53923ebca18d6b260a9b9f1c9b466f62c68a387f9ba978a4293844fa7417b0ff"
+    }
+  ]
+}

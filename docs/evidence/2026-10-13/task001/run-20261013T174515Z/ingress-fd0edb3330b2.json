@@ -1,0 +1,59 @@
+{
+  "id": "E-TASK001-INGRESS-marea-task001-fd0edb3330b2",
+  "at": "2026-10-13T19:36:40.505Z",
+  "project_id": "marea-task001-fd0edb3330b2",
+  "modality": "real",
+  "result": "PASS",
+  "local_interfaces_probed": 1,
+  "results": [
+    {
+      "surface": 0,
+      "probe": "loopback IPv4",
+      "result": "PASS"
+    },
+    {
+      "surface": 0,
+      "probe": "loopback IPv6 denied",
+      "result": "PASS"
+    },
+    {
+      "surface": 0,
+      "probe": "own LAN IPv4 denied",
+      "result": "PASS"
+    },
+    {
+      "surface": 1,
+      "probe": "loopback IPv4",
+      "result": "PASS"
+    },
+    {
+      "surface": 1,
+      "probe": "loopback IPv6 denied",
+      "result": "PASS"
+    },
+    {
+      "surface": 1,
+      "probe": "own LAN IPv4 denied",
+      "result": "PASS"
+    },
+    {
+      "surface": 3,
+      "probe": "loopback IPv4",
+      "result": "PASS"
+    },
+    {
+      "surface": 3,
+      "probe": "loopback IPv6 denied",
+      "result": "PASS"
+    },
+    {
+      "surface": 3,
+      "probe": "own LAN IPv4 denied",
+      "result": "PASS"
+    }
+  ],
+  "limits": [
+    "Docker bindings additionally require only 127.0.0.1 and no IPv6; probes do not certify a different host firewall configuration."
+  ],
+  "remote_modified": false
+}

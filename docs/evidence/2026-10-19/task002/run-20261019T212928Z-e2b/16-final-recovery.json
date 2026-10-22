@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-20T04:57:57.062113+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "DB": {
+        "archive_sha256": "c332e7d02117bdd6b810134148d3b54279df95a528c0d430cb30b3e52424128f",
+        "manifest_sha256": "da110e6e07797df820d1494df197984cb678f245bea783b7b0c63ba919c4828d",
+        "tree_verified_on_new_volume": "task002-e2b-20261019t212928z-a-B-v2-final-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage": {
+        "archive_sha256": "06be79eee3ea27ca8552811ead526359825c8eb907c300d830a1df7d3566d72c",
+        "manifest_sha256": "012581928699dad288aaeffece43befa120551271ff7b66d2f7ac46d38015e5a",
+        "restored_volume": "task002-e2b-20261019t212928z-recovery-a-storage",
+        "restored_copy": "task002-e2b-20261019t212928z-recovery-a-storage-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 49
+      },
+      "coordination": {
+        "archive_sha256": "8806964b019520b8ca14b3f58573dffd2dfb2f79470eb50bdf72d14d1ce5848d",
+        "manifest_sha256": "61168c4408a3de095294bb0f2e18c2afca55d86bf8f6b2c4c2ddaa326788226b",
+        "restored_volume": "task002-e2b-20261019t212928z-recovery-a-control-v2",
+        "restored_copy": "task002-e2b-20261019t212928z-recovery-a-control-v2-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 2
+      },
+      "B_progress_consistent_not_completed": true,
+      "purge_unblock_and_expired_case_denied": true,
+      "case_probe_authenticated_actual_fixture_login": true,
+      "DB_logical_snapshot_and_physical_trees_exact": true,
+      "successful_Auth_profile_media_purges": 0
+    },
+    "b": {
+      "result": "PASS",
+      "DB": {
+        "archive_sha256": "d0c23b79916a0a6e04f4461b7dc9e6a3bf4d17b4e6609e8eeefec0ea3f918a76",
+        "manifest_sha256": "dbd62b69e41a0fd36f710d40095aba2c08f8a673a10a3394296d43f42ab0a148",
+        "tree_verified_on_new_volume": "task002-e2b-20261019t212928z-b-B-v2-final-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage": {
+        "archive_sha256": "b10276d5996489d8f3200c8355718d2e72fc705d6719fb99ecf6003c3e8eb415",
+        "manifest_sha256": "3e31c1946e1286825a45d9689879930cfed7331dfce72a3c14ab3f20c9b78518",
+        "restored_volume": "task002-e2b-20261019t212928z-recovery-b-storage",
+        "restored_copy": "task002-e2b-20261019t212928z-recovery-b-storage-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 54
+      },
+      "coordination": {
+        "archive_sha256": "d790bd87126a0b804a99e815279edea29d12efa9ebbb5e363393d25bacd92ee1",
+        "manifest_sha256": "596dd0f0032c3859d0078a5c14d7cb72e5466e248f5d6c93498257014b61a89c",
+        "restored_volume": "task002-e2b-20261019t212928z-recovery-b-control-v2",
+        "restored_copy": "task002-e2b-20261019t212928z-recovery-b-control-v2-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 2
+      },
+      "B_progress_consistent_not_completed": true,
+      "purge_unblock_and_expired_case_denied": true,
+      "case_probe_authenticated_actual_fixture_login": true,
+      "DB_logical_snapshot_and_physical_trees_exact": true,
+      "successful_Auth_profile_media_purges": 0
+    }
+  },
+  "quiesced_services": [
+    "/task002-e2b-20261019t212928z-b-ingress-B",
+    "/task002-e2b-20261019t212928z-b-storage-B-readonly",
+    "/task002-e2b-20261019t212928z-a-ingress-B",
+    "/task002-e2b-20261019t212928z-a-storage-B-readonly",
+    "/task002-e2b-20261019t212928z-b-auth-B",
+    "/task002-e2b-20261019t212928z-a-auth-B"
+  ],
+  "not_an_E2_R_or_remote_readiness_claim": true
+}

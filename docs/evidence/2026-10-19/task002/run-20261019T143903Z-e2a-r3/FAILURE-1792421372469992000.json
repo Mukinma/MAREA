@@ -1,0 +1,6 @@
+{
+  "at": "2026-10-19T14:49:32.470099+00:00",
+  "result": "FAIL_STOPPED",
+  "error": "PG/probe namespace mismatch",
+  "no_scope_expansion": true
+}

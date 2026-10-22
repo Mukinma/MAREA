@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-20T05:31:03.602144+00:00",
+  "result": "EXPECTED_RED",
+  "source": "b",
+  "actual_legacy_deletion_marker": true,
+  "private_control_open": true,
+  "org_authorize_wrongly_allowed": true,
+  "no_data_changes": true
+}

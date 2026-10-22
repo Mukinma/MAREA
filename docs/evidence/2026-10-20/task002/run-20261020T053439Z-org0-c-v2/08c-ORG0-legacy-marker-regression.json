@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-20T05:37:26.141636+00:00",
+  "result": "PASS",
+  "actual_B_legacy_marker_with_open_private_control": true,
+  "ordinary_private_operator_provision_denied_42501": true,
+  "no_organization_or_membership_inferred": true,
+  "all_data_catalog_sequences_equal": true,
+  "source_previous_RED": "../run-20261020T051527Z-org0-c/13a-ORG0-legacy-marker-RED.json"
+}

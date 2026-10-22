@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-19T20:50:12.332659+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "SQL_reference_denials": 2,
+      "REST_PATCH_SQLSTATE": "55000",
+      "DDL_rollback_exact": true,
+      "changed_S0_triggers": 2,
+      "guard_count": 40,
+      "all_rows_sequences_grants_FKs_existing_functions_unchanged": true,
+      "full_physical_tree_unchanged": true,
+      "Storage_delete_HTTP": 500,
+      "Storage_read_HTTP": 200,
+      "duplicate_marker_HTTP": 503,
+      "completed": false,
+      "epoch": "5bde5b9c-9957-411a-a29d-d84cf7c15cbf",
+      "digest": "fe60b2f1c63cffb6a722ed8bf1e239daeaeff35a1f680edfa09d0793c6c1c681"
+    },
+    "b": {
+      "result": "PASS",
+      "SQL_reference_denials": 2,
+      "REST_PATCH_SQLSTATE": "55000",
+      "DDL_rollback_exact": true,
+      "changed_S0_triggers": 2,
+      "guard_count": 40,
+      "all_rows_sequences_grants_FKs_existing_functions_unchanged": true,
+      "full_physical_tree_unchanged": true,
+      "Storage_delete_HTTP": 500,
+      "Storage_read_HTTP": 200,
+      "duplicate_marker_HTTP": 503,
+      "completed": false,
+      "epoch": "f80c5153-7276-43c6-ad2a-292847eb4a71",
+      "digest": "d959c1aab51dbef098d562254f037f1dbfd0af584e1e237e2d65344b49fcd8d9"
+    }
+  },
+  "patch_sha256": "dacbd0676560d1be5db1001f9c737d71ae4203706042c92fc24b19ea31462c03",
+  "manifest_sha256": "ae49f0195a642874511aeb3539634855cd9a6e2976b216a9ff4cd982ab4aa1a8",
+  "original_T49_cut_still_valid_no_process_reopened_writable": true
+}

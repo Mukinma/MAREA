@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-19T05:36:53.797279+00:00",
+  "result": "PASS",
+  "originals_after_quiescence_unchanged": {
+    "a-db": {
+      "result": "PASS",
+      "entries": 2128,
+      "unchanged_source_content_and_metadata": true
+    },
+    "a-storage": {
+      "result": "PASS",
+      "entries": 45,
+      "unchanged_source_content_and_metadata": true
+    },
+    "b-db": {
+      "result": "PASS",
+      "entries": 2128,
+      "unchanged_source_content_and_metadata": true
+    },
+    "b-storage": {
+      "result": "PASS",
+      "entries": 50,
+      "unchanged_source_content_and_metadata": true
+    }
+  },
+  "pre_boot_vm_clone_preserved_separately": true
+}

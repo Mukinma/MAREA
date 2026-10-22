@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-20T05:36:00.620879+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "DDL_rollback_exact": true,
+      "all_preexisting_rows_sequences_equal": true
+    },
+    "b": {
+      "result": "PASS",
+      "DDL_rollback_exact": true,
+      "all_preexisting_rows_sequences_equal": true
+    }
+  },
+  "SQL_file": "20261020053555_org0_private_structural.sql",
+  "SQL_sha256": "e4089866f57ba7e2ab24db5f4f5e91ceb5e5b1389939fee6e42cc8564f3db1eb"
+}

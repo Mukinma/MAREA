@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-20T05:42:09.608476+00:00",
+  "result": "PASS",
+  "command": [
+    "supabase",
+    "--workdir",
+    "/Users/crisis/Proyectos/marea-backups/task002-org0-c-v2-20261020T053439Z/c-parent-cli-v2",
+    "migration",
+    "new",
+    "e2c_explicit_parent_obligations_v2"
+  ],
+  "stdout": "{\"path\":\"/Users/crisis/Proyectos/marea-backups/task002-org0-c-v2-20261020T053439Z/c-parent-cli-v2/supabase/migrations/20261020054208_e2c_explicit_parent_obligations_v2.sql\",\"message\":\"Migration created\"}\n",
+  "stderr": "A new version of Supabase CLI is available: v2.121.0 (currently installed v2.117.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n",
+  "SQL_file": "20261020054208_e2c_explicit_parent_obligations_v2.sql",
+  "SQL_sha256": "af251183342568dd123b939865f88a83a217d2360d27ce8f819ff1a872af27a1",
+  "changes_existing_private_routine_only": "collaboration.deletion_obligation_guard()",
+  "business_RPC_FK_unchanged": true
+}

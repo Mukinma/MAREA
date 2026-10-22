@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-20T05:41:02.193717+00:00",
+  "result": "EXPECTED_RED",
+  "sources": {
+    "a": {
+      "result": "EXPECTED_RED",
+      "wrong_manifest_resource": true,
+      "matching_manifest_without_receipt": true,
+      "full_rollback_equal": true
+    },
+    "b": {
+      "result": "EXPECTED_RED",
+      "wrong_manifest_resource": true,
+      "matching_manifest_without_receipt": true,
+      "full_rollback_equal": true
+    }
+  }
+}

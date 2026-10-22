@@ -1,0 +1,354 @@
+{
+  "id": "E-TASK001-REPRO-20261013T174515Z",
+  "at": "2026-10-13T19:38:06.731Z",
+  "result": "PASS",
+  "complete_requirement_validation": false,
+  "runtimes": [
+    {
+      "project_id": "marea-task001-d7522760bb90",
+      "api_port": 62001,
+      "suite_file": "suites-marea-task001-d7522760bb90-1791920209728.json",
+      "counts": {
+        "PASS": 726,
+        "FAIL": 5,
+        "NO_IMPLEMENTADO": 3,
+        "PENDIENTE": 0,
+        "BLOQUEADO": 0
+      },
+      "modalities": {
+        "real": 621,
+        "inspeccion": 113
+      },
+      "scenario_counts": {
+        "PASS": 113,
+        "FAIL": 5,
+        "NO_IMPLEMENTADO": 5,
+        "PENDIENTE": 6
+      },
+      "scenarios_defined": 129,
+      "scenarios_covered": 119,
+      "subcases_executed": 734,
+      "original_migration_hashes": [
+        {
+          "file": "001_initial_schema.sql",
+          "sha256": "e7ebaaf2ba761ebb4f11cfb296f6238a8af9d936c256d1b782e8a7c663a0267a"
+        },
+        {
+          "file": "002_account_completion.sql",
+          "sha256": "9d7d4a29eaabd1fd5a2b61ecc519c52caa9f69d94bfb28e9abf6761c1967757b"
+        },
+        {
+          "file": "003_community.sql",
+          "sha256": "f9c89743d848a50165d40ef3e77f4acf0a01489484dd5bf8d94dfd9b16225e15"
+        },
+        {
+          "file": "004_post_locations.sql",
+          "sha256": "3128b9ed33f17d7a1f8193c589deea23d2252979fd32d29f6a1811f664a01b74"
+        },
+        {
+          "file": "005_mission_lifecycle.sql",
+          "sha256": "6b3ea999f9fbf1500a879de4a39298d567c9ab3354e6422b1abaeef4a614da05"
+        },
+        {
+          "file": "006_profile_experience.sql",
+          "sha256": "68c3bf4240c9c5b8e25a3af865509ad82077f55187c5ab3a2cea4f622059ea62"
+        },
+        {
+          "file": "007_minimal_registration.sql",
+          "sha256": "b814f167a162fb68a17706019d728a44540f45984eefdd00de8728de37a65a85"
+        },
+        {
+          "file": "008_recover_minimal_registration.sql",
+          "sha256": "ed690d80e841729aa2838e33f5d10d3f73c3ee4b0934f92f88ddbefad07d2577"
+        },
+        {
+          "file": "009_post_reactions.sql",
+          "sha256": "4130e3c3f625e2f9f1933d03283bcf3b24ff82e94062feb6b2c92fe2312c9082"
+        },
+        {
+          "file": "010_post_comments.sql",
+          "sha256": "30011ce1cd24dae9ab31bfb0bcf11e1b40ba3e3f2b86e9dc668a3b296c4bbeba"
+        },
+        {
+          "file": "011_post_collaboration.sql",
+          "sha256": "4196274a5be5237be41ac33570c01f79dac1fc2495383781dff08ed0ecb17166"
+        },
+        {
+          "file": "012_mission_map.sql",
+          "sha256": "ee9bbb15491bf45c60d948ed3675de6f691a4ea17f25d7de987628df8b3b7a59"
+        },
+        {
+          "file": "013_missions_redesign.sql",
+          "sha256": "528da9f709a30ca04302a258cc681b2aa8f5bae277b2cc94f8d7ba2ed0e8b26c"
+        },
+        {
+          "file": "014_android_push.sql",
+          "sha256": "435a15056e800118941e2f74b5db19ac185fca3798a3a2b4ec57632534c83fb5"
+        },
+        {
+          "file": "015_tours.sql",
+          "sha256": "f4f296347d3f0660b729a2c31a5bdd9d8378e06750541318e41045158b86936e"
+        },
+        {
+          "file": "016_home_feed.sql",
+          "sha256": "61bcfbc453b3d6c8ccd78af2dc7657e657c18cb3b89e2737b071f8707f6d0c5b"
+        },
+        {
+          "file": "017_story_cleanup_schedule.sql",
+          "sha256": "75cdbbba9abd17a339844906927dbf6c29bef1b8c21d884452eade96e59bfe90"
+        },
+        {
+          "file": "018_story_publication_retries.sql",
+          "sha256": "5d857433c18c80cdf446db6a23d3b30b2c7609213e3f13a29786b1cd239730bf"
+        },
+        {
+          "file": "019_story_receipt_upgrade.sql",
+          "sha256": "4c728670e50c9cacf8cb8d6b6cb643e759430554d6cc40ef5c189b77188594e7"
+        },
+        {
+          "file": "020_mission_social.sql",
+          "sha256": "3e8ba895e0f168cf154e409c3a8fb7dd859e064b28ae7f48ea2390e1c029608e"
+        },
+        {
+          "file": "021_content_cities.sql",
+          "sha256": "9a57c562f63b13af12125156fb159720cffc0a8008254f36c2deeecac4f43d49"
+        }
+      ],
+      "cron": {
+        "before": {
+          "name": "cron.launch_active_jobs",
+          "setting": "off",
+          "source": "configuration file",
+          "sourcefile": "/var/lib/postgresql/data/postgresql.auto.conf",
+          "context": "sighup",
+          "pending_restart": false
+        },
+        "after": {
+          "name": "cron.launch_active_jobs",
+          "setting": "off",
+          "source": "configuration file",
+          "sourcefile": "/var/lib/postgresql/data/postgresql.auto.conf",
+          "context": "sighup",
+          "pending_restart": false
+        },
+        "samples": 2616,
+        "all_off": true,
+        "monitor_sha256": "260f5596fcc67ee8691694f247312a0c699bd71384f76245019eec13900c3685",
+        "automatic_executions": 0,
+        "supervision": "Separate PostgreSQL backend, 100 ms sampling + checks before/after each original file; reviewed sources cannot change GUC"
+      },
+      "bundles": [
+        {
+          "file": "delete-account.eszip",
+          "sha256": "5b5f6f1025f69e39b425cd60c9ca6657c46495b9e26135b40f77e2050a8d3154"
+        },
+        {
+          "file": "geocoding.eszip",
+          "sha256": "60877670b2b6daec6ff0e8bae4811a14cf081347c7f4b471bb8f73d33cc11d8b"
+        },
+        {
+          "file": "profile-media.eszip",
+          "sha256": "8b181f4e1251d03b8b76ccbc85aa48a74cf59cbef9ac3dba4e4b6998bad6ead0"
+        },
+        {
+          "file": "send-push.eszip",
+          "sha256": "af847f2f28323f35134da965caf5f62227de2bf38477324097ceba99999d7764"
+        },
+        {
+          "file": "story-cleanup.eszip",
+          "sha256": "d5a4e0b73e04973e8b6bc7f62033d12e5c5c4a7a0c8a1f164fb342cf1be1c768"
+        },
+        {
+          "file": "tour-dispatch.eszip",
+          "sha256": "ebd8d68268629fbec26e7541dabcf6039f4fb2d3ea707d3a8649d402a913572b"
+        }
+      ],
+      "tables": 46,
+      "routines": 139,
+      "buckets": 7,
+      "isolation_subcases": 58,
+      "dns_subcases": 10,
+      "ingress_subcases": 9,
+      "vault_secret_count": 0,
+      "push_enabled": false,
+      "geocoding_enabled": false
+    },
+    {
+      "project_id": "marea-task001-fd0edb3330b2",
+      "api_port": 63001,
+      "suite_file": "suites-marea-task001-fd0edb3330b2-1791920209734.json",
+      "counts": {
+        "PASS": 726,
+        "FAIL": 5,
+        "NO_IMPLEMENTADO": 3,
+        "PENDIENTE": 0,
+        "BLOQUEADO": 0
+      },
+      "modalities": {
+        "real": 621,
+        "inspeccion": 113
+      },
+      "scenario_counts": {
+        "PASS": 113,
+        "FAIL": 5,
+        "NO_IMPLEMENTADO": 5,
+        "PENDIENTE": 6
+      },
+      "scenarios_defined": 129,
+      "scenarios_covered": 119,
+      "subcases_executed": 734,
+      "original_migration_hashes": [
+        {
+          "file": "001_initial_schema.sql",
+          "sha256": "e7ebaaf2ba761ebb4f11cfb296f6238a8af9d936c256d1b782e8a7c663a0267a"
+        },
+        {
+          "file": "002_account_completion.sql",
+          "sha256": "9d7d4a29eaabd1fd5a2b61ecc519c52caa9f69d94bfb28e9abf6761c1967757b"
+        },
+        {
+          "file": "003_community.sql",
+          "sha256": "f9c89743d848a50165d40ef3e77f4acf0a01489484dd5bf8d94dfd9b16225e15"
+        },
+        {
+          "file": "004_post_locations.sql",
+          "sha256": "3128b9ed33f17d7a1f8193c589deea23d2252979fd32d29f6a1811f664a01b74"
+        },
+        {
+          "file": "005_mission_lifecycle.sql",
+          "sha256": "6b3ea999f9fbf1500a879de4a39298d567c9ab3354e6422b1abaeef4a614da05"
+        },
+        {
+          "file": "006_profile_experience.sql",
+          "sha256": "68c3bf4240c9c5b8e25a3af865509ad82077f55187c5ab3a2cea4f622059ea62"
+        },
+        {
+          "file": "007_minimal_registration.sql",
+          "sha256": "b814f167a162fb68a17706019d728a44540f45984eefdd00de8728de37a65a85"
+        },
+        {
+          "file": "008_recover_minimal_registration.sql",
+          "sha256": "ed690d80e841729aa2838e33f5d10d3f73c3ee4b0934f92f88ddbefad07d2577"
+        },
+        {
+          "file": "009_post_reactions.sql",
+          "sha256": "4130e3c3f625e2f9f1933d03283bcf3b24ff82e94062feb6b2c92fe2312c9082"
+        },
+        {
+          "file": "010_post_comments.sql",
+          "sha256": "30011ce1cd24dae9ab31bfb0bcf11e1b40ba3e3f2b86e9dc668a3b296c4bbeba"
+        },
+        {
+          "file": "011_post_collaboration.sql",
+          "sha256": "4196274a5be5237be41ac33570c01f79dac1fc2495383781dff08ed0ecb17166"
+        },
+        {
+          "file": "012_mission_map.sql",
+          "sha256": "ee9bbb15491bf45c60d948ed3675de6f691a4ea17f25d7de987628df8b3b7a59"
+        },
+        {
+          "file": "013_missions_redesign.sql",
+          "sha256": "528da9f709a30ca04302a258cc681b2aa8f5bae277b2cc94f8d7ba2ed0e8b26c"
+        },
+        {
+          "file": "014_android_push.sql",
+          "sha256": "435a15056e800118941e2f74b5db19ac185fca3798a3a2b4ec57632534c83fb5"
+        },
+        {
+          "file": "015_tours.sql",
+          "sha256": "f4f296347d3f0660b729a2c31a5bdd9d8378e06750541318e41045158b86936e"
+        },
+        {
+          "file": "016_home_feed.sql",
+          "sha256": "61bcfbc453b3d6c8ccd78af2dc7657e657c18cb3b89e2737b071f8707f6d0c5b"
+        },
+        {
+          "file": "017_story_cleanup_schedule.sql",
+          "sha256": "75cdbbba9abd17a339844906927dbf6c29bef1b8c21d884452eade96e59bfe90"
+        },
+        {
+          "file": "018_story_publication_retries.sql",
+          "sha256": "5d857433c18c80cdf446db6a23d3b30b2c7609213e3f13a29786b1cd239730bf"
+        },
+        {
+          "file": "019_story_receipt_upgrade.sql",
+          "sha256": "4c728670e50c9cacf8cb8d6b6cb643e759430554d6cc40ef5c189b77188594e7"
+        },
+        {
+          "file": "020_mission_social.sql",
+          "sha256": "3e8ba895e0f168cf154e409c3a8fb7dd859e064b28ae7f48ea2390e1c029608e"
+        },
+        {
+          "file": "021_content_cities.sql",
+          "sha256": "9a57c562f63b13af12125156fb159720cffc0a8008254f36c2deeecac4f43d49"
+        }
+      ],
+      "cron": {
+        "before": {
+          "name": "cron.launch_active_jobs",
+          "setting": "off",
+          "source": "configuration file",
+          "sourcefile": "/var/lib/postgresql/data/postgresql.auto.conf",
+          "context": "sighup",
+          "pending_restart": false
+        },
+        "after": {
+          "name": "cron.launch_active_jobs",
+          "setting": "off",
+          "source": "configuration file",
+          "sourcefile": "/var/lib/postgresql/data/postgresql.auto.conf",
+          "context": "sighup",
+          "pending_restart": false
+        },
+        "samples": 2616,
+        "all_off": true,
+        "monitor_sha256": "260f5596fcc67ee8691694f247312a0c699bd71384f76245019eec13900c3685",
+        "automatic_executions": 0,
+        "supervision": "Separate PostgreSQL backend, 100 ms sampling + checks before/after each original file; reviewed sources cannot change GUC"
+      },
+      "bundles": [
+        {
+          "file": "delete-account.eszip",
+          "sha256": "5b5f6f1025f69e39b425cd60c9ca6657c46495b9e26135b40f77e2050a8d3154"
+        },
+        {
+          "file": "geocoding.eszip",
+          "sha256": "60877670b2b6daec6ff0e8bae4811a14cf081347c7f4b471bb8f73d33cc11d8b"
+        },
+        {
+          "file": "profile-media.eszip",
+          "sha256": "8b181f4e1251d03b8b76ccbc85aa48a74cf59cbef9ac3dba4e4b6998bad6ead0"
+        },
+        {
+          "file": "send-push.eszip",
+          "sha256": "af847f2f28323f35134da965caf5f62227de2bf38477324097ceba99999d7764"
+        },
+        {
+          "file": "story-cleanup.eszip",
+          "sha256": "d5a4e0b73e04973e8b6bc7f62033d12e5c5c4a7a0c8a1f164fb342cf1be1c768"
+        },
+        {
+          "file": "tour-dispatch.eszip",
+          "sha256": "ebd8d68268629fbec26e7541dabcf6039f4fb2d3ea707d3a8649d402a913572b"
+        }
+      ],
+      "tables": 46,
+      "routines": 139,
+      "buckets": 7,
+      "isolation_subcases": 58,
+      "dns_subcases": 10,
+      "ingress_subcases": 9,
+      "vault_secret_count": 0,
+      "push_enabled": false,
+      "geocoding_enabled": false
+    }
+  ],
+  "independent_runtime": true,
+  "original_sources_unchanged": true,
+  "limits": [
+    "Additional seven-bucket expiry and ingress runners were executed separately in both runtimes, then incorporated into CLI for future fresh executions.",
+    "Results compare recorded subcases, not full row/RPC semantics or remote equivalence.",
+    "Network image reproducibility uses cached immutable image/export; rebuilding mutable APK mirror is not claimed."
+  ],
+  "remote_modified": false
+}

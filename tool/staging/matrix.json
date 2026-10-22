@@ -1,0 +1,3989 @@
+{
+  "schema_version": 1,
+  "task": "TASK-001",
+  "normative_source": "docs/MAREA_SRS.md",
+  "srs_sha256": "44087ec119772779a7972063299f248ae60009b26119a5c9b179ee75a7911152",
+  "complete_requirement_validation": false,
+  "status_values": [
+    "PASS",
+    "FAIL",
+    "PENDIENTE",
+    "NO_IMPLEMENTADO",
+    "BLOQUEADO"
+  ],
+  "identities": [
+    "visitante",
+    "propietario",
+    "candidato-A",
+    "candidato-B",
+    "tercero",
+    "administrador-legado",
+    "worker"
+  ],
+  "fixture_policy": "No fixtures creados; futuro email .invalid, password aleatorio privado, IDs por corrida; admin sólo setup/postcondiciones; HTTP con usuario; no datos reales",
+  "runners_planned": {
+    "node": "HTTP real sin redirects; postcondiciones y fetch timeouts",
+    "pgtap": "BEGIN; roles/JWT claims locales controlados; assertions grants/RLS/RPC; ROLLBACK; no servicios simulados como Supabase real",
+    "dart": "Repositorios Supabase reales, params/respuestas; configuración local explícita sin fallback producción"
+  },
+  "cases": [
+    {
+      "id": "T001-ID-01",
+      "area": "identidades",
+      "scenario": "Visitante lee ficha pública autorizada y no postula",
+      "actors": [
+        "visitante"
+      ],
+      "expected": "Lectura sólo pública; postulación rechazada sin filas nuevas",
+      "requirement_ids": [
+        "AC-01",
+        "CT-SEC-AUT-001",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-006",
+        "FND-020"
+      ],
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-ID-02",
+      "area": "identidades",
+      "scenario": "Asignación de actor mediante parámetros, role y app/user_metadata editables",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "tercero"
+      ],
+      "expected": "No elevar admin/worker ni sustituir actor_id/author_id; postcondición role inmutable",
+      "requirement_ids": [
+        "CT-SEC-ID-005",
+        "CT-SEC-ID-007",
+        "CT-SEC-ID-008",
+        "CT-SEC-AUT-001",
+        "RF-25-007",
+        "RF-25-008"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-ID-03",
+      "area": "identidades",
+      "scenario": "Administrador legado y worker no heredan privilegios de usuario común",
+      "actors": [
+        "administrador-legado",
+        "worker",
+        "tercero"
+      ],
+      "expected": "RPC service-only denegada a usuario; admin limitado por caso; secreto worker sólo servidor",
+      "requirement_ids": [
+        "CT-SEC-AUT-003",
+        "CT-SEC-AUT-010",
+        "CT-SEC-ID-005",
+        "CT-SEC-ID-007",
+        "CT-SEC-ID-008",
+        "CT-SEC-AUT-001",
+        "RF-25-007",
+        "RF-25-008"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-019",
+        "FND-032"
+      ],
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-RLS-public-profiles",
+      "area": "RLS",
+      "scenario": "public.profiles: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/001_initial_schema.sql",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-legal_documents",
+      "area": "RLS",
+      "scenario": "public.legal_documents: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/002_account_completion.sql",
+          "line": 2
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-registration_settings",
+      "area": "RLS",
+      "scenario": "public.registration_settings: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/002_account_completion.sql",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-legal_acceptances",
+      "area": "RLS",
+      "scenario": "public.legal_acceptances: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/002_account_completion.sql",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-account_deletion_requests",
+      "area": "RLS",
+      "scenario": "public.account_deletion_requests: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/002_account_completion.sql",
+          "line": 117
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-profile_media_operations",
+      "area": "RLS",
+      "scenario": "public.profile_media_operations: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/002_account_completion.sql",
+          "line": 149
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-posts",
+      "area": "RLS",
+      "scenario": "public.posts: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/003_community.sql",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-post_saves",
+      "area": "RLS",
+      "scenario": "public.post_saves: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/003_community.sql",
+          "line": 42
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-missions",
+      "area": "RLS",
+      "scenario": "public.missions: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/003_community.sql",
+          "line": 48
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-mission_applications",
+      "area": "RLS",
+      "scenario": "public.mission_applications: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/003_community.sql",
+          "line": 64
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-content_reports",
+      "area": "RLS",
+      "scenario": "public.content_reports: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/003_community.sql",
+          "line": 74
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-showcase_items",
+      "area": "RLS",
+      "scenario": "public.showcase_items: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/006_profile_experience.sql",
+          "line": 119
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-showcase_images",
+      "area": "RLS",
+      "scenario": "public.showcase_images: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/006_profile_experience.sql",
+          "line": 134
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-showcase_saves",
+      "area": "RLS",
+      "scenario": "public.showcase_saves: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/006_profile_experience.sql",
+          "line": 139
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-post_reactions",
+      "area": "RLS",
+      "scenario": "public.post_reactions: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/009_post_reactions.sql",
+          "line": 2
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-notifications",
+      "area": "RLS",
+      "scenario": "public.notifications: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/009_post_reactions.sql",
+          "line": 9
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-post_comments",
+      "area": "RLS",
+      "scenario": "public.post_comments: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/010_post_comments.sql",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-post_collaboration_interests",
+      "area": "RLS",
+      "scenario": "public.post_collaboration_interests: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/011_post_collaboration.sql",
+          "line": 3
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-mission_drafts",
+      "area": "RLS",
+      "scenario": "public.mission_drafts: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/013_missions_redesign.sql",
+          "line": 41
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-mission_saves",
+      "area": "RLS",
+      "scenario": "public.mission_saves: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/013_missions_redesign.sql",
+          "line": 50
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-mission_finalists",
+      "area": "RLS",
+      "scenario": "public.mission_finalists: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/013_missions_redesign.sql",
+          "line": 55
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-mission_application_operations",
+      "area": "RLS",
+      "scenario": "public.mission_application_operations: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/013_missions_redesign.sql",
+          "line": 155
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-notification_preferences",
+      "area": "RLS",
+      "scenario": "public.notification_preferences: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/014_android_push.sql",
+          "line": 15
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-notification_devices",
+      "area": "RLS",
+      "scenario": "public.notification_devices: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/014_android_push.sql",
+          "line": 23
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-private-push_settings",
+      "area": "RLS",
+      "scenario": "private.push_settings: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/014_android_push.sql",
+          "line": 30
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-private-push_queue",
+      "area": "RLS",
+      "scenario": "private.push_queue: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/014_android_push.sql",
+          "line": 35
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-tours",
+      "area": "RLS",
+      "scenario": "public.tours: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/015_tours.sql",
+          "line": 4
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-tour_revisions",
+      "area": "RLS",
+      "scenario": "public.tour_revisions: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/015_tours.sql",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-private-tour_captures",
+      "area": "RLS",
+      "scenario": "private.tour_captures: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/015_tours.sql",
+          "line": 14
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-private-tour_jobs",
+      "area": "RLS",
+      "scenario": "private.tour_jobs: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/015_tours.sql",
+          "line": 18
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-private-tour_output_writes",
+      "area": "RLS",
+      "scenario": "private.tour_output_writes: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/015_tours.sql",
+          "line": 27
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-tour_requests",
+      "area": "RLS",
+      "scenario": "public.tour_requests: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/015_tours.sql",
+          "line": 31
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-private-tour_permissions",
+      "area": "RLS",
+      "scenario": "private.tour_permissions: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/015_tours.sql",
+          "line": 38
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-private-tour_ar_tests",
+      "area": "RLS",
+      "scenario": "private.tour_ar_tests: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/015_tours.sql",
+          "line": 42
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-tour_progress",
+      "area": "RLS",
+      "scenario": "public.tour_progress: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/015_tours.sql",
+          "line": 46
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-profile_follows",
+      "area": "RLS",
+      "scenario": "public.profile_follows: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/016_home_feed.sql",
+          "line": 2
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-stories",
+      "area": "RLS",
+      "scenario": "public.stories: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/016_home_feed.sql",
+          "line": 23
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-story_views",
+      "area": "RLS",
+      "scenario": "public.story_views: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/016_home_feed.sql",
+          "line": 36
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-story_reports",
+      "area": "RLS",
+      "scenario": "public.story_reports: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/016_home_feed.sql",
+          "line": 41
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-home_feed_snapshots",
+      "area": "RLS",
+      "scenario": "public.home_feed_snapshots: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/016_home_feed.sql",
+          "line": 144
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-story_publications",
+      "area": "RLS",
+      "scenario": "public.story_publications: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/018_story_publication_retries.sql",
+          "line": 3
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-mission_reactions",
+      "area": "RLS",
+      "scenario": "public.mission_reactions: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/020_mission_social.sql",
+          "line": 3
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-mission_comments",
+      "area": "RLS",
+      "scenario": "public.mission_comments: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/020_mission_social.sql",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-mission_comment_operations",
+      "area": "RLS",
+      "scenario": "public.mission_comment_operations: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/020_mission_social.sql",
+          "line": 21
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-geocoding_provider",
+      "area": "RLS",
+      "scenario": "public.geocoding_provider: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/021_content_cities.sql",
+          "line": 65
+        }
+      ]
+    },
+    {
+      "id": "T001-RLS-public-geocoding_cache",
+      "area": "RLS",
+      "scenario": "public.geocoding_cache: SELECT/INSERT/UPDATE/DELETE; actor propio/ajeno/anon; campos privilegiados",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero",
+        "administrador-legado",
+        "worker"
+      ],
+      "expected": "Grants y RLS coherentes por operación; políticas allowlist; UPDATE cero filas no equivale a autorización",
+      "requirement_ids": [
+        "CT-SEC-AUT-001",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "source_table_name_verification": "Declaración local verificada; despliegue y grants efectivos pendientes de H4",
+      "source_files": [
+        {
+          "path": "supabase/migrations/021_content_cities.sql",
+          "line": 71
+        }
+      ]
+    },
+    {
+      "id": "T001-ST-profile-media-read",
+      "area": "Storage",
+      "scenario": "profile-media: read",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-profile-media-upload",
+      "area": "Storage",
+      "scenario": "profile-media: upload",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-profile-media-replace",
+      "area": "Storage",
+      "scenario": "profile-media: replace",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-profile-media-delete",
+      "area": "Storage",
+      "scenario": "profile-media: delete",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-profile-media-sign",
+      "area": "Storage",
+      "scenario": "profile-media: sign",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-profile-media-expire",
+      "area": "Storage",
+      "scenario": "profile-media: expire",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-profile-media-foreign-path",
+      "area": "Storage",
+      "scenario": "profile-media: foreign-path",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-post-images-read",
+      "area": "Storage",
+      "scenario": "post-images: read",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-post-images-upload",
+      "area": "Storage",
+      "scenario": "post-images: upload",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-post-images-replace",
+      "area": "Storage",
+      "scenario": "post-images: replace",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-post-images-delete",
+      "area": "Storage",
+      "scenario": "post-images: delete",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-post-images-sign",
+      "area": "Storage",
+      "scenario": "post-images: sign",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-post-images-expire",
+      "area": "Storage",
+      "scenario": "post-images: expire",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-post-images-foreign-path",
+      "area": "Storage",
+      "scenario": "post-images: foreign-path",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-mission-images-read",
+      "area": "Storage",
+      "scenario": "mission-images: read",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-mission-images-upload",
+      "area": "Storage",
+      "scenario": "mission-images: upload",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-mission-images-replace",
+      "area": "Storage",
+      "scenario": "mission-images: replace",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-mission-images-delete",
+      "area": "Storage",
+      "scenario": "mission-images: delete",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-mission-images-sign",
+      "area": "Storage",
+      "scenario": "mission-images: sign",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-mission-images-expire",
+      "area": "Storage",
+      "scenario": "mission-images: expire",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-mission-images-foreign-path",
+      "area": "Storage",
+      "scenario": "mission-images: foreign-path",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-showcase-media-read",
+      "area": "Storage",
+      "scenario": "showcase-media: read",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-showcase-media-upload",
+      "area": "Storage",
+      "scenario": "showcase-media: upload",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-showcase-media-replace",
+      "area": "Storage",
+      "scenario": "showcase-media: replace",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-showcase-media-delete",
+      "area": "Storage",
+      "scenario": "showcase-media: delete",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-showcase-media-sign",
+      "area": "Storage",
+      "scenario": "showcase-media: sign",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-showcase-media-expire",
+      "area": "Storage",
+      "scenario": "showcase-media: expire",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-showcase-media-foreign-path",
+      "area": "Storage",
+      "scenario": "showcase-media: foreign-path",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-story-images-read",
+      "area": "Storage",
+      "scenario": "story-images: read",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-story-images-upload",
+      "area": "Storage",
+      "scenario": "story-images: upload",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-story-images-replace",
+      "area": "Storage",
+      "scenario": "story-images: replace",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-story-images-delete",
+      "area": "Storage",
+      "scenario": "story-images: delete",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-story-images-sign",
+      "area": "Storage",
+      "scenario": "story-images: sign",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-story-images-expire",
+      "area": "Storage",
+      "scenario": "story-images: expire",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-story-images-foreign-path",
+      "area": "Storage",
+      "scenario": "story-images: foreign-path",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-inputs-read",
+      "area": "Storage",
+      "scenario": "tour-inputs: read",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-inputs-upload",
+      "area": "Storage",
+      "scenario": "tour-inputs: upload",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-inputs-replace",
+      "area": "Storage",
+      "scenario": "tour-inputs: replace",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-inputs-delete",
+      "area": "Storage",
+      "scenario": "tour-inputs: delete",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-inputs-sign",
+      "area": "Storage",
+      "scenario": "tour-inputs: sign",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-inputs-expire",
+      "area": "Storage",
+      "scenario": "tour-inputs: expire",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-inputs-foreign-path",
+      "area": "Storage",
+      "scenario": "tour-inputs: foreign-path",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-assets-read",
+      "area": "Storage",
+      "scenario": "tour-assets: read",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-assets-upload",
+      "area": "Storage",
+      "scenario": "tour-assets: upload",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-assets-replace",
+      "area": "Storage",
+      "scenario": "tour-assets: replace",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-assets-delete",
+      "area": "Storage",
+      "scenario": "tour-assets: delete",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-assets-sign",
+      "area": "Storage",
+      "scenario": "tour-assets: sign",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-assets-expire",
+      "area": "Storage",
+      "scenario": "tour-assets: expire",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-ST-tour-assets-foreign-path",
+      "area": "Storage",
+      "scenario": "tour-assets: foreign-path",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Lectura pública sólo si declarada; medio privado sólo autorizado; upload/upsert/delete/firma según grants y ruta; expiración bloquea descarga",
+      "requirement_ids": [
+        "CT-SEC-AUT-004",
+        "CT-SEC-AUT-008",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Hash objeto propio y ajeno; filas storage.objects antes/después",
+        "Firma y descarga real; URL y JWT quedan sólo en logs privados",
+        "En URL firmada usar reloj servidor y probar antes/después TTL; HTTP 200 de remove no prueba borrado"
+      ]
+    },
+    {
+      "id": "T001-EDGE-delete-account",
+      "area": "Edge Functions",
+      "scenario": "delete-account: sin credencial, token inválido/vencido, credencial de rol incorrecto, ID ajeno y estado inválido",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Rechazo antes de efecto privilegiado; usuario no puede invocar worker con JWT ordinario",
+      "requirement_ids": [
+        "CT-SEC-AUT-003",
+        "CT-SEC-ID-008",
+        "AT5-06",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "provider_mode": "Doble local futuro; no acredita integración externa"
+    },
+    {
+      "id": "T001-EDGE-profile-media",
+      "area": "Edge Functions",
+      "scenario": "profile-media: sin credencial, token inválido/vencido, credencial de rol incorrecto, ID ajeno y estado inválido",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Rechazo antes de efecto privilegiado; usuario no puede invocar worker con JWT ordinario",
+      "requirement_ids": [
+        "CT-SEC-AUT-003",
+        "CT-SEC-ID-008",
+        "AT5-06",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "provider_mode": "Doble local futuro; no acredita integración externa"
+    },
+    {
+      "id": "T001-EDGE-send-push",
+      "area": "Edge Functions",
+      "scenario": "send-push: sin credencial, token inválido/vencido, credencial de rol incorrecto, ID ajeno y estado inválido",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Rechazo antes de efecto privilegiado; usuario no puede invocar worker con JWT ordinario",
+      "requirement_ids": [
+        "CT-SEC-AUT-003",
+        "CT-SEC-ID-008",
+        "AT5-06",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "provider_mode": "Doble local futuro; no acredita integración externa"
+    },
+    {
+      "id": "T001-EDGE-tour-dispatch",
+      "area": "Edge Functions",
+      "scenario": "tour-dispatch: sin credencial, token inválido/vencido, credencial de rol incorrecto, ID ajeno y estado inválido",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Rechazo antes de efecto privilegiado; usuario no puede invocar worker con JWT ordinario",
+      "requirement_ids": [
+        "CT-SEC-AUT-003",
+        "CT-SEC-ID-008",
+        "AT5-06",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "provider_mode": "Doble local futuro; no acredita integración externa"
+    },
+    {
+      "id": "T001-EDGE-story-cleanup",
+      "area": "Edge Functions",
+      "scenario": "story-cleanup: sin credencial, token inválido/vencido, credencial de rol incorrecto, ID ajeno y estado inválido",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Rechazo antes de efecto privilegiado; usuario no puede invocar worker con JWT ordinario",
+      "requirement_ids": [
+        "CT-SEC-AUT-003",
+        "CT-SEC-ID-008",
+        "AT5-06",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "provider_mode": "Doble local futuro; no acredita integración externa"
+    },
+    {
+      "id": "T001-EDGE-geocoding",
+      "area": "Edge Functions",
+      "scenario": "geocoding: sin credencial, token inválido/vencido, credencial de rol incorrecto, ID ajeno y estado inválido",
+      "actors": [
+        "visitante",
+        "propietario",
+        "tercero",
+        "worker"
+      ],
+      "expected": "search/reverse públicos según contrato; content_city requiere getUser y lectura RLS; no proveedor real",
+      "requirement_ids": [
+        "CT-SEC-AUT-003",
+        "CT-SEC-ID-008",
+        "AT5-06",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "provider_mode": "Doble local futuro; no acredita integración externa"
+    },
+    {
+      "id": "T001-RPC-ALL",
+      "area": "RPC",
+      "scenario": "Expandir todas las firmas activas del inventario DB en actor × acción × estado × grants; params reales Dart vs pg_proc",
+      "actors": [
+        "visitante",
+        "propietario",
+        "candidato-A",
+        "tercero",
+        "worker"
+      ],
+      "expected": "Rechazo de IDs manipulados, campos privilegiados y overload equivocado; validar respuesta y postcondición",
+      "requirement_ids": [
+        "CT-SEC-AUT-003",
+        "CT-SEC-AUT-008",
+        "ADR42-07",
+        "ADR42-16",
+        "AT5-06",
+        "AT5-14",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-015"
+      ],
+      "expansion": "Inventario lexical contiene firmas históricas; expandir sólo firmas activas comprobadas en H4",
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-TX-CAPACITY",
+      "area": "concurrencia/idempotencia/expiracion",
+      "scenario": "Dos candidatos sobre último cupo legado en conexiones concurrentes",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "worker"
+      ],
+      "expected": "Una transición accepted; otra conflicto; accepted <= capacity; rollback completo",
+      "requirement_ids": [
+        "CT-SEC-AUT-007",
+        "AC-07",
+        "ADR42-02",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Conexiones independientes y barrera de inicio; no Promise.all sobre una misma transacción",
+        "Conteos/invariantes y hashes antes/después; registrar conflictos e IDs de corrida",
+        "Ningún push/SMTP/Cloud Run real"
+      ]
+    },
+    {
+      "id": "T001-TX-STORY",
+      "area": "concurrencia/idempotencia/expiracion",
+      "scenario": "Publicación duplicada concurrente y reintento tras timeout",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "worker"
+      ],
+      "expected": "Un recibo y una story; retry mismo payload mismo ID; distinto payload conflicto",
+      "requirement_ids": [
+        "CT-SEC-AUT-006",
+        "CT-SEC-AUT-007",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Conexiones independientes y barrera de inicio; no Promise.all sobre una misma transacción",
+        "Conteos/invariantes y hashes antes/después; registrar conflictos e IDs de corrida",
+        "Ningún push/SMTP/Cloud Run real"
+      ]
+    },
+    {
+      "id": "T001-TX-APPLICATION",
+      "area": "concurrencia/idempotencia/expiracion",
+      "scenario": "Candidatura simultánea duplicada",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "worker"
+      ],
+      "expected": "Una fila única; error recuperable; sin avisos duplicados",
+      "requirement_ids": [
+        "CT-SEC-AUT-006",
+        "CT-SEC-AUT-007",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Conexiones independientes y barrera de inicio; no Promise.all sobre una misma transacción",
+        "Conteos/invariantes y hashes antes/después; registrar conflictos e IDs de corrida",
+        "Ningún push/SMTP/Cloud Run real"
+      ]
+    },
+    {
+      "id": "T001-TX-OUTBOX",
+      "area": "concurrencia/idempotencia/expiracion",
+      "scenario": "Caída de worker entre persistencia y aviso",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "worker"
+      ],
+      "expected": "Una notificación lógica tras reintento; leases vencidos no escriben",
+      "requirement_ids": [
+        "ADR42-15",
+        "AT5-15",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Conexiones independientes y barrera de inicio; no Promise.all sobre una misma transacción",
+        "Conteos/invariantes y hashes antes/después; registrar conflictos e IDs de corrida",
+        "Ningún push/SMTP/Cloud Run real"
+      ]
+    },
+    {
+      "id": "T001-TX-ATOMIC",
+      "area": "concurrencia/idempotencia/expiracion",
+      "scenario": "Fallo a mitad de operación privilegiada",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "worker"
+      ],
+      "expected": "Sin estado parcial ni cupo/archivo huérfano",
+      "requirement_ids": [
+        "CT-SEC-AUT-006",
+        "CT-SEC-AUT-007",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Conexiones independientes y barrera de inicio; no Promise.all sobre una misma transacción",
+        "Conteos/invariantes y hashes antes/después; registrar conflictos e IDs de corrida",
+        "Ningún push/SMTP/Cloud Run real"
+      ]
+    },
+    {
+      "id": "T001-TX-DEADLINE",
+      "area": "concurrencia/idempotencia/expiracion",
+      "scenario": "Candidatura antes/en/después del plazo; desfase reloj cliente",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "worker"
+      ],
+      "expected": "Tiempo servidor decide; después del límite no crea candidatura",
+      "requirement_ids": [
+        "ADR42-05",
+        "CTR5-02",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Conexiones independientes y barrera de inicio; no Promise.all sobre una misma transacción",
+        "Conteos/invariantes y hashes antes/después; registrar conflictos e IDs de corrida",
+        "Ningún push/SMTP/Cloud Run real"
+      ]
+    },
+    {
+      "id": "T001-SESSION-JWT",
+      "area": "sesiones/Realtime",
+      "scenario": "JWT vencido sin refresh automático",
+      "actors": [
+        "propietario",
+        "tercero"
+      ],
+      "expected": "Postcondición: Rechazo REST/RPC/Storage con JWT vencido; sin escrituras",
+      "requirement_ids": [
+        "CT-SEC-ID-006",
+        "CT-SEC-AUT-005",
+        "ADR42-06",
+        "AC-16",
+        "AT5-05",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-SESSION-REVOKE",
+      "area": "sesiones/Realtime",
+      "scenario": "Revocar sesión y reutilizar access/refresh tokens",
+      "actors": [
+        "propietario",
+        "tercero"
+      ],
+      "expected": "Postcondición: Refresh revocado falla; medir access token aún vigente, sin asumir invalidación inmediata",
+      "requirement_ids": [
+        "CT-SEC-ID-006",
+        "CT-SEC-AUT-005",
+        "ADR42-06",
+        "AC-16",
+        "AT5-05",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-SESSION-REALTIME",
+      "area": "sesiones/Realtime",
+      "scenario": "Socket abierto durante revocación; no reconectar voluntariamente",
+      "actors": [
+        "propietario",
+        "tercero"
+      ],
+      "expected": "Postcondición: Sin nuevos payload privados ni acceso posterior; documentar limitación JWT/canal",
+      "requirement_ids": [
+        "CT-SEC-ID-006",
+        "CT-SEC-AUT-005",
+        "ADR42-06",
+        "AC-16",
+        "AT5-05",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-SESSION-DELETE",
+      "area": "sesiones/Realtime",
+      "scenario": "Restricción de cuenta en borrado y sesión previa",
+      "actors": [
+        "propietario",
+        "tercero"
+      ],
+      "expected": "Postcondición: Operaciones restringidas según marker; no archivos nuevos durante lease",
+      "requirement_ids": [
+        "CT-SEC-ID-006",
+        "CT-SEC-AUT-005",
+        "ADR42-06",
+        "AC-16",
+        "AT5-05",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-SESSION-LIMITS",
+      "area": "sesiones/Realtime",
+      "scenario": "Timeout/inactividad/sesión única disponibles",
+      "actors": [
+        "propietario",
+        "tercero"
+      ],
+      "expected": "Postcondición: Medir sólo controles presentes; ausencias NO_IMPLEMENTADO tras inspección",
+      "requirement_ids": [
+        "CT-SEC-ID-006",
+        "CT-SEC-AUT-005",
+        "ADR42-06",
+        "AC-16",
+        "AT5-05",
+        "RF-25-007"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3: stack local no saludable; H4 sin esquema",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-V5-ORG",
+      "area": "contratos v5",
+      "scenario": "Aislamiento entre dos organizaciones y tercero; role miembro/owner removido",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero"
+      ],
+      "expected": "Rechazar BOLA en borrador, propuesta, mensaje, RPC y Storage",
+      "requirement_ids": [
+        "CT-SEC-AUT-002",
+        "CT-SEC-AUT-005",
+        "AC-02",
+        "AC-03",
+        "AT5-05",
+        "AT5-06"
+      ],
+      "execution": false,
+      "result": "NO_IMPLEMENTADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "Modelo contractual ausente y H3 bloqueado; no crear sustitutos ficticios",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-003",
+        "FND-029"
+      ],
+      "source_observation": "Regresión preparada como especificación para futura prueba ejecutable; ningún resultado real inferido",
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-V5-UNILATERAL",
+      "area": "contratos v5",
+      "scenario": "Selección unilateral no produce acuerdo",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero"
+      ],
+      "expected": "Sin acuerdo activo/participante confirmado hasta aceptar ambas partes",
+      "requirement_ids": [
+        "CTR5-01",
+        "CTR5-03",
+        "ADR42-02"
+      ],
+      "execution": false,
+      "result": "NO_IMPLEMENTADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "Modelo contractual ausente y H3 bloqueado; no crear sustitutos ficticios",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-001",
+        "FND-027"
+      ],
+      "source_observation": "Regresión preparada como especificación para futura prueba ejecutable; ningún resultado real inferido",
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-V5-CLOSED",
+      "area": "contratos v5",
+      "scenario": "Seleccionar después de cerrar/expirar",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero"
+      ],
+      "expected": "Rechazar nueva candidatura/oferta; conservar acuerdos activos",
+      "requirement_ids": [
+        "CTR5-02",
+        "ADR42-02"
+      ],
+      "execution": false,
+      "result": "BLOQUEADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "H3; restricción de ofertas v5 ausente, selección legado conocida incorrecta",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-011",
+        "FND-028"
+      ],
+      "source_observation": "FAIL por inspección en AUDIT-2026-10-13/FND-011/FND-028; no ejecución real nueva ni corrección dentro de TASK-001",
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-V5-REVISION",
+      "area": "contratos v5",
+      "scenario": "Cambio material tras candidaturas/aceptación",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero"
+      ],
+      "expected": "Nueva revision inmutable; aceptación previa no habilita selección",
+      "requirement_ids": [
+        "CTR5-03",
+        "ADR42-03",
+        "AC-08",
+        "AT5-03"
+      ],
+      "execution": false,
+      "result": "NO_IMPLEMENTADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "Modelo contractual ausente y H3 bloqueado; no crear sustitutos ficticios",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-002"
+      ],
+      "source_observation": "Regresión preparada como especificación para futura prueba ejecutable; ningún resultado real inferido",
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-V5-TTL72",
+      "area": "contratos v5",
+      "scenario": "Oferta 72 horas, reserva una plaza y aceptación vencida hace 1 segundo",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero"
+      ],
+      "expected": "Liberación atómica; rechazar aceptar; sin acuerdo/confirmación optimista",
+      "requirement_ids": [
+        "CTR5-01",
+        "ADR42-02",
+        "AT5-01",
+        "AT5-02"
+      ],
+      "execution": false,
+      "result": "NO_IMPLEMENTADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "Modelo contractual ausente y H3 bloqueado; no crear sustitutos ficticios",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-027"
+      ],
+      "source_observation": "Regresión preparada como especificación para futura prueba ejecutable; ningún resultado real inferido",
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-V5-RESERVE",
+      "area": "contratos v5",
+      "scenario": "Último cupo con dos ofertas simultáneas",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero"
+      ],
+      "expected": "Una reserva válida, conflicto estable, no sobrecupo ni huérfanos",
+      "requirement_ids": [
+        "CTR5-01",
+        "CT-SEC-AUT-007",
+        "AC-07",
+        "AT5-01"
+      ],
+      "execution": false,
+      "result": "NO_IMPLEMENTADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "Modelo contractual ausente y H3 bloqueado; no crear sustitutos ficticios",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-027"
+      ],
+      "source_observation": "Regresión preparada como especificación para futura prueba ejecutable; ningún resultado real inferido",
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-V5-ACCEPT",
+      "area": "contratos v5",
+      "scenario": "Aceptación revisionada con actor/contexto y auditoría limitada",
+      "actors": [
+        "propietario",
+        "candidato-A",
+        "candidato-B",
+        "tercero"
+      ],
+      "expected": "Idempotencia actor-revision; no aceptar desde otro contexto ni revisión vencida",
+      "requirement_ids": [
+        "CTR5-03",
+        "CT-SEC-AUT-006"
+      ],
+      "execution": false,
+      "result": "NO_IMPLEMENTADO",
+      "modality": "inspeccion",
+      "planned_modality": "real",
+      "blocker": "Modelo contractual ausente y H3 bloqueado; no crear sustitutos ficticios",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ],
+      "known_defects": [
+        "FND-027"
+      ],
+      "source_observation": "Regresión preparada como especificación para futura prueba ejecutable; ningún resultado real inferido",
+      "known_findings_retained": true
+    },
+    {
+      "id": "T001-CLIENT-android-90",
+      "area": "clientes",
+      "scenario": "android: contratos RPC reales",
+      "actors": [
+        "propietario",
+        "candidato-A"
+      ],
+      "expected": "Suite repositorio Dart con endpoint local explícito; además dispositivo/runtime identificado para matriz y degradación",
+      "requirement_ids": [
+        "RF-23-001",
+        "RF-25-007",
+        "CT-PLT-MOB-008",
+        "AC-22",
+        "AT5-19",
+        "AT5-14"
+      ],
+      "execution": false,
+      "result": "PENDIENTE",
+      "modality": "inspeccion",
+      "planned_modality": "real-dispositivo",
+      "blocker": "Dart de host y compilación no acreditan QA Android/iOS",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-CLIENT-android-91",
+      "area": "clientes",
+      "scenario": "android: hardware AR/sensores ausentes y GPS denegado",
+      "actors": [
+        "propietario",
+        "candidato-A"
+      ],
+      "expected": "Suite repositorio Dart con endpoint local explícito; además dispositivo/runtime identificado para matriz y degradación",
+      "requirement_ids": [
+        "RF-23-001",
+        "RF-25-007",
+        "CT-PLT-MOB-008",
+        "AC-22",
+        "AT5-19",
+        "AT5-14"
+      ],
+      "execution": false,
+      "result": "PENDIENTE",
+      "modality": "inspeccion",
+      "planned_modality": "real-dispositivo",
+      "blocker": "Dart de host y compilación no acreditan QA Android/iOS",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-CLIENT-android-92",
+      "area": "clientes",
+      "scenario": "android: offline/permisos y sesión restaurada",
+      "actors": [
+        "propietario",
+        "candidato-A"
+      ],
+      "expected": "Suite repositorio Dart con endpoint local explícito; además dispositivo/runtime identificado para matriz y degradación",
+      "requirement_ids": [
+        "RF-23-001",
+        "RF-25-007",
+        "CT-PLT-MOB-008",
+        "AC-22",
+        "AT5-19",
+        "AT5-14"
+      ],
+      "execution": false,
+      "result": "PENDIENTE",
+      "modality": "inspeccion",
+      "planned_modality": "real-dispositivo",
+      "blocker": "Dart de host y compilación no acreditan QA Android/iOS",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-CLIENT-ios-93",
+      "area": "clientes",
+      "scenario": "ios: contratos RPC reales",
+      "actors": [
+        "propietario",
+        "candidato-A"
+      ],
+      "expected": "Suite repositorio Dart con endpoint local explícito; además dispositivo/runtime identificado para matriz y degradación",
+      "requirement_ids": [
+        "RF-23-001",
+        "RF-25-007",
+        "CT-PLT-MOB-008",
+        "AC-22",
+        "AT5-19",
+        "AT5-14"
+      ],
+      "execution": false,
+      "result": "PENDIENTE",
+      "modality": "inspeccion",
+      "planned_modality": "real-dispositivo",
+      "blocker": "Dart de host y compilación no acreditan QA Android/iOS",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-CLIENT-ios-94",
+      "area": "clientes",
+      "scenario": "ios: hardware AR/sensores ausentes y GPS denegado",
+      "actors": [
+        "propietario",
+        "candidato-A"
+      ],
+      "expected": "Suite repositorio Dart con endpoint local explícito; además dispositivo/runtime identificado para matriz y degradación",
+      "requirement_ids": [
+        "RF-23-001",
+        "RF-25-007",
+        "CT-PLT-MOB-008",
+        "AC-22",
+        "AT5-19",
+        "AT5-14"
+      ],
+      "execution": false,
+      "result": "PENDIENTE",
+      "modality": "inspeccion",
+      "planned_modality": "real-dispositivo",
+      "blocker": "Dart de host y compilación no acreditan QA Android/iOS",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    },
+    {
+      "id": "T001-CLIENT-ios-95",
+      "area": "clientes",
+      "scenario": "ios: offline/permisos y sesión restaurada",
+      "actors": [
+        "propietario",
+        "candidato-A"
+      ],
+      "expected": "Suite repositorio Dart con endpoint local explícito; además dispositivo/runtime identificado para matriz y degradación",
+      "requirement_ids": [
+        "RF-23-001",
+        "RF-25-007",
+        "CT-PLT-MOB-008",
+        "AC-22",
+        "AT5-19",
+        "AT5-14"
+      ],
+      "execution": false,
+      "result": "PENDIENTE",
+      "modality": "inspeccion",
+      "planned_modality": "real-dispositivo",
+      "blocker": "Dart de host y compilación no acreditan QA Android/iOS",
+      "postconditions": [
+        "Sin lecturas privadas ajenas ni mutaciones no autorizadas",
+        "Comparar filas, objetos y avisos antes/después con preparación privilegiada local"
+      ]
+    }
+  ]
+}

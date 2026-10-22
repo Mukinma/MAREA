@@ -1,0 +1,10 @@
+{
+  "cli": "2.117.0",
+  "tag": "public.ecr.aws/supabase/edge-runtime:v1.74.3",
+  "id": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+  "digests": [
+    "public.ecr.aws/supabase/edge-runtime@sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c"
+  ],
+  "architecture": "arm64",
+  "source": "https://github.com/supabase/cli/blob/v2.117.0/apps/cli-go/pkg/config/templates/Dockerfile"
+}

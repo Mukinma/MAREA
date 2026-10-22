@@ -1,0 +1,8 @@
+{
+  "captured_at": "2026-10-13T17:04:09.232Z",
+  "before_sha256": "560a4d678ded347e83630e18fb2e6afc17275bdc3df99ba22786034c50ba4bd6",
+  "after_sha256": "90c403844ce2974c74831921a3cf1683e08dd374727b3ee63d0e76f708eab69f",
+  "change": "TASK-001 execution H6 EN_PROGRESO -> PASS after actual 21 tests, validate/render/check and no-op second render. Overall task remains BLOQUEADO incomplete.",
+  "rf_states_changed": 0,
+  "srs_changed": false
+}

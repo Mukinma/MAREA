@@ -1,0 +1,507 @@
+{
+  "captured_at": "2026-10-13T06:46:42.927Z",
+  "source": "pubspec.yaml + imports versionados lib/test; tooling sin imports no se considera inútil",
+  "dependencies": [
+    {
+      "package": "flutter",
+      "version_constraint": {
+        "sdk": "flutter"
+      },
+      "imported_by": [
+        "lib/app.dart",
+        "lib/core/router/app_router.dart",
+        "lib/core/session/app_session_controller.dart",
+        "lib/core/theme/app_colors.dart",
+        "lib/core/theme/app_depth.dart",
+        "lib/core/theme/app_theme.dart",
+        "lib/core/theme/category_visuals.dart",
+        "lib/features/auth/presentation/check_email_screen.dart",
+        "lib/features/auth/presentation/configuration_screen.dart",
+        "lib/features/auth/presentation/email_code_screen.dart",
+        "lib/features/auth/presentation/intro_decorations.dart",
+        "lib/features/auth/presentation/intro_waves.dart",
+        "lib/features/auth/presentation/login_screen.dart",
+        "lib/features/auth/presentation/mobile_intro_screen.dart",
+        "lib/features/auth/presentation/profile_type_picker.dart",
+        "lib/features/auth/presentation/register_screen.dart",
+        "lib/features/auth/presentation/security_screen.dart",
+        "lib/features/auth/presentation/splash_screen.dart",
+        "lib/features/auth/presentation/welcome_entry_screen.dart",
+        "lib/features/auth/presentation/welcome_screen.dart",
+        "lib/features/community/data/notifications_controller.dart",
+        "lib/features/community/presentation/community_widgets.dart",
+        "lib/features/community/presentation/explore_screen.dart",
+        "lib/features/community/presentation/mission_application_screen.dart",
+        "lib/features/community/presentation/mission_composer_screen.dart",
+        "lib/features/community/presentation/mission_management_screen.dart",
+        "lib/features/community/presentation/mission_social_actions.dart",
+        "lib/features/community/presentation/mission_social_panels.dart",
+        "lib/features/community/presentation/mission_widgets.dart",
+        "lib/features/community/presentation/missions_screen.dart",
+        "lib/features/community/presentation/moderation_screen.dart",
+        "lib/features/community/presentation/notifications_panel.dart",
+        "lib/features/community/presentation/post_composer_screen.dart",
+        "lib/features/community/presentation/post_detail_screen.dart",
+        "lib/features/community/presentation/post_location_picker.dart",
+        "lib/features/community/presentation/posts_feed.dart",
+        "lib/features/community/presentation/reaction_button.dart",
+        "lib/features/community/presentation/social_panels.dart",
+        "lib/features/home_feed/presentation/feed_city_label.dart",
+        "lib/features/home_feed/presentation/follow_button.dart",
+        "lib/features/home_feed/presentation/home_feed_screen.dart",
+        "lib/features/home_feed/presentation/mission_feed_card.dart",
+        "lib/features/home_feed/presentation/stories_rail.dart",
+        "lib/features/home_feed/presentation/story_composer.dart",
+        "lib/features/home_feed/presentation/story_moderation.dart",
+        "lib/features/home_feed/presentation/story_viewer.dart",
+        "lib/features/legal/legal_screens.dart",
+        "lib/features/map/application/mission_map_controller.dart",
+        "lib/features/map/presentation/map_filter_sheet.dart",
+        "lib/features/map/presentation/map_search_bar.dart",
+        "lib/features/map/presentation/mission_map_canvas.dart",
+        "lib/features/map/presentation/mission_map_marker.dart",
+        "lib/features/map/presentation/mission_map_preview.dart",
+        "lib/features/map/presentation/mission_map_screen.dart",
+        "lib/features/notifications/data/android_push_gateway.dart",
+        "lib/features/notifications/data/push_controller.dart",
+        "lib/features/notifications/presentation/notification_settings.dart",
+        "lib/features/profile/data/profile_media_repository.dart",
+        "lib/features/profile/presentation/edit_profile_screen.dart",
+        "lib/features/profile/presentation/onboarding_screen.dart",
+        "lib/features/profile/presentation/professional_details.dart",
+        "lib/features/profile/presentation/profile_experience.dart",
+        "lib/features/profile/presentation/profile_form_widgets.dart",
+        "lib/features/profile/presentation/profile_identity.dart",
+        "lib/features/profile/presentation/profile_screen.dart",
+        "lib/features/profile/presentation/profile_setup_screen.dart",
+        "lib/features/profile/presentation/profile_tools_sheet.dart",
+        "lib/features/profile/presentation/settings_screen.dart",
+        "lib/features/shell/presentation/app_shell.dart",
+        "lib/features/shell/presentation/placeholder_screen.dart",
+        "lib/features/showcase/presentation/create_screen.dart",
+        "lib/features/showcase/presentation/showcase_composer_screen.dart",
+        "lib/features/showcase/presentation/showcase_detail_screen.dart",
+        "lib/features/showcase/presentation/showcase_widgets.dart",
+        "lib/features/tours/capture/tour_capture_screen.dart",
+        "lib/features/tours/presentation/tour_ar_screen.dart",
+        "lib/features/tours/presentation/tour_discovery_screen.dart",
+        "lib/features/tours/presentation/tour_editor_screen.dart",
+        "lib/features/tours/presentation/tour_management_screen.dart",
+        "lib/features/tours/presentation/tour_panorama.dart",
+        "lib/features/tours/presentation/tour_visit_screen.dart",
+        "lib/features/tours/presentation/tour_widgets.dart",
+        "lib/main.dart",
+        "lib/shared/widgets/auth_layout.dart",
+        "lib/shared/widgets/creative_artwork.dart",
+        "lib/shared/widgets/marea_action_button.dart",
+        "lib/shared/widgets/marea_logo.dart",
+        "lib/shared/widgets/marea_panel.dart",
+        "lib/shared/widgets/marea_refresh_indicator.dart",
+        "lib/shared/widgets/marea_skeleton.dart",
+        "lib/shared/widgets/marea_surface.dart",
+        "lib/shared/widgets/marea_tabs.dart",
+        "lib/shared/widgets/marea_text_field.dart",
+        "lib/shared/widgets/primary_button.dart",
+        "lib/shared/widgets/profile_image.dart",
+        "lib/shared/widgets/session_feedback.dart",
+        "lib/shared/widgets/social_avatar.dart",
+        "test/browser/access_experience_probe.dart",
+        "test/browser/home_feed_probe.dart",
+        "test/browser/image_picker_probe.dart",
+        "test/browser/mission_map_probe.dart",
+        "test/browser/mission_routes_probe.dart",
+        "test/browser/modern_interactions_probe.dart",
+        "test/browser/profile_experience_probe.dart",
+        "test/browser/tours_probe.dart",
+        "test/core/router/app_router_test.dart",
+        "test/features/auth/mobile_intro_experience_test.dart",
+        "test/features/auth/mobile_intro_test.dart",
+        "test/features/auth/mobile_intro_web_test.dart",
+        "test/features/auth/registration_email_test.dart",
+        "test/features/auth/welcome_reference_test.dart",
+        "test/features/community/community_flow_test.dart",
+        "test/features/community/community_routes_test.dart",
+        "test/features/community/location_picker_test.dart",
+        "test/features/community/mission_composer_steps_test.dart",
+        "test/features/community/mission_navigation_test.dart",
+        "test/features/community/mission_participation_test.dart",
+        "test/features/community/mission_permissions_ui_test.dart",
+        "test/features/community/mission_social_panels_test.dart",
+        "test/features/community/missions_screen_test.dart",
+        "test/features/community/post_composer_test.dart",
+        "test/features/community/social_header_test.dart",
+        "test/features/community/social_panels_test.dart",
+        "test/features/community/social_ui_test.dart",
+        "test/features/community/ui_regression_test.dart",
+        "test/features/home_feed/feed_city_label_test.dart",
+        "test/features/home_feed/feed_correction_test.dart",
+        "test/features/home_feed/home_feed_experience_test.dart",
+        "test/features/home_feed/home_feed_ui_test.dart",
+        "test/features/home_feed/mission_card_layout_test.dart",
+        "test/features/map/device_location_service_test.dart",
+        "test/features/map/mission_map_ui_test.dart",
+        "test/features/presentation/access_redesign_test.dart",
+        "test/features/presentation/account_flow_test.dart",
+        "test/features/presentation/email_flow_test.dart",
+        "test/features/presentation/navigation_test.dart",
+        "test/features/presentation/responsive_test.dart",
+        "test/features/presentation/screens_test.dart",
+        "test/features/profile/profile_camera_test.dart",
+        "test/features/profile/profile_experience_ui_test.dart",
+        "test/features/profile/profile_redesign_test.dart",
+        "test/features/profile/profile_setup_test.dart",
+        "test/features/profile/profile_tools_test.dart",
+        "test/features/showcase/showcase_flow_test.dart",
+        "test/features/tours/tour_ar_recovery_test.dart",
+        "test/features/tours/tour_editor_recovery_test.dart",
+        "test/features/tours/tour_ui_test.dart",
+        "test/shared/widgets/marea_loading_test.dart",
+        "test/shared/widgets/marea_panel_test.dart",
+        "test/shared/widgets/marea_refresh_indicator_test.dart",
+        "test/support/test_app.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "SDK/framework utilizado; importar no mide valor."
+    },
+    {
+      "package": "flutter_localizations",
+      "version_constraint": {
+        "sdk": "flutter"
+      },
+      "imported_by": [
+        "lib/app.dart",
+        "test/browser/access_experience_probe.dart",
+        "test/browser/home_feed_probe.dart",
+        "test/browser/mission_map_probe.dart",
+        "test/browser/mission_routes_probe.dart",
+        "test/browser/modern_interactions_probe.dart",
+        "test/browser/profile_experience_probe.dart",
+        "test/browser/tours_probe.dart",
+        "test/features/community/community_routes_test.dart",
+        "test/features/community/missions_screen_test.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "SDK/framework utilizado; importar no mide valor."
+    },
+    {
+      "package": "supabase_flutter",
+      "version_constraint": "^2.17.2",
+      "imported_by": [
+        "lib/features/auth/data/auth_repository.dart",
+        "lib/features/community/data/community_repository.dart",
+        "lib/features/community/data/mission_social_repository.dart",
+        "lib/features/community/data/social_repository.dart",
+        "lib/features/home_feed/data/home_feed_repository.dart",
+        "lib/features/home_feed/data/stories_repository.dart",
+        "lib/features/legal/legal_repository.dart",
+        "lib/features/location/data/location_repository.dart",
+        "lib/features/map/data/mission_map_repository.dart",
+        "lib/features/notifications/data/notification_preferences_repository.dart",
+        "lib/features/profile/data/profile_media_repository.dart",
+        "lib/features/profile/data/profile_repository.dart",
+        "lib/features/showcase/data/showcase_repository.dart",
+        "lib/features/tours/data/tour_repository.dart",
+        "lib/features/tours/presentation/tour_editor_screen.dart",
+        "lib/features/tours/presentation/tour_widgets.dart",
+        "lib/main.dart",
+        "test/features/auth/registration_email_test.dart",
+        "test/features/community/mission_experience_repository_test.dart",
+        "test/features/community/mission_repository_test.dart",
+        "test/features/community/models_test.dart",
+        "test/features/location/location_repository_test.dart",
+        "test/features/map/mission_map_repository_test.dart",
+        "test/features/showcase/showcase_repository_test.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "go_router",
+      "version_constraint": "^17.4.0",
+      "imported_by": [
+        "lib/core/router/app_router.dart",
+        "lib/features/auth/presentation/check_email_screen.dart",
+        "lib/features/auth/presentation/email_code_screen.dart",
+        "lib/features/auth/presentation/login_screen.dart",
+        "lib/features/auth/presentation/register_screen.dart",
+        "lib/features/auth/presentation/security_screen.dart",
+        "lib/features/auth/presentation/welcome_screen.dart",
+        "lib/features/community/presentation/explore_screen.dart",
+        "lib/features/community/presentation/mission_application_screen.dart",
+        "lib/features/community/presentation/mission_composer_screen.dart",
+        "lib/features/community/presentation/mission_management_screen.dart",
+        "lib/features/community/presentation/missions_screen.dart",
+        "lib/features/community/presentation/moderation_screen.dart",
+        "lib/features/community/presentation/notifications_panel.dart",
+        "lib/features/community/presentation/post_composer_screen.dart",
+        "lib/features/community/presentation/post_detail_screen.dart",
+        "lib/features/community/presentation/posts_feed.dart",
+        "lib/features/home_feed/presentation/home_feed_screen.dart",
+        "lib/features/home_feed/presentation/mission_feed_card.dart",
+        "lib/features/home_feed/presentation/stories_rail.dart",
+        "lib/features/home_feed/presentation/story_viewer.dart",
+        "lib/features/legal/legal_screens.dart",
+        "lib/features/map/presentation/mission_map_screen.dart",
+        "lib/features/profile/presentation/edit_profile_screen.dart",
+        "lib/features/profile/presentation/onboarding_screen.dart",
+        "lib/features/profile/presentation/profile_experience.dart",
+        "lib/features/profile/presentation/profile_form_widgets.dart",
+        "lib/features/profile/presentation/profile_setup_screen.dart",
+        "lib/features/profile/presentation/settings_screen.dart",
+        "lib/features/shell/presentation/app_shell.dart",
+        "lib/features/showcase/presentation/create_screen.dart",
+        "lib/features/showcase/presentation/showcase_composer_screen.dart",
+        "lib/features/showcase/presentation/showcase_detail_screen.dart",
+        "lib/features/showcase/presentation/showcase_widgets.dart",
+        "lib/features/tours/presentation/tour_ar_screen.dart",
+        "lib/features/tours/presentation/tour_discovery_screen.dart",
+        "lib/features/tours/presentation/tour_editor_screen.dart",
+        "lib/features/tours/presentation/tour_management_screen.dart",
+        "lib/features/tours/presentation/tour_visit_screen.dart",
+        "lib/features/tours/presentation/tour_widgets.dart",
+        "test/features/auth/welcome_reference_test.dart",
+        "test/features/community/community_routes_test.dart",
+        "test/features/community/mission_participation_test.dart",
+        "test/features/community/missions_screen_test.dart",
+        "test/features/community/post_composer_test.dart",
+        "test/features/community/ui_regression_test.dart",
+        "test/features/home_feed/feed_correction_test.dart",
+        "test/features/home_feed/home_feed_experience_test.dart",
+        "test/features/map/mission_map_ui_test.dart",
+        "test/features/presentation/access_redesign_test.dart",
+        "test/features/presentation/navigation_test.dart",
+        "test/features/profile/profile_setup_test.dart",
+        "test/features/showcase/showcase_flow_test.dart",
+        "test/features/tours/tour_ui_test.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "image_picker",
+      "version_constraint": "^1.2.3",
+      "imported_by": [
+        "lib/features/profile/data/profile_media_repository.dart",
+        "lib/features/tours/capture/tour_capture_screen.dart",
+        "lib/features/tours/presentation/tour_editor_screen.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "url_launcher",
+      "version_constraint": "^6.3.2",
+      "imported_by": [
+        "lib/features/community/presentation/mission_application_screen.dart",
+        "lib/features/legal/legal_screens.dart",
+        "lib/features/map/presentation/mission_map_screen.dart",
+        "lib/features/profile/presentation/professional_details.dart",
+        "lib/features/profile/presentation/profile_identity.dart",
+        "lib/features/showcase/presentation/showcase_detail_screen.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "flutter_map",
+      "version_constraint": "^8.2.2",
+      "imported_by": [
+        "lib/features/community/presentation/post_location_picker.dart",
+        "lib/features/map/presentation/mission_map_canvas.dart",
+        "lib/features/map/presentation/mission_map_screen.dart",
+        "test/features/community/location_picker_test.dart",
+        "test/features/map/mission_map_ui_test.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "flutter_map_marker_cluster",
+      "version_constraint": "^8.2.2",
+      "imported_by": [
+        "lib/features/map/presentation/mission_map_canvas.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "geolocator",
+      "version_constraint": "^14.0.2",
+      "imported_by": [
+        "lib/core/location/device_location_service.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "http",
+      "version_constraint": "^1.5.0",
+      "imported_by": [
+        "lib/features/tours/data/tus_uploader.dart",
+        "lib/features/tours/presentation/tour_ar_screen.dart",
+        "test/browser/tours_probe.dart",
+        "test/features/auth/registration_email_test.dart",
+        "test/features/community/location_picker_test.dart",
+        "test/features/community/mission_experience_repository_test.dart",
+        "test/features/community/mission_repository_test.dart",
+        "test/features/location/location_repository_test.dart",
+        "test/features/map/mission_map_repository_test.dart",
+        "test/features/map/mission_map_ui_test.dart",
+        "test/features/showcase/showcase_repository_test.dart",
+        "test/features/tours/tus_upload_test.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "latlong2",
+      "version_constraint": "^0.9.1",
+      "imported_by": [
+        "lib/features/community/presentation/post_location_picker.dart",
+        "lib/features/map/models/mission_map_models.dart",
+        "lib/features/map/presentation/mission_map_canvas.dart",
+        "lib/features/map/presentation/mission_map_screen.dart",
+        "test/features/community/location_picker_test.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "flutter_web_plugins",
+      "version_constraint": {
+        "sdk": "flutter"
+      },
+      "imported_by": [
+        "lib/main.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "share_plus",
+      "version_constraint": "^13.3.0",
+      "imported_by": [
+        "lib/features/community/presentation/social_panels.dart",
+        "lib/features/tours/presentation/tour_editor_screen.dart",
+        "lib/features/tours/presentation/tour_visit_screen.dart",
+        "test/features/community/social_panels_test.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "uuid",
+      "version_constraint": "^4.6.0",
+      "imported_by": [
+        "lib/features/community/presentation/mission_application_screen.dart",
+        "lib/features/community/presentation/mission_composer_screen.dart",
+        "lib/features/community/presentation/mission_social_panels.dart",
+        "lib/features/community/presentation/social_panels.dart",
+        "lib/features/home_feed/presentation/story_composer.dart",
+        "lib/features/notifications/data/android_push_gateway.dart",
+        "lib/features/tours/models/tour_models.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "firebase_core",
+      "version_constraint": "^4.15.0",
+      "imported_by": [
+        "lib/features/notifications/data/android_push_gateway.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "firebase_messaging",
+      "version_constraint": "^16.7.0",
+      "imported_by": [
+        "lib/features/notifications/data/android_push_gateway.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "flutter_local_notifications",
+      "version_constraint": "^22.3.1",
+      "imported_by": [
+        "lib/features/notifications/data/android_push_gateway.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "flutter_timezone",
+      "version_constraint": "^5.1.1",
+      "imported_by": [
+        "lib/features/notifications/data/android_push_gateway.dart",
+        "lib/features/notifications/data/inbox_only_gateway.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "shared_preferences",
+      "version_constraint": "^2.5.5",
+      "imported_by": [
+        "lib/features/auth/data/mobile_intro_store.dart",
+        "lib/features/notifications/data/android_push_gateway.dart",
+        "lib/features/tours/data/tour_local_store_web.dart",
+        "test/core/router/app_router_test.dart",
+        "test/features/auth/mobile_intro_experience_test.dart",
+        "test/features/auth/mobile_intro_test.dart",
+        "test/features/presentation/account_flow_test.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "camera",
+      "version_constraint": "^0.12.1",
+      "imported_by": [
+        "lib/features/tours/capture/tour_capture_screen.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "panorama_viewer",
+      "version_constraint": "^2.0.7",
+      "imported_by": [
+        "lib/features/tours/presentation/tour_panorama.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "path_provider",
+      "version_constraint": "^2.1.6",
+      "imported_by": [
+        "lib/features/tours/data/tour_local_store_io.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    },
+    {
+      "package": "image",
+      "version_constraint": "^4.10.1",
+      "imported_by": [
+        "lib/features/tours/capture/tour_capture_screen.dart",
+        "lib/features/tours/presentation/tour_editor_screen.dart",
+        "test/browser/tours_probe.dart"
+      ],
+      "assessment": "POR_VALIDAR",
+      "note": "Import/caller no acredita necesidad estratégica ni compatibilidad nativa. Las dependencias de tours/AR están relacionadas con ORF-002; sin retiro automático."
+    }
+  ],
+  "dev_dependencies": {
+    "flutter_test": {
+      "sdk": "flutter"
+    },
+    "image_picker_platform_interface": "^2.11.1",
+    "flutter_lints": "^6.0.0",
+    "flutter_launcher_icons": "^0.14.4"
+  },
+  "limitations": "No se declara dependencia innecesaria sólo por ausencia de import; auditoría de vulnerabilidad completa y contratos externos pendientes."
+}

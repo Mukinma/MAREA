@@ -1,0 +1,92 @@
+{
+  "at": "2026-10-19T15:27:21.604005+00:00",
+  "result": "PASS",
+  "containers": [
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-b-A-final-verified-recovery-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-b-A-final-verified-recovery-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-a-A-final-verified-recovery-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-a-A-final-verified-recovery-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-b-auth",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-a-auth",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-b-storage-recovery-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-b-E1-verified-recovery-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-b-E1-verified-recovery-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-b-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-b-storage-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-b-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-a-storage-recovery-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-a-E1-verified-recovery-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-a-E1-verified-recovery-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-a-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-a-storage-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-a-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-empty-independent",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-empty-shared",
+      "stopped": true
+    },
+    {
+      "name": "/task002-e2a-r8-20261019t152005z-empty-anchor",
+      "stopped": true
+    }
+  ],
+  "E2_A_execution_finished": true,
+  "next_increment_started": false
+}

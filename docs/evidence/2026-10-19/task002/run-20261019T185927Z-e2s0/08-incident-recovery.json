@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-19T19:11:43.559079+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "new_signup_fixtures": 2,
+      "original_rows_and_objects_preserved": true,
+      "exact_delta": {
+        "auth.audit_log_entries": 4,
+        "auth.identities": 2,
+        "auth.mfa_amr_claims": 2,
+        "auth.refresh_tokens": 2,
+        "auth.sessions": 2,
+        "auth.users": 2,
+        "collaboration.person_controls": 2,
+        "collaboration.persons": 2,
+        "public.legal_acceptances": 2,
+        "public.missions": 2,
+        "public.profiles": 2,
+        "storage.objects": 1
+      },
+      "partial_RED_completed": true
+    },
+    "b": {
+      "result": "PASS",
+      "new_signup_fixtures": 1,
+      "original_rows_and_objects_preserved": true,
+      "exact_delta": {
+        "auth.audit_log_entries": 2,
+        "auth.identities": 1,
+        "auth.mfa_amr_claims": 1,
+        "auth.refresh_tokens": 1,
+        "auth.sessions": 1,
+        "auth.users": 1,
+        "collaboration.person_controls": 1,
+        "collaboration.persons": 1,
+        "public.legal_acceptances": 1,
+        "public.profiles": 1
+      },
+      "partial_RED_completed": false
+    }
+  },
+  "root_correction": "Phase-aware resume; A RED completed before B failure. Preserve an extra unused A signup from rejected recovery attempt. All deltas match exact fixture provenance.",
+  "dependency_defect": "Earlier shell continued to RED after proof failure; mandatory gate now checked inside red entrypoint. No further combined shell phase execution.",
+  "daemon_retry_attempts": 0
+}

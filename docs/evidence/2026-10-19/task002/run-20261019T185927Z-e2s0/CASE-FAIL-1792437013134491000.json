@@ -1,0 +1,5 @@
+{
+  "at": "2026-10-19T19:10:13.134659+00:00",
+  "result": "STOPPED",
+  "error": "Fixture upload failed: {'status': 0, 'headers': {}, 'sha256': 'e34e569775072811cb4c470a0c4d22f1142a959156959124b8fdbeb3bb3fdfbd', 'body_text': 'URLError'}"
+}

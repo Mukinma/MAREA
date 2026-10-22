@@ -1,0 +1,108 @@
+{
+  "result": "PASS_STOPPED",
+  "new_containers": [
+    {
+      "name": "/task002-e2a-r2-20261019t140102z-a-E1-verified-recovery-db-copy",
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "stopped": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "task002-e2a-r2-20261019t140102z-a-E1-verified-recovery-db",
+          "Source": "/var/lib/docker/volumes/task002-e2a-r2-20261019t140102z-a-E1-verified-recovery-db/_data",
+          "Destination": "/dest",
+          "Driver": "local",
+          "Mode": "z",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "name": "/task002-e2a-r2-20261019t140102z-a-probe",
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "stopped": true,
+      "mounts": []
+    },
+    {
+      "name": "/task002-e2a-r2-20261019t140102z-a-pg",
+      "image": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "stopped": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "task002-e2a-r2-20261019t140102z-a-db",
+          "Source": "/var/lib/docker/volumes/task002-e2a-r2-20261019t140102z-a-db/_data",
+          "Destination": "/pg",
+          "Driver": "local",
+          "Mode": "z",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "name": "/task002-e2a-r2-20261019t140102z-a-storage-copy",
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "stopped": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "task002-e2a-r2-20261019t140102z-a-storage",
+          "Source": "/var/lib/docker/volumes/task002-e2a-r2-20261019t140102z-a-storage/_data",
+          "Destination": "/dest",
+          "Driver": "local",
+          "Mode": "z",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "name": "/task002-e2a-r2-20261019t140102z-a-db-copy",
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "stopped": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "task002-e2a-r2-20261019t140102z-a-db",
+          "Source": "/var/lib/docker/volumes/task002-e2a-r2-20261019t140102z-a-db/_data",
+          "Destination": "/dest",
+          "Driver": "local",
+          "Mode": "z",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "name": "/task002-e2a-r2-20261019t140102z-empty-independent",
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "stopped": true,
+      "mounts": []
+    },
+    {
+      "name": "/task002-e2a-r2-20261019t140102z-empty-shared",
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "stopped": true,
+      "mounts": []
+    },
+    {
+      "name": "/task002-e2a-r2-20261019t140102z-empty-anchor",
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "stopped": true,
+      "mounts": []
+    }
+  ],
+  "previous_container_state_mounts_images_unchanged": 286,
+  "new_volumes_retained": [
+    "task002-e2a-r2-20261019t140102z-a-E1-verified-recovery-db",
+    "task002-e2a-r2-20261019t140102z-a-db",
+    "task002-e2a-r2-20261019t140102z-a-storage"
+  ],
+  "original_volumes_accessed": false,
+  "Auth_containers_created": 0,
+  "running_after": 0,
+  "initial_full_inventory_query_timed_out": true,
+  "metadata_check_completed_in_bounded_batches": true
+}

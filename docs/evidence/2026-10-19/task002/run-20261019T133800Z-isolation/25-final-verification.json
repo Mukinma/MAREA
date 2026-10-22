@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-19T13:53:09.336Z",
+  "result": "PASS_WITH_DISCLOSED_DOCKER_EMPTY_DNS_REPRESENTATION_DIFFERENCES",
+  "prior_files_compared": 876,
+  "allowed_changes": [
+    "docs/MAREA_AUDIT_REPORT.md",
+    "docs/MAREA_REQUIREMENTS_STATUS.yaml",
+    "docs/MAREA_TRACKING.md",
+    "tool/task002/e2a_lab.py"
+  ],
+  "additional_historical_outputs_compared": 97,
+  "all_prior_public_evidence_files_unchanged": 296,
+  "prior_private_files_and_backups_unchanged": 14,
+  "old_evidence_records_unchanged": 307,
+  "new_diagnostic_evidence": 5,
+  "requirements_unchanged": 684,
+  "test_cases_unchanged": 21,
+  "baseline_raw_bytes_preserved": true,
+  "SRS_sha256": "4a1c28594e68d26180390b9aea3affce18a619039ad25ad1c8c528dc3d2f4388",
+  "tracked_product_diff_empty": true,
+  "HEAD_staged_unchanged": true,
+  "running_containers": 0,
+  "old_source_hash_preserved_in_snapshot": true,
+  "old_failure_receipts_unchanged": true,
+  "E2A": "BLOQUEADO_NO_IMPLEMENTADO",
+  "E2A_resume_authorized": false,
+  "TASK002_complete": false,
+  "raw_Docker_HostConfig_exact": false,
+  "DNS_difference_receipt": "docs/evidence/2026-10-19/task002/run-20261019T133800Z-isolation/14-preservation-first-check-drift.json"
+}

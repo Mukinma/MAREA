@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-20T05:22:27.129967+00:00",
+  "result": "STOPPED_FOR_INSTRUMENTATION",
+  "cause": "Verifier expected nonexistent routine name field; real snapshot keys recorded",
+  "keys": [
+    "acl",
+    "owner",
+    "schema",
+    "settings",
+    "signature",
+    "definition",
+    "security_definer"
+  ],
+  "all_preexisting_rows_sequences_equal": true
+}

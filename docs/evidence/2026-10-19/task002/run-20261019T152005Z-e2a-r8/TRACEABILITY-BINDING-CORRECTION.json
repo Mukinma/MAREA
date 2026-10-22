@@ -1,0 +1,20 @@
+{
+  "result": "APPLIED_PENDING_VALIDATION",
+  "initial_validator_error": "10 missing evidence normative bindings",
+  "new_bindings_only": [
+    "E-TASK002-PAX-AUTH-20261019",
+    "E-TASK002-PAX-TRANSPORT-20261019",
+    "E-TASK002-PAX-HISTORY-20261019",
+    "E-TASK002-R8-PREFLIGHT-20261019",
+    "E-TASK002-R8-IMPLEMENTATION-20261019",
+    "E-TASK002-R8-FUNCTIONAL-20261019",
+    "E-TASK002-R8-CONSERVATION-20261019",
+    "E-TASK002-R8-RECOVERY-20261019",
+    "E-TASK002-R8-HARNESS-20261019",
+    "E-TASK002-R8-REPORT-20261019"
+  ],
+  "historical_evidence_preserved": 318,
+  "requirements_unchanged": 684,
+  "baseline_unchanged": true,
+  "complete_requirement_validation": false
+}

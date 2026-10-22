@@ -1,0 +1,17 @@
+{
+  "id": "E-TASK001-EDGE-SERVE-marea-task001-d7522760bb90",
+  "at": "2026-10-13T18:46:46.258Z",
+  "result": "PASS",
+  "modality": "real",
+  "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+  "networks": [
+    "marea-task001-d7522760bb90"
+  ],
+  "published": {},
+  "privileged": false,
+  "cap_add": null,
+  "functions": 6,
+  "jwt_policy": "Per-function original settings; no global no-verify-jwt",
+  "external_credentials": false,
+  "remote_modified": false
+}

@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-10-13T17:02:24.589Z",
+  "before_sha256": "5520f791ccd0e391b0371892f2fc645e8a20e69b278712ddb18639362e41f8fb",
+  "after_sha256": "560a4d678ded347e83630e18fb2e6afc17275bdc3df99ba22786034c50ba4bd6",
+  "evidence_added": [
+    "E-TASK001-BACKUP-20261013T164530Z",
+    "E-TASK001-DOCKER-20261013T164530Z",
+    "E-TASK001-SUPABASE-20261013T164530Z",
+    "E-TASK001-SCHEMA-20261013T164530Z",
+    "E-TASK001-SUITES-20261013T164530Z",
+    "E-TASK001-GUARDS-20261013T164530Z",
+    "E-TASK001-INTEGRITY-20261013T164530Z"
+  ],
+  "runs_added": [
+    "RUN-TASK001-SUPABASE-20261013T164530Z",
+    "RUN-TASK001-GUARDS-20261013T164530Z",
+    "RUN-TASK001-SUITES-20261013T164530Z",
+    "RUN-TASK001-INTEGRITY-20261013T164530Z"
+  ],
+  "history_appended": [
+    "RF-25-007",
+    "RF-25-008"
+  ],
+  "requirement_states_changed": 0,
+  "platform_states_changed": 0,
+  "old_events_associations_preserved": true,
+  "prior_objects_deep_equal": true,
+  "srs_unchanged": true,
+  "canonical_validation": "PASS"
+}

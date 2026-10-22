@@ -1,0 +1,101 @@
+{
+  "at": "2026-10-20T05:33:26.292577+00:00",
+  "result": "PASS",
+  "containers": [
+    {
+      "name": "/task002-orgc-20261020t051527z-org0-recovery-b-control-v2-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-org0-recovery-b-storage-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-b-ORG0-final-v2-verified-recovery-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-b-ORG0-final-v2-verified-recovery-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-org0-recovery-a-control-v2-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-org0-recovery-a-storage-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-a-ORG0-final-v2-verified-recovery-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-a-ORG0-final-v2-verified-recovery-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-b-orgc-source-verified-recovery-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-b-orgc-source-verified-recovery-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-b-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-b-control-v2-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-b-storage-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-b-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-a-orgc-source-verified-recovery-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-a-orgc-source-verified-recovery-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-a-pg",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-a-control-v2-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-a-storage-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-a-db-copy",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-empty-independent",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-empty-shared",
+      "stopped": true
+    },
+    {
+      "name": "/task002-orgc-20261020t051527z-empty-anchor",
+      "stopped": true
+    }
+  ],
+  "ORG0_previous_acceptance_invalidated": true,
+  "C_incomplete": true,
+  "no_other_increment_started": true
+}

@@ -1,0 +1,6 @@
+{
+  "at": "2026-10-19T19:35:49.140433+00:00",
+  "result": "BLOCKED",
+  "error": "Privileged SQL did not reach/deny constant guard",
+  "do_not_ignore_real_data_loss": true
+}

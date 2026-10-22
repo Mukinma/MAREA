@@ -1,0 +1,5 @@
+{
+  "at": "2026-10-19T21:41:08.366749+00:00",
+  "result": "STOPPED_FOR_DIAGNOSIS",
+  "error": "[Errno 2] No such file or directory: '/Users/crisis/Proyectos/marea-backups/task002-b-20261019T212928Z/b-B-main-receipt.json'"
+}

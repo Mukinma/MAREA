@@ -1,0 +1,53 @@
+{
+  "at": "2026-10-19T21:41:35.202114+00:00",
+  "result": "CLASSIFIED_NO_DATA_LOSS",
+  "sources": {
+    "a": {
+      "result": "PASS_DATA_UNCHANGED",
+      "cases": [
+        {
+          "table": "auth.users",
+          "role": "service_role",
+          "exit": 3,
+          "stderr": "ERROR:  42501: permission denied for table users\nLOCATION:  aclcheck_error, aclchk.c:2843\n"
+        },
+        {
+          "table": "auth.users",
+          "role": "supabase_auth_admin",
+          "exit": 3,
+          "stderr": "ERROR:  55000: S0_DESTRUCTIVE_TRANSITION_FENCED\nCONTEXT:  PL/pgSQL function collaboration.s0_deny_mutation() line 1 at RAISE\nLOCATION:  exec_stmt_raise, pl_exec.c:3911\n"
+        },
+        {
+          "table": "public.profiles",
+          "role": "service_role",
+          "exit": 3,
+          "stderr": "ERROR:  55000: S0_DESTRUCTIVE_TRANSITION_FENCED\nCONTEXT:  PL/pgSQL function collaboration.s0_deny_mutation() line 1 at RAISE\nLOCATION:  exec_stmt_raise, pl_exec.c:3911\n"
+        }
+      ]
+    },
+    "b": {
+      "result": "PASS_DATA_UNCHANGED",
+      "cases": [
+        {
+          "table": "auth.users",
+          "role": "service_role",
+          "exit": 3,
+          "stderr": "ERROR:  42501: permission denied for table users\nLOCATION:  aclcheck_error, aclchk.c:2843\n"
+        },
+        {
+          "table": "auth.users",
+          "role": "supabase_auth_admin",
+          "exit": 3,
+          "stderr": "ERROR:  55000: S0_DESTRUCTIVE_TRANSITION_FENCED\nCONTEXT:  PL/pgSQL function collaboration.s0_deny_mutation() line 1 at RAISE\nLOCATION:  exec_stmt_raise, pl_exec.c:3911\n"
+        },
+        {
+          "table": "public.profiles",
+          "role": "service_role",
+          "exit": 3,
+          "stderr": "ERROR:  55000: S0_DESTRUCTIVE_TRANSITION_FENCED\nCONTEXT:  PL/pgSQL function collaboration.s0_deny_mutation() line 1 at RAISE\nLOCATION:  exec_stmt_raise, pl_exec.c:3911\n"
+        }
+      ]
+    }
+  },
+  "premature_manifest_phase_failed_before_B_fixture_read_or_mutation": true
+}

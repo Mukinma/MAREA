@@ -1,0 +1,19 @@
+# TASK-001 — continuación run-20261013T174515Z
+
+H1 PASS: respaldo completo verificado; fallos iniciales y resolución conservados privados.
+
+Ruling: conservar checkout actual y rama existente; el trabajo previo sin seguimiento debe permanecer disponible. Aislamiento de ejecución mediante runtimes privados fuera del checkout. Sin commits, staging ni borrados.
+
+Pre-flight: H3 exige conectividad host e aislamiento; H4 consume stack saludable y cron desactivado; H5 consume replay íntegro; trazabilidad consume resultados efectivos.
+
+H3 diagnosis PASS: internal peer healthy but publication omitted []; host ECONNREFUSED. Same listener on control bridge reachable. Initial diagnostic predicate expected null, corrected to also accept empty arrays; original receipt retained.
+
+H3 PASS: 7 Supabase services healthy, exact loopback relay routes, 50 TCP + 9 DNS subcases PASS, all temporary NET_ADMIN helpers removed. H4 configuration preflight initially rejected ALTER SYSTEM under non-superuser postgres; no schema applied. Setup uses the local Supabase bootstrap administrator only for this GUC; original migrations retain postgres role. Empty DB rechecked before retry; no product change.
+
+H4 PASS: original 21 migrations in order, hashes intact, continuously sampled cron off, zero cron executions/Vault secrets. Two full fresh schemas reproduced without product data.
+H5 real execution: Node 72 (68 PASS/4 known product FAIL on second runtime), pgTAP 300 PASS (110 catalog inspections), RPC negative actual invocation 151 PASS, Edge 30 PASS, outbox transaction 9 PASS, Realtime/JWT 5 (4 PASS/1 revocation FAIL), Dart host 6 PASS. No external provider integration or device QA claim. Full semantic RPC/table action coverage remains explicitly partial.
+Ruling: initial JWT/Realtime/Edge failures caused by harness preparation were preserved, diagnosed and superseded; true unilateral/closed/material/revocation defects remain FAIL. Full dependency graph frozen with official Deno 2.1.4, original function sources copied unchanged, offline compilation; no handler evaluated during infrastructure downloads.
+Final review: most-capable reviewer could not start due tool usage limit; sole actual independent review performed by next available reviewer. Found stale-proof gates, omitted RPC CLI suite, already-exited supervisor wait, helper cleanup, and too-wide subnet bootstrap. Addressed without loosening controls: latest+current namespace proofs, CLI RPC runner, settled child wait, finally cleanup, deny-only bootstrap with discovered exact IP/port rules. Third fresh runtime verifies reviewed procedure on localhost-only 63001/63002/63004 with its own internal subnet; first two kept intact.
+Git preservation: source/index staged entries, HEAD and branch unchanged. App rewrote index stat data and removed transient refs/codex checkpoints; their objects remain available and full prior metadata is retained in verified backups. No source loss, staging or commit by this execution.
+
+Closure: cold compile required controlled infrastructure JSR metadata retrieval; previous "offline compilation" description applies only to the earlier warm-cache attempt, not the final cold-start procedure. Exact six bundle hashes enforced before serving. Final two independent runtimes each734 subcases:726PASS/5FAIL/3NO_IMPLEMENTADO,621real/113inspection,0mock. Scenarios129defined/119covered;113partialPASS/5FAIL/5NO_IMPLEMENTADO/6devicePENDIENTE. Extra Storage expiry7PASS and ingress9PASS verified separately in both and added to future CLI. BothTCP58/DNS10PASS. Firstnewstack stopPASS with3volumes retained; other2unchanged. Canonical TASK001 COMPLETADO for laboratory acceptance only, all product failures retained and complete_requirement_validation=false. 21integrity/10guards PASS, validate/render/check PASS, stable second generation, original SRS SHA. See REPORT.md and final receipts.

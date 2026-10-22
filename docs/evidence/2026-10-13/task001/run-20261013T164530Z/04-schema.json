@@ -1,0 +1,20 @@
+{
+  "id": "E-TASK001-SCHEMA-20261013T164530Z",
+  "captured_at": "2026-10-13T17:00:31.963Z",
+  "milestone": 4,
+  "result": "BLOQUEADO",
+  "modality": "inspeccion",
+  "cause": "Dependent on blocked H3; no schema replay attempted",
+  "migrations_executed": 0,
+  "functions_served": 0,
+  "fixtures_created": 0,
+  "source_inventory": "source-inventory.json",
+  "secondary_blockers": [
+    "002:115 drop policy",
+    "005:12/14/22 drop constraint; 005:79 drop function",
+    "017:14 cron.schedule",
+    "021:66 provider real enabled default"
+  ],
+  "deployed_inventory_verified": false,
+  "remote_equivalence": false
+}

@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-19T05:55:15.488639+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "legacy_tables": 100,
+      "sequences": 7,
+      "all_old_catalog_and_extra_definitions_equal": true,
+      "rows_digests_equal": true,
+      "expected_added_auth_internal_fk_triggers": 2,
+      "expected_new_indexes": 2,
+      "storage": {
+        "tree_sha256": "c0463f45e4f920704d5b89100294dbabed01675dc3621a7213dcb1abeb6ddb50",
+        "files": 13
+      },
+      "new_persons_digest": {
+        "rows": 6,
+        "table": "collaboration.persons",
+        "sha256": "29f933486c2862e13f234b18147bd9f96b3f2fd3df22768e600294578348fe13"
+      },
+      "negative_tests_preserved_all_rows_and_catalog": true
+    },
+    "b": {
+      "legacy_tables": 100,
+      "sequences": 7,
+      "all_old_catalog_and_extra_definitions_equal": true,
+      "rows_digests_equal": true,
+      "expected_added_auth_internal_fk_triggers": 2,
+      "expected_new_indexes": 2,
+      "storage": {
+        "tree_sha256": "f0795d720f7d2cbf825feee611e7ece47eb47b51f2fd0a4b9b063b072d92a69e",
+        "files": 15
+      },
+      "new_persons_digest": {
+        "rows": 6,
+        "table": "collaboration.persons",
+        "sha256": "c242eab8ae3f7ccc4e68a6722cce79fbfdba267370f926140a0cf7f5b86fc129"
+      },
+      "negative_tests_preserved_all_rows_and_catalog": true
+    }
+  },
+  "original_volume_access": false,
+  "missions_author_id_or_fk_modified": false,
+  "expected_additions": "Schema, persons, two indexes, three constraints (PK/UNIQUE/FK), four internal RI triggers (two on auth.users) per copy; no policy or routine added"
+}

@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-19T06:34:17.820624+00:00",
+  "result": "DOCUMENTED_NOT_RUNTIME_TESTED",
+  "finding": "Auth deletion may be blocked by technical Storage ownership even without an objects-to-Auth FK",
+  "snapshot_columns_verified": [
+    "owner uuid nullable",
+    "owner_id text nullable"
+  ],
+  "proposed_gate": "M / D04 / T33 / integration T12",
+  "resolution": "Verify installed version; approved supported custody/reassignment or API copy with hashes, rights, bindings and compatibility before Auth purge",
+  "database_queries_executed": 0,
+  "scope_expanded_to_execution": false
+}

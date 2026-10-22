@@ -1,0 +1,2818 @@
+{
+  "checked_at": "2026-10-13T06:50:13.966268+00:00",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": [
+        "npm",
+        "test",
+        "--prefix",
+        "tool/traceability"
+      ],
+      "exit_code": 0,
+      "output": "> test\n> node --test traceability.test.mjs\n\n✔ extracts original IDs and explicit phases without assigning a phase to controls (0.735458ms)\n✔ detects lost and duplicated normative IDs (6.023708ms)\n✔ rejects unknown states, references and paths (0.907917ms)\n✔ SRS changes fail protection check (1.182667ms)\n✔ reserved validity decisions require explicit approval (0.853042ms)\n✔ phase ambiguity remains in total and outside phase metrics (1.769125ms)\n✔ phase assignment contrary to SRS is rejected (0.951542ms)\n✔ stale evidence stays historical and stops counting as current validation without changing states (2.254125ms)\n✔ failed mandatory test forbids complete validation (1.373792ms)\n✔ percentage requires reproducible criterion calculation (0.756292ms)\n✔ manual text survives generation byte for byte (0.089583ms)\n✔ existing files without markers are preserved and damaged markers rejected (0.175083ms)\n✔ rendering is deterministic and cannot target SRS (8.109708ms)\n✔ preserves descriptions of standalone contract bullets (0.615584ms)\n✔ invalid finding and related requirement references cannot pass (1.39625ms)\n✔ platform status changes need recorded history (0.66575ms)\n✔ reconfirmation preserves old hash and can restore evidence applicability (2.563ms)\n✔ stale failed evidence is retained but does not block later current validation (2.189791ms)\n✔ human answers recompute their figures from canonical states (1.644459ms)\n✔ catalog identity and complete source metadata are mandatory (0.618958ms)\nℹ tests 20\nℹ suites 0\nℹ pass 20\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 74.845083",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "tool/traceability/cli.mjs",
+        "validate"
+      ],
+      "exit_code": 0,
+      "output": "Integridad aprobada: 635 registros, 249 evidencias.",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "tool/traceability/cli.mjs",
+        "check"
+      ],
+      "exit_code": 0,
+      "output": "Integridad y documentos consistentes.",
+      "stderr": ""
+    }
+  ],
+  "consecutive_generations": [
+    {
+      "exit_code": 0,
+      "output": "Generación completa: 0 archivos modificados."
+    },
+    {
+      "exit_code": 0,
+      "output": "Generación completa: 0 archivos modificados."
+    }
+  ],
+  "content_and_mtime_unchanged": true,
+  "protected_srs_sha256": "44087ec119772779a7972063299f248ae60009b26119a5c9b179ee75a7911152",
+  "original_files_preserved": 571,
+  "original_files_changed": [],
+  "original_symlinks_changed": [],
+  "tracked_diff_empty": true,
+  "staged_diff_empty": true,
+  "independent_normative_ids": 521,
+  "requirements_registered": 635,
+  "auxiliary_clauses": 114,
+  "metrics": {
+    "BASE": {
+      "denominator": 95,
+      "total": 95,
+      "excluded": [],
+      "audited": 94,
+      "not_audited": 1,
+      "implementation_complete": 5,
+      "affirmative_implementation_identified": 3,
+      "prohibition_satisfied": 2,
+      "verified_historical": 0,
+      "verified_current": 0,
+      "test_linked": 47,
+      "ambiguous_phase": 0,
+      "states": {
+        "REQUIERE_RETRABAJO": 10,
+        "PARCIAL": 49,
+        "NO_INICIADO": 30,
+        "NO_AUDITADO": 1,
+        "IMPLEMENTADO": 5
+      },
+      "other_phase_exclusions": [
+        {
+          "id": "RF-04-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-04-012",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-05-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-06-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-06-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-06-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-06-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-06-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-06-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-06-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-07-012",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-012",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-013",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-014",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-015",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-016",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-017",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-018",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-08-019",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-012",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-013",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-09-014",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-012",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-013",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-10-014",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-11-012",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-12-012",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-13-012",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-14-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-15-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-001",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-002",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-003",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-004",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-005",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-006",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-007",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-008",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-18-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-20-011",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-001",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-002",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-003",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-004",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-005",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-006",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-007",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-008",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-009",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-010",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-011",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-22-010",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-24-001",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-24-002",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-24-003",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-24-004",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-24-005",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-24-006",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-24-007",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-24-008",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-24-009",
+          "phase": "PILOTO",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-001",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-002",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-003",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-004",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-005",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-006",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-007",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-008",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-009",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-010",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-011",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-012",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-013",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        }
+      ]
+    },
+    "PILOTO": {
+      "denominator": 186,
+      "total": 186,
+      "excluded": [],
+      "audited": 185,
+      "not_audited": 1,
+      "implementation_complete": 10,
+      "affirmative_implementation_identified": 7,
+      "prohibition_satisfied": 3,
+      "verified_historical": 0,
+      "verified_current": 0,
+      "test_linked": 82,
+      "ambiguous_phase": 0,
+      "states": {
+        "PARCIAL": 85,
+        "IMPLEMENTADO": 10,
+        "NO_INICIADO": 70,
+        "REQUIERE_RETRABAJO": 20,
+        "NO_AUDITADO": 1
+      },
+      "other_phase_exclusions": [
+        {
+          "id": "RF-01-001",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-002",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-003",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-004",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-005",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-006",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-007",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-008",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-009",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-010",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-011",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-012",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-013",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-01-014",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-001",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-002",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-003",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-004",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-005",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-006",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-007",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-008",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-009",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-010",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-011",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-012",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-013",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-014",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-02-015",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-001",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-002",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-003",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-004",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-005",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-006",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-007",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-008",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-009",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-010",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-011",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-012",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-013",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-03-014",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-001",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-002",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-003",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-004",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-005",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-006",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-007",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-16-008",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-001",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-002",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-003",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-004",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-005",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-006",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-007",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-008",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-009",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-010",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-011",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-012",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-013",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-17-014",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-001",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-002",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-003",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-004",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-005",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-006",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-007",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-008",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-009",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-010",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-19-011",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-001",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-002",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-003",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-004",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-005",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-006",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-007",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-008",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-009",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-010",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-21-011",
+          "phase": "POST",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-001",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-002",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-003",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-004",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-005",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-006",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-007",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-008",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-009",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-010",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-011",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-012",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-013",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-014",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-23-015",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-001",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-002",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-003",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-004",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-005",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-006",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-007",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-008",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-009",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-010",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-011",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-25-012",
+          "phase": "BASE",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-001",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-002",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-003",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-004",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-005",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-006",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-007",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-008",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-009",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-010",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-011",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-012",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        },
+        {
+          "id": "RF-26-013",
+          "phase": "CONDICIONAL",
+          "reason": "Fase normativa distinta"
+        }
+      ]
+    },
+    "PRODUCTO_COMPLETO": {
+      "denominator": 313,
+      "total": 313,
+      "excluded": [],
+      "audited": 311,
+      "not_audited": 2,
+      "implementation_complete": 28,
+      "affirmative_implementation_identified": 10,
+      "prohibition_satisfied": 18,
+      "verified_historical": 0,
+      "verified_current": 0,
+      "test_linked": 137,
+      "ambiguous_phase": 0,
+      "states": {
+        "REQUIERE_RETRABAJO": 37,
+        "PARCIAL": 140,
+        "NO_INICIADO": 106,
+        "NO_AUDITADO": 2,
+        "IMPLEMENTADO": 28
+      }
+    },
+    "phase_unresolved_catalog": [
+      "TR-S1.1-001",
+      "TR-S1.1-002",
+      "TR-S1.1-003",
+      "TR-S1.1-004",
+      "TR-S1.2-001",
+      "TR-S1.2-002",
+      "TR-S1.2-003",
+      "TR-S1.2-004",
+      "TR-S1.2-005",
+      "TR-S2-001",
+      "TR-S2-002",
+      "TR-S2-003",
+      "TR-S2-004",
+      "TR-S2-005",
+      "TR-S2-006",
+      "TR-S2-007",
+      "TR-S2-008",
+      "TR-S2-009",
+      "TR-S2-010",
+      "TR-S2-011",
+      "TR-S2-012",
+      "TR-S2-013",
+      "TR-S2-014",
+      "TR-S2-015",
+      "TR-S2-016",
+      "TR-S2.1-001",
+      "TR-S2.1-002",
+      "TR-S2.1-003",
+      "TR-S2.1-004",
+      "TR-S2.1-005",
+      "TR-S2.1-006",
+      "TR-S2.1-007",
+      "TR-S2.1-008",
+      "TR-S2.1-009",
+      "TR-S2.1-010",
+      "TR-S2.1-011",
+      "TR-S2.1-012",
+      "TR-S3.1-001",
+      "TR-S3.1-002",
+      "TR-S3.1-003",
+      "TR-S3.1-004",
+      "TR-S3.1-005",
+      "TR-S3.1-006",
+      "TR-S3.1-007",
+      "TR-S3.1-008",
+      "TR-S3.1-009",
+      "TR-S3.2-001",
+      "TR-S3.2-002",
+      "TR-S3.2-003",
+      "TR-S3.2-004",
+      "TR-S3.2-005",
+      "TR-S3.2-006",
+      "TR-S3.3-001",
+      "TR-S3.4-001",
+      "TR-S3.4-002",
+      "TR-S3.4-003",
+      "TR-S3.4-004",
+      "TR-S3.4-005",
+      "TR-S3.4-006",
+      "TR-S3.4-007",
+      "TR-S3.4-008",
+      "TR-S3.4-009",
+      "TR-S3.4-010",
+      "TR-S3.4-011",
+      "TR-S3.4-012",
+      "TR-S3.5-001",
+      "TR-S3.5-002",
+      "TR-S3.5-003",
+      "TR-S3.5-004",
+      "TR-S4.1-001",
+      "TR-S4.1-002",
+      "TR-S4.1-003",
+      "TR-S4.1-004",
+      "TR-S4.1-005",
+      "TR-S4.2-001",
+      "TR-S4.2-002",
+      "TR-S4.2-003",
+      "TR-S4.2-004",
+      "TR-S4.3-001",
+      "TR-S4.3-002",
+      "TR-S4.3-003",
+      "TR-S4.3-004",
+      "TR-S4.4-001",
+      "TR-S4.4-002",
+      "TR-S4.4-003",
+      "TR-S4.4-004",
+      "TR-S4.5-001",
+      "TR-S4.5-002",
+      "TR-S4.5-003",
+      "TR-S4.5-004",
+      "TR-S4.5-005",
+      "CT-SEC-ID-001",
+      "CT-SEC-ID-002",
+      "CT-SEC-ID-003",
+      "CT-SEC-ID-004",
+      "CT-SEC-ID-005",
+      "CT-SEC-ID-006",
+      "CT-SEC-ID-007",
+      "CT-SEC-ID-008",
+      "CT-SEC-AUT-001",
+      "CT-SEC-AUT-002",
+      "CT-SEC-AUT-003",
+      "CT-SEC-AUT-004",
+      "CT-SEC-AUT-005",
+      "CT-SEC-AUT-006",
+      "CT-SEC-AUT-007",
+      "CT-SEC-AUT-008",
+      "CT-SEC-AUT-009",
+      "CT-SEC-AUT-010",
+      "CT-SEC-CONT-001",
+      "CT-SEC-CONT-002",
+      "CT-SEC-CONT-003",
+      "CT-SEC-CONT-004",
+      "CT-SEC-CONT-005",
+      "CT-SEC-CONT-006",
+      "CT-SEC-CONT-007",
+      "CT-SEC-CONT-008",
+      "CT-SEC-CONT-009",
+      "CT-SEC-CONT-010",
+      "CT-PRI-DAT-001",
+      "CT-PRI-DAT-002",
+      "CT-PRI-DAT-003",
+      "CT-PRI-DAT-004",
+      "CT-PRI-DAT-005",
+      "CT-PRI-DAT-006",
+      "CT-PRI-DAT-007",
+      "CT-PRI-DAT-008",
+      "CT-PRI-DAT-009",
+      "CT-QLT-UX-001",
+      "CT-QLT-UX-002",
+      "CT-QLT-UX-003",
+      "CT-QLT-UX-004",
+      "CT-QLT-UX-005",
+      "CT-QLT-UX-006",
+      "CT-QLT-UX-007",
+      "CT-QLT-UX-008",
+      "CT-QLT-UX-009",
+      "CT-OPS-REL-001",
+      "CT-OPS-REL-002",
+      "CT-OPS-REL-003",
+      "CT-OPS-REL-004",
+      "CT-OPS-REL-005",
+      "CT-OPS-REL-006",
+      "CT-OPS-REL-007",
+      "CT-OPS-REL-008",
+      "CT-OPS-REL-009",
+      "CT-OPS-REL-010",
+      "CT-PLT-WEB-001",
+      "CT-PLT-WEB-002",
+      "CT-PLT-WEB-003",
+      "CT-PLT-WEB-004",
+      "CT-PLT-WEB-005",
+      "CT-PLT-MOB-001",
+      "CT-PLT-MOB-002",
+      "CT-PLT-MOB-003",
+      "CT-PLT-MOB-004",
+      "CT-PLT-MOB-005",
+      "CT-PLT-MOB-006",
+      "CT-PLT-MOB-007",
+      "CT-PLT-MOB-008",
+      "RB-01",
+      "RB-02",
+      "RB-03",
+      "RB-04",
+      "RB-05",
+      "RB-06",
+      "RB-07",
+      "RB-08",
+      "RB-09",
+      "RB-10",
+      "RB-11",
+      "RB-12",
+      "RB-13",
+      "RB-14",
+      "RB-15",
+      "RB-16",
+      "RB-17",
+      "RB-18",
+      "RB-19",
+      "RB-20",
+      "RB-21",
+      "RB-22",
+      "RB-23",
+      "RB-24",
+      "RB-25",
+      "ADR41-01",
+      "ADR41-02",
+      "ADR41-03",
+      "ADR41-04",
+      "ADR41-05",
+      "ADR41-06",
+      "ADR41-07",
+      "ADR41-08",
+      "ADR41-09",
+      "ADR41-10",
+      "ADR41-11",
+      "ADR41-12",
+      "ADR41-13",
+      "ADR41-14",
+      "ADR41-15",
+      "ADR41-16",
+      "ADR41-17",
+      "ADR41-18",
+      "ADR41-19",
+      "ADR41-20",
+      "ADR42-01",
+      "ADR42-02",
+      "ADR42-03",
+      "ADR42-04",
+      "ADR42-05",
+      "ADR42-06",
+      "ADR42-07",
+      "ADR42-08",
+      "ADR42-09",
+      "ADR42-10",
+      "ADR42-11",
+      "ADR42-12",
+      "ADR42-13",
+      "ADR42-14",
+      "ADR42-15",
+      "ADR42-16",
+      "ADR42-17",
+      "ADR42-18",
+      "CTR5-01",
+      "CTR5-02",
+      "CTR5-03",
+      "CTR5-04",
+      "CTR5-05",
+      "CTR5-06",
+      "CTR5-07",
+      "CTR5-08",
+      "CTR5-09",
+      "CTR5-10",
+      "CTR5-11",
+      "CTR5-12",
+      "AC-01",
+      "AC-02",
+      "AC-03",
+      "AC-04",
+      "AC-05",
+      "AC-06",
+      "AC-07",
+      "AC-08",
+      "AC-09",
+      "AC-10",
+      "AC-11",
+      "AC-12",
+      "AC-13",
+      "AC-14",
+      "AC-15",
+      "AC-16",
+      "AC-17",
+      "AC-18",
+      "AC-19",
+      "AC-20",
+      "AC-21",
+      "AC-22",
+      "AC-23",
+      "AC-24",
+      "AC-25",
+      "AC-26",
+      "AT5-01",
+      "AT5-02",
+      "AT5-03",
+      "AT5-04",
+      "AT5-05",
+      "AT5-06",
+      "AT5-07",
+      "AT5-08",
+      "AT5-09",
+      "AT5-10",
+      "AT5-11",
+      "AT5-12",
+      "AT5-13",
+      "AT5-14",
+      "AT5-15",
+      "AT5-16",
+      "AT5-17",
+      "AT5-18",
+      "AT5-19",
+      "AT5-20",
+      "TR-S10.1-001",
+      "TR-S10.1-002",
+      "TR-S10.1-003",
+      "TR-S10.1-004",
+      "TR-S10.1-005",
+      "TR-S10.1-006",
+      "TR-S10.1-007",
+      "TR-S10.1-008",
+      "TR-S10.1-009",
+      "TR-S10.1-010",
+      "G0",
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G6",
+      "G7",
+      "B01",
+      "B02",
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B07",
+      "B08",
+      "B09",
+      "B10",
+      "TR-S11.3-001",
+      "TR-S11.3-002",
+      "TR-S11.3-003",
+      "TR-S12.2-001",
+      "TR-S12.2-002",
+      "TR-S12.2-003",
+      "TR-S12.2-004",
+      "TR-S12.2-005",
+      "TR-S12.2-006",
+      "TR-S12.2-007",
+      "TR-S12.2-008",
+      "TR-S12.2-009",
+      "TR-S12.3-001"
+    ],
+    "catalog": {
+      "total": 635,
+      "audited": 517,
+      "ambiguous_phase": 322
+    },
+    "modules": {
+      "M01": {
+        "denominator": 14,
+        "total": 14,
+        "excluded": [],
+        "audited": 13,
+        "not_audited": 1,
+        "implementation_complete": 1,
+        "affirmative_implementation_identified": 1,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 11,
+        "ambiguous_phase": 0,
+        "states": {
+          "REQUIERE_RETRABAJO": 3,
+          "PARCIAL": 7,
+          "NO_INICIADO": 2,
+          "NO_AUDITADO": 1,
+          "IMPLEMENTADO": 1
+        }
+      },
+      "M02": {
+        "denominator": 15,
+        "total": 15,
+        "excluded": [],
+        "audited": 15,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 2,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 3,
+          "NO_INICIADO": 12
+        }
+      },
+      "M03": {
+        "denominator": 14,
+        "total": 14,
+        "excluded": [],
+        "audited": 14,
+        "not_audited": 0,
+        "implementation_complete": 1,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 1,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 8,
+        "ambiguous_phase": 0,
+        "states": {
+          "REQUIERE_RETRABAJO": 3,
+          "PARCIAL": 8,
+          "NO_INICIADO": 2,
+          "IMPLEMENTADO": 1
+        }
+      },
+      "M04": {
+        "denominator": 12,
+        "total": 12,
+        "excluded": [],
+        "audited": 12,
+        "not_audited": 0,
+        "implementation_complete": 2,
+        "affirmative_implementation_identified": 2,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 7,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 6,
+          "IMPLEMENTADO": 2,
+          "NO_INICIADO": 4
+        }
+      },
+      "M05": {
+        "denominator": 10,
+        "total": 10,
+        "excluded": [],
+        "audited": 10,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 4,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 5,
+          "NO_INICIADO": 4,
+          "REQUIERE_RETRABAJO": 1
+        }
+      },
+      "M06": {
+        "denominator": 7,
+        "total": 7,
+        "excluded": [],
+        "audited": 6,
+        "not_audited": 1,
+        "implementation_complete": 1,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 1,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 2,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 2,
+          "IMPLEMENTADO": 1,
+          "NO_INICIADO": 3,
+          "NO_AUDITADO": 1
+        }
+      },
+      "M07": {
+        "denominator": 12,
+        "total": 12,
+        "excluded": [],
+        "audited": 12,
+        "not_audited": 0,
+        "implementation_complete": 2,
+        "affirmative_implementation_identified": 2,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 11,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 9,
+          "IMPLEMENTADO": 2,
+          "NO_INICIADO": 1
+        }
+      },
+      "M08": {
+        "denominator": 19,
+        "total": 19,
+        "excluded": [],
+        "audited": 19,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 13,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 11,
+          "REQUIERE_RETRABAJO": 4,
+          "NO_INICIADO": 4
+        }
+      },
+      "M09": {
+        "denominator": 14,
+        "total": 14,
+        "excluded": [],
+        "audited": 14,
+        "not_audited": 0,
+        "implementation_complete": 1,
+        "affirmative_implementation_identified": 1,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 10,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 8,
+          "IMPLEMENTADO": 1,
+          "REQUIERE_RETRABAJO": 4,
+          "NO_INICIADO": 1
+        }
+      },
+      "M10": {
+        "denominator": 14,
+        "total": 14,
+        "excluded": [],
+        "audited": 14,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 1,
+        "ambiguous_phase": 0,
+        "states": {
+          "NO_INICIADO": 11,
+          "PARCIAL": 3
+        }
+      },
+      "M11": {
+        "denominator": 12,
+        "total": 12,
+        "excluded": [],
+        "audited": 12,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 6,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 6,
+          "REQUIERE_RETRABAJO": 2,
+          "NO_INICIADO": 4
+        }
+      },
+      "M12": {
+        "denominator": 12,
+        "total": 12,
+        "excluded": [],
+        "audited": 12,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 1,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 7,
+          "NO_INICIADO": 4,
+          "REQUIERE_RETRABAJO": 1
+        }
+      },
+      "M13": {
+        "denominator": 12,
+        "total": 12,
+        "excluded": [],
+        "audited": 12,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 1,
+        "ambiguous_phase": 0,
+        "states": {
+          "NO_INICIADO": 9,
+          "REQUIERE_RETRABAJO": 1,
+          "PARCIAL": 2
+        }
+      },
+      "M14": {
+        "denominator": 11,
+        "total": 11,
+        "excluded": [],
+        "audited": 11,
+        "not_audited": 0,
+        "implementation_complete": 1,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 1,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 6,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 5,
+          "REQUIERE_RETRABAJO": 3,
+          "IMPLEMENTADO": 1,
+          "NO_INICIADO": 2
+        }
+      },
+      "M15": {
+        "denominator": 11,
+        "total": 11,
+        "excluded": [],
+        "audited": 11,
+        "not_audited": 0,
+        "implementation_complete": 2,
+        "affirmative_implementation_identified": 2,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 6,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 5,
+          "REQUIERE_RETRABAJO": 3,
+          "IMPLEMENTADO": 2,
+          "NO_INICIADO": 1
+        }
+      },
+      "M16": {
+        "denominator": 8,
+        "total": 8,
+        "excluded": [],
+        "audited": 8,
+        "not_audited": 0,
+        "implementation_complete": 2,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 2,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 5,
+        "ambiguous_phase": 0,
+        "states": {
+          "REQUIERE_RETRABAJO": 2,
+          "PARCIAL": 3,
+          "IMPLEMENTADO": 2,
+          "NO_INICIADO": 1
+        }
+      },
+      "M17": {
+        "denominator": 14,
+        "total": 14,
+        "excluded": [],
+        "audited": 14,
+        "not_audited": 0,
+        "implementation_complete": 1,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 1,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 6,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 8,
+          "NO_INICIADO": 5,
+          "IMPLEMENTADO": 1
+        }
+      },
+      "M18": {
+        "denominator": 10,
+        "total": 10,
+        "excluded": [],
+        "audited": 10,
+        "not_audited": 0,
+        "implementation_complete": 1,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 1,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 6,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 6,
+          "NO_INICIADO": 3,
+          "IMPLEMENTADO": 1
+        }
+      },
+      "M19": {
+        "denominator": 11,
+        "total": 11,
+        "excluded": [],
+        "audited": 11,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 6,
+        "ambiguous_phase": 0,
+        "states": {
+          "REQUIERE_RETRABAJO": 1,
+          "PARCIAL": 7,
+          "NO_INICIADO": 3
+        }
+      },
+      "M20": {
+        "denominator": 11,
+        "total": 11,
+        "excluded": [],
+        "audited": 11,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 0,
+        "ambiguous_phase": 0,
+        "states": {
+          "NO_INICIADO": 10,
+          "PARCIAL": 1
+        }
+      },
+      "M21": {
+        "denominator": 11,
+        "total": 11,
+        "excluded": [],
+        "audited": 11,
+        "not_audited": 0,
+        "implementation_complete": 3,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 3,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 0,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 3,
+          "NO_INICIADO": 5,
+          "IMPLEMENTADO": 3
+        }
+      },
+      "M22": {
+        "denominator": 10,
+        "total": 10,
+        "excluded": [],
+        "audited": 10,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 6,
+        "ambiguous_phase": 0,
+        "states": {
+          "REQUIERE_RETRABAJO": 1,
+          "NO_INICIADO": 4,
+          "PARCIAL": 5
+        }
+      },
+      "M23": {
+        "denominator": 15,
+        "total": 15,
+        "excluded": [],
+        "audited": 15,
+        "not_audited": 0,
+        "implementation_complete": 2,
+        "affirmative_implementation_identified": 2,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 11,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 10,
+          "IMPLEMENTADO": 2,
+          "NO_INICIADO": 2,
+          "REQUIERE_RETRABAJO": 1
+        }
+      },
+      "M24": {
+        "denominator": 9,
+        "total": 9,
+        "excluded": [],
+        "audited": 9,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 2,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 4,
+          "NO_INICIADO": 5
+        }
+      },
+      "M25": {
+        "denominator": 12,
+        "total": 12,
+        "excluded": [],
+        "audited": 12,
+        "not_audited": 0,
+        "implementation_complete": 0,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 0,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 3,
+        "ambiguous_phase": 0,
+        "states": {
+          "PARCIAL": 6,
+          "NO_INICIADO": 4,
+          "REQUIERE_RETRABAJO": 2
+        }
+      },
+      "M26": {
+        "denominator": 13,
+        "total": 13,
+        "excluded": [],
+        "audited": 13,
+        "not_audited": 0,
+        "implementation_complete": 8,
+        "affirmative_implementation_identified": 0,
+        "prohibition_satisfied": 8,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 3,
+        "ambiguous_phase": 0,
+        "states": {
+          "IMPLEMENTADO": 8,
+          "REQUIERE_RETRABAJO": 5
+        }
+      }
+    },
+    "platforms": {
+      "web": {
+        "denominator": 305,
+        "total": 313,
+        "excluded": [
+          {
+            "id": "RF-22-004",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-23-001",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-23-002",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-23-003",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-23-011",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-23-013",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-23-014",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-23-015",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          }
+        ],
+        "audited": 270,
+        "not_audited": 35,
+        "implementation_complete": 26,
+        "affirmative_implementation_identified": 8,
+        "prohibition_satisfied": 18,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 132,
+        "ambiguous_phase": 0,
+        "states": {
+          "REQUIERE_RETRABAJO": 35,
+          "PARCIAL": 128,
+          "NO_INICIADO": 81,
+          "NO_AUDITADO": 35,
+          "IMPLEMENTADO": 26
+        }
+      },
+      "android": {
+        "denominator": 309,
+        "total": 313,
+        "excluded": [
+          {
+            "id": "RF-22-002",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-22-003",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-22-006",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-22-009",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          }
+        ],
+        "audited": 274,
+        "not_audited": 35,
+        "implementation_complete": 28,
+        "affirmative_implementation_identified": 10,
+        "prohibition_satisfied": 18,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 136,
+        "ambiguous_phase": 0,
+        "states": {
+          "REQUIERE_RETRABAJO": 36,
+          "PARCIAL": 130,
+          "NO_INICIADO": 80,
+          "NO_AUDITADO": 35,
+          "IMPLEMENTADO": 28
+        }
+      },
+      "ios": {
+        "denominator": 309,
+        "total": 313,
+        "excluded": [
+          {
+            "id": "RF-22-002",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-22-003",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-22-006",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          },
+          {
+            "id": "RF-22-009",
+            "reason": "Conservado en SRS v5.0; no existe aprobación humana de retiro/reemplazo/fuera de alcance."
+          }
+        ],
+        "audited": 274,
+        "not_audited": 35,
+        "implementation_complete": 28,
+        "affirmative_implementation_identified": 10,
+        "prohibition_satisfied": 18,
+        "verified_historical": 0,
+        "verified_current": 0,
+        "test_linked": 136,
+        "ambiguous_phase": 0,
+        "states": {
+          "REQUIERE_RETRABAJO": 36,
+          "PARCIAL": 130,
+          "NO_INICIADO": 80,
+          "NO_AUDITADO": 35,
+          "IMPLEMENTADO": 28
+        }
+      }
+    },
+    "stale_evidence": [
+      "E-RUN-TRACKING"
+    ],
+    "orphan_candidates": 7,
+    "unnecessary_confirmed": 0
+  },
+  "limitations": "Pruebas de integridad del seguimiento y preservación; no validan comportamiento completo de MAREA. Huellas/fechas de documentos usadas sólo para comparación entre dos ejecuciones, no copiadas en el propio YAML para evitar referencias circulares."
+}

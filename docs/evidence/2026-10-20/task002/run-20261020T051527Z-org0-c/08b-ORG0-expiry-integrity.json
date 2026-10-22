@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-20T05:23:37.061121+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "explicit_new_private_fixture_rows": 1,
+      "genuine_before_expiry_allowed_after_expiry_denied": true,
+      "server_clock_without_extension": true,
+      "provision_replay_no_delta": true,
+      "provision_conflicting_key_23505": true,
+      "real_membership_organization_FK_23503": true
+    },
+    "b": {
+      "result": "PASS",
+      "explicit_new_private_fixture_rows": 1,
+      "genuine_before_expiry_allowed_after_expiry_denied": true,
+      "server_clock_without_extension": true,
+      "provision_replay_no_delta": true,
+      "provision_conflicting_key_23505": true,
+      "real_membership_organization_FK_23503": true
+    }
+  }
+}

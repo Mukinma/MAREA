@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-14T05:06:33.507174+00:00",
+  "result": "PASS",
+  "files_checked": 375,
+  "changed_in_scope": [
+    "docs/task002/E-STRUCTURAL-REVIEW.md",
+    "docs/task002/U0-FUNCTIONAL-DESIGN.md",
+    "docs/task002/U0/index.html",
+    "docs/task002/U0/screens.json"
+  ],
+  "missing": [],
+  "prohibited_changes": [],
+  "srs_sha256": "4a1c28594e68d26180390b9aea3affce18a619039ad25ad1c8c528dc3d2f4388",
+  "head_same": true,
+  "scope": "FILE_CONSERVATION_ONLY_NOT_DATABASE_OR_STORAGE"
+}

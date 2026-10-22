@@ -1,0 +1,34 @@
+{
+  "at": "2026-10-19T18:25:25.946542+00:00",
+  "result": "PASS",
+  "historical_workspace": {
+    "run-20261019T143903Z-e2a-r3": {
+      "preserved_files": 1050,
+      "changed": []
+    },
+    "run-20261019T152005Z-e2a-r8": {
+      "preserved_files": 1132,
+      "changed": []
+    }
+  },
+  "previous_private_files_preserved": 365,
+  "private_allowlist_sha256": "7858a2d21b83750fa2a87f0468c6197b2ce27e7e292be36d422009a94aa47695",
+  "previous_containers_unchanged": 384,
+  "previous_volumes_preserved": 73,
+  "new_volumes_only_owner_labelled": 10,
+  "new_containers_all_stopped": 21,
+  "running_containers": 0,
+  "HEAD": "989e5b5845deff0afd13703a067a7d7a3775d3bc",
+  "staged_changes": false,
+  "tracked_product_changes": false,
+  "original_volumes_mounted": false,
+  "Docker_raw_image_read_or_inventoried": false,
+  "remote_modified": false,
+  "next_documentation_changes_only": [
+    "docs/MAREA_REQUIREMENTS_STATUS.yaml",
+    "docs/MAREA_TRACKING.md",
+    "docs/MAREA_AUDIT_REPORT.md",
+    "docs/MAREA_TRACEABILITY.md",
+    "docs/MAREA_CHANGELOG.md"
+  ]
+}

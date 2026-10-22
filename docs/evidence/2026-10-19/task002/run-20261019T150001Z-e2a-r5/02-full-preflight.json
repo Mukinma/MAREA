@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-19T15:00:10.569885+00:00",
+  "result": "PASS",
+  "endpoint": "unix:///Users/crisis/.docker/run/docker.sock",
+  "empty_receipt_sha256": "909681fd0fb523203efe5fb8be4ef57e8e2db7e2dc1ed5b73fb962135f9f37dd",
+  "verifier_hashes": {
+    "tool/task002/e2a_lab.py": "3e90947e46f08765cd3cc266f99759a4312b2b541d6ec78122e16b67c222e2b5",
+    "tool/task002/e2a_isolation.py": "db5ff9793fe1cef1ad1cf04a0f416c07433cc49f9847f7f831ae21c1bf219aab",
+    "tool/task002/e2a_isolation_probe.py": "504d39aee19aef011256ba546778afd5b4e39acb44d09369686391d3e453e4d5",
+    "tool/task002/e2a_isolation_policy.json": "fb723eafd579e1e7bd9450fad7fe8f11c025ab2a7e88d7874fa8674c33faab22",
+    "tool/task002/test_e2a_isolation.py": "ccc5ede2c335a1e6a9ad2ad034f4842e10959c2798a7a836e923ff1d38cffebd"
+  },
+  "namespace_proof_sha256": "27df155daf562359c10ad8f23bd9b3faaaf2d4dacb632393ff45a75c83b9bf22",
+  "pax_stage_sha256": "998c93ddd27e8b508e95d38de85e4882f0459ef105fba8364eb9b631f412fc1c",
+  "transport_sha256": "4bae53e9b3ac4782100434cfc3c0cf93fe242015614756c8be1487e8ae8aaa70",
+  "runtime_verifier_sha256": "d41184ac1176c6cd3609096f61507156294fb2f6e0b8f1dd0a1fd8f90f85ab90",
+  "executor_sha256": "6806b5b4a45c7a0b0999b4aad820a27be4971027374f3080293544bf5eac5db9",
+  "backup_and_E1_SQL_hashes_verified": true,
+  "original_volumes_mounted": false
+}

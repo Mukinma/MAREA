@@ -1,0 +1,16 @@
+{
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/a-E1-base.json": "6b48497cc41de70ed3e9080f708d52086f2bca454c63b7d87e22378f39c57c8e",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/a-E1-reproduced-cold.tar": "8fecb92828d930eff692461fa5cb5f7453252af8c4b8117b0c72ad21e17d5d2e",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/a-E1-reproduced-cold.tar.manifest.json": "31465e3c768b4af641479b16fa3b721aec3e202abb89c74ef38a4c34192f91b9",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/a-auth.env": "638674daa69708a5dc0c51084da81aeda56c2e7e1c66bd6ef9b85f119680168a",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/auth-configuration.go": "6a6cfe2b2f14ea5387c875bfedfa3f1b900472fd9ccb58da92927c05e849072e",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/docker-commands.jsonl": "db08f25df9efb897756ffba470bf09b94d9024f7b1a0ce10724da9b32973dba1",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/error-1792416399488903000.log": "7d0ecbcfc6e7763bce86a9e33ec5c38dd91c5cd19f1a03d6abcceec22e87f6e0",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/previous-containers.json": "20485ed2a749b1a374f439f7af55a7f8c081f2c08c87bddee5266424b9e16e8d",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/sql-project/supabase/.temp/cli-latest": "268f7ae709209256d49c0d4c3e21b95ef2b87de338c074932e790effc7a728c0",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/sql-project/supabase/migrations/20261019132322_e2a_private_identity.sql": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/supabase-changelog.md": "15b3d0d1a7dc3b3f2c0af4788e49acfdf2d2edbd2613f22de0705fa43b1cf58b",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/task002-e2a-20261019t132000z-a-auth-server.log": "e8e592316d1b67aac680de15d5b846bfc90d63ad4cd03ecaec15eb63a30adf79",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/task002-e2a-20261019t132000z-a-pg-server.log": "ece314bbd4c69576d34ab8ef3976034184dd78fd38f920b2d83a5f5de6ebd25d",
+  "/Users/crisis/Proyectos/marea-backups/task002-e2a-20261019T132000Z/task002-e2a-20261019t132000z-a-recovery-pg-server.log": "e4e1afc565b863ef7cd60167a2f93bc2366682f16e962fa853d618127a225fab"
+}

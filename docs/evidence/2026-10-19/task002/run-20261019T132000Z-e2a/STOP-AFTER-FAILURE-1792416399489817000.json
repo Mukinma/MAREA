@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-19T13:27:05.790958+00:00",
+  "result": "PASS",
+  "stopped": [
+    {
+      "name": "task002-e2a-20261019t132000z-a-auth",
+      "stopped": true
+    },
+    {
+      "name": "task002-e2a-20261019t132000z-a-pg",
+      "stopped": true
+    },
+    {
+      "name": "task002-e2a-20261019t132000z-a-recovery-pg",
+      "stopped": true
+    }
+  ],
+  "previous_container_metadata_unchanged": true,
+  "original_volumes_accessed": false,
+  "all_new_volumes_retained": true
+}

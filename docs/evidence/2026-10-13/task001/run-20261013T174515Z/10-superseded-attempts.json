@@ -1,0 +1,53 @@
+{
+  "id": "E-TASK001-ATTEMPT-HISTORY-20261013T174515Z",
+  "at": "2026-10-13T19:16:54.186Z",
+  "complete_requirement_validation": false,
+  "remote_modified": false,
+  "attempts": [
+    {
+      "file": "node-results-1791915075367.json",
+      "sha256": "59c9684ff8035da62bab7cf9d3d4c9b3f8ab812eff0ab9460a3b5bfe2784990d",
+      "raw_counts": {
+        "PASS": 67,
+        "FAIL": 5
+      },
+      "classification": "Raw 67 PASS/5 FAIL. Expiration assertion used undefined expires_at: delay0, invalid harness result. True product FAIL4; corrected actual-exp checks in both session suites and fresh Node reproduction PASS."
+    },
+    {
+      "file": "pgtap-results-1791915204083.json",
+      "sha256": "c349ff9ded1add17b2cd97f0a47fa75314182ad881e5dca378ede7b309bc0e1c",
+      "raw_counts": {
+        "PASS": 63,
+        "BLOQUEADO": 237
+      },
+      "classification": "Raw 63 PASS/237 BLOQUEADO. Identity UPDATE expression invalid; only63 assertions reached. Corrected transaction300PASS."
+    },
+    {
+      "file": "session-results-1791915501766.json",
+      "sha256": "222c9732405ff844b0891e7c6a2a7ceeef1dbc9ad861777a280d5dfb4fb480f8",
+      "raw_counts": {
+        "PASS": 3,
+        "FAIL": 1
+      },
+      "classification": "Raw3PASS/1FAIL: positive subscription event missed before postgres_changes ready. Fixed readiness produces4PASS/1 real revocationFAIL; no reconnect."
+    },
+    {
+      "file": "edge-results-1791916512850.json",
+      "sha256": "120fb7ec5bb786b7a4a13b0005d0ec379f03f0de7693117695aa0c419803d90b",
+      "raw_counts": {
+        "PASS": 6,
+        "FAIL": 23
+      },
+      "classification": "Raw6PASS/23FAIL: missing dependency graph BOOT_ERROR. Infrastructure BLOQUEADO, not23 product defects. Cache prepared with officialDeno, no egress opened."
+    },
+    {
+      "file": "edge-results-1791917165453.json",
+      "sha256": "b7166981315238569f363c809d530ed5c9f7dcf1affeff7a9471802f4f7ce0fa",
+      "raw_counts": {
+        "PASS": 26,
+        "FAIL": 4
+      },
+      "classification": "Raw26PASS/4FAIL: profile Node22.5.4types missing3BOOT_ERROR + wrong synthetic worker header1. Prepared exact graph and corrected runner header; final30PASS unchanged original sources."
+    }
+  ]
+}

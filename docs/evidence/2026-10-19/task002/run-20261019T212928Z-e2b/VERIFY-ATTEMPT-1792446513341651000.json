@@ -1,0 +1,5 @@
+{
+  "at": "2026-10-19T21:48:33.341756+00:00",
+  "result": "STOPPED_FOR_DIAGNOSIS",
+  "error": "Unexplained original-table delta {'auth.audit_log_entries': 8, 'auth.identities': 4, 'auth.mfa_amr_claims': 4, 'auth.refresh_tokens': 4, 'auth.sessions': 4, 'auth.users': 4, 'collaboration.person_controls': 5, 'collaboration.persons': 4, 'public.account_deletion_requests': 4, 'public.legal_acceptances': 4, 'public.mission_applications': 2, 'public.missions': 4, 'public.notification_preferences': 2, 'public.notifications': 2, 'public.profiles': 4}"
+}

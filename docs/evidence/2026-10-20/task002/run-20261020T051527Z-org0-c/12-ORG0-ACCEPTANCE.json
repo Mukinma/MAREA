@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-20T05:24:38.393006+00:00",
+  "result": "PASS",
+  "stage": "ORG0_ONLY",
+  "gates": [
+    "05-ORG0-installation.json",
+    "07-ORG0-GREEN.json",
+    "08-ORG0-concurrency-states.json",
+    "08b-ORG0-expiry-integrity.json",
+    "09b-ORG0-conservation-final.json",
+    "10-ORG0-recovery.json"
+  ],
+  "C_started": false,
+  "C_conditional_authorization_now_satisfied": true,
+  "product_or_TASK002_acceptance": false
+}

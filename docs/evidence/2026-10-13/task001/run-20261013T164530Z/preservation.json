@@ -1,0 +1,17 @@
+{
+  "captured_at": "2026-10-13T17:04:17.337Z",
+  "result": "FAIL",
+  "preexisting_regular_files_checked": 39879,
+  "preexisting_symlinks_checked": 111,
+  "missing_preexisting_paths": 0,
+  "unexpected_changed_paths": 1,
+  "changed_allowed_documents": [
+    "docs/MAREA_AUDIT_REPORT.md",
+    "docs/MAREA_CHANGELOG.md",
+    "docs/MAREA_REQUIREMENTS_STATUS.yaml",
+    "docs/MAREA_TRACEABILITY.md",
+    "docs/MAREA_TRACKING.md"
+  ],
+  "changed_symlink_targets": 0,
+  "private_detail_retained": true
+}

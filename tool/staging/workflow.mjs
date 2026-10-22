@@ -1,0 +1,13 @@
+import {readdirSync,existsSync,readFileSync,writeFileSync,openSync,closeSync} from 'node:fs';
+import {join} from 'node:path';import {spawnSync} from 'node:child_process';
+import {assertOwnedRuntime,childEnvironment} from './guard.mjs';
+export const suiteOrder=['node-tests','storage-expiration','pgtap','table-permissions','rpc-permissions','outbox','session-tests','session-limits','dart','edge-tests'];
+export function assertUnusedSuiteRuntime(path){if(readdirSync(path).some(n=>/^(workflow-test-started|node-results-|storage-expiration-results-|pgtap-results-|rpc-permission-results-|table-permission-results-|session-limits-results-|outbox-receipt|session-results-|dart-receipt|edge-results-)/.test(n)))throw Error('Fresh synthetic-fixture runtime required; previous partial results retained');}
+function command(path,name){const stamp=Date.now(),log='workflow-'+name+'-'+stamp+'-private.log',fd=openSync(join(path,log),'wx',0o600);let r;try{r=spawnSync('node',['tool/staging/'+name+'.mjs',path],{env:childEnvironment(),stdio:['ignore',fd,fd]});}finally{closeSync(fd);}if(r.error||r.status!==0)throw Error(name+' infrastructure failure; private log preserved');return {script:name,log,exit_code:r.status};}
+export async function seed(path){assertOwnedRuntime(path);for(const n of ['network-test','dns-test'])if(!existsSync(join(path,n==='network-test'?'isolation-receipt.json':'dns-receipt.json')))command(path,n);if(!existsSync(join(path,'schema-receipt.json')))command(path,'replay');command(path,'db-inventory');return (await import('./fixtures.mjs')).seed(path);}
+export function test(path){const m=assertOwnedRuntime(path);assertUnusedSuiteRuntime(path);if(!existsSync(join(path,'fixtures-private.json')))throw Error('seed required');writeFileSync(join(path,'workflow-test-started.json'),JSON.stringify({at:new Date().toISOString(),project:m.project_id}),{flag:'wx',mode:0o600});const runs=[];
+ if(!existsSync(join(path,'functions-prepare-receipt.json')))runs.push(command(path,'functions-prepare'));
+ if(!readdirSync(path).some(n=>n.startsWith('functions-cache-receipt-')))runs.push(command(path,'functions-cache'));
+ if(!existsSync(join(path,'functions-serve-receipt.json')))runs.push(command(path,'functions-serve'));
+ for(const n of ['network-test','dns-test','ingress-test',...suiteOrder,'db-inventory'])runs.push(command(path,n));
+ writeFileSync(join(path,'workflow-test-receipt.json'),JSON.stringify({at:new Date().toISOString(),result:'EXECUTED; inspect separate product PASS/FAIL receipts',runs,complete_requirement_validation:false,remote_modified:false}),{flag:'wx',mode:0o600});return {result:'EXECUTED',suites:suiteOrder.length,product_failures_preserved:true,remote_modified:false};}

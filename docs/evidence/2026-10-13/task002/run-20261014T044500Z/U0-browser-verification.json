@@ -1,0 +1,1722 @@
+{
+  "scope": "PROTOTYPE_ONLY_NOT_PRODUCT",
+  "before_reproduction": {
+    "bad02": "¿Cómo vas a organizar?\nEl plazo terminó. Esta oferta o propuesta no puede aceptarse; el acuerdo previo, si existe, conserva sus condiciones.\nTu cuenta personal puede organizar misiones completas. No necesitas crear una organización.\nComo persona\nAR\n\nAlex Rivera\nActúas por ti mismo\n\nComo organización\nColectivo Río\n\nRepresentas a la organización con permisos vigentes. Este contexto no cambia el titular de misiones existentes.\n\nContinuar con el contexto elegido\nGestionar organizaciones",
+    "badSafety": [
+      {
+        "disabled": true,
+        "label": "Detener participación y registrar aviso"
+      },
+      {
+        "disabled": true,
+        "label": "Bloquear contacto y reportar"
+      },
+      {
+        "disabled": true,
+        "label": "Solicitar cancelación ordinaria"
+      }
+    ]
+  },
+  "critical": [
+    {
+      "case": [
+        "U02",
+        "organizer",
+        "personal",
+        "available"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "personal",
+            "label": "Continuar como persona"
+          },
+          {
+            "disabled": false,
+            "id": "organizations",
+            "label": "Gestionar organizaciones"
+          }
+        ],
+        "resource": "acting_context",
+        "state": "available",
+        "text": "¿Cómo vas a organizar?Tu identidad personal siempre se mantiene. El contexto se comprueba para la acción concreta; no cambia el titular de una misión existente.Como personaAlex RiveraPuede organizar por sí misma cuando sea elegible.Colectivo RíoAlex Rivera · propietario con permisos de misión y firma.Continuar como personaGestionar organizaciones"
+      }
+    },
+    {
+      "case": [
+        "U02",
+        "organizer",
+        "organization",
+        "available"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "personal",
+            "label": "Continuar como persona"
+          },
+          {
+            "disabled": false,
+            "id": "organization",
+            "label": "Continuar por Colectivo Río"
+          },
+          {
+            "disabled": false,
+            "id": "organizations",
+            "label": "Gestionar organizaciones"
+          }
+        ],
+        "resource": "acting_context",
+        "state": "available",
+        "text": "¿Cómo vas a organizar?Tu identidad personal siempre se mantiene. El contexto se comprueba para la acción concreta; no cambia el titular de una misión existente.Como personaAlex RiveraPuede organizar por sí misma cuando sea elegible.Colectivo RíoAlex Rivera · propietario con permisos de misión y firma.Continuar como personaContinuar por Colectivo RíoGestionar organizaciones"
+      }
+    },
+    {
+      "case": [
+        "U02",
+        "organizer",
+        "organization",
+        "org_unavailable"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "personal",
+            "label": "Continuar como persona"
+          },
+          {
+            "disabled": false,
+            "id": "organizations",
+            "label": "Gestionar organizaciones"
+          }
+        ],
+        "resource": "acting_context",
+        "state": "org_unavailable",
+        "text": "¿Cómo vas a organizar?Tu identidad personal siempre se mantiene. El contexto se comprueba para la acción concreta; no cambia el titular de una misión existente.Como personaAlex RiveraPuede organizar por sí misma cuando sea elegible.Colectivo RíoSin facultad organizacional vigente. Puedes continuar como persona.Continuar como personaGestionar organizaciones"
+      }
+    },
+    {
+      "case": [
+        "U07",
+        "candidate",
+        "personal",
+        "pending"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_invite",
+            "label": "Aceptar invitación"
+          },
+          {
+            "disabled": false,
+            "id": "reject_invite",
+            "label": "Rechazar invitación"
+          },
+          {
+            "disabled": false,
+            "id": "organizations",
+            "label": "Volver a organizaciones"
+          }
+        ],
+        "resource": "invitation",
+        "state": "pending",
+        "text": "Invitación al colectivoInvitación para Lucía TorresColectivo Río · invita Alex Rivera · editar misiones; sin firma contractual.Escenario I: 13 oct, 09:00. Lucía aún no es miembro y no tiene candidatura en esta misión.Estos escenarios son alternativos al flujo contractual C, donde Lucía es candidata externa. No ocurren simultáneamente.Acepto esta invitación y estos permisos; no acepto un acuerdo contractual.Aceptar invitaciónRequiere consentimiento expreso sobre la versión actual.Rechazar invitaciónVolver a organizaciones"
+      }
+    },
+    {
+      "case": [
+        "U07",
+        "candidate",
+        "personal",
+        "member_active"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "membership",
+            "label": "Consultar membresía vigente"
+          },
+          {
+            "disabled": false,
+            "id": "organizations",
+            "label": "Volver a organizaciones"
+          }
+        ],
+        "resource": "invitation",
+        "state": "member_active",
+        "text": "Invitación al colectivoMembresía vigente de LucíaColectivo Río · invita Alex Rivera · editar misiones; sin firma contractual.Escenario M: 14 oct, 09:00. Invitación ya aceptada; membresía editora vigente. No volver a aceptar/rechazar la invitación.Estos escenarios son alternativos al flujo contractual C, donde Lucía es candidata externa. No ocurren simultáneamente.Consultar membresía vigenteVolver a organizaciones"
+      }
+    },
+    {
+      "case": [
+        "U09",
+        "organizer",
+        "personal",
+        "open"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "manage",
+            "label": "Gestionar como organizador"
+          },
+          {
+            "disabled": false,
+            "id": "eligibility",
+            "label": "Consultar elegibilidad de persona vinculada"
+          },
+          {
+            "disabled": false,
+            "id": "legacy",
+            "label": "Consultar histórico legado"
+          }
+        ],
+        "resource": "mission",
+        "state": "open",
+        "text": "Mural de barrioPUBLICADA · admite candidaturasUna colaboración localOrganiza Alex RiveraDiseñar y pintar un mural para una jornada creativa.Revisión v1 · cierre 18 oct, 18:00 · America/Mexico_City2 plazas · 1 disponible · 1 reserva temporal.Alex es titular personal: puede administrar; RF-09-001 impide autopostularse.Gestionar como organizadorConsultar elegibilidad de persona vinculadaConsultar histórico legado"
+      }
+    },
+    {
+      "case": [
+        "U09",
+        "candidate",
+        "personal",
+        "open"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "apply",
+            "label": "Postular personalmente"
+          },
+          {
+            "disabled": false,
+            "id": "legacy",
+            "label": "Consultar histórico legado"
+          }
+        ],
+        "resource": "mission",
+        "state": "open",
+        "text": "Mural de barrioPUBLICADA · admite candidaturasUna colaboración localOrganiza Alex RiveraDiseñar y pintar un mural para una jornada creativa.Revisión v1 · cierre 18 oct, 18:00 · America/Mexico_City2 plazas · 1 disponible · 1 reserva temporal.Lucía es candidata externa, sin membresía ni facultad de administración en el escenario C.Postular personalmenteConsultar histórico legado"
+      }
+    },
+    {
+      "case": [
+        "U09",
+        "organizer",
+        "organization",
+        "eligibility_pending"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "manage",
+            "label": "Gestionar como organizador"
+          },
+          {
+            "disabled": false,
+            "id": "eligibility",
+            "label": "Consultar elegibilidad de persona vinculada"
+          },
+          {
+            "disabled": false,
+            "id": "legacy",
+            "label": "Consultar histórico legado"
+          }
+        ],
+        "resource": "mission",
+        "state": "eligibility_pending",
+        "text": "Mural de barrioVínculo de control: elegibilidad sin resolverUna colaboración localOrganiza Colectivo RíoDiseñar y pintar un mural para una jornada creativa.Revisión v1 · cierre 18 oct, 18:00 · America/Mexico_City2 plazas · 1 disponible · 1 reserva temporal.Alex representa y controla la misión. La postulación personal exige resolver los vínculos de control en servidor; no se habilita por cambiar la perspectiva. Nunca puede firmar ambos lados.Gestionar como organizadorConsultar elegibilidad de persona vinculadaConsultar histórico legado"
+      }
+    },
+    {
+      "case": [
+        "U09",
+        "related",
+        "organization",
+        "open"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "apply",
+            "label": "Postular personalmente"
+          },
+          {
+            "disabled": false,
+            "id": "eligibility",
+            "label": "Consultar elegibilidad de persona vinculada"
+          },
+          {
+            "disabled": false,
+            "id": "legacy",
+            "label": "Consultar histórico legado"
+          }
+        ],
+        "resource": "mission",
+        "state": "open",
+        "text": "Mural de barrioPUBLICADA · admite candidaturasUna colaboración localOrganiza Colectivo RíoDiseñar y pintar un mural para una jornada creativa.Revisión v1 · cierre 18 oct, 18:00 · America/Mexico_City2 plazas · 1 disponible · 1 reserva temporal.Escenario V separado: Lucía tiene vínculo divulgado. Sólo se muestra postulación en la muestra open, que presupone admisibilidad comprobada por servidor y representante distinto Alex. No genera reputación independiente.Postular personalmenteConsultar elegibilidad de persona vinculadaConsultar histórico legado"
+      }
+    },
+    {
+      "case": [
+        "U13",
+        "organizer",
+        "personal",
+        "available"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "issue",
+            "label": "Enviar oferta y aceptar estas condiciones"
+          },
+          {
+            "disabled": false,
+            "id": "applications",
+            "label": "Volver a candidaturas"
+          }
+        ],
+        "resource": "offer_preparation",
+        "state": "available",
+        "text": "Revisa la ofertaCondiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Enviar exige consentimiento organizador, plaza y candidatura vigentes. Una transacción servidor crea firma, oferta y reserva; aquí no se ejecuta.Acepto las condiciones exactas por la parte organizadora y autorizo la oferta.Enviar oferta y aceptar estas condicionesRequiere consentimiento expreso sobre la versión actual.Volver a candidaturas"
+      }
+    },
+    {
+      "case": [
+        "U13",
+        "organizer",
+        "organization",
+        "expired"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "existing_offer",
+            "label": "Consultar oferta previa"
+          },
+          {
+            "disabled": false,
+            "id": "eligibility",
+            "label": "Consultar candidatura y cupo actuales"
+          },
+          {
+            "disabled": false,
+            "id": "applications",
+            "label": "Volver a candidaturas"
+          }
+        ],
+        "resource": "offer_preparation",
+        "state": "expired",
+        "text": "Revisa la ofertaCondiciones de la colaboraciónOrganizadorColectivo RíoParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.La oferta anterior expiró y liberó su reserva. No emitir otra hasta comprobar elegibilidad, revisión y cupo actuales.Consultar oferta previaConsultar candidatura y cupo actualesVolver a candidaturas"
+      }
+    },
+    {
+      "case": [
+        "U13",
+        "organizer",
+        "personal",
+        "resolved"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "existing_offer",
+            "label": "Consultar oferta previa"
+          },
+          {
+            "disabled": false,
+            "id": "applications",
+            "label": "Volver a candidaturas"
+          }
+        ],
+        "resource": "offer_preparation",
+        "state": "resolved",
+        "text": "Revisa la ofertaCondiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Preparación sin transición de emisión disponible; consulta el resultado o las condiciones actuales.Consultar oferta previaVolver a candidaturas"
+      }
+    },
+    {
+      "case": [
+        "U14",
+        "organizer",
+        "organization",
+        "pending"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "withdraw",
+            "label": "Retirar oferta pendiente"
+          },
+          {
+            "disabled": false,
+            "id": "applications",
+            "label": "Volver a candidaturas"
+          }
+        ],
+        "resource": "offer",
+        "state": "pending",
+        "text": "Oferta enviadaPENDIENTE · reserva vigenteCondiciones de la colaboraciónOrganizadorColectivo RíoParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaColectivo Río aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Una plaza reservada; Lucía no ha aceptado. Acuerdo vinculado pendiente de aceptaciones.Solicito retirar esta oferta pendiente y liberar su reserva.Retirar oferta pendienteRequiere consentimiento expreso sobre la versión actual.Volver a candidaturas"
+      }
+    },
+    {
+      "case": [
+        "U14",
+        "organizer",
+        "personal",
+        "expired"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "applications",
+            "label": "Volver a candidaturas"
+          }
+        ],
+        "resource": "offer",
+        "state": "expired",
+        "text": "Oferta enviadaEXPIRADA · reserva liberadaCondiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaAlex Rivera aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Oferta terminal; reserva liberada. Sin botones para responder o retirar.Volver a candidaturas"
+      }
+    },
+    {
+      "case": [
+        "U14",
+        "organizer",
+        "organization",
+        "accepted"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "agreement",
+            "label": "Consultar acuerdo vinculado"
+          },
+          {
+            "disabled": false,
+            "id": "applications",
+            "label": "Volver a candidaturas"
+          }
+        ],
+        "resource": "offer",
+        "state": "accepted",
+        "text": "Oferta enviadaACEPTADA · aceptación históricaCondiciones de la colaboraciónOrganizadorColectivo RíoParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaColectivo Río aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Aceptación bilateral inicial válida. La reserva se convirtió en cupo confirmado; consulta el estado actual independiente del acuerdo.Consultar acuerdo vinculadoVolver a candidaturas"
+      }
+    },
+    {
+      "case": [
+        "U15",
+        "candidate",
+        "personal",
+        "pending"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_offer",
+            "label": "Aceptar oferta"
+          },
+          {
+            "disabled": false,
+            "id": "reject_offer",
+            "label": "Rechazar oferta"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "label": "Volver a candidatura"
+          }
+        ],
+        "resource": "offer",
+        "state": "pending",
+        "text": "Una oferta para tiPENDIENTE · antes de expires_atCondiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaAlex Rivera aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Una plaza reservada; Lucía no ha aceptado. Acuerdo vinculado pendiente de aceptaciones.Acepto las condiciones v1 por mi propia parte.Aceptar ofertaRequiere consentimiento expreso sobre la versión actual.Rechazar ofertaVolver a candidatura"
+      }
+    },
+    {
+      "case": [
+        "U15",
+        "candidate",
+        "organization",
+        "expired"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "application",
+            "label": "Volver a candidatura"
+          }
+        ],
+        "resource": "offer",
+        "state": "expired",
+        "text": "Una oferta para tiEXPIRADA · no admite respuestaCondiciones de la colaboraciónOrganizadorColectivo RíoParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaColectivo Río aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Oferta terminal; reserva liberada. Sin botones para responder o retirar.Volver a candidatura"
+      }
+    },
+    {
+      "case": [
+        "U15",
+        "candidate",
+        "organization",
+        "accepted"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "agreement",
+            "label": "Consultar acuerdo vinculado"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "label": "Volver a candidatura"
+          }
+        ],
+        "resource": "offer",
+        "state": "accepted",
+        "text": "Una oferta para tiACEPTADA · aceptación históricaCondiciones de la colaboraciónOrganizadorColectivo RíoParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaColectivo Río aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Aceptación bilateral inicial válida. La reserva se convirtió en cupo confirmado; consulta el estado actual independiente del acuerdo.Consultar acuerdo vinculadoVolver a candidatura"
+      }
+    },
+    {
+      "case": [
+        "U16",
+        "organizer",
+        "personal",
+        "active"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "propose",
+            "label": "Proponer cambios de acuerdo"
+          },
+          {
+            "disabled": false,
+            "id": "history",
+            "label": "Ver historial"
+          },
+          {
+            "disabled": false,
+            "id": "cancel_request",
+            "label": "Solicitar cancelación"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "label": "Participación y seguridad"
+          }
+        ],
+        "resource": "agreement",
+        "state": "active",
+        "text": "Tu acuerdoACTIVOCondiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Aceptaciones históricasOferta ACEPTADA el 14 oct; Alex y Lucía firmaron v1 en activación inicial. Una terminación posterior conserva estas firmas.v1 vigente. Nuevas condiciones requieren aceptación explícita de ambas partes.Proponer cambios de acuerdoVer historialSolicitar cancelaciónParticipación y seguridad"
+      }
+    },
+    {
+      "case": [
+        "U16",
+        "candidate",
+        "organization",
+        "revision_pending"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "revision",
+            "label": "Consultar propuesta pendiente"
+          },
+          {
+            "disabled": false,
+            "id": "history",
+            "label": "Ver historial"
+          },
+          {
+            "disabled": false,
+            "id": "cancel_request",
+            "label": "Solicitar cancelación"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "label": "Participación y seguridad"
+          }
+        ],
+        "resource": "agreement",
+        "state": "revision_pending",
+        "text": "Tu acuerdoACTIVO · propuesta de revisión pendienteCondiciones de la colaboraciónOrganizadorColectivo RíoParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Aceptaciones históricasOferta ACEPTADA el 14 oct; Alex y Lucía firmaron v1 en activación inicial. Una terminación posterior conserva estas firmas.v1 sigue vigente; v2 es sólo propuesta.Consultar propuesta pendienteVer historialSolicitar cancelaciónParticipación y seguridad"
+      }
+    },
+    {
+      "case": [
+        "U16",
+        "organizer",
+        "organization",
+        "terminated"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "history",
+            "label": "Ver historial"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "label": "Participación y seguridad"
+          }
+        ],
+        "resource": "agreement",
+        "state": "terminated",
+        "text": "Tu acuerdoTERMINADOCondiciones de la colaboraciónOrganizadorColectivo RíoParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Aceptaciones históricasOferta ACEPTADA el 14 oct; Alex y Lucía firmaron v1 en activación inicial. Una terminación posterior conserva estas firmas.Acuerdo terminal: sólo historial, consulta y protección personal. No proponer cambios ni solicitar cancelación.Ver historialParticipación y seguridad"
+      }
+    },
+    {
+      "case": [
+        "U17",
+        "candidate",
+        "personal",
+        "pending"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_revision",
+            "label": "Aceptar cambios por mi parte"
+          },
+          {
+            "disabled": false,
+            "id": "reject_revision",
+            "label": "Rechazar propuesta y conservar v1"
+          },
+          {
+            "disabled": false,
+            "id": "history",
+            "label": "Ver versiones"
+          },
+          {
+            "disabled": false,
+            "id": "agreement",
+            "label": "Consultar acuerdo"
+          }
+        ],
+        "resource": "agreement_revision",
+        "state": "pending",
+        "text": "Cambios propuestosPropuesta v2 vigentev1 conserva su vigenciaAlex propuso y aceptó v2; falta la respuesta de Lucía.Condiciones propuestas$3,000 → $3,500 MXN20 oct → 21 oct · añade sesión de bocetosCreada 14 oct, 10:00; límite 20 oct, 10:00, acortado por ejecución original. Siete días naturales máximos, calculados por servidor. Vencida o rechazada: no reabrir por cambiar el reloj del cliente.Acepto la revisión propuesta exacta por mi propia parte; requiere todas las firmas.Aceptar cambios por mi parteRequiere consentimiento expreso sobre la versión actual.Rechazar propuesta y conservar v1Ver versionesConsultar acuerdo"
+      }
+    },
+    {
+      "case": [
+        "U17",
+        "organizer",
+        "organization",
+        "expired"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "history",
+            "label": "Ver versiones"
+          },
+          {
+            "disabled": false,
+            "id": "agreement",
+            "label": "Consultar acuerdo"
+          }
+        ],
+        "resource": "agreement_revision",
+        "state": "expired",
+        "text": "Cambios propuestosPropuesta EXPIRADAv1 conserva su vigenciaPropuesta resuelta sin cambiar unilateralmente v1.Condiciones propuestas$3,000 → $3,500 MXN20 oct → 21 oct · añade sesión de bocetosCreada 14 oct, 10:00; límite 20 oct, 10:00, acortado por ejecución original. Siete días naturales máximos, calculados por servidor. Vencida o rechazada: no reabrir por cambiar el reloj del cliente.Ver versionesConsultar acuerdo"
+      }
+    },
+    {
+      "case": [
+        "U18",
+        "candidate",
+        "organization",
+        "terminated"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "agreement",
+            "label": "Volver al acuerdo"
+          }
+        ],
+        "resource": "agreement_history",
+        "state": "terminated",
+        "text": "Versiones y aceptacionesHistorial restringidov1 · última revisión bilateral v1Alex y Lucía aceptaron en activación inicial.Oferta inicial ACEPTADAAcuerdo TERMINADO: las firmas siguen históricas; ninguna versión se presenta como obligación vigente.Volver al acuerdo"
+      }
+    },
+    {
+      "case": [
+        "U25",
+        "candidate",
+        "personal",
+        "requested"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_cancel",
+            "label": "Aceptar cancelación por mi parte"
+          },
+          {
+            "disabled": false,
+            "id": "reject_cancel",
+            "label": "Rechazar solicitud y conservar acuerdo"
+          },
+          {
+            "disabled": false,
+            "id": "agreement",
+            "label": "Consultar acuerdo"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "label": "Participación y seguridad"
+          }
+        ],
+        "resource": "cancellation_request",
+        "state": "requested",
+        "text": "Responder cancelaciónSolicitud de cancelaciónAlex solicitó; Lucía es la contraparte receptora.Pendiente: acuerdo ACTIVO; aceptar o rechazar requiere respuesta de la contraparte.Acepto cancelar por mi propia parte, como contraparte distinta de quien solicitó.Aceptar cancelación por mi parteRequiere consentimiento expreso sobre la versión actual.Rechazar solicitud y conservar acuerdoConsultar acuerdoParticipación y seguridad"
+      }
+    },
+    {
+      "case": [
+        "U25",
+        "organizer",
+        "organization",
+        "rejected"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "agreement",
+            "label": "Consultar acuerdo"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "label": "Participación y seguridad"
+          }
+        ],
+        "resource": "cancellation_request",
+        "state": "rejected",
+        "text": "Responder cancelaciónSolicitud de cancelaciónLucía solicitó; Alex es la contraparte receptora.Solicitud rechazada: acuerdo ACTIVO. Sin volver a responder esta solicitud.Consultar acuerdoParticipación y seguridad"
+      }
+    },
+    {
+      "case": [
+        "U25",
+        "candidate",
+        "organization",
+        "completed"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "agreement",
+            "label": "Consultar acuerdo"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "label": "Participación y seguridad"
+          }
+        ],
+        "resource": "cancellation_request",
+        "state": "completed",
+        "text": "Responder cancelaciónSolicitud de cancelaciónAlex solicitó; Lucía es la contraparte receptora.Cancelación bilateral completada: acuerdo CANCELADO, firmas históricas conservadas. Sin volver a aceptar/rechazar.Consultar acuerdoParticipación y seguridad"
+      }
+    },
+    {
+      "case": [
+        "U26",
+        "candidate",
+        "personal",
+        "pending"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "acknowledge",
+            "label": "Reconocer revisión de misión"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "label": "Volver a candidatura"
+          }
+        ],
+        "resource": "mission_revision_ack",
+        "state": "pending",
+        "text": "Reconocer nuevos términosRevisión de misiónv1 conocida → v2$3,000 → $3,500 MXN · horario 10:00 → 11:00Reconocimiento pendiente: leer la revisión exacta antes de reconocer.Reconocer MissionRevision acredita lectura de condiciones de misión. No acepta AgreementOffer ni AgreementRevision, y no modifica acuerdos activos.He leído y reconozco esta revisión de misión. NO acepto un acuerdo contractual.Reconocer revisión de misiónRequiere consentimiento expreso sobre la versión actual.Volver a candidatura"
+      }
+    },
+    {
+      "case": [
+        "U26",
+        "candidate",
+        "organization",
+        "conflict"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "current_revision",
+            "label": "Consultar revisión vigente en servidor"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "label": "Volver a candidatura"
+          }
+        ],
+        "resource": "mission_revision_ack",
+        "state": "conflict",
+        "text": "Reconocer nuevos términosRevisión de misiónv1 conocida → v2 superada; servidor tiene v3$3,000 → $3,500 MXN · horario 10:00 → 11:00El consentimiento sobre v2 no sirve para v3. Consultar v3 y renovar reconocimiento.Reconocer MissionRevision acredita lectura de condiciones de misión. No acepta AgreementOffer ni AgreementRevision, y no modifica acuerdos activos.Consultar revisión vigente en servidorVolver a candidatura"
+      }
+    },
+    {
+      "case": [
+        "U26",
+        "candidate",
+        "personal",
+        "expired"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "application",
+            "label": "Volver a candidatura"
+          }
+        ],
+        "resource": "mission_revision_ack",
+        "state": "expired",
+        "text": "Reconocer nuevos términosRevisión de misiónv1 conocida → v2$3,000 → $3,500 MXN · horario 10:00 → 11:00La candidatura CADUCADA no admite esta transición. La revisión inmutable no tiene un TTL inventado.Reconocer MissionRevision acredita lectura de condiciones de misión. No acepta AgreementOffer ni AgreementRevision, y no modifica acuerdos activos.Volver a candidatura"
+      }
+    },
+    {
+      "case": [
+        "U26",
+        "candidate",
+        "organization",
+        "acknowledged"
+      ],
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "application",
+            "label": "Volver a candidatura"
+          }
+        ],
+        "resource": "mission_revision_ack",
+        "state": "acknowledged",
+        "text": "Reconocer nuevos términosRevisión de misiónv1 conocida → v2$3,000 → $3,500 MXN · horario 10:00 → 11:00Reconocimiento v2 ya registrado; no repetirlo.Reconocer MissionRevision acredita lectura de condiciones de misión. No acepta AgreementOffer ni AgreementRevision, y no modifica acuerdos activos.Volver a candidatura"
+      }
+    }
+  ],
+  "all_views": [
+    {
+      "screen": "U01",
+      "result": "PASS",
+      "observed": {
+        "resource": "mission_list",
+        "state": "available",
+        "text": "MisionesColabora en tu ciudadMural de barrioPublicadaOrganiza Colectivo Río · Arte · CDMX2 plazas · 1 disponible · 1 reservada por ofertaVer misiónCrear misiónVer avisos",
+        "title": "Misiones"
+      }
+    },
+    {
+      "screen": "U02",
+      "result": "PASS",
+      "observed": {
+        "resource": "acting_context",
+        "state": "available",
+        "text": "¿Cómo vas a organizar?Tu identidad personal siempre se mantiene. El contexto se comprueba para la acción concreta; no cambia el titular de una misión existente.Como personaLucía TorresPuede organizar por sí misma cuando sea elegible.Colectivo RíoSin representación vigente en este escenario; consulta una invitación por separado.Continuar como personaGestionar organizaciones",
+        "title": "¿Cómo vas a organizar?"
+      }
+    },
+    {
+      "screen": "U03",
+      "result": "PASS",
+      "observed": {
+        "resource": "organization_list",
+        "state": "available",
+        "text": "Tus organizacionesColectivo RíoOperación normalPropietario · gestión y firma autorizadasCrear organizaciónConsultar invitación separada",
+        "title": "Tus organizaciones"
+      }
+    },
+    {
+      "screen": "U04",
+      "result": "PASS",
+      "observed": {
+        "resource": "organization_draft",
+        "state": "draft",
+        "text": "Crear organizaciónNombre de la organizaciónLa organización tendrá recursos y miembros propios. Tu identidad personal seguirá siendo la misma.Confirmo creación y representación por mi propia parte.Crear organizaciónRequiere consentimiento expreso sobre la versión actual.",
+        "title": "Crear organización"
+      }
+    },
+    {
+      "screen": "U05",
+      "result": "PASS",
+      "observed": {
+        "resource": "organization",
+        "state": "normal",
+        "text": "Colectivo RíoEste actor no tiene facultad para el recurso privado de esta muestra. El rol visible no concede permiso.",
+        "title": "Colectivo Río"
+      }
+    },
+    {
+      "screen": "U06",
+      "result": "PASS",
+      "observed": {
+        "resource": "memberships",
+        "state": "active",
+        "text": "Miembros y permisosEste actor no tiene facultad para el recurso privado de esta muestra. El rol visible no concede permiso.",
+        "title": "Miembros y permisos"
+      }
+    },
+    {
+      "screen": "U07",
+      "result": "PASS",
+      "observed": {
+        "resource": "invitation",
+        "state": "pending",
+        "text": "Invitación al colectivoInvitación para Lucía TorresColectivo Río · invita Alex Rivera · editar misiones; sin firma contractual.Escenario I: 13 oct, 09:00. Lucía aún no es miembro y no tiene candidatura en esta misión.Estos escenarios son alternativos al flujo contractual C, donde Lucía es candidata externa. No ocurren simultáneamente.Acepto esta invitación y estos permisos; no acepto un acuerdo contractual.Aceptar invitaciónRequiere consentimiento expreso sobre la versión actual.Rechazar invitaciónVolver a organizaciones",
+        "title": "Invitación al colectivo"
+      }
+    },
+    {
+      "screen": "U08",
+      "result": "PASS",
+      "observed": {
+        "resource": "mission_draft",
+        "state": "draft",
+        "text": "Tu próxima colaboraciónEste actor no tiene facultad para el recurso privado de esta muestra. El rol visible no concede permiso.",
+        "title": "Tu próxima colaboración"
+      }
+    },
+    {
+      "screen": "U09",
+      "result": "PASS",
+      "observed": {
+        "resource": "mission",
+        "state": "open",
+        "text": "Mural de barrioPUBLICADA · admite candidaturasUna colaboración localOrganiza Colectivo RíoDiseñar y pintar un mural para una jornada creativa.Revisión v1 · cierre 18 oct, 18:00 · America/Mexico_City2 plazas · 1 disponible · 1 reserva temporal.Lucía es candidata externa, sin membresía ni facultad de administración en el escenario C.Postular personalmenteConsultar histórico legado",
+        "title": "Mural de barrio"
+      }
+    },
+    {
+      "screen": "U10",
+      "result": "PASS",
+      "observed": {
+        "resource": "application_draft",
+        "state": "eligible",
+        "text": "Tu propuestaPostulas como Lucía Torres, por tu propia parte.Tu propuestaReferencia de portafolioConozco la revisión y confirmo disponibilidad; postular no es contratar.Enviar candidaturaRequiere consentimiento expreso sobre la versión actual.Consultar revisión de misión",
+        "title": "Tu propuesta"
+      }
+    },
+    {
+      "screen": "U11",
+      "result": "PASS",
+      "observed": {
+        "resource": "application",
+        "state": "sent",
+        "text": "Mi candidaturaCandidatura enviadaTu propuestaDisponibilidad confirmada · condiciones conocidas v1.Aún no tienes un acuerdo. Una preselección tampoco confirma contratación.Volver a misión",
+        "title": "Mi candidatura"
+      }
+    },
+    {
+      "screen": "U12",
+      "result": "PASS",
+      "observed": {
+        "resource": "applications",
+        "state": "available",
+        "text": "CandidaturasEste actor no tiene facultad para el recurso privado de esta muestra. El rol visible no concede permiso.",
+        "title": "Candidaturas"
+      }
+    },
+    {
+      "screen": "U13",
+      "result": "PASS",
+      "observed": {
+        "resource": "offer_preparation",
+        "state": "available",
+        "text": "Revisa la ofertaEste actor no tiene facultad para el recurso privado de esta muestra. El rol visible no concede permiso.",
+        "title": "Revisa la oferta"
+      }
+    },
+    {
+      "screen": "U14",
+      "result": "PASS",
+      "observed": {
+        "resource": "offer",
+        "state": "pending",
+        "text": "Oferta enviadaEste actor no tiene facultad para el recurso privado de esta muestra. El rol visible no concede permiso.",
+        "title": "Oferta enviada"
+      }
+    },
+    {
+      "screen": "U15",
+      "result": "PASS",
+      "observed": {
+        "resource": "offer",
+        "state": "pending",
+        "text": "Una oferta para tiPENDIENTE · antes de expires_atCondiciones de la colaboraciónOrganizadorColectivo RíoParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaColectivo Río aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Una plaza reservada; Lucía no ha aceptado. Acuerdo vinculado pendiente de aceptaciones.Acepto las condiciones v1 por mi propia parte.Aceptar ofertaRequiere consentimiento expreso sobre la versión actual.Rechazar ofertaVolver a candidatura",
+        "title": "Una oferta para ti"
+      }
+    },
+    {
+      "screen": "U16",
+      "result": "PASS",
+      "observed": {
+        "resource": "agreement",
+        "state": "active",
+        "text": "Tu acuerdoACTIVOCondiciones de la colaboraciónOrganizadorColectivo RíoParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Aceptaciones históricasOferta ACEPTADA el 14 oct; Alex y Lucía firmaron v1 en activación inicial. Una terminación posterior conserva estas firmas.v1 vigente. Nuevas condiciones requieren aceptación explícita de ambas partes.Proponer cambios de acuerdoVer historialSolicitar cancelaciónParticipación y seguridad",
+        "title": "Tu acuerdo"
+      }
+    },
+    {
+      "screen": "U17",
+      "result": "PASS",
+      "observed": {
+        "resource": "agreement_revision",
+        "state": "pending",
+        "text": "Cambios propuestosPropuesta v2 vigentev1 conserva su vigenciaAlex propuso y aceptó v2; falta la respuesta de Lucía.Condiciones propuestas$3,000 → $3,500 MXN20 oct → 21 oct · añade sesión de bocetosCreada 14 oct, 10:00; límite 20 oct, 10:00, acortado por ejecución original. Siete días naturales máximos, calculados por servidor. Vencida o rechazada: no reabrir por cambiar el reloj del cliente.Acepto la revisión propuesta exacta por mi propia parte; requiere todas las firmas.Aceptar cambios por mi parteRequiere consentimiento expreso sobre la versión actual.Rechazar propuesta y conservar v1Ver versionesConsultar acuerdo",
+        "title": "Cambios propuestos"
+      }
+    },
+    {
+      "screen": "U18",
+      "result": "PASS",
+      "observed": {
+        "resource": "agreement_history",
+        "state": "active",
+        "text": "Versiones y aceptacionesHistorial restringidov1 · última revisión bilateral v1Alex y Lucía aceptaron en activación inicial.Oferta inicial ACEPTADAEl estado de la oferta histórica no sustituye el del acuerdo.Volver al acuerdo",
+        "title": "Versiones y aceptaciones"
+      }
+    },
+    {
+      "screen": "U19",
+      "result": "PASS",
+      "observed": {
+        "resource": "cancellation_preparation",
+        "state": "available",
+        "text": "Solicitar cancelaciónMotivo de tu solicitudLa solicitud no cancela el acuerdo. Cualquier parte puede solicitar; la respuesta exige contraparte distinta.Solicito cancelación; aún no es bilateral.Enviar solicitud de cancelaciónRequiere consentimiento expreso sobre la versión actual.Consultar acuerdoAcciones de seguridad",
+        "title": "Solicitar cancelación"
+      }
+    },
+    {
+      "screen": "U20",
+      "result": "PASS",
+      "observed": {
+        "resource": "personal_safety",
+        "state": "available",
+        "text": "Tu participación y seguridadPuedes detener físicamente tu participación sin autorización de otra parte. Acceso a protección independiente de cualquier envío contractual.Motivo breve (opcional por riesgo inmediato)No hay registro remoto confirmado.Offline: instrucciones de protección disponibles; registro, bloqueo y reporte digital deshabilitados. Nunca se afirma registro remoto sin respuesta.Detener participación y solicitar registroBloquear contacto y solicitar reporteConsultar acuerdo",
+        "title": "Tu participación y seguridad"
+      }
+    },
+    {
+      "screen": "U21",
+      "result": "PASS",
+      "observed": {
+        "resource": "case",
+        "state": "unconfirmed",
+        "text": "Seguimiento de tu reporteSeguimientoSolicitud sin confirmación ni número de caso.La app no declara culpabilidad, pagos ni indemnización.Horarios y atención humana requieren política operativa; no se promete atención continua.Consultar estado del casoConsultar acuerdoProtección personal",
+        "title": "Seguimiento de tu reporte"
+      }
+    },
+    {
+      "screen": "U22",
+      "result": "PASS",
+      "observed": {
+        "resource": "notification_list",
+        "state": "available",
+        "text": "NotificacionesOferta para tiHay una oferta pendiente de tu respuesta. Sus condiciones se consultan dentro de la app.Cambios propuestosEl acuerdo anterior sigue vigente.Solicitud de cancelaciónUna solicitud no equivale a cancelación bilateral.Consultar ofertaConsultar cambiosConsultar cancelación",
+        "title": "Notificaciones"
+      }
+    },
+    {
+      "screen": "U23",
+      "result": "PASS",
+      "observed": {
+        "resource": "legacy_record",
+        "state": "review",
+        "text": "Colaboración históricaRegistro históricoSelección del sistema anteriorEste registro no acredita acuerdo bilateral ni firmas completas.Titularidad o compromisos pendientes de revisión. No admite nuevas ofertas, publicación ni transferencia.Volver a ficha seguraConsultar actualización requerida",
+        "title": "Colaboración histórica"
+      }
+    },
+    {
+      "screen": "U24",
+      "result": "PASS",
+      "observed": {
+        "resource": "client_capability",
+        "state": "incompatible",
+        "text": "Actualiza para continuarEsta versión no puede representar con seguridad los estados de ofertas y acuerdos.Actualiza para continuarActualiza MAREA y vuelve a abrir este enlace. Las selecciones antiguas no se mostrarán como acuerdos confirmados.La app nueva conciliará su caché al recuperar conexión; no puede reparar un dispositivo antiguo que siga offline.Volver a misionesProtección personal",
+        "title": "Actualiza para continuar"
+      }
+    },
+    {
+      "screen": "U25",
+      "result": "PASS",
+      "observed": {
+        "resource": "cancellation_request",
+        "state": "requested",
+        "text": "Responder cancelaciónSolicitud de cancelaciónAlex solicitó; Lucía es la contraparte receptora.Pendiente: acuerdo ACTIVO; aceptar o rechazar requiere respuesta de la contraparte.Acepto cancelar por mi propia parte, como contraparte distinta de quien solicitó.Aceptar cancelación por mi parteRequiere consentimiento expreso sobre la versión actual.Rechazar solicitud y conservar acuerdoConsultar acuerdoParticipación y seguridad",
+        "title": "Responder cancelación"
+      }
+    },
+    {
+      "screen": "U26",
+      "result": "PASS",
+      "observed": {
+        "resource": "mission_revision_ack",
+        "state": "pending",
+        "text": "Reconocer nuevos términosRevisión de misiónv1 conocida → v2$3,000 → $3,500 MXN · horario 10:00 → 11:00Reconocimiento pendiente: leer la revisión exacta antes de reconocer.Reconocer MissionRevision acredita lectura de condiciones de misión. No acepta AgreementOffer ni AgreementRevision, y no modifica acuerdos activos.He leído y reconozco esta revisión de misión. NO acepto un acuerdo contractual.Reconocer revisión de misiónRequiere consentimiento expreso sobre la versión actual.Volver a candidatura",
+        "title": "Reconocer nuevos términos"
+      }
+    },
+    {
+      "screen": "U27",
+      "result": "PASS",
+      "observed": {
+        "resource": "mission_transition",
+        "state": "open",
+        "text": "Cerrar o cancelar misiónEste actor no tiene facultad para el recurso privado de esta muestra. El rol visible no concede permiso.",
+        "title": "Cerrar o cancelar misión"
+      }
+    },
+    {
+      "screen": "U28",
+      "result": "PASS",
+      "observed": {
+        "resource": "mission_draft",
+        "state": "local",
+        "text": "Borrador de misiónEste actor no tiene facultad para el recurso privado de esta muestra. El rol visible no concede permiso.",
+        "title": "Borrador de misión"
+      }
+    }
+  ],
+  "transport": [
+    {
+      "screen": "U13",
+      "transport": "loading",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "issue",
+            "kind": "accept"
+          },
+          {
+            "disabled": true,
+            "id": "applications",
+            "kind": "consult"
+          }
+        ],
+        "text": "Operación de muestra: issue · clave DEMO-U13-personal-organizer-001. Sin respuesta real; no se cambió el recurso.Revisa la ofertaCargando permiso y recurso actuales. Las acciones que dependen de ellos están deshabilitadas.Enviar oferta y aceptar estas condicionesOperación original sin conciliar. No duplicar ni iniciar otra operación.Volver a candidaturasDestino requiere autorización o conexión actual."
+      }
+    },
+    {
+      "screen": "U13",
+      "transport": "sending",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "issue",
+            "kind": "accept"
+          },
+          {
+            "disabled": false,
+            "id": "applications",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Operación de muestra: issue · clave DEMO-U13-personal-organizer-001. Sin respuesta real; no se cambió el recurso.Revisa la ofertaEnvío en curso: sin confirmación. Botones de nueva operación deshabilitados; consulta con la misma clave.Condiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Enviar exige consentimiento organizador, plaza y candidatura vigentes. Una transacción servidor crea firma, oferta y reserva; aquí no se ejecuta.Acepto las condiciones exactas por la parte organizadora y autorizo la oferta.Enviar oferta y aceptar estas condicionesOperación original sin conciliar. No duplicar ni iniciar otra operación.Volver a candidaturasConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U13",
+      "transport": "error",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "issue",
+            "kind": "accept"
+          },
+          {
+            "disabled": false,
+            "id": "applications",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Operación de muestra: issue · clave DEMO-U13-personal-organizer-001. Sin respuesta real; no se cambió el recurso.Revisa la ofertaResultado incierto. Consulta el servidor con la misma clave antes de reenviar. No hay confirmación.Condiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Enviar exige consentimiento organizador, plaza y candidatura vigentes. Una transacción servidor crea firma, oferta y reserva; aquí no se ejecuta.Acepto las condiciones exactas por la parte organizadora y autorizo la oferta.Enviar oferta y aceptar estas condicionesOperación original sin conciliar. No duplicar ni iniciar otra operación.Volver a candidaturasConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U13",
+      "transport": "conflict",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "issue",
+            "kind": "accept"
+          },
+          {
+            "disabled": false,
+            "id": "applications",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Operación de muestra: issue · clave DEMO-U13-personal-organizer-001. Sin respuesta real; no se cambió el recurso.Revisa la ofertaVersión en conflicto. Consultar recurso y operación; revisar versión actual y renovar consentimiento.Condiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Enviar exige consentimiento organizador, plaza y candidatura vigentes. Una transacción servidor crea firma, oferta y reserva; aquí no se ejecuta.Acepto las condiciones exactas por la parte organizadora y autorizo la oferta.Enviar oferta y aceptar estas condicionesOperación original sin conciliar. No duplicar ni iniciar otra operación.Volver a candidaturasConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U13",
+      "transport": "offline",
+      "result": "PASS",
+      "observed": {
+        "actions": [],
+        "text": "Operación de muestra: issue · clave DEMO-U13-personal-organizer-001. Sin respuesta real; no se cambió el recurso.Revisa la ofertaSin conexión: no se envían ni encolan operaciones. Sólo contenido público/local protegido e instrucciones de protección."
+      }
+    },
+    {
+      "screen": "U13",
+      "transport": "denied",
+      "result": "PASS",
+      "observed": {
+        "actions": [],
+        "text": "Operación de muestra: issue · clave DEMO-U13-personal-organizer-001. Sin respuesta real; no se cambió el recurso.Revisa la ofertaPermiso perdido: contenido privado retirado. Consultar de nuevo no recupera acceso sin autorización."
+      }
+    },
+    {
+      "screen": "U15",
+      "transport": "loading",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_offer",
+            "kind": "accept"
+          },
+          {
+            "disabled": true,
+            "id": "reject_offer",
+            "kind": "reject"
+          },
+          {
+            "disabled": true,
+            "id": "application",
+            "kind": "consult"
+          }
+        ],
+        "text": "Una oferta para tiCargando permiso y recurso actuales. Las acciones que dependen de ellos están deshabilitadas.Aceptar ofertaRequiere consentimiento expreso sobre la versión actual.Rechazar ofertaNo mutar hasta conciliación y autorización del servidor.Volver a candidaturaDestino requiere autorización o conexión actual."
+      }
+    },
+    {
+      "screen": "U15",
+      "transport": "sending",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_offer",
+            "kind": "accept"
+          },
+          {
+            "disabled": true,
+            "id": "reject_offer",
+            "kind": "reject"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Una oferta para tiEnvío en curso: sin confirmación. Botones de nueva operación deshabilitados; consulta con la misma clave.PENDIENTE · antes de expires_atCondiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaAlex Rivera aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Una plaza reservada; Lucía no ha aceptado. Acuerdo vinculado pendiente de aceptaciones.Acepto las condiciones v1 por mi propia parte.Aceptar ofertaRequiere consentimiento expreso sobre la versión actual.Rechazar ofertaNo mutar hasta conciliación y autorización del servidor.Volver a candidaturaConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U15",
+      "transport": "error",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_offer",
+            "kind": "accept"
+          },
+          {
+            "disabled": true,
+            "id": "reject_offer",
+            "kind": "reject"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Una oferta para tiResultado incierto. Consulta el servidor con la misma clave antes de reenviar. No hay confirmación.PENDIENTE · antes de expires_atCondiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaAlex Rivera aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Una plaza reservada; Lucía no ha aceptado. Acuerdo vinculado pendiente de aceptaciones.Acepto las condiciones v1 por mi propia parte.Aceptar ofertaRequiere consentimiento expreso sobre la versión actual.Rechazar ofertaNo mutar hasta conciliación y autorización del servidor.Volver a candidaturaConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U15",
+      "transport": "conflict",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_offer",
+            "kind": "accept"
+          },
+          {
+            "disabled": true,
+            "id": "reject_offer",
+            "kind": "reject"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Una oferta para tiVersión en conflicto. Consultar recurso y operación; revisar versión actual y renovar consentimiento.PENDIENTE · antes de expires_atCondiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Oferta y reservaAlex Rivera aceptó v1 al emitir el 13 oct 2026, 18:00.expires_at: 16 oct 2026, 18:00 · America/Mexico_City (72h de servidor).Una plaza reservada; Lucía no ha aceptado. Acuerdo vinculado pendiente de aceptaciones.Acepto las condiciones v1 por mi propia parte.Aceptar ofertaRequiere consentimiento expreso sobre la versión actual.Rechazar ofertaNo mutar hasta conciliación y autorización del servidor.Volver a candidaturaConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U15",
+      "transport": "offline",
+      "result": "PASS",
+      "observed": {
+        "actions": [],
+        "text": "Una oferta para tiSin conexión: no se envían ni encolan operaciones. Sólo contenido público/local protegido e instrucciones de protección."
+      }
+    },
+    {
+      "screen": "U15",
+      "transport": "denied",
+      "result": "PASS",
+      "observed": {
+        "actions": [],
+        "text": "Una oferta para tiPermiso perdido: contenido privado retirado. Consultar de nuevo no recupera acceso sin autorización."
+      }
+    },
+    {
+      "screen": "U25",
+      "transport": "loading",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_cancel",
+            "kind": "cancel"
+          },
+          {
+            "disabled": true,
+            "id": "reject_cancel",
+            "kind": "reject"
+          },
+          {
+            "disabled": true,
+            "id": "agreement",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "kind": "protection"
+          }
+        ],
+        "text": "Responder cancelaciónCargando permiso y recurso actuales. Las acciones que dependen de ellos están deshabilitadas.Aceptar cancelación por mi parteRequiere consentimiento expreso sobre la versión actual.Rechazar solicitud y conservar acuerdoNo mutar hasta conciliación y autorización del servidor.Consultar acuerdoDestino requiere autorización o conexión actual.Participación y seguridad"
+      }
+    },
+    {
+      "screen": "U25",
+      "transport": "sending",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_cancel",
+            "kind": "cancel"
+          },
+          {
+            "disabled": true,
+            "id": "reject_cancel",
+            "kind": "reject"
+          },
+          {
+            "disabled": false,
+            "id": "agreement",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "kind": "protection"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Responder cancelaciónEnvío en curso: sin confirmación. Botones de nueva operación deshabilitados; consulta con la misma clave.Solicitud de cancelaciónAlex solicitó; Lucía es la contraparte receptora.Pendiente: acuerdo ACTIVO; aceptar o rechazar requiere respuesta de la contraparte.Acepto cancelar por mi propia parte, como contraparte distinta de quien solicitó.Aceptar cancelación por mi parteRequiere consentimiento expreso sobre la versión actual.Rechazar solicitud y conservar acuerdoNo mutar hasta conciliación y autorización del servidor.Consultar acuerdoParticipación y seguridadConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U25",
+      "transport": "error",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_cancel",
+            "kind": "cancel"
+          },
+          {
+            "disabled": true,
+            "id": "reject_cancel",
+            "kind": "reject"
+          },
+          {
+            "disabled": false,
+            "id": "agreement",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "kind": "protection"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Responder cancelaciónResultado incierto. Consulta el servidor con la misma clave antes de reenviar. No hay confirmación.Solicitud de cancelaciónAlex solicitó; Lucía es la contraparte receptora.Pendiente: acuerdo ACTIVO; aceptar o rechazar requiere respuesta de la contraparte.Acepto cancelar por mi propia parte, como contraparte distinta de quien solicitó.Aceptar cancelación por mi parteRequiere consentimiento expreso sobre la versión actual.Rechazar solicitud y conservar acuerdoNo mutar hasta conciliación y autorización del servidor.Consultar acuerdoParticipación y seguridadConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U25",
+      "transport": "conflict",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "accept_cancel",
+            "kind": "cancel"
+          },
+          {
+            "disabled": true,
+            "id": "reject_cancel",
+            "kind": "reject"
+          },
+          {
+            "disabled": false,
+            "id": "agreement",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "safety",
+            "kind": "protection"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Responder cancelaciónVersión en conflicto. Consultar recurso y operación; revisar versión actual y renovar consentimiento.Solicitud de cancelaciónAlex solicitó; Lucía es la contraparte receptora.Pendiente: acuerdo ACTIVO; aceptar o rechazar requiere respuesta de la contraparte.Acepto cancelar por mi propia parte, como contraparte distinta de quien solicitó.Aceptar cancelación por mi parteRequiere consentimiento expreso sobre la versión actual.Rechazar solicitud y conservar acuerdoNo mutar hasta conciliación y autorización del servidor.Consultar acuerdoParticipación y seguridadConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U25",
+      "transport": "offline",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "safety",
+            "kind": "protection"
+          }
+        ],
+        "text": "Responder cancelaciónSin conexión: no se envían ni encolan operaciones. Sólo contenido público/local protegido e instrucciones de protección.Participación y seguridad"
+      }
+    },
+    {
+      "screen": "U25",
+      "transport": "denied",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": false,
+            "id": "safety",
+            "kind": "protection"
+          }
+        ],
+        "text": "Responder cancelaciónPermiso perdido: contenido privado retirado. Consultar de nuevo no recupera acceso sin autorización.Participación y seguridad"
+      }
+    },
+    {
+      "screen": "U26",
+      "transport": "loading",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "acknowledge",
+            "kind": "acknowledge"
+          },
+          {
+            "disabled": true,
+            "id": "application",
+            "kind": "consult"
+          }
+        ],
+        "text": "Reconocer nuevos términosCargando permiso y recurso actuales. Las acciones que dependen de ellos están deshabilitadas.Reconocer revisión de misiónRequiere consentimiento expreso sobre la versión actual.Volver a candidaturaDestino requiere autorización o conexión actual."
+      }
+    },
+    {
+      "screen": "U26",
+      "transport": "sending",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "acknowledge",
+            "kind": "acknowledge"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Reconocer nuevos términosEnvío en curso: sin confirmación. Botones de nueva operación deshabilitados; consulta con la misma clave.Revisión de misiónv1 conocida → v2$3,000 → $3,500 MXN · horario 10:00 → 11:00Reconocimiento pendiente: leer la revisión exacta antes de reconocer.Reconocer MissionRevision acredita lectura de condiciones de misión. No acepta AgreementOffer ni AgreementRevision, y no modifica acuerdos activos.He leído y reconozco esta revisión de misión. NO acepto un acuerdo contractual.Reconocer revisión de misiónRequiere consentimiento expreso sobre la versión actual.Volver a candidaturaConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U26",
+      "transport": "error",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "acknowledge",
+            "kind": "acknowledge"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Reconocer nuevos términosResultado incierto. Consulta el servidor con la misma clave antes de reenviar. No hay confirmación.Revisión de misiónv1 conocida → v2$3,000 → $3,500 MXN · horario 10:00 → 11:00Reconocimiento pendiente: leer la revisión exacta antes de reconocer.Reconocer MissionRevision acredita lectura de condiciones de misión. No acepta AgreementOffer ni AgreementRevision, y no modifica acuerdos activos.He leído y reconozco esta revisión de misión. NO acepto un acuerdo contractual.Reconocer revisión de misiónRequiere consentimiento expreso sobre la versión actual.Volver a candidaturaConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U26",
+      "transport": "conflict",
+      "result": "PASS",
+      "observed": {
+        "actions": [
+          {
+            "disabled": true,
+            "id": "acknowledge",
+            "kind": "acknowledge"
+          },
+          {
+            "disabled": false,
+            "id": "application",
+            "kind": "consult"
+          },
+          {
+            "disabled": false,
+            "id": "reconcile",
+            "kind": "query"
+          }
+        ],
+        "consentDisabled": true,
+        "text": "Reconocer nuevos términosVersión en conflicto. Consultar recurso y operación; revisar versión actual y renovar consentimiento.Revisión de misiónv1 conocida → v2$3,000 → $3,500 MXN · horario 10:00 → 11:00Reconocimiento pendiente: leer la revisión exacta antes de reconocer.Reconocer MissionRevision acredita lectura de condiciones de misión. No acepta AgreementOffer ni AgreementRevision, y no modifica acuerdos activos.He leído y reconozco esta revisión de misión. NO acepto un acuerdo contractual.Reconocer revisión de misiónRequiere consentimiento expreso sobre la versión actual.Volver a candidaturaConsultar resultado en servidor"
+      }
+    },
+    {
+      "screen": "U26",
+      "transport": "offline",
+      "result": "PASS",
+      "observed": {
+        "actions": [],
+        "text": "Reconocer nuevos términosSin conexión: no se envían ni encolan operaciones. Sólo contenido público/local protegido e instrucciones de protección."
+      }
+    },
+    {
+      "screen": "U26",
+      "transport": "denied",
+      "result": "PASS",
+      "observed": {
+        "actions": [],
+        "text": "Reconocer nuevos términosPermiso perdido: contenido privado retirado. Consultar de nuevo no recupera acceso sin autorización."
+      }
+    }
+  ],
+  "interaction": {
+    "beforeConsentU0": false,
+    "afterConsentU0": true,
+    "sentU0": {
+      "issueDisabled": true,
+      "state": "available",
+      "text": "Operación de muestra: issue · clave DEMO-U13-personal-organizer-001. Sin respuesta real; no se cambió el recurso.Revisa la ofertaEnvío en curso: sin confirmación. Botones de nueva operación deshabilitados; consulta con la misma clave.Condiciones de la colaboraciónOrganizadorAlex RiveraParticipanteLucía TorresEntregableMural, boceto y sesión de trabajoEjecución20 oct · 10:00–16:00Sede autorizadaEspacio Río · CDMXCompensación declarada$3,000 MXNHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.Enviar exige consentimiento organizador, plaza y candidatura vigentes. Una transacción servidor crea firma, oferta y reserva; aquí no se ejecuta.Acepto las condiciones exactas por la parte organizadora y autorizo la oferta.Enviar oferta y aceptar estas condicionesOperación original sin conciliar. No duplicar ni iniciar otra operación.Volver a candidaturasConsultar resultado en servidorSólo se demuestra el envío pendiente. No se navegó a un resultado confirmado ni se ejecutó backend.",
+      "transport": "sending"
+    },
+    "uncertainU0": "Operación de muestra: issue · clave DEMO-U13-personal-organizer-001. Sin respuesta real; no se cambió el recurso.\nRevisa la oferta\nResultado incierto. Consulta el servidor con la misma clave antes de reenviar. No hay confirmación.\nCondiciones de la colaboración\nOrganizador\nAlex Rivera\nParticipante\nLucía Torres\nEntregable\nMural, boceto y sesión de trabajo\nEjecución\n20 oct · 10:00–16:00\nSede autorizada\nEspacio Río · CDMX\nCompensación declarada\n$3,000 MXN\n\nHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.\n\nEnviar exige consentimiento organizador, plaza y candidatura vigentes. Una transacción servidor crea firma, oferta y reserva; aquí no se ejecuta.\nAcepto las condiciones exactas por la parte organizadora y autorizo la oferta.\nEnviar oferta y aceptar estas condiciones\n\nOperación original sin conciliar. No duplicar ni iniciar otra operación.\n\nVolver a candidaturas\nConsultar resultado en servidor\nConsulta necesaria al servidor: permiso actual, versión, estado del recurso y resultado de la clave original. Este prototipo no ejecuta consultas. Para revisar una respuesta de ejemplo, elige explícitamente su estado en el panel; no es confirmación de esta operación.",
+    "retryU0": "Operación de muestra: issue · clave DEMO-U13-personal-organizer-001. Sin respuesta real; no se cambió el recurso.\nRevisa la oferta\nEnvío en curso: sin confirmación. Botones de nueva operación deshabilitados; consulta con la misma clave.\nCondiciones de la colaboración\nOrganizador\nAlex Rivera\nParticipante\nLucía Torres\nEntregable\nMural, boceto y sesión de trabajo\nEjecución\n20 oct · 10:00–16:00\nSede autorizada\nEspacio Río · CDMX\nCompensación declarada\n$3,000 MXN\n\nHorario de la sede: America/Mexico_City. Condiciones v1. MAREA no procesa ni verifica pagos externos.\n\nEnviar exige consentimiento organizador, plaza y candidatura vigentes. Una transacción servidor crea firma, oferta y reserva; aquí no se ejecuta.\nAcepto las condiciones exactas por la parte organizadora y autorizo la oferta.\nEnviar oferta y aceptar estas condiciones\n\nOperación original sin conciliar. No duplicar ni iniciar otra operación.\n\nVolver a candidaturas\nConsultar resultado en servidor\nSólo se demuestra el envío pendiente. No se navegó a un resultado confirmado ni se ejecutó backend.",
+    "safetyU0": {
+      "state": "contract_sending",
+      "stopEnabled": true,
+      "text": "Tu participación y seguridadPuedes detener físicamente tu participación sin autorización de otra parte. Acceso a protección independiente de cualquier envío contractual.Motivo breve (opcional por riesgo inmediato)Hay un envío contractual con clave propia; el aviso de seguridad usa otra clave y puede solicitarse en línea.Offline: instrucciones de protección disponibles; registro, bloqueo y reporte digital deshabilitados. Nunca se afirma registro remoto sin respuesta.Detener participación y solicitar registroBloquear contacto y solicitar reporteConsultar acuerdo"
+    },
+    "independentU0": {
+      "resource": "acting_context",
+      "state": "available",
+      "text": "¿Cómo vas a organizar?Tu identidad personal siempre se mantiene. El contexto se comprueba para la acción concreta; no cambia el titular de una misión existente.Como personaAlex RiveraPuede organizar por sí misma cuando sea elegible.Colectivo RíoAlex Rivera · propietario con permisos de misión y firma.Continuar como personaGestionar organizaciones",
+      "transport": "ready"
+    },
+    "result": "PASS"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "result": "PROCESS_STATUS_OBSERVED",
+  "ps_returncode": 0,
+  "ps_stdout": "44624 Us      944 /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python -",
+  "ps_stderr": "",
+  "signals_previously_sent": [
+    "SIGINT",
+    "SIGTERM",
+    "SIGKILL"
+  ],
+  "no_further_raw_image_reads_requested": true
+}

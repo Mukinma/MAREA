@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-19T21:42:51.783890+00:00",
+  "result": "EXPECTED_RED",
+  "sources": {
+    "a": {
+      "result": "EXPECTED_RED",
+      "incoming_candidature_missing_from_manifest": true,
+      "rollback_exact": true
+    },
+    "b": {
+      "result": "EXPECTED_RED",
+      "incoming_candidature_missing_from_manifest": true,
+      "rollback_exact": true
+    }
+  }
+}

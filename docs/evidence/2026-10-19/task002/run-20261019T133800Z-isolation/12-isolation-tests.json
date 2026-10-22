@@ -1,0 +1,263 @@
+{
+  "result": "PASS",
+  "methods": 12,
+  "recorded_methods_and_subcases": 63,
+  "cases": [
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_archived_Docker_dispatch_is_blocked",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_archived_E2A_entrypoints_cannot_resume",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='NetworkMode host')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='NetworkMode bridge')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='NetworkMode default')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='NetworkMode container:other')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='published port')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='effective port')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='extra network')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='effective IP')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='privileged')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='NET_ADMIN')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='cap drop lost')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='volume')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='forwarding')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='effective capabilities')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incompatible_docker_config (test_e2a_isolation.IsolationTests) (case='unexpected listener')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_incompatible_docker_config",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='missing inspect')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='missing kernel')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='missing netlink')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='missing netlink links')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='empty netlink links')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='missing netlink addresses')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='empty netlink addresses')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='missing netlink routes')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='empty netlink routes')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='missing netlink rules')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='empty netlink rules')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='sysfs index')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='sysfs missing')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='proc missing')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='command failure')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='command missing')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='incomplete privilege evidence')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_incomplete_inconsistent_evidence_fails_closed (test_e2a_isolation.IsolationTests) (case='proc sockets missing')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_incomplete_inconsistent_evidence_fails_closed",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_independent_namespace_positive",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_isolated_shared_namespace_positive",
+      "result": "PASS"
+    },
+    {
+      "case": "test_namespace_mismatch (test_e2a_isolation.IsolationTests) (case='netlink namespace')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_namespace_mismatch (test_e2a_isolation.IsolationTests) (case='PID1 namespace')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_namespace_mismatch (test_e2a_isolation.IsolationTests) (case='namespace inode')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_namespace_mismatch",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_original_predicate_reproduced",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_preflight_failure_never_starts_service",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_preflight_precedes_service_callback",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_interfaces (test_e2a_isolation.IsolationTests) (case='new eth0')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_interfaces (test_e2a_isolation.IsolationTests) (case='hidden netlink interface')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_interfaces (test_e2a_isolation.IsolationTests) (case='renamed template')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_interfaces (test_e2a_isolation.IsolationTests) (case='active template')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_interfaces (test_e2a_isolation.IsolationTests) (case='configured tunnel remote')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_interfaces (test_e2a_isolation.IsolationTests) (case='sysfs interface up')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_interfaces (test_e2a_isolation.IsolationTests) (case='proc-only interface')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_unexpected_interfaces",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_routes_and_addresses (test_e2a_isolation.IsolationTests) (case='default route 2')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_routes_and_addresses (test_e2a_isolation.IsolationTests) (case='default route 10')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_routes_and_addresses (test_e2a_isolation.IsolationTests) (case='non-main table route')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_routes_and_addresses (test_e2a_isolation.IsolationTests) (case='extra address')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_routes_and_addresses (test_e2a_isolation.IsolationTests) (case='multipath route')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_routes_and_addresses (test_e2a_isolation.IsolationTests) (case='proc IPv4 route')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_routes_and_addresses (test_e2a_isolation.IsolationTests) (case='proc IPv6 route')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_unexpected_routes_and_addresses (test_e2a_isolation.IsolationTests) (case='routing rule')",
+      "result": "PASS"
+    },
+    {
+      "case": "test_e2a_isolation.IsolationTests.test_unexpected_routes_and_addresses",
+      "result": "PASS"
+    }
+  ],
+  "negative_networks_created": false,
+  "unsafe_cases": "Mutated captured receipts only; real independent namespace used for correspondence checks",
+  "Auth_started": false,
+  "SQL_executed": false
+}

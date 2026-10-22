@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-19T19:01:33.800324+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "E2_A_snapshot_equal": true,
+      "DB_recovery": {
+        "archive_sha256": "1a071efbdf81ba3428f064ba110173fa43da9c69735631b10f688841709a8c1c",
+        "manifest_sha256": "3585599f307686ff931878fc28066a37181fe7d2a5f43095680e4c33a64f639c",
+        "tree_verified_on_new_volume": "task002-e2s0-20261019t185927z-a-A-source-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage_recovery": {
+        "result": "PASS",
+        "entries": 46,
+        "archive_sha256": "6860558d2e25188c524a2045573d0ad7095ab46fccc3fdc95664c5d668b884a4",
+        "restored_bytes_modes_owners_and_times_exact": true
+      }
+    },
+    "b": {
+      "result": "PASS",
+      "E2_A_snapshot_equal": true,
+      "DB_recovery": {
+        "archive_sha256": "3d28668d4d929042492f641909821e1e9fc28a75c822c5b2342c7245cde89532",
+        "manifest_sha256": "dd7d6c690017cae6b064e0e00d7d5dfcbbac07e7527a58b4cd149ab19018b8c6",
+        "tree_verified_on_new_volume": "task002-e2s0-20261019t185927z-b-A-source-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage_recovery": {
+        "result": "PASS",
+        "entries": 51,
+        "archive_sha256": "50971925d380085cc2668226c699aa81b866b68ebe579655fb0770c7a166904d",
+        "restored_bytes_modes_owners_and_times_exact": true
+      }
+    }
+  },
+  "S0_implemented": false
+}

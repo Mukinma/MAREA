@@ -1,0 +1,48 @@
+{
+  "id": "E-TASK001-ATTEMPTS-ADDITIONAL-20261013T174515Z",
+  "at": "2026-10-13T19:38:06.731Z",
+  "attempts": [
+    {
+      "project_id": "marea-task001-d7522760bb90",
+      "file": "storage-expiration-results-1791919650207.json",
+      "sha256": "7cea3fd0d8eb158af577f518ca732c56a68d27f457ce84976b0c0a4131d15a5c",
+      "raw_counts": {
+        "PASS": 2,
+        "FAIL": 5
+      },
+      "classification": "Invalid fixture path/MIME/tour capture in harness; excluded from product defect counts. Preserved, corrected only synthetic runner fixtures; latest seven expiry cases PASS."
+    },
+    {
+      "project_id": "marea-task001-fd0edb3330b2",
+      "file": "storage-expiration-results-1791919729465.json",
+      "sha256": "2049c0c5de5b7cd28bb94217327c145adf596adfcff2e9e047687a28f1559ae7",
+      "raw_counts": {
+        "PASS": 4,
+        "FAIL": 3
+      },
+      "classification": "Invalid fixture path/MIME/tour capture in harness; excluded from product defect counts. Preserved, corrected only synthetic runner fixtures; latest seven expiry cases PASS."
+    }
+  ],
+  "cold_compile": {
+    "first": "Offline Edge compile blocked on missing JSR manifest before serving handlers.",
+    "second": "Retained exited helper name collision; no business execution.",
+    "resolution": "Controlled infrastructure compile, unique helper names, exact six bundle hashes verified before internal-only serving.",
+    "private_log_hashes": [
+      {
+        "file": "workflow-functions-prepare-1791919014277-private.log",
+        "sha256": "4138c93a9ebf581d907740c3637d4c85177444fe254b0ae996cc64a2fcdc52d6"
+      },
+      {
+        "file": "workflow-functions-prepare-1791919279931-private.log",
+        "sha256": "2b878006804b1f3798cc40612850a7827e686ee9f39463a2a38027311a9a1820"
+      },
+      {
+        "file": "workflow-functions-prepare-1791919388820-private.log",
+        "sha256": "7b686efcde16fdd9f3ba4b5b5aac758966f64a55798964703c6e8963c14ff029"
+      }
+    ],
+    "original_function_sources_unchanged": true,
+    "security_restrictions_weakened": false
+  },
+  "remote_modified": false
+}

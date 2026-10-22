@@ -1,0 +1,46 @@
+{
+  "captured_at": "2026-10-13T17:10:17.796Z",
+  "new_evidence": [
+    {
+      "id": "E-TASK001-BACKUP-20261013T164530Z",
+      "state": "ACTUAL",
+      "changed": []
+    },
+    {
+      "id": "E-TASK001-DOCKER-20261013T164530Z",
+      "state": "ACTUAL",
+      "changed": []
+    },
+    {
+      "id": "E-TASK001-SUPABASE-20261013T164530Z",
+      "state": "ACTUAL",
+      "changed": []
+    },
+    {
+      "id": "E-TASK001-SCHEMA-20261013T164530Z",
+      "state": "ACTUAL",
+      "changed": []
+    },
+    {
+      "id": "E-TASK001-SUITES-20261013T164530Z",
+      "state": "ACTUAL",
+      "changed": []
+    },
+    {
+      "id": "E-TASK001-GUARDS-20261013T164530Z",
+      "state": "ACTUAL",
+      "changed": []
+    },
+    {
+      "id": "E-TASK001-INTEGRITY-20261013T164530Z",
+      "state": "ACTUAL",
+      "changed": []
+    },
+    {
+      "id": "E-TASK001-PRESERVATION-20261013T1704Z",
+      "state": "ACTUAL",
+      "changed": []
+    }
+  ],
+  "complete_requirement_validation": false
+}

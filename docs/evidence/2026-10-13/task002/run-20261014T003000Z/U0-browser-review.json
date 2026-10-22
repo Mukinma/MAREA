@@ -1,0 +1,177 @@
+{
+  "at": "2026-10-14T01:04:50.774Z",
+  "mode": "DOCUMENTARY_SIMULATION_ONLY",
+  "screens": [
+    {
+      "id": "U01",
+      "heading": "Misiones",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U02",
+      "heading": "¿Cómo vas a organizar?",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U03",
+      "heading": "Tus organizaciones",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U04",
+      "heading": "Crear organización",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U05",
+      "heading": "Colectivo Río",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U06",
+      "heading": "Miembros y permisos",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U07",
+      "heading": "Invitación al colectivo",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U08",
+      "heading": "Tu próxima colaboración",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U09",
+      "heading": "Mural de barrio",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U10",
+      "heading": "Tu propuesta",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U11",
+      "heading": "Mi candidatura",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U12",
+      "heading": "Candidaturas",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U13",
+      "heading": "Revisa la oferta",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U14",
+      "heading": "Oferta enviada",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U15",
+      "heading": "Una oferta para ti",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U16",
+      "heading": "Tu acuerdo",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U17",
+      "heading": "Cambios propuestos",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U18",
+      "heading": "Versiones y aceptaciones",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U19",
+      "heading": "Solicitar cancelación",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U20",
+      "heading": "Tu participación y seguridad",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U21",
+      "heading": "Seguimiento de tu reporte",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U22",
+      "heading": "Notificaciones",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U23",
+      "heading": "Colaboración histórica",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U24",
+      "heading": "Actualiza para continuar",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U25",
+      "heading": "Responder cancelación",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U26",
+      "heading": "Reconocer nuevos términos",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U27",
+      "heading": "Cerrar o cancelar misión",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    },
+    {
+      "id": "U28",
+      "heading": "Borrador de misión",
+      "result": "RENDERED_DOCUMENTARY_PROPOSAL"
+    }
+  ],
+  "checks": [
+    {
+      "case": "organizer_explicit_consent_to_pending_offer",
+      "mode": "personal",
+      "result": "PASS_PROTOTYPE_ONLY"
+    },
+    {
+      "case": "organizer_explicit_consent_to_pending_offer",
+      "mode": "organization",
+      "result": "PASS_PROTOTYPE_ONLY"
+    },
+    {
+      "case": "private_agreement_hidden_offline",
+      "result": "PASS_PROTOTYPE_ONLY"
+    },
+    {
+      "case": "expired_acceptance_disabled",
+      "result": "PASS_PROTOTYPE_ONLY"
+    },
+    {
+      "case": "cancellation_response_preserves_offer_history",
+      "result": "PASS_PROTOTYPE_ONLY"
+    },
+    {
+      "case": "terminated_contract_mutations_disabled",
+      "result": "PASS_PROTOTYPE_ONLY"
+    }
+  ],
+  "backend_calls": false,
+  "flutter_modified": false,
+  "complete_requirement_validation": false
+}

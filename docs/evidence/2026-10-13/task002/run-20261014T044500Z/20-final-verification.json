@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-14T05:16:20.862879+00:00",
+  "result": "PASS",
+  "files_checked": 375,
+  "changed_allowed": [
+    "docs/MAREA_REQUIREMENTS_STATUS.yaml",
+    "docs/task002/E-STRUCTURAL-REVIEW.md",
+    "docs/task002/U0-FUNCTIONAL-DESIGN.md",
+    "docs/task002/U0/index.html",
+    "docs/task002/U0/screens.json"
+  ],
+  "missing": [],
+  "forbidden_changes": [],
+  "head_unchanged": true,
+  "tracked_diff": [],
+  "staged": [],
+  "srs_sha256": "4a1c28594e68d26180390b9aea3affce18a619039ad25ad1c8c528dc3d2f4388",
+  "checks": {
+    "16-validate.log": "Integridad aprobada: 684 registros, 287 evidencias.",
+    "18-check.log": "Integridad y documentos consistentes.",
+    "19-render-idempotent.log": "Generaci\u00f3n completa: 0 archivos modificados."
+  },
+  "product_migrations_or_remote_operations_executed": false,
+  "database_conservation_test_status": "NOT_RUN_BLOCKED_DOCKER",
+  "task002_complete": false
+}
