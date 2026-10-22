@@ -1,0 +1,29 @@
+{
+  "edge_image": "public.ecr.aws/supabase/edge-runtime@sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+  "bundles": [
+    {
+      "file": "delete-account.eszip",
+      "sha256": "5b5f6f1025f69e39b425cd60c9ca6657c46495b9e26135b40f77e2050a8d3154"
+    },
+    {
+      "file": "geocoding.eszip",
+      "sha256": "60877670b2b6daec6ff0e8bae4811a14cf081347c7f4b471bb8f73d33cc11d8b"
+    },
+    {
+      "file": "profile-media.eszip",
+      "sha256": "8b181f4e1251d03b8b76ccbc85aa48a74cf59cbef9ac3dba4e4b6998bad6ead0"
+    },
+    {
+      "file": "send-push.eszip",
+      "sha256": "af847f2f28323f35134da965caf5f62227de2bf38477324097ceba99999d7764"
+    },
+    {
+      "file": "story-cleanup.eszip",
+      "sha256": "d5a4e0b73e04973e8b6bc7f62033d12e5c5c4a7a0c8a1f164fb342cf1be1c768"
+    },
+    {
+      "file": "tour-dispatch.eszip",
+      "sha256": "ebd8d68268629fbec26e7541dabcf6039f4fb2d3ea707d3a8649d402a913572b"
+    }
+  ]
+}

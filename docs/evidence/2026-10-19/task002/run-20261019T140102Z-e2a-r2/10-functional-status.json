@@ -1,0 +1,16 @@
+{
+  "E2A": "BLOQUEADO_NO_IMPLEMENTADO",
+  "functional_acceptance_cases_passed": 0,
+  "E2-T01": "PARCIAL: guardas y baseline comprobadas; recuperaci\u00f3n rechazada; no aceptaci\u00f3n integral",
+  "E2-T02": "NO_EJECUTADO",
+  "E2-T03": "NO_EJECUTADO",
+  "E2-T04": "NO_EJECUTADO",
+  "E2-T05": "NO_EJECUTADO",
+  "E2-T06": "NO_EJECUTADO",
+  "E2-T08": "NO_EJECUTADO",
+  "E2-T44_repair": "NO_EJECUTADO",
+  "E2-T07": "EXCLUIDO_NO_EJECUTADO",
+  "new_A_private_schema_objects": 0,
+  "Auth_signup_fixtures": 0,
+  "TASK002_complete": false
+}

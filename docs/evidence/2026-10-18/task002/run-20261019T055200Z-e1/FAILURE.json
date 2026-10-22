@@ -1,0 +1,6 @@
+{
+  "at": "2026-10-19T05:52:40.399138+00:00",
+  "result": "FAIL_STOPPED",
+  "error": "Unexpected legacy catalog change",
+  "no_scope_expansion": true
+}

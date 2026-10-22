@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-19T19:27:46.407953+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "case": "E2-T49",
+      "frontier": "deleteObjects",
+      "old_API_PID": 0,
+      "old_API_exit": 137,
+      "old_DB_sessions": 0,
+      "old_request_HTTP": 0,
+      "late_privileged_retry_HTTP": 500,
+      "shared_resource_count": 2,
+      "physical_bytes_hashes_modes_owners_mtime_atime_ns_equal": true,
+      "references_and_storage_metadata_equal": true,
+      "all_rows_sequences_equal": true,
+      "active_epoch": "5bde5b9c-9957-411a-a29d-d84cf7c15cbf",
+      "state_digest": "cbd0add980e31eda86d6039c16048ba1c630490b3a5c9b605625bf03e0e96f33",
+      "guard_count": 40,
+      "mount_readonly": true,
+      "DDL_rollback_exact": true,
+      "no_Auth_deletion": true
+    },
+    "b": {
+      "result": "PASS",
+      "case": "E2-T49",
+      "frontier": "deleteObjects",
+      "old_API_PID": 0,
+      "old_API_exit": 137,
+      "old_DB_sessions": 0,
+      "old_request_HTTP": 0,
+      "late_privileged_retry_HTTP": 500,
+      "shared_resource_count": 2,
+      "physical_bytes_hashes_modes_owners_mtime_atime_ns_equal": true,
+      "references_and_storage_metadata_equal": true,
+      "all_rows_sequences_equal": true,
+      "active_epoch": "f80c5153-7276-43c6-ad2a-292847eb4a71",
+      "state_digest": "974ba6277e8ab6ba1e1b664f9ee72201702660d17a1c70507b1541b8ace4b80e",
+      "guard_count": 40,
+      "mount_readonly": true,
+      "DDL_rollback_exact": true,
+      "no_Auth_deletion": true
+    }
+  },
+  "scope": "S0 local quiescent cut only; no account deletion lifecycle"
+}

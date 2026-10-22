@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-19T05:26:08.518167+00:00",
+  "result": "FAIL",
+  "sources": {
+    "a": {
+      "backup": {
+        "db": {
+          "sha256": "add947e178fae33046090b2d9ef117d9c68d4752ddef1fcf04c453f9d8e525cd",
+          "bytes": 775264
+        },
+        "globals": {
+          "sha256": "544aa1f76070e5155d476b2ff6f9d4a5fb0eef19aeeb6af79fd505ce75080ec2",
+          "bytes": 7436
+        },
+        "schema": {
+          "sha256": "02bd14ae140716622bd9462b5906eb5ede7bd118d42c7dcdfdee0a4f4bfa1f56",
+          "bytes": 610326
+        }
+      },
+      "restore": {
+        "globals": {
+          "exit_code": 0,
+          "input_sha256": "544aa1f76070e5155d476b2ff6f9d4a5fb0eef19aeeb6af79fd505ce75080ec2",
+          "single_transaction": false,
+          "restored_stream_sha256": "7090f3638b4bff1e94ee6f4a3809a216f2f0f6af7f55a4c6b0374b19617e4601",
+          "bootstrap_exception": "Only CREATE ROLE supabase_admin skipped because initdb created the same original bootstrap role; ALTER properties and all grants unchanged"
+        },
+        "db": {
+          "exit_code": 0,
+          "input_sha256": "add947e178fae33046090b2d9ef117d9c68d4752ddef1fcf04c453f9d8e525cd",
+          "single_transaction": true,
+          "restored_stream_sha256": "add947e178fae33046090b2d9ef117d9c68d4752ddef1fcf04c453f9d8e525cd",
+          "bootstrap_exception": null
+        }
+      },
+      "checks": {
+        "rows": false,
+        "sequences": true,
+        "catalog": false,
+        "runtime_setting_values": true
+      },
+      "row_tables": 100,
+      "role_limit": "All source roles/attributes/memberships compared, original bootstrap role retained; no extra role or exposed Data API.",
+      "complete_requirement_validation": false
+    }
+  }
+}

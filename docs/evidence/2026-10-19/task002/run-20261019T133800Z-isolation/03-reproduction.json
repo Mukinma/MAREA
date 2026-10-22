@@ -1,0 +1,1355 @@
+{
+  "anchor": {
+    "inspect": {
+      "Id": "b96e30b1976baa92611c63cb551bee3ac658907d0afe576c7e9c7c5e12698a1b",
+      "Created": "2026-10-19T13:39:15.98474875Z",
+      "Path": "python",
+      "Args": [
+        "-c",
+        "import time; time.sleep(1800)"
+      ],
+      "State": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 977,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-10-19T13:39:16.08846625Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "Image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "ResolvConfPath": "/var/lib/docker/containers/b96e30b1976baa92611c63cb551bee3ac658907d0afe576c7e9c7c5e12698a1b/resolv.conf",
+      "HostnamePath": "/var/lib/docker/containers/b96e30b1976baa92611c63cb551bee3ac658907d0afe576c7e9c7c5e12698a1b/hostname",
+      "HostsPath": "/var/lib/docker/containers/b96e30b1976baa92611c63cb551bee3ac658907d0afe576c7e9c7c5e12698a1b/hosts",
+      "LogPath": "",
+      "Name": "/task002-isolation-20261019t133800z-anchor",
+      "RestartCount": 0,
+      "Driver": "overlayfs",
+      "Platform": "linux",
+      "MountLabel": "",
+      "ProcessLabel": "",
+      "AppArmorProfile": "",
+      "ExecIDs": null,
+      "HostConfig": {
+        "Binds": null,
+        "ContainerIDFile": "",
+        "LogConfig": {
+          "Type": "local",
+          "Config": {}
+        },
+        "NetworkMode": "none",
+        "PortBindings": {},
+        "RestartPolicy": {
+          "Name": "no",
+          "MaximumRetryCount": 0
+        },
+        "AutoRemove": false,
+        "VolumeDriver": "",
+        "VolumesFrom": null,
+        "ConsoleSize": [
+          0,
+          0
+        ],
+        "CapAdd": null,
+        "CapDrop": [
+          "ALL"
+        ],
+        "CgroupnsMode": "private",
+        "Dns": null,
+        "DnsOptions": [],
+        "DnsSearch": [],
+        "ExtraHosts": null,
+        "GroupAdd": null,
+        "IpcMode": "private",
+        "Cgroup": "",
+        "Links": null,
+        "OomScoreAdj": 0,
+        "PidMode": "",
+        "Privileged": false,
+        "PublishAllPorts": false,
+        "ReadonlyRootfs": true,
+        "SecurityOpt": [
+          "no-new-privileges"
+        ],
+        "UTSMode": "",
+        "UsernsMode": "",
+        "ShmSize": 67108864,
+        "Runtime": "runc",
+        "Isolation": "",
+        "CpuShares": 0,
+        "Memory": 0,
+        "NanoCpus": 0,
+        "CgroupParent": "",
+        "BlkioWeight": 0,
+        "BlkioWeightDevice": [],
+        "BlkioDeviceReadBps": [],
+        "BlkioDeviceWriteBps": [],
+        "BlkioDeviceReadIOps": [],
+        "BlkioDeviceWriteIOps": [],
+        "CpuPeriod": 0,
+        "CpuQuota": 0,
+        "CpuRealtimePeriod": 0,
+        "CpuRealtimeRuntime": 0,
+        "CpusetCpus": "",
+        "CpusetMems": "",
+        "Devices": [],
+        "DeviceCgroupRules": null,
+        "DeviceRequests": null,
+        "MemoryReservation": 0,
+        "MemorySwap": 0,
+        "MemorySwappiness": null,
+        "OomKillDisable": null,
+        "PidsLimit": null,
+        "Ulimits": null,
+        "CpuCount": 0,
+        "CpuPercent": 0,
+        "IOMaximumIOps": 0,
+        "IOMaximumBandwidth": 0,
+        "MaskedPaths": [
+          "/proc/acpi",
+          "/proc/asound",
+          "/proc/interrupts",
+          "/proc/kcore",
+          "/proc/keys",
+          "/proc/latency_stats",
+          "/proc/sched_debug",
+          "/proc/scsi",
+          "/proc/timer_list",
+          "/proc/timer_stats",
+          "/sys/devices/virtual/powercap",
+          "/sys/firmware"
+        ],
+        "ReadonlyPaths": [
+          "/proc/bus",
+          "/proc/fs",
+          "/proc/irq",
+          "/proc/sys",
+          "/proc/sysrq-trigger"
+        ]
+      },
+      "Storage": {
+        "RootFS": {
+          "Snapshot": {
+            "Name": "overlayfs"
+          }
+        }
+      },
+      "Mounts": [],
+      "Config": {
+        "Hostname": "b96e30b1976b",
+        "Domainname": "",
+        "User": "1000:1000",
+        "AttachStdin": false,
+        "AttachStdout": false,
+        "AttachStderr": false,
+        "Tty": false,
+        "OpenStdin": false,
+        "StdinOnce": false,
+        "Env": [
+          "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "PYTHON_VERSION=3.14.8",
+          "PYTHON_SHA256=c2215904f02b175596dc49351585104f4bc20341e1c47378b26a2c274360ce73"
+        ],
+        "Cmd": [
+          "-c",
+          "import time; time.sleep(1800)"
+        ],
+        "Image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+        "Volumes": null,
+        "WorkingDir": "/",
+        "Entrypoint": [
+          "python"
+        ],
+        "Labels": {
+          "marea.isolation.owner": "task002-isolation-20261019t133800z"
+        }
+      },
+      "NetworkSettings": {
+        "SandboxID": "56cbc6d582acae49f0ac9135ef39a3f7dadd980ddd4d9df6b4c3cb09f025e788",
+        "SandboxKey": "/var/run/docker/netns/56cbc6d582ac",
+        "Ports": {},
+        "Networks": {
+          "none": {
+            "IPAMConfig": null,
+            "Links": null,
+            "Aliases": null,
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "NetworkID": "751c18c7d6a353185572d4df42164059e9f95ad3464c908bafe11fc84898d701",
+            "EndpointID": "66ea94be4c4cb661fe2fdad34798ec60b1e4eb0a726cc8d06a424832137b7795",
+            "Gateway": "",
+            "IPAddress": "",
+            "MacAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "DNSNames": null
+          }
+        }
+      },
+      "ImageManifestDescriptor": {
+        "mediaType": "application/vnd.oci.image.manifest.v1+json",
+        "digest": "sha256:25aff8700ed3e473a54aec32f4db8933a44688c79e89bb80ee9a3524b7f52c07",
+        "size": 1432,
+        "platform": {
+          "architecture": "arm64",
+          "os": "linux"
+        }
+      }
+    },
+    "kernel": {
+      "commands": [
+        {
+          "argv": [
+            "ip",
+            "-details",
+            "link",
+            "show"
+          ],
+          "returncode": 1,
+          "stderr": "BusyBox v1.37.0 (2025-12-16 14:19:28 UTC) multi-call binary.\n\nUsage: ip [OPTIONS] address|route|link|tunnel|neigh|rule [ARGS]\n\nOPTIONS := -f[amily] inet|inet6|link | -o[neline]\n\nip addr add|del IFADDR dev IFACE | show|flush [dev IFACE] [to PREFIX]\nip route list|flush|add|del|change|append|replace|test ROUTE\nip link set IFACE [up|down] [arp on|off] [multicast on|off]\n\t[promisc on|off] [mtu NUM] [name NAME] [qlen NUM] [address MAC]\n\t[master IFACE | nomaster] [netns PID]\nip tunnel add|change|del|show [NAME]\n\t[mode ipip|gre|sit] [remote ADDR] [local ADDR] [ttl TTL]\nip neigh show|flush [to PREFIX] [dev DEV] [nud STATE]\nip rule [list] | add|del SELECTOR ACTION\n",
+          "stdout": ""
+        },
+        {
+          "argv": [
+            "ip",
+            "-4",
+            "addr",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000\n    inet 127.0.0.1/8 scope host lo\n       valid_lft forever preferred_lft forever\n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-6",
+            "addr",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 state UNKNOWN qlen 1000\n    inet6 ::1/128 scope host \n       valid_lft forever preferred_lft forever\n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-4",
+            "route",
+            "show",
+            "table",
+            "all"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "local 127.0.0.0/8 dev lo table local scope host  src 127.0.0.1 \nlocal 127.0.0.1 dev lo table local scope host  src 127.0.0.1 \nbroadcast 127.255.255.255 dev lo table local scope link  src 127.0.0.1 \n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-6",
+            "route",
+            "show",
+            "table",
+            "all"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "local ::1 dev lo table local  metric 0 \n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-4",
+            "rule",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "0:\tfrom all lookup local \n32766:\tfrom all lookup main \n32767:\tfrom all lookup default \n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-6",
+            "rule",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "0:\tfrom all lookup local \n32766:\tfrom all lookup main \n"
+        }
+      ],
+      "if_nameindex": [
+        [
+          1,
+          "lo"
+        ],
+        [
+          2,
+          "tunl0"
+        ],
+        [
+          3,
+          "gre0"
+        ],
+        [
+          4,
+          "gretap0"
+        ],
+        [
+          5,
+          "erspan0"
+        ],
+        [
+          6,
+          "ip_vti0"
+        ],
+        [
+          7,
+          "ip6_vti0"
+        ],
+        [
+          8,
+          "sit0"
+        ],
+        [
+          9,
+          "ip6tnl0"
+        ],
+        [
+          10,
+          "ip6gre0"
+        ]
+      ],
+      "if_nameindex_module": "_socket",
+      "legacy_predicate": false,
+      "netns": "net:[4026532568]",
+      "netns_inode": 4026532568,
+      "pid1_netns": "net:[4026532568]",
+      "proc": {
+        "/proc/net/dev": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n tunl0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n  gre0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\ngretap0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nerspan0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip_vti0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip6_vti0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n  sit0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip6tnl0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip6gre0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n",
+        "/proc/net/fib_trie": "Main:\n  +-- 127.0.0.0/8 2 0 2\n     +-- 127.0.0.0/31 1 0 0\n        |-- 127.0.0.0\n           /8 host LOCAL\n        |-- 127.0.0.1\n           /32 host LOCAL\n     |-- 127.255.255.255\n        /32 link BROADCAST\nLocal:\n  +-- 127.0.0.0/8 2 0 2\n     +-- 127.0.0.0/31 1 0 0\n        |-- 127.0.0.0\n           /8 host LOCAL\n        |-- 127.0.0.1\n           /32 host LOCAL\n     |-- 127.255.255.255\n        /32 link BROADCAST\n",
+        "/proc/net/if_inet6": "00000000000000000000000000000001 01 80 10 80       lo\n",
+        "/proc/net/ipv6_route": "00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo\n00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80200001       lo\n00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo\n",
+        "/proc/net/route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "/proc/net/tcp": "  sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode                                                     \n",
+        "/proc/net/tcp6": "  sl  local_address                         remote_address                        st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode\n",
+        "/proc/net/udp": "   sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops            \n",
+        "/proc/net/udp6": "  sl  local_address                         remote_address                        st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops\n",
+        "/proc/self/status": "Name:\tpython\nUmask:\t0022\nState:\tR (running)\nTgid:\t13\nNgid:\t0\nPid:\t13\nPPid:\t0\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nFDSize:\t64\nGroups:\t1000 \nNStgid:\t13\nNSpid:\t13\nNSpgid:\t13\nNSsid:\t13\nKthread:\t0\nVmPeak:\t   20184 kB\nVmSize:\t   17568 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t   17120 kB\nVmRSS:\t   14332 kB\nRssAnon:\t    8212 kB\nRssFile:\t    6120 kB\nRssShmem:\t       0 kB\nVmData:\t    9900 kB\nVmStk:\t     132 kB\nVmExe:\t       4 kB\nVmLib:\t    7120 kB\nVmPTE:\t      72 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffff\nThreads:\t1\nSigQ:\t0/31879\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000000000002\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t0000000000000000\nCapAmb:\t0000000000000000\nNoNewPrivs:\t1\nSeccomp:\t2\nSeccomp_filters:\t1\nSpeculation_Store_Bypass:\tvulnerable\nSpeculationIndirectBranch:\tunknown\nCpus_allowed:\t3ff\nCpus_allowed_list:\t0-9\nMems_allowed:\t1\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t12\nnonvoluntary_ctxt_switches:\t0\n",
+        "/proc/sys/net/ipv4/ip_forward": "1\n",
+        "/proc/sys/net/ipv6/conf/all/forwarding": "0\n"
+      },
+      "python": "3.14.8 (main, Oct  1 2026, 21:34:52) [GCC 15.2.0]",
+      "socket_file": "/usr/local/lib/python3.14/socket.py",
+      "sysfs": {
+        "bonding_masters": {
+          "control_entry": ""
+        },
+        "erspan0": {
+          "address": "00:00:00:00:00:00\n",
+          "flags": "0x1002\n",
+          "ifindex": "5\n",
+          "iflink": "0\n",
+          "mtu": "1450\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/erspan0",
+          "type": "1\n"
+        },
+        "gre0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "3\n",
+          "iflink": "0\n",
+          "mtu": "1476\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/gre0",
+          "type": "778\n"
+        },
+        "gretap0": {
+          "address": "00:00:00:00:00:00\n",
+          "flags": "0x1002\n",
+          "ifindex": "4\n",
+          "iflink": "0\n",
+          "mtu": "1462\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/gretap0",
+          "type": "1\n"
+        },
+        "ip6_vti0": {
+          "address": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "7\n",
+          "iflink": "0\n",
+          "mtu": "1428\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip6_vti0",
+          "type": "769\n"
+        },
+        "ip6gre0": {
+          "address": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "10\n",
+          "iflink": "0\n",
+          "mtu": "1448\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip6gre0",
+          "type": "823\n"
+        },
+        "ip6tnl0": {
+          "address": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "9\n",
+          "iflink": "0\n",
+          "mtu": "1452\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip6tnl0",
+          "type": "769\n"
+        },
+        "ip_vti0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "6\n",
+          "iflink": "0\n",
+          "mtu": "1480\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip_vti0",
+          "type": "768\n"
+        },
+        "lo": {
+          "address": "00:00:00:00:00:00\n",
+          "flags": "0x9\n",
+          "ifindex": "1\n",
+          "iflink": "1\n",
+          "mtu": "65536\n",
+          "operstate": "unknown\n",
+          "symlink": "../../devices/virtual/net/lo",
+          "type": "772\n"
+        },
+        "sit0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "8\n",
+          "iflink": "0\n",
+          "mtu": "1480\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/sit0",
+          "type": "776\n"
+        },
+        "tunl0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "2\n",
+          "iflink": "0\n",
+          "mtu": "1480\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/tunl0",
+          "type": "768\n"
+        }
+      }
+    }
+  },
+  "shared": {
+    "inspect": {
+      "Id": "822ae52ad8af09cd9c30b55cc4298763855aef9c49c647cce8d256ce8322644d",
+      "Created": "2026-10-19T13:39:16.174713333Z",
+      "Path": "python",
+      "Args": [
+        "-c",
+        "import time; time.sleep(1800)"
+      ],
+      "State": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 1020,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-10-19T13:39:16.204357583Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "Image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "ResolvConfPath": "/var/lib/docker/containers/b96e30b1976baa92611c63cb551bee3ac658907d0afe576c7e9c7c5e12698a1b/resolv.conf",
+      "HostnamePath": "/var/lib/docker/containers/b96e30b1976baa92611c63cb551bee3ac658907d0afe576c7e9c7c5e12698a1b/hostname",
+      "HostsPath": "/var/lib/docker/containers/b96e30b1976baa92611c63cb551bee3ac658907d0afe576c7e9c7c5e12698a1b/hosts",
+      "LogPath": "",
+      "Name": "/task002-isolation-20261019t133800z-shared",
+      "RestartCount": 0,
+      "Driver": "overlayfs",
+      "Platform": "linux",
+      "MountLabel": "",
+      "ProcessLabel": "",
+      "AppArmorProfile": "",
+      "ExecIDs": null,
+      "HostConfig": {
+        "Binds": null,
+        "ContainerIDFile": "",
+        "LogConfig": {
+          "Type": "local",
+          "Config": {}
+        },
+        "NetworkMode": "container:b96e30b1976baa92611c63cb551bee3ac658907d0afe576c7e9c7c5e12698a1b",
+        "PortBindings": {},
+        "RestartPolicy": {
+          "Name": "no",
+          "MaximumRetryCount": 0
+        },
+        "AutoRemove": false,
+        "VolumeDriver": "",
+        "VolumesFrom": null,
+        "ConsoleSize": [
+          0,
+          0
+        ],
+        "CapAdd": null,
+        "CapDrop": [
+          "ALL"
+        ],
+        "CgroupnsMode": "private",
+        "Dns": null,
+        "DnsOptions": [],
+        "DnsSearch": [],
+        "ExtraHosts": null,
+        "GroupAdd": null,
+        "IpcMode": "private",
+        "Cgroup": "",
+        "Links": null,
+        "OomScoreAdj": 0,
+        "PidMode": "",
+        "Privileged": false,
+        "PublishAllPorts": false,
+        "ReadonlyRootfs": true,
+        "SecurityOpt": [
+          "no-new-privileges"
+        ],
+        "UTSMode": "",
+        "UsernsMode": "",
+        "ShmSize": 67108864,
+        "Runtime": "runc",
+        "Isolation": "",
+        "CpuShares": 0,
+        "Memory": 0,
+        "NanoCpus": 0,
+        "CgroupParent": "",
+        "BlkioWeight": 0,
+        "BlkioWeightDevice": [],
+        "BlkioDeviceReadBps": [],
+        "BlkioDeviceWriteBps": [],
+        "BlkioDeviceReadIOps": [],
+        "BlkioDeviceWriteIOps": [],
+        "CpuPeriod": 0,
+        "CpuQuota": 0,
+        "CpuRealtimePeriod": 0,
+        "CpuRealtimeRuntime": 0,
+        "CpusetCpus": "",
+        "CpusetMems": "",
+        "Devices": [],
+        "DeviceCgroupRules": null,
+        "DeviceRequests": null,
+        "MemoryReservation": 0,
+        "MemorySwap": 0,
+        "MemorySwappiness": null,
+        "OomKillDisable": null,
+        "PidsLimit": null,
+        "Ulimits": null,
+        "CpuCount": 0,
+        "CpuPercent": 0,
+        "IOMaximumIOps": 0,
+        "IOMaximumBandwidth": 0,
+        "MaskedPaths": [
+          "/proc/acpi",
+          "/proc/asound",
+          "/proc/interrupts",
+          "/proc/kcore",
+          "/proc/keys",
+          "/proc/latency_stats",
+          "/proc/sched_debug",
+          "/proc/scsi",
+          "/proc/timer_list",
+          "/proc/timer_stats",
+          "/sys/devices/virtual/powercap",
+          "/sys/firmware"
+        ],
+        "ReadonlyPaths": [
+          "/proc/bus",
+          "/proc/fs",
+          "/proc/irq",
+          "/proc/sys",
+          "/proc/sysrq-trigger"
+        ]
+      },
+      "Storage": {
+        "RootFS": {
+          "Snapshot": {
+            "Name": "overlayfs"
+          }
+        }
+      },
+      "Mounts": [],
+      "Config": {
+        "Hostname": "b96e30b1976b",
+        "Domainname": "",
+        "User": "1000:1000",
+        "AttachStdin": false,
+        "AttachStdout": false,
+        "AttachStderr": false,
+        "Tty": false,
+        "OpenStdin": false,
+        "StdinOnce": false,
+        "Env": [
+          "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "PYTHON_VERSION=3.14.8",
+          "PYTHON_SHA256=c2215904f02b175596dc49351585104f4bc20341e1c47378b26a2c274360ce73"
+        ],
+        "Cmd": [
+          "-c",
+          "import time; time.sleep(1800)"
+        ],
+        "Image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+        "Volumes": null,
+        "WorkingDir": "/",
+        "Entrypoint": [
+          "python"
+        ],
+        "Labels": {
+          "marea.isolation.owner": "task002-isolation-20261019t133800z"
+        }
+      },
+      "NetworkSettings": {
+        "SandboxID": "",
+        "SandboxKey": "",
+        "Ports": {},
+        "Networks": {}
+      },
+      "ImageManifestDescriptor": {
+        "mediaType": "application/vnd.oci.image.manifest.v1+json",
+        "digest": "sha256:25aff8700ed3e473a54aec32f4db8933a44688c79e89bb80ee9a3524b7f52c07",
+        "size": 1432,
+        "platform": {
+          "architecture": "arm64",
+          "os": "linux"
+        }
+      }
+    },
+    "kernel": {
+      "commands": [
+        {
+          "argv": [
+            "ip",
+            "-details",
+            "link",
+            "show"
+          ],
+          "returncode": 1,
+          "stderr": "BusyBox v1.37.0 (2025-12-16 14:19:28 UTC) multi-call binary.\n\nUsage: ip [OPTIONS] address|route|link|tunnel|neigh|rule [ARGS]\n\nOPTIONS := -f[amily] inet|inet6|link | -o[neline]\n\nip addr add|del IFADDR dev IFACE | show|flush [dev IFACE] [to PREFIX]\nip route list|flush|add|del|change|append|replace|test ROUTE\nip link set IFACE [up|down] [arp on|off] [multicast on|off]\n\t[promisc on|off] [mtu NUM] [name NAME] [qlen NUM] [address MAC]\n\t[master IFACE | nomaster] [netns PID]\nip tunnel add|change|del|show [NAME]\n\t[mode ipip|gre|sit] [remote ADDR] [local ADDR] [ttl TTL]\nip neigh show|flush [to PREFIX] [dev DEV] [nud STATE]\nip rule [list] | add|del SELECTOR ACTION\n",
+          "stdout": ""
+        },
+        {
+          "argv": [
+            "ip",
+            "-4",
+            "addr",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000\n    inet 127.0.0.1/8 scope host lo\n       valid_lft forever preferred_lft forever\n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-6",
+            "addr",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 state UNKNOWN qlen 1000\n    inet6 ::1/128 scope host \n       valid_lft forever preferred_lft forever\n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-4",
+            "route",
+            "show",
+            "table",
+            "all"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "local 127.0.0.0/8 dev lo table local scope host  src 127.0.0.1 \nlocal 127.0.0.1 dev lo table local scope host  src 127.0.0.1 \nbroadcast 127.255.255.255 dev lo table local scope link  src 127.0.0.1 \n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-6",
+            "route",
+            "show",
+            "table",
+            "all"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "local ::1 dev lo table local  metric 0 \n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-4",
+            "rule",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "0:\tfrom all lookup local \n32766:\tfrom all lookup main \n32767:\tfrom all lookup default \n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-6",
+            "rule",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "0:\tfrom all lookup local \n32766:\tfrom all lookup main \n"
+        }
+      ],
+      "if_nameindex": [
+        [
+          1,
+          "lo"
+        ],
+        [
+          2,
+          "tunl0"
+        ],
+        [
+          3,
+          "gre0"
+        ],
+        [
+          4,
+          "gretap0"
+        ],
+        [
+          5,
+          "erspan0"
+        ],
+        [
+          6,
+          "ip_vti0"
+        ],
+        [
+          7,
+          "ip6_vti0"
+        ],
+        [
+          8,
+          "sit0"
+        ],
+        [
+          9,
+          "ip6tnl0"
+        ],
+        [
+          10,
+          "ip6gre0"
+        ]
+      ],
+      "if_nameindex_module": "_socket",
+      "legacy_predicate": false,
+      "netns": "net:[4026532568]",
+      "netns_inode": 4026532568,
+      "pid1_netns": "net:[4026532568]",
+      "proc": {
+        "/proc/net/dev": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n tunl0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n  gre0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\ngretap0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nerspan0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip_vti0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip6_vti0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n  sit0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip6tnl0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip6gre0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n",
+        "/proc/net/fib_trie": "Main:\n  +-- 127.0.0.0/8 2 0 2\n     +-- 127.0.0.0/31 1 0 0\n        |-- 127.0.0.0\n           /8 host LOCAL\n        |-- 127.0.0.1\n           /32 host LOCAL\n     |-- 127.255.255.255\n        /32 link BROADCAST\nLocal:\n  +-- 127.0.0.0/8 2 0 2\n     +-- 127.0.0.0/31 1 0 0\n        |-- 127.0.0.0\n           /8 host LOCAL\n        |-- 127.0.0.1\n           /32 host LOCAL\n     |-- 127.255.255.255\n        /32 link BROADCAST\n",
+        "/proc/net/if_inet6": "00000000000000000000000000000001 01 80 10 80       lo\n",
+        "/proc/net/ipv6_route": "00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo\n00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80200001       lo\n00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo\n",
+        "/proc/net/route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "/proc/net/tcp": "  sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode                                                     \n",
+        "/proc/net/tcp6": "  sl  local_address                         remote_address                        st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode\n",
+        "/proc/net/udp": "   sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops            \n",
+        "/proc/net/udp6": "  sl  local_address                         remote_address                        st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops\n",
+        "/proc/self/status": "Name:\tpython\nUmask:\t0022\nState:\tR (running)\nTgid:\t7\nNgid:\t0\nPid:\t7\nPPid:\t0\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nFDSize:\t64\nGroups:\t1000 \nNStgid:\t7\nNSpid:\t7\nNSpgid:\t7\nNSsid:\t7\nKthread:\t0\nVmPeak:\t   20184 kB\nVmSize:\t   17568 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t   17088 kB\nVmRSS:\t   14352 kB\nRssAnon:\t    8212 kB\nRssFile:\t    6140 kB\nRssShmem:\t       0 kB\nVmData:\t    9900 kB\nVmStk:\t     132 kB\nVmExe:\t       4 kB\nVmLib:\t    7120 kB\nVmPTE:\t      76 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffff\nThreads:\t1\nSigQ:\t0/31879\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000000000002\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t0000000000000000\nCapAmb:\t0000000000000000\nNoNewPrivs:\t1\nSeccomp:\t2\nSeccomp_filters:\t1\nSpeculation_Store_Bypass:\tvulnerable\nSpeculationIndirectBranch:\tunknown\nCpus_allowed:\t3ff\nCpus_allowed_list:\t0-9\nMems_allowed:\t1\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t10\nnonvoluntary_ctxt_switches:\t1\n",
+        "/proc/sys/net/ipv4/ip_forward": "1\n",
+        "/proc/sys/net/ipv6/conf/all/forwarding": "0\n"
+      },
+      "python": "3.14.8 (main, Oct  1 2026, 21:34:52) [GCC 15.2.0]",
+      "socket_file": "/usr/local/lib/python3.14/socket.py",
+      "sysfs": {
+        "bonding_masters": {
+          "control_entry": ""
+        },
+        "erspan0": {
+          "address": "00:00:00:00:00:00\n",
+          "flags": "0x1002\n",
+          "ifindex": "5\n",
+          "iflink": "0\n",
+          "mtu": "1450\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/erspan0",
+          "type": "1\n"
+        },
+        "gre0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "3\n",
+          "iflink": "0\n",
+          "mtu": "1476\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/gre0",
+          "type": "778\n"
+        },
+        "gretap0": {
+          "address": "00:00:00:00:00:00\n",
+          "flags": "0x1002\n",
+          "ifindex": "4\n",
+          "iflink": "0\n",
+          "mtu": "1462\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/gretap0",
+          "type": "1\n"
+        },
+        "ip6_vti0": {
+          "address": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "7\n",
+          "iflink": "0\n",
+          "mtu": "1428\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip6_vti0",
+          "type": "769\n"
+        },
+        "ip6gre0": {
+          "address": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "10\n",
+          "iflink": "0\n",
+          "mtu": "1448\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip6gre0",
+          "type": "823\n"
+        },
+        "ip6tnl0": {
+          "address": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "9\n",
+          "iflink": "0\n",
+          "mtu": "1452\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip6tnl0",
+          "type": "769\n"
+        },
+        "ip_vti0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "6\n",
+          "iflink": "0\n",
+          "mtu": "1480\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip_vti0",
+          "type": "768\n"
+        },
+        "lo": {
+          "address": "00:00:00:00:00:00\n",
+          "flags": "0x9\n",
+          "ifindex": "1\n",
+          "iflink": "1\n",
+          "mtu": "65536\n",
+          "operstate": "unknown\n",
+          "symlink": "../../devices/virtual/net/lo",
+          "type": "772\n"
+        },
+        "sit0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "8\n",
+          "iflink": "0\n",
+          "mtu": "1480\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/sit0",
+          "type": "776\n"
+        },
+        "tunl0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "2\n",
+          "iflink": "0\n",
+          "mtu": "1480\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/tunl0",
+          "type": "768\n"
+        }
+      }
+    }
+  },
+  "independent": {
+    "inspect": {
+      "Id": "7c3dfb65f0f538ee0792e7f279f507d749fb3f579a19487c0ce7a1ba27e03922",
+      "Created": "2026-10-19T13:39:16.28747Z",
+      "Path": "python",
+      "Args": [
+        "-c",
+        "import time; time.sleep(1800)"
+      ],
+      "State": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 1067,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-10-19T13:39:16.318796083Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "Image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "ResolvConfPath": "/var/lib/docker/containers/7c3dfb65f0f538ee0792e7f279f507d749fb3f579a19487c0ce7a1ba27e03922/resolv.conf",
+      "HostnamePath": "/var/lib/docker/containers/7c3dfb65f0f538ee0792e7f279f507d749fb3f579a19487c0ce7a1ba27e03922/hostname",
+      "HostsPath": "/var/lib/docker/containers/7c3dfb65f0f538ee0792e7f279f507d749fb3f579a19487c0ce7a1ba27e03922/hosts",
+      "LogPath": "",
+      "Name": "/task002-isolation-20261019t133800z-independent",
+      "RestartCount": 0,
+      "Driver": "overlayfs",
+      "Platform": "linux",
+      "MountLabel": "",
+      "ProcessLabel": "",
+      "AppArmorProfile": "",
+      "ExecIDs": null,
+      "HostConfig": {
+        "Binds": null,
+        "ContainerIDFile": "",
+        "LogConfig": {
+          "Type": "local",
+          "Config": {}
+        },
+        "NetworkMode": "none",
+        "PortBindings": {},
+        "RestartPolicy": {
+          "Name": "no",
+          "MaximumRetryCount": 0
+        },
+        "AutoRemove": false,
+        "VolumeDriver": "",
+        "VolumesFrom": null,
+        "ConsoleSize": [
+          0,
+          0
+        ],
+        "CapAdd": null,
+        "CapDrop": [
+          "ALL"
+        ],
+        "CgroupnsMode": "private",
+        "Dns": null,
+        "DnsOptions": [],
+        "DnsSearch": [],
+        "ExtraHosts": null,
+        "GroupAdd": null,
+        "IpcMode": "private",
+        "Cgroup": "",
+        "Links": null,
+        "OomScoreAdj": 0,
+        "PidMode": "",
+        "Privileged": false,
+        "PublishAllPorts": false,
+        "ReadonlyRootfs": true,
+        "SecurityOpt": [
+          "no-new-privileges"
+        ],
+        "UTSMode": "",
+        "UsernsMode": "",
+        "ShmSize": 67108864,
+        "Runtime": "runc",
+        "Isolation": "",
+        "CpuShares": 0,
+        "Memory": 0,
+        "NanoCpus": 0,
+        "CgroupParent": "",
+        "BlkioWeight": 0,
+        "BlkioWeightDevice": [],
+        "BlkioDeviceReadBps": [],
+        "BlkioDeviceWriteBps": [],
+        "BlkioDeviceReadIOps": [],
+        "BlkioDeviceWriteIOps": [],
+        "CpuPeriod": 0,
+        "CpuQuota": 0,
+        "CpuRealtimePeriod": 0,
+        "CpuRealtimeRuntime": 0,
+        "CpusetCpus": "",
+        "CpusetMems": "",
+        "Devices": [],
+        "DeviceCgroupRules": null,
+        "DeviceRequests": null,
+        "MemoryReservation": 0,
+        "MemorySwap": 0,
+        "MemorySwappiness": null,
+        "OomKillDisable": null,
+        "PidsLimit": null,
+        "Ulimits": null,
+        "CpuCount": 0,
+        "CpuPercent": 0,
+        "IOMaximumIOps": 0,
+        "IOMaximumBandwidth": 0,
+        "MaskedPaths": [
+          "/proc/acpi",
+          "/proc/asound",
+          "/proc/interrupts",
+          "/proc/kcore",
+          "/proc/keys",
+          "/proc/latency_stats",
+          "/proc/sched_debug",
+          "/proc/scsi",
+          "/proc/timer_list",
+          "/proc/timer_stats",
+          "/sys/devices/virtual/powercap",
+          "/sys/firmware"
+        ],
+        "ReadonlyPaths": [
+          "/proc/bus",
+          "/proc/fs",
+          "/proc/irq",
+          "/proc/sys",
+          "/proc/sysrq-trigger"
+        ]
+      },
+      "Storage": {
+        "RootFS": {
+          "Snapshot": {
+            "Name": "overlayfs"
+          }
+        }
+      },
+      "Mounts": [],
+      "Config": {
+        "Hostname": "7c3dfb65f0f5",
+        "Domainname": "",
+        "User": "1000:1000",
+        "AttachStdin": false,
+        "AttachStdout": false,
+        "AttachStderr": false,
+        "Tty": false,
+        "OpenStdin": false,
+        "StdinOnce": false,
+        "Env": [
+          "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "PYTHON_VERSION=3.14.8",
+          "PYTHON_SHA256=c2215904f02b175596dc49351585104f4bc20341e1c47378b26a2c274360ce73"
+        ],
+        "Cmd": [
+          "-c",
+          "import time; time.sleep(1800)"
+        ],
+        "Image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+        "Volumes": null,
+        "WorkingDir": "/",
+        "Entrypoint": [
+          "python"
+        ],
+        "Labels": {
+          "marea.isolation.owner": "task002-isolation-20261019t133800z"
+        }
+      },
+      "NetworkSettings": {
+        "SandboxID": "469d2b906940a1f7a7cd712d28d8585b8da63677a2b617393a3f792a5a1323b1",
+        "SandboxKey": "/var/run/docker/netns/469d2b906940",
+        "Ports": {},
+        "Networks": {
+          "none": {
+            "IPAMConfig": null,
+            "Links": null,
+            "Aliases": null,
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "NetworkID": "751c18c7d6a353185572d4df42164059e9f95ad3464c908bafe11fc84898d701",
+            "EndpointID": "4a6cb533563e307ecfc27acc2655ccb1a68bef534f21f3341891b4ffac7e5da8",
+            "Gateway": "",
+            "IPAddress": "",
+            "MacAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "DNSNames": null
+          }
+        }
+      },
+      "ImageManifestDescriptor": {
+        "mediaType": "application/vnd.oci.image.manifest.v1+json",
+        "digest": "sha256:25aff8700ed3e473a54aec32f4db8933a44688c79e89bb80ee9a3524b7f52c07",
+        "size": 1432,
+        "platform": {
+          "architecture": "arm64",
+          "os": "linux"
+        }
+      }
+    },
+    "kernel": {
+      "commands": [
+        {
+          "argv": [
+            "ip",
+            "-details",
+            "link",
+            "show"
+          ],
+          "returncode": 1,
+          "stderr": "BusyBox v1.37.0 (2025-12-16 14:19:28 UTC) multi-call binary.\n\nUsage: ip [OPTIONS] address|route|link|tunnel|neigh|rule [ARGS]\n\nOPTIONS := -f[amily] inet|inet6|link | -o[neline]\n\nip addr add|del IFADDR dev IFACE | show|flush [dev IFACE] [to PREFIX]\nip route list|flush|add|del|change|append|replace|test ROUTE\nip link set IFACE [up|down] [arp on|off] [multicast on|off]\n\t[promisc on|off] [mtu NUM] [name NAME] [qlen NUM] [address MAC]\n\t[master IFACE | nomaster] [netns PID]\nip tunnel add|change|del|show [NAME]\n\t[mode ipip|gre|sit] [remote ADDR] [local ADDR] [ttl TTL]\nip neigh show|flush [to PREFIX] [dev DEV] [nud STATE]\nip rule [list] | add|del SELECTOR ACTION\n",
+          "stdout": ""
+        },
+        {
+          "argv": [
+            "ip",
+            "-4",
+            "addr",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000\n    inet 127.0.0.1/8 scope host lo\n       valid_lft forever preferred_lft forever\n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-6",
+            "addr",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 state UNKNOWN qlen 1000\n    inet6 ::1/128 scope host \n       valid_lft forever preferred_lft forever\n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-4",
+            "route",
+            "show",
+            "table",
+            "all"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "local 127.0.0.0/8 dev lo table local scope host  src 127.0.0.1 \nlocal 127.0.0.1 dev lo table local scope host  src 127.0.0.1 \nbroadcast 127.255.255.255 dev lo table local scope link  src 127.0.0.1 \n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-6",
+            "route",
+            "show",
+            "table",
+            "all"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "local ::1 dev lo table local  metric 0 \n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-4",
+            "rule",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "0:\tfrom all lookup local \n32766:\tfrom all lookup main \n32767:\tfrom all lookup default \n"
+        },
+        {
+          "argv": [
+            "ip",
+            "-6",
+            "rule",
+            "show"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "0:\tfrom all lookup local \n32766:\tfrom all lookup main \n"
+        }
+      ],
+      "if_nameindex": [
+        [
+          1,
+          "lo"
+        ],
+        [
+          2,
+          "tunl0"
+        ],
+        [
+          3,
+          "gre0"
+        ],
+        [
+          4,
+          "gretap0"
+        ],
+        [
+          5,
+          "erspan0"
+        ],
+        [
+          6,
+          "ip_vti0"
+        ],
+        [
+          7,
+          "ip6_vti0"
+        ],
+        [
+          8,
+          "sit0"
+        ],
+        [
+          9,
+          "ip6tnl0"
+        ],
+        [
+          10,
+          "ip6gre0"
+        ]
+      ],
+      "if_nameindex_module": "_socket",
+      "legacy_predicate": false,
+      "netns": "net:[4026532708]",
+      "netns_inode": 4026532708,
+      "pid1_netns": "net:[4026532708]",
+      "proc": {
+        "/proc/net/dev": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n tunl0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n  gre0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\ngretap0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nerspan0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip_vti0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip6_vti0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n  sit0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip6tnl0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\nip6gre0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0\n",
+        "/proc/net/fib_trie": "Main:\n  +-- 127.0.0.0/8 2 0 2\n     +-- 127.0.0.0/31 1 0 0\n        |-- 127.0.0.0\n           /8 host LOCAL\n        |-- 127.0.0.1\n           /32 host LOCAL\n     |-- 127.255.255.255\n        /32 link BROADCAST\nLocal:\n  +-- 127.0.0.0/8 2 0 2\n     +-- 127.0.0.0/31 1 0 0\n        |-- 127.0.0.0\n           /8 host LOCAL\n        |-- 127.0.0.1\n           /32 host LOCAL\n     |-- 127.255.255.255\n        /32 link BROADCAST\n",
+        "/proc/net/if_inet6": "00000000000000000000000000000001 01 80 10 80       lo\n",
+        "/proc/net/ipv6_route": "00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo\n00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80200001       lo\n00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo\n",
+        "/proc/net/route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "/proc/net/tcp": "  sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode                                                     \n",
+        "/proc/net/tcp6": "  sl  local_address                         remote_address                        st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode\n",
+        "/proc/net/udp": "   sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops            \n",
+        "/proc/net/udp6": "  sl  local_address                         remote_address                        st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops\n",
+        "/proc/self/status": "Name:\tpython\nUmask:\t0022\nState:\tR (running)\nTgid:\t7\nNgid:\t0\nPid:\t7\nPPid:\t0\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nFDSize:\t64\nGroups:\t1000 \nNStgid:\t7\nNSpid:\t7\nNSpgid:\t7\nNSsid:\t7\nKthread:\t0\nVmPeak:\t   20184 kB\nVmSize:\t   17568 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t   17188 kB\nVmRSS:\t   14340 kB\nRssAnon:\t    8208 kB\nRssFile:\t    6132 kB\nRssShmem:\t       0 kB\nVmData:\t    9900 kB\nVmStk:\t     132 kB\nVmExe:\t       4 kB\nVmLib:\t    7120 kB\nVmPTE:\t      72 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffff\nThreads:\t1\nSigQ:\t0/31879\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000000000002\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t0000000000000000\nCapAmb:\t0000000000000000\nNoNewPrivs:\t1\nSeccomp:\t2\nSeccomp_filters:\t1\nSpeculation_Store_Bypass:\tvulnerable\nSpeculationIndirectBranch:\tunknown\nCpus_allowed:\t3ff\nCpus_allowed_list:\t0-9\nMems_allowed:\t1\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t10\nnonvoluntary_ctxt_switches:\t1\n",
+        "/proc/sys/net/ipv4/ip_forward": "1\n",
+        "/proc/sys/net/ipv6/conf/all/forwarding": "0\n"
+      },
+      "python": "3.14.8 (main, Oct  1 2026, 21:34:52) [GCC 15.2.0]",
+      "socket_file": "/usr/local/lib/python3.14/socket.py",
+      "sysfs": {
+        "bonding_masters": {
+          "control_entry": ""
+        },
+        "erspan0": {
+          "address": "00:00:00:00:00:00\n",
+          "flags": "0x1002\n",
+          "ifindex": "5\n",
+          "iflink": "0\n",
+          "mtu": "1450\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/erspan0",
+          "type": "1\n"
+        },
+        "gre0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "3\n",
+          "iflink": "0\n",
+          "mtu": "1476\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/gre0",
+          "type": "778\n"
+        },
+        "gretap0": {
+          "address": "00:00:00:00:00:00\n",
+          "flags": "0x1002\n",
+          "ifindex": "4\n",
+          "iflink": "0\n",
+          "mtu": "1462\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/gretap0",
+          "type": "1\n"
+        },
+        "ip6_vti0": {
+          "address": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "7\n",
+          "iflink": "0\n",
+          "mtu": "1428\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip6_vti0",
+          "type": "769\n"
+        },
+        "ip6gre0": {
+          "address": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "10\n",
+          "iflink": "0\n",
+          "mtu": "1448\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip6gre0",
+          "type": "823\n"
+        },
+        "ip6tnl0": {
+          "address": "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "9\n",
+          "iflink": "0\n",
+          "mtu": "1452\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip6tnl0",
+          "type": "769\n"
+        },
+        "ip_vti0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "6\n",
+          "iflink": "0\n",
+          "mtu": "1480\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/ip_vti0",
+          "type": "768\n"
+        },
+        "lo": {
+          "address": "00:00:00:00:00:00\n",
+          "flags": "0x9\n",
+          "ifindex": "1\n",
+          "iflink": "1\n",
+          "mtu": "65536\n",
+          "operstate": "unknown\n",
+          "symlink": "../../devices/virtual/net/lo",
+          "type": "772\n"
+        },
+        "sit0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "8\n",
+          "iflink": "0\n",
+          "mtu": "1480\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/sit0",
+          "type": "776\n"
+        },
+        "tunl0": {
+          "address": "00:00:00:00\n",
+          "flags": "0x80\n",
+          "ifindex": "2\n",
+          "iflink": "0\n",
+          "mtu": "1480\n",
+          "operstate": "down\n",
+          "symlink": "../../devices/virtual/net/tunl0",
+          "type": "768\n"
+        }
+      }
+    }
+  }
+}

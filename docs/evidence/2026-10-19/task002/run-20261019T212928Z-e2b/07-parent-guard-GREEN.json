@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-19T21:36:55.196438+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "functions_changed": [
+        "collaboration.deletion_obligation_guard()",
+        "collaboration.request_person_deletion(uuid,uuid,bigint,text)"
+      ],
+      "SQLSTATE": "55000",
+      "all_rows_sequences_grants_unchanged": true
+    },
+    "b": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "functions_changed": [
+        "collaboration.deletion_obligation_guard()",
+        "collaboration.request_person_deletion(uuid,uuid,bigint,text)"
+      ],
+      "SQLSTATE": "55000",
+      "all_rows_sequences_grants_unchanged": true
+    }
+  },
+  "patch_file": "20261019213631_e2b_parent_obligation_serialization.sql",
+  "patch_sha256": "852d3c8d7322d4720c5d091c00ba98eaf224c8d00c394953d3de70f362e53b8a"
+}

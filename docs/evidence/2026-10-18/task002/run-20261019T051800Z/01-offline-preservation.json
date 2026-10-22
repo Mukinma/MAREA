@@ -1,0 +1,36 @@
+{
+  "result": "PASS_OFFLINE_APFS_CLONE_AND_SAMPLES",
+  "daemon_was_off": true,
+  "private_backup_path": "/Users/crisis/Proyectos/marea-backups/task002-e-20261019T051800Z/Docker-offline-before.raw",
+  "logical_bytes": 994662416384,
+  "allocated_bytes": 15976099840,
+  "source_stable": true,
+  "samples": [
+    {
+      "offset": 0,
+      "sha256": "0de6f73079f3285bb914b9cb0a2cb1cf5f90251ecb9eee5908f5f3ad68a1286f"
+    },
+    {
+      "offset": 1048576,
+      "sha256": "5280253fb6ab00af1aa08dee716423089ffabf1b52b79cfb854f5cdacbfda943"
+    },
+    {
+      "offset": 1073741824,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    },
+    {
+      "offset": 10737418240,
+      "sha256": "5c7a98d0adbc4b68e479e8f88f1f4a3b700869bcb553c8311f6d77600cb94666"
+    },
+    {
+      "offset": 497331208192,
+      "sha256": "fcd90d64a61c75cfc25fc9f2737006c225b865f68729494f6641dc6c535510a2"
+    },
+    {
+      "offset": 994661367808,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    }
+  ],
+  "whole_file_checksum_verified": false,
+  "limits": "Offline APFS copy-on-write clone with sampled equality; not a PostgreSQL backup/restore proof and not a global Docker rollback authorization."
+}

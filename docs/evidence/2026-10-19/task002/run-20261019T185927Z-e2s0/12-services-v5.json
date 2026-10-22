@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-19T19:26:41.477862+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "snapshot_equal": true,
+      "services": [
+        "storage-v5",
+        "auth-v5",
+        "rest-v5"
+      ]
+    },
+    "b": {
+      "result": "PASS",
+      "snapshot_equal": true,
+      "services": [
+        "storage-v5",
+        "auth-v5",
+        "rest-v5"
+      ]
+    }
+  }
+}

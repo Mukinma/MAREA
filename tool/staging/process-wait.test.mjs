@@ -1,0 +1,2 @@
+import{test}from'node:test';import assert from'node:assert/strict';import{spawn}from'node:child_process';import{settledExit}from'./process-wait.mjs';
+test('waiting on an already exited supervisor cannot hang',async()=>{const p=spawn(process.execPath,['-e','process.exit(7)']);await new Promise(r=>p.once('exit',r));assert.equal(await Promise.race([settledExit(p),new Promise((_,reject)=>setTimeout(()=>reject(Error('hang')),300))]),7);});

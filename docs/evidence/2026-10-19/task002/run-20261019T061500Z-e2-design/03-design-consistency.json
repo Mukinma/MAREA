@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-19T06:31:10.099345+00:00",
+  "result": "PASS_DOCUMENTARY_ONLY",
+  "planned_test_cases": 49,
+  "functional_E2_cases_executed": 0,
+  "invariants": 12,
+  "human_pending_decisions": 10,
+  "bound_sources": 85,
+  "all_bound_source_hashes_match": true,
+  "relative_design_links_exist": true,
+  "S0_present_all_documents": true,
+  "A_no_Auth_DELETE_and_C_structural_integration_split": true,
+  "no_database_or_docker_execution": true
+}

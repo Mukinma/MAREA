@@ -1,0 +1,272 @@
+{
+  "modality": "STATIC_SOURCE_AND_HISTORICAL_CATALOG",
+  "at_utc": "2026-10-14",
+  "runtime_current_verified": false,
+  "row_counts": null,
+  "source_references": [
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 63,
+      "statement": "create index missions_author_idx on public.missions(author_id);"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 66,
+      "statement": "mission_id uuid not null references public.missions(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 73,
+      "statement": "create index mission_applications_applicant_idx on public.mission_applications(applicant_id);"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 78,
+      "statement": "mission_id uuid references public.missions(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 107,
+      "statement": "create policy \"Visible missions\" on public.missions for select to authenticated using(not hidden or author_id=auth.uid() or public.community_is_admin());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 108,
+      "statement": "create policy \"Create own missions\" on public.missions for insert to authenticated with check(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 109,
+      "statement": "create policy \"Delete own missions\" on public.missions for delete to authenticated using(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 110,
+      "statement": "create policy \"Private applications\" on public.mission_applications for select to authenticated using(applicant_id=auth.uid() or exists(select 1 from public.missions where id=mission_id and author_id=auth.uid()));"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 112,
+      "statement": "create policy \"Report visible content\" on public.content_reports for insert to authenticated with check(reporter_id=auth.uid() and (exists(select 1 from public.posts where id=post_id) or exists(select 1 from public.missions where id=mission_id)));"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 179,
+      "statement": "insert into public.mission_applications(mission_id,applicant_id,message) values(mission.id,account,btrim(application_message)) returning id into application;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 187,
+      "statement": "select a.mission_id into target from public.mission_applications a where a.id=application_id and a.applicant_id=account;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 190,
+      "statement": "delete from public.mission_applications a where a.id=application_id and a.applicant_id=account;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 49,
+      "statement": "if new.image_path is not null and (new.image_path !~ ('^'||new.author_id::text||'/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$') or not exists(select 1 from storage.objects where bucket_id='mission-images' and name=new.image_path)) then raise exception 'invalid_mission_image'; end if;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 61,
+      "statement": "insert into public.missions(author_id,title,body,category,location,starts_at,capacity,target_type,image_path,location_latitude,location_longitude,location_precision,requirements,conditions)"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 107,
+      "statement": "insert into public.mission_applications as a(mission_id,applicant_id,message) values(mission.id,account,btrim(application_message))"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 118,
+      "statement": "select a.mission_id into target from public.mission_applications a where a.id=application_id and a.applicant_id=account;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 122,
+      "statement": "update public.mission_applications a set status='withdrawn' where a.id=application_id and a.applicant_id=account and a.status in ('pending','accepted');"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 157,
+      "statement": "'pending_count',case when m.author_id=account or admin then (select count(*) from public.mission_applications a where a.mission_id=m.id and a.status='pending') else null end,"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 159,
+      "statement": "from public.missions m join public.profiles p on p.id=m.author_id"
+    },
+    {
+      "path": "supabase/migrations/012_mission_map.sql",
+      "line": 40,
+      "statement": "from public.missions m join public.profiles p on p.id=m.author_id"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 46,
+      "statement": "published_mission_id uuid references public.missions(id) on delete set null,"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 49,
+      "statement": "create index mission_drafts_author_time on public.mission_drafts(author_id,updated_at desc);"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 52,
+      "statement": "mission_id uuid not null references public.missions(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 56,
+      "statement": "mission_id uuid not null references public.missions(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 57,
+      "statement": "application_id uuid not null references public.mission_applications(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 66,
+      "statement": "create policy \"Private mission drafts\" on public.mission_drafts for select to authenticated using(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 68,
+      "statement": "create policy \"Organizer finalists\" on public.mission_finalists for select to authenticated using(exists(select 1 from public.missions m where m.id=mission_id and m.author_id=auth.uid()));"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 113,
+      "statement": "insert into public.mission_drafts(id,author_id,data) values(draft_id,account,draft_input)"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 114,
+      "statement": "on conflict(id) do update set data=excluded.data,updated_at=clock_timestamp() where mission_drafts.author_id=account and mission_drafts.published_at is null;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 136,
+      "statement": "if exists(select 1 from public.mission_drafts d where d.id=draft_id and d.author_id=account and d.published_at is not null) then raise exception 'mission_draft_published'; end if;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 137,
+      "statement": "delete from public.mission_drafts d where d.id=draft_id and d.author_id=account;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 146,
+      "statement": "if not exists(select 1 from public.missions m where m.id=mission_id and not m.hidden and not exists(select 1 from public.account_deletion_requests d where d.user_id=m.author_id)) then raise exception 'mission_unavailable'; end if;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 158,
+      "statement": "mission_id uuid not null references public.missions(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 159,
+      "statement": "application_id uuid not null references public.mission_applications(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 229,
+      "statement": "add column mission_id uuid references public.missions(id) on delete cascade;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 274,
+      "statement": "from public.mission_applications a where a.mission_id=new.id and a.status in ('pending','accepted') and a.applicant_id<>new.author_id"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 318,
+      "statement": "'pending_count',case when m.author_id=account or admin then (select count(*) from public.mission_applications a where a.mission_id=m.id and a.status='pending') else null end,"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 320,
+      "statement": "from public.mission_saves s join public.missions m on m.id=s.mission_id join public.profiles p on p.id=m.author_id"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 112,
+      "statement": "elsif p_kind='mission' then select author_id,title into target_owner,target_title from public.missions where id=p_id and not hidden;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 123,
+      "statement": "select 'mission',id,author_id,title from public.missions where not hidden union all"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 177,
+      "statement": "union select 'mission',a.mission_id,a.applicant_id from public.mission_applications a where a.status='accepted' and a.accepted_at>=now()-interval '7 days'"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 181,
+      "statement": "select 'mission',m.id,m.created_at,to_jsonb(m)||jsonb_build_object('accepted_count',(select count(*) from public.mission_applications a where a.mission_id=m.id and a.status='accepted'),'organizer_name',p.full_name,'organizer_username',p.username),m.author_id,m.category,m.location_latitude,m.location_longitude"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 182,
+      "statement": "from public.missions m join public.profiles p on p.id=m.author_id where not m.hidden and m.status='open' and m.starts_at>now()"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 4,
+      "statement": "mission_id uuid not null references public.missions(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 12,
+      "statement": "mission_id uuid not null references public.missions(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 24,
+      "statement": "mission_id uuid not null references public.missions(id) on delete cascade,"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 53,
+      "statement": "create function public.social_mission(mission_uuid uuid) returns public.missions"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 74,
+      "statement": "select m.author_id,m.title into recipient,title from public.missions m where m.id=new.mission_id;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 140,
+      "statement": "select author_id into owner from public.missions where id=comment.mission_id;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 168,
+      "statement": "union select 'mission',a.mission_id,a.applicant_id from public.mission_applications a where a.status='accepted' and a.accepted_at>=now()-interval '7 days'"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 174,
+      "statement": "select 'mission',m.id,m.created_at,to_jsonb(m)||jsonb_build_object('accepted_count',(select count(*) from public.mission_applications a where a.mission_id=m.id and a.status='accepted'),'organizer_name',p.full_name,'organizer_username',p.username),m.author_id,m.category,m.location_latitude,m.location_longitude"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 175,
+      "statement": "from public.missions m join public.profiles p on p.id=m.author_id where not m.hidden and m.status='open' and m.starts_at>now()"
+    }
+  ],
+  "historical_catalog": "docs/evidence/2026-10-13/task001/run-20261013T174515Z/inventory-d7522760bb90.json",
+  "remote_equivalence": false,
+  "migrations_executed": false,
+  "complete_requirement_validation": false
+}

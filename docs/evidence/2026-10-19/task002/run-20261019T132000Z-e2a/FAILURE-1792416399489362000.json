@@ -1,0 +1,6 @@
+{
+  "at": "2026-10-19T13:26:39.489444+00:00",
+  "result": "FAIL_STOPPED",
+  "error": "Docker error; private error-1792416399488903000.log",
+  "no_scope_expansion": true
+}

@@ -1,0 +1,22 @@
+{
+  "id": "E-TASK001-WORK-BACKUP-20261013T1957Z",
+  "at": "2026-10-13T19:56:30.431863+00:00",
+  "result": "PASS",
+  "backup_id": "task001-closure-20261013T1957Z",
+  "kind": "INCREMENTAL_ARTIFACT_BACKUP",
+  "base_complete_backup_id": "task001-continuation-20261013T174222Z",
+  "counts": {
+    "file": 193,
+    "dir": 13,
+    "link": 0
+  },
+  "bytes": 13968342,
+  "manifest_sha256": "7cd4fdb00a2d0dca95e097686a1e777299d71692f4d50b120f2333ce214b72a4",
+  "source_stable": true,
+  "content_permissions_links_mtime_verified": true,
+  "restricted_root_mode": "0700",
+  "limits": [
+    "Incremental docs/tool artifacts; active Docker volumes and private current-runtime logs remain preserved in their original restricted storage, not snapshotted here."
+  ],
+  "remote_modified": false
+}

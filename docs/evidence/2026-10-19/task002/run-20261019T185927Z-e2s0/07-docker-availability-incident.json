@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-19T19:09:14.442035+00:00",
+  "result": "READ_ONLY_CHECKS_PASS",
+  "event": "Transient Unix Docker daemon connection error before fixture upload",
+  "root_internal_cause": "Not established from available CLI evidence; do not infer",
+  "bounded_policy": "One new instrumented attempt only, after complete data verification; repeated availability failure blocks S0",
+  "version": "29.8.2",
+  "historical_containers_unchanged": 405,
+  "running_containers": 0,
+  "original_error": "error-1792436869443675000.log"
+}

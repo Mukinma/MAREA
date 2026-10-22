@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-20T05:43:59.548778+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "actual_mission_resolver_vs_membership_revocation": true,
+      "inflight_linearizes_before_revoke": true,
+      "contention": "55P03",
+      "exrepresentative_after_commit": "42501",
+      "personal_context_remains_valid": true,
+      "new_private_membership_fixture": 1,
+      "org_operations_audit": 3,
+      "TASK003_HTTP_socket_Storage_revocation": "NOT_IMPLEMENTED"
+    },
+    "b": {
+      "result": "PASS",
+      "actual_mission_resolver_vs_membership_revocation": true,
+      "inflight_linearizes_before_revoke": true,
+      "contention": "55P03",
+      "exrepresentative_after_commit": "42501",
+      "personal_context_remains_valid": true,
+      "new_private_membership_fixture": 1,
+      "org_operations_audit": 3,
+      "TASK003_HTTP_socket_Storage_revocation": "NOT_IMPLEMENTED"
+    }
+  }
+}

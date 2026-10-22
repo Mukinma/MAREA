@@ -1,0 +1,35 @@
+{
+  "result": "CHECK_FAILED_REQUIRES_DIAGNOSIS",
+  "changes": [
+    {
+      "container": "/task002-e2a-20261019t132000z-a-auth",
+      "changes": [
+        {
+          "path": "/HostConfig/Dns",
+          "before": null,
+          "after": []
+        }
+      ]
+    },
+    {
+      "container": "/task002-e2a-20261019t132000z-a-recovery-pg",
+      "changes": [
+        {
+          "path": "/HostConfig/Dns",
+          "before": null,
+          "after": []
+        }
+      ]
+    },
+    {
+      "container": "/task002-e2a-20261019t132000z-a-pg",
+      "changes": [
+        {
+          "path": "/HostConfig/Dns",
+          "before": null,
+          "after": []
+        }
+      ]
+    }
+  ]
+}

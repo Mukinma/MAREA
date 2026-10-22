@@ -1,0 +1,374 @@
+{
+  "at": "2026-10-19T20:50:22.866756+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "original_rows_preserved_by_hash": 550,
+      "catalog": {
+        "catalog.columns": {
+          "original": 699,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.constraints": {
+          "original": 380,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.event_triggers": {
+          "original": 6,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.extensions": {
+          "original": 7,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.grants": {
+          "original": 1331,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.memberships": {
+          "original": 25,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.policies": {
+          "original": 66,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.roles": {
+          "original": 33,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.routines": {
+          "original": 160,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.settings": {
+          "original": 6,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.tables": {
+          "original": 110,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.triggers": {
+          "original": 432,
+          "added": 40,
+          "removed_or_modified": 0
+        },
+        "extra.all_routines": {
+          "original": 261,
+          "added": 1,
+          "removed_or_modified": 0
+        },
+        "extra.column_acl": {
+          "original": 40,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.defaults": {
+          "original": 30,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.indexes": {
+          "original": 234,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.private_columns": {
+          "original": 17,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.publication_tables": {
+          "original": 8,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.publications": {
+          "original": 2,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.schemas": {
+          "original": 14,
+          "added": 0,
+          "removed_or_modified": 0
+        }
+      },
+      "exact_fixture_insertions": {
+        "auth.audit_log_entries": 4,
+        "auth.identities": 2,
+        "auth.mfa_amr_claims": 2,
+        "auth.refresh_tokens": 2,
+        "auth.sessions": 2,
+        "auth.users": 2,
+        "collaboration.person_controls": 2,
+        "collaboration.persons": 2,
+        "public.account_deletion_requests": 1,
+        "public.legal_acceptances": 2,
+        "public.missions": 2,
+        "public.profiles": 2,
+        "storage.objects": 1
+      },
+      "sequence_accounting": [
+        {
+          "name": "auth.refresh_tokens_id_seq",
+          "initial": 28,
+          "final": 30,
+          "fixture_nextvals": 2
+        },
+        {
+          "name": "cron.jobid_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "cron.runid_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "net.http_request_queue_id_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "public.legal_acceptances_id_seq",
+          "initial": 19,
+          "final": 21,
+          "fixture_nextvals": 2
+        },
+        {
+          "name": "realtime.subscription_id_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "supabase_functions.hooks_id_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        }
+      ],
+      "original_physical_entries_preserved": 46,
+      "fixture_physical_entries": 3,
+      "ancestor_directory_time_deltas_before_S0": [
+        {
+          "path": "data/stub/stub/mission-images",
+          "before": {
+            "mtime_ns": 1791919766767851000
+          },
+          "after": {
+            "mtime_ns": 1792436861166030002
+          },
+          "cause": "New RED fixture directory creation/removal/compensating upload before S0; unchanged since full T49 baseline"
+        }
+      ],
+      "all_physical_fields_equal_since_T49_baseline": true,
+      "Auth_profile_deletions": 0,
+      "missions_author_FK_unchanged": true,
+      "roles_grants_policies_existing_routines_unchanged": true,
+      "no_B_or_other_increment": true
+    },
+    "b": {
+      "result": "PASS",
+      "original_rows_preserved_by_hash": 554,
+      "catalog": {
+        "catalog.columns": {
+          "original": 699,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.constraints": {
+          "original": 380,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.event_triggers": {
+          "original": 6,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.extensions": {
+          "original": 7,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.grants": {
+          "original": 1331,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.memberships": {
+          "original": 25,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.policies": {
+          "original": 66,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.roles": {
+          "original": 33,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.routines": {
+          "original": 160,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.settings": {
+          "original": 6,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.tables": {
+          "original": 110,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "catalog.triggers": {
+          "original": 432,
+          "added": 40,
+          "removed_or_modified": 0
+        },
+        "extra.all_routines": {
+          "original": 261,
+          "added": 1,
+          "removed_or_modified": 0
+        },
+        "extra.column_acl": {
+          "original": 40,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.defaults": {
+          "original": 30,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.indexes": {
+          "original": 234,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.private_columns": {
+          "original": 17,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.publication_tables": {
+          "original": 8,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.publications": {
+          "original": 2,
+          "added": 0,
+          "removed_or_modified": 0
+        },
+        "extra.schemas": {
+          "original": 14,
+          "added": 0,
+          "removed_or_modified": 0
+        }
+      },
+      "exact_fixture_insertions": {
+        "auth.audit_log_entries": 2,
+        "auth.identities": 1,
+        "auth.mfa_amr_claims": 1,
+        "auth.refresh_tokens": 1,
+        "auth.sessions": 1,
+        "auth.users": 1,
+        "collaboration.person_controls": 1,
+        "collaboration.persons": 1,
+        "public.account_deletion_requests": 1,
+        "public.legal_acceptances": 1,
+        "public.missions": 2,
+        "public.profiles": 1,
+        "storage.objects": 1
+      },
+      "sequence_accounting": [
+        {
+          "name": "auth.refresh_tokens_id_seq",
+          "initial": 28,
+          "final": 29,
+          "fixture_nextvals": 1
+        },
+        {
+          "name": "cron.jobid_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "cron.runid_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "net.http_request_queue_id_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "public.legal_acceptances_id_seq",
+          "initial": 19,
+          "final": 20,
+          "fixture_nextvals": 1
+        },
+        {
+          "name": "realtime.subscription_id_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "supabase_functions.hooks_id_seq",
+          "initial": 1,
+          "final": 1,
+          "fixture_nextvals": 0
+        }
+      ],
+      "original_physical_entries_preserved": 51,
+      "fixture_physical_entries": 3,
+      "ancestor_directory_time_deltas_before_S0": [
+        {
+          "path": "data/stub/stub/mission-images",
+          "before": {
+            "mtime_ns": 1791919820482530000
+          },
+          "after": {
+            "mtime_ns": 1792437191948986003
+          },
+          "cause": "New RED fixture directory creation/removal/compensating upload before S0; unchanged since full T49 baseline"
+        }
+      ],
+      "all_physical_fields_equal_since_T49_baseline": true,
+      "Auth_profile_deletions": 0,
+      "missions_author_FK_unchanged": true,
+      "roles_grants_policies_existing_routines_unchanged": true,
+      "no_B_or_other_increment": true
+    }
+  }
+}

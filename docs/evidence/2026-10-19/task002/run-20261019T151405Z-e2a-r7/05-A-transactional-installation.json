@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-19T15:15:32.628273+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "transactional_rollback_exact": true,
+      "committed": true,
+      "legacy_rows_hashes_sequences_equal": true,
+      "SQL_sha256": "e6bc6a360aa82f7c6e41bcb975464c07dae35bc231028c56fad26e43c7c6e4c5"
+    },
+    "b": {
+      "result": "PASS",
+      "transactional_rollback_exact": true,
+      "committed": true,
+      "legacy_rows_hashes_sequences_equal": true,
+      "SQL_sha256": "e6bc6a360aa82f7c6e41bcb975464c07dae35bc231028c56fad26e43c7c6e4c5"
+    }
+  }
+}

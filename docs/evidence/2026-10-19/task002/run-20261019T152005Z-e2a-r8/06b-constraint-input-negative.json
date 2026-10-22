@@ -1,0 +1,180 @@
+{
+  "at": "2026-10-19T15:23:35.516484+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "cases": [
+        {
+          "case": "manifest_empty",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "manifest_null",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "manifest_null_item",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "manifest_duplicates",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "manifest_over_bound",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "null_batch",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "explicit_dry_run_required",
+          "result": "PASS",
+          "SQLSTATE": "22004"
+        },
+        {
+          "case": "manifest_required",
+          "result": "PASS",
+          "SQLSTATE": "P0002"
+        },
+        {
+          "case": "invalid_sync_source",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "duplicate_mapping",
+          "result": "PASS",
+          "SQLSTATE": "23505"
+        },
+        {
+          "case": "duplicate_person_pk",
+          "result": "PASS",
+          "SQLSTATE": "23505"
+        },
+        {
+          "case": "control_fk",
+          "result": "PASS",
+          "SQLSTATE": "23503"
+        },
+        {
+          "case": "control_pk",
+          "result": "PASS",
+          "SQLSTATE": "23505"
+        },
+        {
+          "case": "control_consistency",
+          "result": "PASS",
+          "SQLSTATE": "23514"
+        },
+        {
+          "case": "manifest_result_pair",
+          "result": "PASS",
+          "SQLSTATE": "23514"
+        },
+        {
+          "case": "forged_claim_no_private_access",
+          "result": "PASS",
+          "SQLSTATE": "42501"
+        }
+      ],
+      "count": 16,
+      "snapshot_exactly_equal_before_after": true
+    },
+    "b": {
+      "result": "PASS",
+      "cases": [
+        {
+          "case": "manifest_empty",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "manifest_null",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "manifest_null_item",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "manifest_duplicates",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "manifest_over_bound",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "null_batch",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "explicit_dry_run_required",
+          "result": "PASS",
+          "SQLSTATE": "22004"
+        },
+        {
+          "case": "manifest_required",
+          "result": "PASS",
+          "SQLSTATE": "P0002"
+        },
+        {
+          "case": "invalid_sync_source",
+          "result": "PASS",
+          "SQLSTATE": "22023"
+        },
+        {
+          "case": "duplicate_mapping",
+          "result": "PASS",
+          "SQLSTATE": "23505"
+        },
+        {
+          "case": "duplicate_person_pk",
+          "result": "PASS",
+          "SQLSTATE": "23505"
+        },
+        {
+          "case": "control_fk",
+          "result": "PASS",
+          "SQLSTATE": "23503"
+        },
+        {
+          "case": "control_pk",
+          "result": "PASS",
+          "SQLSTATE": "23505"
+        },
+        {
+          "case": "control_consistency",
+          "result": "PASS",
+          "SQLSTATE": "23514"
+        },
+        {
+          "case": "manifest_result_pair",
+          "result": "PASS",
+          "SQLSTATE": "23514"
+        },
+        {
+          "case": "forged_claim_no_private_access",
+          "result": "PASS",
+          "SQLSTATE": "42501"
+        }
+      ],
+      "count": 16,
+      "snapshot_exactly_equal_before_after": true
+    }
+  }
+}

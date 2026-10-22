@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-20T04:54:49.226370+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "all_data_sequences_unchanged": true,
+      "modified_objects": [
+        "collaboration.deletion_obligation_guard()",
+        "B-added mission_applications.ab_e2b_obligation"
+      ],
+      "existing_RPC_FKs_privileges_changed": false
+    },
+    "b": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "all_data_sequences_unchanged": true,
+      "modified_objects": [
+        "collaboration.deletion_obligation_guard()",
+        "B-added mission_applications.ab_e2b_obligation"
+      ],
+      "existing_RPC_FKs_privileges_changed": false
+    }
+  },
+  "SQL_file": "20261020042015_e2b_review_identity_and_lock_guards.sql",
+  "SQL_sha256": "994a58fa6380f2ef9d85a8e1020b22117d143c62035debf1af046c1c6bb15a11"
+}

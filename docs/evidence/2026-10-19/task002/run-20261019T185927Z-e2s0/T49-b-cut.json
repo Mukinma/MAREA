@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-19T19:27:41.714603+00:00",
+  "result": "PASS_CUT_ONLY",
+  "old_request_HTTP": 0,
+  "physical_tree_equal": true,
+  "references_equal": true,
+  "all_rows_sequences_equal": true,
+  "old_PID": 0,
+  "late_retry_and_ingress_pending": true
+}

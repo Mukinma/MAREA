@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-20T05:38:56.299824+00:00",
+  "result": "EXPECTED_RED",
+  "sources": {
+    "a": {
+      "result": "EXPECTED_RED",
+      "blocked_historical_author_confused_with_org_owner": true,
+      "rollback_exact": true
+    },
+    "b": {
+      "result": "EXPECTED_RED",
+      "blocked_historical_author_confused_with_org_owner": true,
+      "rollback_exact": true
+    }
+  }
+}

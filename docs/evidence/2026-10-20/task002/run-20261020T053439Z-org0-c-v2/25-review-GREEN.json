@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-20T05:54:24.426509+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "RR_SERIALIZABLE_denied_0A000": true,
+      "current_revoked_denied_42501": true,
+      "NULL_999_replay_denied_40001": true,
+      "valid_read_committed_and_replay_pass": true,
+      "snapshot_exact": true
+    },
+    "b": {
+      "result": "PASS",
+      "RR_SERIALIZABLE_denied_0A000": true,
+      "current_revoked_denied_42501": true,
+      "NULL_999_replay_denied_40001": true,
+      "valid_read_committed_and_replay_pass": true,
+      "snapshot_exact": true
+    }
+  }
+}

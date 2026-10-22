@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-20T04:56:34.463553+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "receipt_replay_after_manifest_stable": true,
+      "progress_current_and_incomplete": true,
+      "stale_version_rejected": "40001",
+      "purge_denied": "55000",
+      "available_publication_and_candidature_real_triggers_allowed_inside_rollback": true,
+      "full_rollback_exact": true
+    },
+    "b": {
+      "result": "PASS",
+      "receipt_replay_after_manifest_stable": true,
+      "progress_current_and_incomplete": true,
+      "stale_version_rejected": "40001",
+      "purge_denied": "55000",
+      "available_publication_and_candidature_real_triggers_allowed_inside_rollback": true,
+      "full_rollback_exact": true
+    }
+  },
+  "case_Authorization_and_S0_functions_unchanged_by_review_patch": true
+}

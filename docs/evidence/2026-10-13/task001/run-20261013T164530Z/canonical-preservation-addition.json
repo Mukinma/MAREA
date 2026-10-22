@@ -1,0 +1,9 @@
+{
+  "captured_at": "2026-10-13T17:05:56.109Z",
+  "evidence_added": "E-TASK001-PRESERVATION-20261013T1704Z",
+  "before_sha256": "90c403844ce2974c74831921a3cf1683e08dd374727b3ee63d0e76f708eab69f",
+  "after_sha256": "180225fcc18fb155f740d69ecc2c549b55713d969c6bae4e67c647987d99e9f0",
+  "git_index_flags_equal": true,
+  "rf_states_changed": 0,
+  "old_evidence_preserved": true
+}

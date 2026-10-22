@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-20T05:20:00.775087+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "explicit_permissions_all_four_roles": true,
+      "editor_signing_and_escalation_denied": true,
+      "cross_org_metadata_UUID_GUC_denied": true,
+      "same_key_parallel_invites_idempotent": true,
+      "multi_org_membership_and_scoped_revocation": true,
+      "last_owner_departure_denied": true,
+      "transaction_failure_rollback_exact": true,
+      "contracts_executed": false
+    },
+    "b": {
+      "result": "PASS",
+      "explicit_permissions_all_four_roles": true,
+      "editor_signing_and_escalation_denied": true,
+      "cross_org_metadata_UUID_GUC_denied": true,
+      "same_key_parallel_invites_idempotent": true,
+      "multi_org_membership_and_scoped_revocation": true,
+      "last_owner_departure_denied": true,
+      "transaction_failure_rollback_exact": true,
+      "contracts_executed": false
+    }
+  }
+}

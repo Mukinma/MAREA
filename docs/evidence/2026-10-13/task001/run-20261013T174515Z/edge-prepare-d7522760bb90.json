@@ -1,0 +1,85 @@
+{
+  "id": "E-TASK001-EDGE-PREPARE-marea-task001-d7522760bb90",
+  "at": "2026-10-13T18:45:42.398Z",
+  "result": "PASS",
+  "image": "public.ecr.aws/supabase/edge-runtime@sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+  "source_hashes": [
+    {
+      "path": "supabase/functions/delete-account/index.ts",
+      "sha256": "2c2aaa8c2260bde57c82aa3b4490377b7eb4d2627f14257ab68358ebdd944c92"
+    },
+    {
+      "path": "supabase/functions/delete-account/tour-storage.ts",
+      "sha256": "05f8cf64b863117e34f7de86e98af2182a16dca562229f3fc5587591dcc5663a"
+    },
+    {
+      "path": "supabase/functions/profile-media/image.ts",
+      "sha256": "ccf4c750638b10689ad57c3a91ecae20c2b820b58e679ec195ae287937926f3d"
+    },
+    {
+      "path": "supabase/functions/profile-media/index.ts",
+      "sha256": "e475e5356a111e135f3f7ae4857b3c904f2bf0792cbbc2f5e283b2f2450f4681"
+    },
+    {
+      "path": "supabase/functions/send-push/delivery.ts",
+      "sha256": "855bcf029f35ae87b4fb26a266cc0da68af511007798f45562eb857f4c22e586"
+    },
+    {
+      "path": "supabase/functions/send-push/index.ts",
+      "sha256": "2d1d9ee8921848e4908312792e4a71550b0442c536cf34298cb10cdf101e183c"
+    },
+    {
+      "path": "supabase/functions/tour-dispatch/dispatch.ts",
+      "sha256": "64a22c2e593d56761874226c93d0be53e15cd79d7a0bf4af84319613fa33389f"
+    },
+    {
+      "path": "supabase/functions/tour-dispatch/index.ts",
+      "sha256": "88faa4c3dcccdb9593657e99d680ab64ce1ce712b8c9e0c7a613a8b2e38595fd"
+    },
+    {
+      "path": "supabase/functions/story-cleanup/cleanup.ts",
+      "sha256": "4cde561e76f96035793936a90a1a51ee418a850c4c51fab9e91ce4090512fe91"
+    },
+    {
+      "path": "supabase/functions/story-cleanup/index.ts",
+      "sha256": "3ec8d1c51d94e53cabdc09435d87b5ae5b6b789cdeef28208c4ae33e60b0eeed"
+    },
+    {
+      "path": "supabase/functions/geocoding/geocoding.ts",
+      "sha256": "62356b1b4f71ab178484f550ff75f82e3355319f9c0580952f6e30aafe7e7582"
+    },
+    {
+      "path": "supabase/functions/geocoding/index.ts",
+      "sha256": "68009e05165492784d56ded0b770c8e829e546c3ff27ccd08372ff9760962de6"
+    }
+  ],
+  "bundles": [
+    {
+      "file": "delete-account.eszip",
+      "sha256": "5b5f6f1025f69e39b425cd60c9ca6657c46495b9e26135b40f77e2050a8d3154"
+    },
+    {
+      "file": "geocoding.eszip",
+      "sha256": "60877670b2b6daec6ff0e8bae4811a14cf081347c7f4b471bb8f73d33cc11d8b"
+    },
+    {
+      "file": "profile-media.eszip",
+      "sha256": "8b181f4e1251d03b8b76ccbc85aa48a74cf59cbef9ac3dba4e4b6998bad6ead0"
+    },
+    {
+      "file": "send-push.eszip",
+      "sha256": "af847f2f28323f35134da965caf5f62227de2bf38477324097ceba99999d7764"
+    },
+    {
+      "file": "story-cleanup.eszip",
+      "sha256": "d5a4e0b73e04973e8b6bc7f62033d12e5c5c4a7a0c8a1f164fb342cf1be1c768"
+    },
+    {
+      "file": "tour-dispatch.eszip",
+      "sha256": "ebd8d68268629fbec26e7541dabcf6039f4fb2d3ea707d3a8649d402a913572b"
+    }
+  ],
+  "dependency_execution": "Compilation only; handlers never evaluated; no secrets supplied",
+  "config_overlay": "Per-function JWT flags from reviewed production config; no global disable",
+  "remote_modified": false
+}

@@ -1,0 +1,6 @@
+{
+  "at": "2026-10-19T19:38:13.085375+00:00",
+  "result": "PASS_STATE_UNCHANGED",
+  "API_negative_tests_source_a_preserved_all_rows_catalog_sequences": true,
+  "diagnostic_has_no_DML": true
+}

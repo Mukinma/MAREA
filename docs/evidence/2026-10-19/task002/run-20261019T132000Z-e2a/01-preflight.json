@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-19T13:25:37.836393+00:00",
+  "result": "PASS",
+  "local_socket": true,
+  "docker": "29.8.2",
+  "running_before": 0,
+  "pinned_images": [
+    "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+    "sha256:c0c25187a6b835e65a6f6e6c6b39d090e832d40e6de5186f2c038e0411944232",
+    "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983"
+  ],
+  "original_volume_access": false,
+  "archives_and_E1_SQL_verified": true
+}

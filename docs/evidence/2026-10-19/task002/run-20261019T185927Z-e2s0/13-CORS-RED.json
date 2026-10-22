@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-19T19:28:12.514296+00:00",
+  "result": "EXPECTED_RED",
+  "HTTP": 204,
+  "missing_allow_origin": true,
+  "reason": "Native S0 variant must preserve legacy browser preflight headers",
+  "protected_data_mutated": false
+}

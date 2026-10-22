@@ -1,0 +1,2789 @@
+{
+  "modality": "inspeccion",
+  "deployed_schema_verified": false,
+  "equivalence_remote": false,
+  "source_files": [
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "sha256": "e7ebaaf2ba761ebb4f11cfb296f6238a8af9d936c256d1b782e8a7c663a0267a",
+      "lines": 157
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "sha256": "9d7d4a29eaabd1fd5a2b61ecc519c52caa9f69d94bfb28e9abf6761c1967757b",
+      "lines": 179
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "sha256": "f9c89743d848a50165d40ef3e77f4acf0a01489484dd5bf8d94dfd9b16225e15",
+      "lines": 268
+    },
+    {
+      "path": "supabase/migrations/004_post_locations.sql",
+      "sha256": "3128b9ed33f17d7a1f8193c589deea23d2252979fd32d29f6a1811f664a01b74",
+      "lines": 24
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "sha256": "6b3ea999f9fbf1500a879de4a39298d567c9ab3354e6422b1abaeef4a614da05",
+      "lines": 208
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "sha256": "68c3bf4240c9c5b8e25a3af865509ad82077f55187c5ab3a2cea4f622059ea62",
+      "lines": 272
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "sha256": "b814f167a162fb68a17706019d728a44540f45984eefdd00de8728de37a65a85",
+      "lines": 79
+    },
+    {
+      "path": "supabase/migrations/008_recover_minimal_registration.sql",
+      "sha256": "ed690d80e841729aa2838e33f5d10d3f73c3ee4b0934f92f88ddbefad07d2577",
+      "lines": 25
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "sha256": "4130e3c3f625e2f9f1933d03283bcf3b24ff82e94062feb6b2c92fe2312c9082",
+      "lines": 109
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "sha256": "30011ce1cd24dae9ab31bfb0bcf11e1b40ba3e3f2b86e9dc668a3b296c4bbeba",
+      "lines": 61
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "sha256": "4196274a5be5237be41ac33570c01f79dac1fc2495383781dff08ed0ecb17166",
+      "lines": 47
+    },
+    {
+      "path": "supabase/migrations/012_mission_map.sql",
+      "sha256": "ee9bbb15491bf45c60d948ed3675de6f691a4ea17f25d7de987628df8b3b7a59",
+      "lines": 76
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "sha256": "528da9f709a30ca04302a258cc681b2aa8f5bae277b2cc94f8d7ba2ed0e8b26c",
+      "lines": 329
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "sha256": "435a15056e800118941e2f74b5db19ac185fca3798a3a2b4ec57632534c83fb5",
+      "lines": 256
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "sha256": "f4f296347d3f0660b729a2c31a5bdd9d8378e06750541318e41045158b86936e",
+      "lines": 573
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "sha256": "61bcfbc453b3d6c8ccd78af2dc7657e657c18cb3b89e2737b071f8707f6d0c5b",
+      "lines": 236
+    },
+    {
+      "path": "supabase/migrations/017_story_cleanup_schedule.sql",
+      "sha256": "75cdbbba9abd17a339844906927dbf6c29bef1b8c21d884452eade96e59bfe90",
+      "lines": 15
+    },
+    {
+      "path": "supabase/migrations/018_story_publication_retries.sql",
+      "sha256": "5d857433c18c80cdf446db6a23d3b30b2c7609213e3f13a29786b1cd239730bf",
+      "lines": 34
+    },
+    {
+      "path": "supabase/migrations/019_story_receipt_upgrade.sql",
+      "sha256": "4c728670e50c9cacf8cb8d6b6cb643e759430554d6cc40ef5c189b77188594e7",
+      "lines": 41
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "sha256": "3e8ba895e0f168cf154e409c3a8fb7dd859e064b28ae7f48ea2390e1c029608e",
+      "lines": 188
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "sha256": "9a57c562f63b13af12125156fb159720cffc0a8008254f36c2deeecac4f43d49",
+      "lines": 88
+    },
+    {
+      "path": "supabase/functions/delete-account/index.ts",
+      "sha256": "2c2aaa8c2260bde57c82aa3b4490377b7eb4d2627f14257ab68358ebdd944c92",
+      "lines": 79
+    },
+    {
+      "path": "supabase/functions/delete-account/tour-storage.ts",
+      "sha256": "05f8cf64b863117e34f7de86e98af2182a16dca562229f3fc5587591dcc5663a",
+      "lines": 43
+    },
+    {
+      "path": "supabase/functions/delete-account/tour-storage_test.ts",
+      "sha256": "61cafe351b91c281a269da444344982972fb8984e599cc2e4534887193e83a7b",
+      "lines": 53
+    },
+    {
+      "path": "supabase/functions/geocoding/edge_test.mjs",
+      "sha256": "1d939c3d6c596fc3de139a697788ee602a74201027f6ca5bb56d9c207fab9944",
+      "lines": 100
+    },
+    {
+      "path": "supabase/functions/geocoding/geocoding.ts",
+      "sha256": "62356b1b4f71ab178484f550ff75f82e3355319f9c0580952f6e30aafe7e7582",
+      "lines": 39
+    },
+    {
+      "path": "supabase/functions/geocoding/geocoding_test.mjs",
+      "sha256": "54eca0bde7cf746e8a6a5c7bb7a32b1eaac95070fa08cc58986f137d8467255e",
+      "lines": 18
+    },
+    {
+      "path": "supabase/functions/geocoding/index.ts",
+      "sha256": "68009e05165492784d56ded0b770c8e829e546c3ff27ccd08372ff9760962de6",
+      "lines": 239
+    },
+    {
+      "path": "supabase/functions/geocoding/lease_test.mjs",
+      "sha256": "4bad34d7464b7ceef07fe12a1e27412cd5fb2e62cf44ab49c1b1b465170ebeb4",
+      "lines": 63
+    },
+    {
+      "path": "supabase/functions/profile-media/image.ts",
+      "sha256": "ccf4c750638b10689ad57c3a91ecae20c2b820b58e679ec195ae287937926f3d",
+      "lines": 17
+    },
+    {
+      "path": "supabase/functions/profile-media/image_test.ts",
+      "sha256": "da9a8b3c0f2e9b4544589b39c9d8eea446cca47294e61efdbbb2073585037d22",
+      "lines": 22
+    },
+    {
+      "path": "supabase/functions/profile-media/index.ts",
+      "sha256": "e475e5356a111e135f3f7ae4857b3c904f2bf0792cbbc2f5e283b2f2450f4681",
+      "lines": 55
+    },
+    {
+      "path": "supabase/functions/send-push/database_test.ts",
+      "sha256": "1e5f1df4ba9e396aa1c5e4cc875836929c5cab914fb9935e5d54ae30a95b07f0",
+      "lines": 284
+    },
+    {
+      "path": "supabase/functions/send-push/delivery.ts",
+      "sha256": "855bcf029f35ae87b4fb26a266cc0da68af511007798f45562eb857f4c22e586",
+      "lines": 62
+    },
+    {
+      "path": "supabase/functions/send-push/delivery_test.ts",
+      "sha256": "ebadb74ce19b6677d30c1fa6a690c95ad1c1b1f1b7dd2aca76a6082aa7005cfd",
+      "lines": 67
+    },
+    {
+      "path": "supabase/functions/send-push/index.ts",
+      "sha256": "2d1d9ee8921848e4908312792e4a71550b0442c536cf34298cb10cdf101e183c",
+      "lines": 178
+    },
+    {
+      "path": "supabase/functions/story-cleanup/README.md",
+      "sha256": "bc84d58fd5eba8b719546cc04ee627ea0d887180b21d99e21449ee09eb6c649f",
+      "lines": 19
+    },
+    {
+      "path": "supabase/functions/story-cleanup/cleanup.ts",
+      "sha256": "4cde561e76f96035793936a90a1a51ee418a850c4c51fab9e91ce4090512fe91",
+      "lines": 18
+    },
+    {
+      "path": "supabase/functions/story-cleanup/cleanup_test.ts",
+      "sha256": "6666912e43e53e990ba2be54daa08c9dab0ab68fdd3b859ea50754c167aa9f1e",
+      "lines": 20
+    },
+    {
+      "path": "supabase/functions/story-cleanup/index.ts",
+      "sha256": "3ec8d1c51d94e53cabdc09435d87b5ae5b6b789cdeef28208c4ae33e60b0eeed",
+      "lines": 29
+    },
+    {
+      "path": "supabase/functions/tour-dispatch/dispatch.ts",
+      "sha256": "64a22c2e593d56761874226c93d0be53e15cd79d7a0bf4af84319613fa33389f",
+      "lines": 46
+    },
+    {
+      "path": "supabase/functions/tour-dispatch/dispatch_test.ts",
+      "sha256": "b9653bfa0f1f212284147bdfd4daaa3f04afe39e5154f38b028c5e722c109cd9",
+      "lines": 39
+    },
+    {
+      "path": "supabase/functions/tour-dispatch/index.ts",
+      "sha256": "88faa4c3dcccdb9593657e99d680ab64ce1ce712b8c9e0c7a613a8b2e38595fd",
+      "lines": 174
+    },
+    {
+      "path": "supabase/config.toml",
+      "sha256": "9cd34fd63550ae2a6340d8a2056ee45377593ccee1d1903611a84c4e418f8376",
+      "lines": 23
+    }
+  ],
+  "destructive_ddl": [
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 115,
+      "statement": "drop policy \"Public usernames are discoverable\" on public.profiles;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 12,
+      "statement": "alter table public.missions drop constraint missions_status_check;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 14,
+      "statement": "alter table public.mission_applications drop constraint mission_applications_status_check;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 22,
+      "statement": "alter table public.posts drop constraint posts_location_coordinates_check;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 79,
+      "statement": "drop function public.set_mission_status(uuid,text);"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 98,
+      "statement": "drop function public.community_profiles(uuid[],text);"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 239,
+      "statement": "alter table public.content_reports drop constraint content_reports_check;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 230,
+      "statement": "alter table public.notifications drop constraint notifications_kind_check;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 283,
+      "statement": "drop policy \"Delete own unused mission images\" on storage.objects;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 6,
+      "statement": "alter table public.notifications drop constraint notifications_kind_check;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 10,
+      "statement": "alter table public.notifications drop constraint notifications_one_target;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 444,
+      "statement": "drop policy \"Tour input owner reads\" on storage.objects;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 513,
+      "statement": "drop policy \"Tour input owner reads\" on storage.objects;"
+    }
+  ],
+  "jobs": [
+    {
+      "path": "supabase/migrations/017_story_cleanup_schedule.sql",
+      "line": 14,
+      "statement": "select cron.schedule('marea-story-cleanup','0 * * * *','select public.dispatch_story_cleanup()');"
+    }
+  ],
+  "tables": [
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 1,
+      "statement": "create table public.profiles"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 2,
+      "statement": "create table public.legal_documents"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 10,
+      "statement": "create table public.registration_settings"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 20,
+      "statement": "create table public.legal_acceptances"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 117,
+      "statement": "create table public.account_deletion_requests"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 149,
+      "statement": "create table public.profile_media_operations"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 20,
+      "statement": "create table public.posts"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 42,
+      "statement": "create table public.post_saves"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 48,
+      "statement": "create table public.missions"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 64,
+      "statement": "create table public.mission_applications"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 74,
+      "statement": "create table public.content_reports"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 119,
+      "statement": "create table public.showcase_items"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 134,
+      "statement": "create table public.showcase_images"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 139,
+      "statement": "create table public.showcase_saves"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 2,
+      "statement": "create table public.post_reactions"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 9,
+      "statement": "create table public.notifications"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 1,
+      "statement": "create table public.post_comments"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 3,
+      "statement": "create table public.post_collaboration_interests"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 41,
+      "statement": "create table public.mission_drafts"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 50,
+      "statement": "create table public.mission_saves"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 55,
+      "statement": "create table public.mission_finalists"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 155,
+      "statement": "create table public.mission_application_operations"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 15,
+      "statement": "create table public.notification_preferences"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 23,
+      "statement": "create table public.notification_devices"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 30,
+      "statement": "create table private.push_settings"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 35,
+      "statement": "create table private.push_queue"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 4,
+      "statement": "create table public.tours"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 10,
+      "statement": "create table public.tour_revisions"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 14,
+      "statement": "create table private.tour_captures"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 18,
+      "statement": "create table private.tour_jobs"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 27,
+      "statement": "create table private.tour_output_writes"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 31,
+      "statement": "create table public.tour_requests"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 38,
+      "statement": "create table private.tour_permissions"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 42,
+      "statement": "create table private.tour_ar_tests"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 46,
+      "statement": "create table public.tour_progress"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 2,
+      "statement": "create table public.profile_follows"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 23,
+      "statement": "create table public.stories"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 36,
+      "statement": "create table public.story_views"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 41,
+      "statement": "create table public.story_reports"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 144,
+      "statement": "create table public.home_feed_snapshots"
+    },
+    {
+      "path": "supabase/migrations/018_story_publication_retries.sql",
+      "line": 3,
+      "statement": "create table public.story_publications"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 3,
+      "statement": "create table public.mission_reactions"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 10,
+      "statement": "create table public.mission_comments"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 21,
+      "statement": "create table public.mission_comment_operations"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 65,
+      "statement": "create table public.geocoding_provider"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 71,
+      "statement": "create table public.geocoding_cache"
+    }
+  ],
+  "rls": [
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 36,
+      "statement": "alter table public.profiles enable row level security"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 37,
+      "statement": "alter table public.profiles force row level security"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 29,
+      "statement": "alter table public.legal_documents enable row level security"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 30,
+      "statement": "alter table public.registration_settings enable row level security"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 31,
+      "statement": "alter table public.legal_acceptances enable row level security"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 121,
+      "statement": "alter table public.account_deletion_requests enable row level security"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 154,
+      "statement": "alter table public.profile_media_operations enable row level security"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 86,
+      "statement": "alter table public.posts enable row level security"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 87,
+      "statement": "alter table public.post_saves enable row level security"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 88,
+      "statement": "alter table public.missions enable row level security"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 89,
+      "statement": "alter table public.mission_applications enable row level security"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 90,
+      "statement": "alter table public.content_reports enable row level security"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 144,
+      "statement": "alter table public.showcase_items enable row level security"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 145,
+      "statement": "alter table public.showcase_images enable row level security"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 146,
+      "statement": "alter table public.showcase_saves enable row level security"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 24,
+      "statement": "alter table public.post_reactions enable row level security"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 25,
+      "statement": "alter table public.notifications enable row level security"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 11,
+      "statement": "alter table public.post_comments enable row level security"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 11,
+      "statement": "alter table public.post_collaboration_interests enable row level security"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 60,
+      "statement": "alter table public.mission_drafts enable row level security"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 61,
+      "statement": "alter table public.mission_saves enable row level security"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 62,
+      "statement": "alter table public.mission_finalists enable row level security"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 162,
+      "statement": "alter table public.mission_application_operations enable row level security"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 49,
+      "statement": "alter table public.notification_preferences enable row level security"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 50,
+      "statement": "alter table public.notification_devices enable row level security"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 51,
+      "statement": "alter table private.push_queue enable row level security"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 52,
+      "statement": "alter table private.push_settings enable row level security"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 8,
+      "statement": "alter table public.profile_follows enable row level security"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 47,
+      "statement": "alter table public.stories enable row level security"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 48,
+      "statement": "alter table public.story_views enable row level security"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 49,
+      "statement": "alter table public.story_reports enable row level security"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 149,
+      "statement": "alter table public.home_feed_snapshots enable row level security"
+    },
+    {
+      "path": "supabase/migrations/018_story_publication_retries.sql",
+      "line": 8,
+      "statement": "alter table public.story_publications enable row level security"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 29,
+      "statement": "alter table public.mission_comment_operations enable row level security"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 33,
+      "statement": "alter table public.mission_reactions enable row level security"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 34,
+      "statement": "alter table public.mission_comments enable row level security"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 72,
+      "statement": "alter table public.geocoding_provider enable row level security"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 73,
+      "statement": "alter table public.geocoding_cache enable row level security"
+    }
+  ],
+  "grants": [
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 39,
+      "statement": "revoke all on table public.profiles from anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 40,
+      "statement": "grant select (username) on table public.profiles to anon;"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 41,
+      "statement": "grant select on table public.profiles to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 42,
+      "statement": "grant insert (id, full_name, username, bio, user_type, avatar_url)\n  on table public.profiles to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 44,
+      "statement": "grant update (full_name, username, bio, user_type, avatar_url)\n  on table public.profiles to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 46,
+      "statement": "grant all on table public.profiles to service_role;"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 89,
+      "statement": "revoke all on function public.is_username_available(text) from public;"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 90,
+      "statement": "grant execute on function public.is_username_available(text) to anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 104,
+      "statement": "revoke all on function public.set_profile_updated_at() from public, anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 151,
+      "statement": "revoke all on function public.handle_new_user() from public, anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 32,
+      "statement": "revoke all on public.legal_documents, public.registration_settings, public.legal_acceptances from anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 33,
+      "statement": "grant all on public.legal_documents, public.registration_settings, public.legal_acceptances to service_role;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 34,
+      "statement": "grant select on public.legal_acceptances to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 47,
+      "statement": "revoke all on function public.protect_published_legal() from public, anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 62,
+      "statement": "revoke all on function public.registration_policy() from public;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 63,
+      "statement": "grant execute on function public.registration_policy() to anon, authenticated, service_role;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 77,
+      "statement": "revoke all on function public.accept_current_legal(text,text,boolean) from public;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 78,
+      "statement": "grant execute on function public.accept_current_legal(text,text,boolean) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 111,
+      "statement": "revoke update(avatar_url), insert(avatar_url) on public.profiles from authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 112,
+      "statement": "grant update(avatar_path,cover_path,cover_preset,website,interests,goals,onboarding_status) on public.profiles to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 114,
+      "statement": "revoke select(username) on public.profiles from anon;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 122,
+      "statement": "revoke all on public.account_deletion_requests from anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 123,
+      "statement": "grant all on public.account_deletion_requests to service_role;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 145,
+      "statement": "revoke all on function public.validate_profile_media() from public, anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 155,
+      "statement": "revoke all on public.profile_media_operations from anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 156,
+      "statement": "grant all on public.profile_media_operations to service_role;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 177,
+      "statement": "revoke all on function public.begin_profile_media_operation(uuid), public.request_account_deletion(uuid) from public, anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 178,
+      "statement": "grant execute on function public.begin_profile_media_operation(uuid), public.request_account_deletion(uuid) to service_role;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 17,
+      "statement": "revoke all on function public.community_is_admin(), public.community_active_account() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 18,
+      "statement": "grant execute on function public.community_is_admin() to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 91,
+      "statement": "revoke all on public.posts,public.post_saves,public.missions,public.mission_applications,public.content_reports from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 92,
+      "statement": "grant all on public.posts,public.post_saves,public.missions,public.mission_applications,public.content_reports to service_role;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 93,
+      "statement": "grant select,delete on public.posts,public.post_saves,public.missions to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 94,
+      "statement": "grant insert(kind,title,body,category,location,price,image_path) on public.posts to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 95,
+      "statement": "grant update(title,body,category,location,price,image_path) on public.posts to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 96,
+      "statement": "grant insert(post_id) on public.post_saves to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 97,
+      "statement": "grant insert(title,body,category,location,starts_at,capacity,target_type) on public.missions to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 98,
+      "statement": "grant select on public.mission_applications,public.content_reports to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 99,
+      "statement": "grant insert(post_id,mission_id,reason) on public.content_reports to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 142,
+      "statement": "revoke all on function public.validate_community_content() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 230,
+      "statement": "revoke all on function public.community_profiles(uuid[],text), public.set_mission_status(uuid,text), public.apply_to_mission(uuid,text), public.withdraw_application(uuid), public.review_application(uuid,text), public.moderate_content(uuid,text,boolean) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 231,
+      "statement": "grant execute on function public.community_profiles(uuid[],text), public.set_mission_status(uuid,text), public.apply_to_mission(uuid,text), public.withdraw_application(uuid), public.review_application(uuid,text), public.moderate_content(uuid,text,boolean) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 266,
+      "statement": "revoke all on function public.guard_post_image_operation() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/004_post_locations.sql",
+      "line": 16,
+      "statement": "grant insert(\n  kind,title,body,category,location,location_latitude,location_longitude,\n  location_precision,price,image_path\n) on public.posts to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/004_post_locations.sql",
+      "line": 20,
+      "statement": "grant update(\n  title,body,category,location,location_latitude,location_longitude,\n  location_precision,price,image_path\n) on public.posts to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 35,
+      "statement": "revoke insert(title,body,category,location,starts_at,capacity,target_type) on public.missions from authenticated;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 53,
+      "statement": "revoke all on function public.validate_mission_lifecycle() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 173,
+      "statement": "revoke all on function public.create_mission(jsonb),public.update_mission(uuid,jsonb),public.set_mission_status(uuid,text,text),public.list_missions(uuid,text,text,text,text,int,uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 174,
+      "statement": "grant execute on function public.create_mission(jsonb),public.update_mission(uuid,jsonb),public.set_mission_status(uuid,text,text),public.list_missions(uuid,text,text,text,text,int,uuid) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 206,
+      "statement": "revoke all on function public.guard_mission_image_operation() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 13,
+      "statement": "revoke insert(id,full_name,username,bio,user_type) on public.profiles from authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 14,
+      "statement": "revoke update(user_type,interests,goals,onboarding_status) on public.profiles from authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 15,
+      "statement": "grant update(contact_url,open_to_collaboration,location,location_latitude,location_longitude,location_precision,business_hours) on public.profiles to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 35,
+      "statement": "revoke all on function public.validate_profile_presentation() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 57,
+      "statement": "revoke all on function public.complete_initial_profile(text,text[],text[]) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 58,
+      "statement": "grant execute on function public.complete_initial_profile(text,text[],text[]) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 109,
+      "statement": "revoke all on function public.community_profiles(uuid[],text) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 110,
+      "statement": "grant execute on function public.community_profiles(uuid[],text) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 115,
+      "statement": "revoke all on function public.visible_profile_media(text) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 116,
+      "statement": "grant execute on function public.visible_profile_media(text) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 147,
+      "statement": "revoke all on public.showcase_items,public.showcase_images,public.showcase_saves from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 148,
+      "statement": "grant all on public.showcase_items,public.showcase_images,public.showcase_saves to service_role;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 149,
+      "statement": "grant select on public.showcase_items,public.showcase_images,public.showcase_saves to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 150,
+      "statement": "grant insert(item_id),delete on public.showcase_saves to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 155,
+      "statement": "revoke all on function public.showcase_owner_visible(uuid) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 156,
+      "statement": "grant execute on function public.showcase_owner_visible(uuid) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 207,
+      "statement": "revoke all on function public.save_showcase(jsonb,uuid),public.delete_showcase(uuid) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 208,
+      "statement": "grant execute on function public.save_showcase(jsonb,uuid),public.delete_showcase(uuid) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 235,
+      "statement": "revoke all on function public.guard_showcase_photo() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 249,
+      "statement": "revoke all on function public.report_showcase(uuid,text) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 250,
+      "statement": "grant execute on function public.report_showcase(uuid,text) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "line": 7,
+      "statement": "grant update(interests,goals,setup_step) on public.profiles to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "line": 27,
+      "statement": "revoke all on function public.validate_profile_presentation() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "line": 48,
+      "statement": "revoke all on function public.complete_initial_profile(text,text[],text[]) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "line": 49,
+      "statement": "grant execute on function public.complete_initial_profile(text,text[],text[]) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 26,
+      "statement": "revoke all on public.post_reactions,public.notifications from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 27,
+      "statement": "grant all on public.post_reactions,public.notifications to service_role;"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 28,
+      "statement": "grant select on public.post_reactions,public.notifications to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 44,
+      "statement": "revoke all on function public.social_post(uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 64,
+      "statement": "revoke all on function public.notify_post_reaction() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 102,
+      "statement": "revoke all on function public.set_post_reaction(uuid,text),public.post_social_stats(uuid[]),public.mark_notifications_read(uuid,timestamptz) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 103,
+      "statement": "grant execute on function public.set_post_reaction(uuid,text),public.post_social_stats(uuid[]),public.mark_notifications_read(uuid,timestamptz) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 12,
+      "statement": "revoke all on public.post_comments from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 13,
+      "statement": "grant all on public.post_comments to service_role;"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 14,
+      "statement": "grant select on public.post_comments to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 59,
+      "statement": "revoke all on function public.create_post_comment(uuid,text,uuid),public.delete_post_comment(uuid) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 60,
+      "statement": "grant execute on function public.create_post_comment(uuid,text,uuid),public.delete_post_comment(uuid) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 2,
+      "statement": "grant insert(allows_collaboration),update(allows_collaboration) on public.posts to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 12,
+      "statement": "revoke all on public.post_collaboration_interests from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 13,
+      "statement": "grant all on public.post_collaboration_interests to service_role;"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 14,
+      "statement": "grant select on public.post_collaboration_interests to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 45,
+      "statement": "revoke all on function public.send_post_interest(uuid,text) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 46,
+      "statement": "grant execute on function public.send_post_interest(uuid,text) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/012_mission_map.sql",
+      "line": 70,
+      "statement": "revoke all on function public.list_map_missions(double precision,double precision,\n  double precision,double precision,text,text,timestamptz,timestamptz,\n  double precision,double precision,double precision) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/012_mission_map.sql",
+      "line": 73,
+      "statement": "grant execute on function public.list_map_missions(double precision,double precision,\n  double precision,double precision,text,text,timestamptz,timestamptz,\n  double precision,double precision,double precision) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 17,
+      "statement": "revoke all on function public.lock_mission_compensation() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 22,
+      "statement": "revoke all on function public.create_mission_legacy(jsonb),public.update_mission_legacy(uuid,jsonb) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 63,
+      "statement": "revoke all on public.mission_drafts,public.mission_saves,public.mission_finalists from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 64,
+      "statement": "grant select on public.mission_drafts,public.mission_saves,public.mission_finalists to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 65,
+      "statement": "grant all on public.mission_drafts,public.mission_saves,public.mission_finalists to service_role;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 163,
+      "statement": "revoke all on public.mission_application_operations from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 164,
+      "statement": "grant all on public.mission_application_operations to service_role;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 280,
+      "statement": "revoke all on function public.version_mission_event(),public.notify_mission_application(),public.notify_mission_status() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 309,
+      "statement": "revoke all on function public.create_mission(jsonb),public.update_mission(uuid,jsonb),public.save_mission_draft(uuid,jsonb),public.publish_mission_draft(uuid,jsonb),public.delete_mission_draft(uuid),public.set_mission_saved(uuid,boolean),public.submit_mission_application(uuid,jsonb),public.set_mission_finalist(uuid,uuid,boolean),public.confirm_mission_selection(uuid,uuid[]) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 310,
+      "statement": "grant execute on function public.create_mission(jsonb),public.update_mission(uuid,jsonb),public.save_mission_draft(uuid,jsonb),public.publish_mission_draft(uuid,jsonb),public.delete_mission_draft(uuid),public.set_mission_saved(uuid,boolean),public.submit_mission_application(uuid,jsonb),public.set_mission_finalist(uuid,uuid,boolean),public.confirm_mission_selection(uuid,uuid[]) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 327,
+      "statement": "revoke all on function public.list_saved_missions(text,text,text,integer) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 328,
+      "statement": "grant execute on function public.list_saved_missions(text,text,text,integer) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 3,
+      "statement": "revoke all on schema private from public, anon, authenticated;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 53,
+      "statement": "revoke all on public.notification_preferences,public.notification_devices,private.push_queue,private.push_settings from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 54,
+      "statement": "grant select on public.notification_preferences to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 55,
+      "statement": "grant all on public.notification_preferences,public.notification_devices,private.push_queue,private.push_settings to service_role;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 56,
+      "statement": "grant usage on schema private to service_role;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 98,
+      "statement": "revoke all on function public.set_notification_preferences(boolean,boolean),public.record_notification_activity(text),\n public.register_notification_device(uuid,text,boolean),public.unregister_notification_device(uuid) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 100,
+      "statement": "grant execute on function public.set_notification_preferences(boolean,boolean),public.record_notification_activity(text),\n public.register_notification_device(uuid,text,boolean),public.unregister_notification_device(uuid) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 231,
+      "statement": "revoke all on function public.claim_push_jobs(integer),public.finish_push_job(uuid,uuid,text),\n private.schedule_marea_messages(timestamptz),private.wake_push_worker(),private.enqueue_notification_push() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 233,
+      "statement": "grant execute on function public.claim_push_jobs(integer),public.finish_push_job(uuid,uuid,text),\n private.schedule_marea_messages(timestamptz),private.wake_push_worker() to service_role;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 254,
+      "statement": "revoke all on function public.push_job_is_current(uuid,uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 255,
+      "statement": "grant execute on function public.push_job_is_current(uuid,uuid) to service_role;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 3,
+      "statement": "revoke all on schema private from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 53,
+      "statement": "revoke all on '||tab||' from public,anon,authenticated';"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 54,
+      "statement": "grant all on '||tab||' to service_role';"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 451,
+      "statement": "grant usage on schema private to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 452,
+      "statement": "revoke all on all functions in schema private from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 453,
+      "statement": "grant execute on function private.tour_input_write(text),private.tour_asset_read(text),private.tour_reference_write(text) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 456,
+      "statement": "revoke all on function '||f.signature||' from public,anon,authenticated';"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 457,
+      "statement": "grant execute on function '||f.signature||' to service_role';"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 458,
+      "statement": "grant execute on function '||f.signature||' to authenticated';"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 461,
+      "statement": "revoke all on function public.request_account_deletion(uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 462,
+      "statement": "grant execute on function public.request_account_deletion(uuid) to service_role;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 468,
+      "statement": "revoke all on function public.tours_job_context(uuid,uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 469,
+      "statement": "grant execute on function public.tours_job_context(uuid,uuid) to service_role;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 483,
+      "statement": "revoke all on function private.wake_tour_dispatcher(),private.tour_queue_wake() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 484,
+      "statement": "grant execute on function private.wake_tour_dispatcher() to service_role;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 503,
+      "statement": "revoke all on function public.tours_claim_cleanup(),public.tours_finish_cleanup(uuid,uuid,boolean) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 504,
+      "statement": "grant execute on function public.tours_claim_cleanup(),public.tours_finish_cleanup(uuid,uuid,boolean) to service_role;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 515,
+      "statement": "revoke all on function private.tour_input_read(text) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 516,
+      "statement": "grant execute on function private.tour_input_read(text) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 524,
+      "statement": "revoke all on function private.tour_review_asset(text) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 525,
+      "statement": "grant execute on function private.tour_review_asset(text) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 533,
+      "statement": "revoke all on function public.tours_completion_receipt(uuid,uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 534,
+      "statement": "grant execute on function public.tours_completion_receipt(uuid,uuid) to service_role;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 545,
+      "statement": "revoke all on function public.tours_permission_revoke(uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 546,
+      "statement": "grant execute on function public.tours_permission_revoke(uuid) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 556,
+      "statement": "revoke all on function public.tours_public_list(uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 557,
+      "statement": "grant execute on function public.tours_public_list(uuid) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 571,
+      "statement": "revoke all on function public.tours_renew_cleanup(uuid,uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 572,
+      "statement": "grant execute on function public.tours_renew_cleanup(uuid,uuid) to service_role;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 9,
+      "statement": "revoke all on public.profile_follows from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 10,
+      "statement": "grant select on public.profile_follows to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 11,
+      "statement": "grant all on public.profile_follows to service_role;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 50,
+      "statement": "revoke all on public.stories,public.story_views,public.story_reports from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 51,
+      "statement": "grant select on public.stories,public.story_views,public.story_reports to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 52,
+      "statement": "grant all on public.stories,public.story_views,public.story_reports to service_role;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 71,
+      "statement": "revoke all on function public.story_image_visible(text) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 72,
+      "statement": "grant execute on function public.story_image_visible(text) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 150,
+      "statement": "revoke all on public.home_feed_snapshots from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 151,
+      "statement": "grant all on public.home_feed_snapshots to service_role;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 232,
+      "statement": "revoke all on function public.home_feed_candidates(jsonb),public.story_cleanup_images() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 233,
+      "statement": "grant execute on function public.story_cleanup_images() to service_role;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 234,
+      "statement": "revoke all on function public.home_feed(jsonb,jsonb),public.set_profile_follow(uuid,boolean),public.publish_story(uuid,text,text),public.list_stories(),public.mark_story_seen(uuid),public.delete_story(uuid),public.report_story(uuid,text),public.reported_stories(),public.moderate_story(uuid,boolean) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 235,
+      "statement": "grant execute on function public.home_feed(jsonb,jsonb),public.set_profile_follow(uuid,boolean),public.publish_story(uuid,text,text),public.list_stories(),public.mark_story_seen(uuid),public.delete_story(uuid),public.report_story(uuid,text),public.reported_stories(),public.moderate_story(uuid,boolean) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/017_story_cleanup_schedule.sql",
+      "line": 13,
+      "statement": "revoke all on function public.dispatch_story_cleanup() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/018_story_publication_retries.sql",
+      "line": 9,
+      "statement": "revoke all on public.story_publications from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/018_story_publication_retries.sql",
+      "line": 10,
+      "statement": "grant all on public.story_publications to service_role;"
+    },
+    {
+      "path": "supabase/migrations/019_story_receipt_upgrade.sql",
+      "line": 10,
+      "statement": "revoke all on function public.journal_story_publication() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 30,
+      "statement": "revoke all on public.mission_comment_operations from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 31,
+      "statement": "grant all on public.mission_comment_operations to service_role;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 35,
+      "statement": "revoke all on public.mission_reactions,public.mission_comments from anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 36,
+      "statement": "grant select on public.mission_reactions,public.mission_comments to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 37,
+      "statement": "grant all on public.mission_reactions,public.mission_comments to service_role;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 46,
+      "statement": "revoke all on function public.mission_social_visible(uuid) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 47,
+      "statement": "grant execute on function public.mission_social_visible(uuid) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 63,
+      "statement": "revoke all on function public.social_mission(uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 83,
+      "statement": "revoke all on function public.notify_mission_reaction() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 130,
+      "statement": "revoke all on function public.retract_mission_comment_notification() from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 155,
+      "statement": "revoke all on function public.set_mission_reaction(uuid,text),public.create_mission_comment(uuid,text,uuid),public.delete_mission_comment(uuid),public.mission_social_stats(uuid[]) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 156,
+      "statement": "grant execute on function public.set_mission_reaction(uuid,text),public.create_mission_comment(uuid,text,uuid),public.delete_mission_comment(uuid),public.mission_social_stats(uuid[]) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 12,
+      "statement": "grant insert(location_city),update(location_city) on public.posts to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 40,
+      "statement": "revoke all on function public.create_mission_before_city(jsonb),public.update_mission_before_city(uuid,jsonb),public.save_mission_draft_before_city(uuid,jsonb) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 61,
+      "statement": "revoke all on function public.create_mission(jsonb),public.update_mission(uuid,jsonb),public.save_mission_draft(uuid,jsonb) from public,anon;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 62,
+      "statement": "grant execute on function public.create_mission(jsonb),public.update_mission(uuid,jsonb),public.save_mission_draft(uuid,jsonb) to authenticated;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 74,
+      "statement": "revoke all on public.geocoding_provider,public.geocoding_cache from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 75,
+      "statement": "grant all on public.geocoding_provider,public.geocoding_cache to service_role;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 86,
+      "statement": "revoke all on function public.claim_geocoding_request(uuid),public.finish_geocoding_request(uuid) from public,anon,authenticated;"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 87,
+      "statement": "grant execute on function public.claim_geocoding_request(uuid),public.finish_geocoding_request(uuid) to service_role;"
+    }
+  ],
+  "policies": [
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 48,
+      "statement": "create policy \"Public usernames are discoverable\"\n  on public.profiles\n  for select\n  to anon\n  using (true);"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 54,
+      "statement": "create policy \"Users can read their profile\"\n  on public.profiles\n  for select\n  to authenticated\n  using ((select auth.uid()) = id);"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 60,
+      "statement": "create policy \"Users can create their profile\"\n  on public.profiles\n  for insert\n  to authenticated\n  with check ((select auth.uid()) = id);"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 66,
+      "statement": "create policy \"Users can update their profile\"\n  on public.profiles\n  for update\n  to authenticated\n  using ((select auth.uid()) = id)\n  with check ((select auth.uid()) = id);"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 35,
+      "statement": "create policy \"Own legal history\" on public.legal_acceptances for select to authenticated using (user_id = (select auth.uid()));"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 129,
+      "statement": "create policy \"Read own profile media\" on storage.objects for select to authenticated\nusing (bucket_id='profile-media' and (storage.foldername(name))[1]=(select auth.uid())::text);"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 100,
+      "statement": "create policy \"Visible posts\" on public.posts for select to authenticated using(not hidden or author_id=auth.uid() or public.community_is_admin());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 101,
+      "statement": "create policy \"Create own posts\" on public.posts for insert to authenticated with check(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 102,
+      "statement": "create policy \"Edit own posts\" on public.posts for update to authenticated using(author_id=auth.uid()) with check(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 103,
+      "statement": "create policy \"Delete own posts\" on public.posts for delete to authenticated using(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 104,
+      "statement": "create policy \"Read own saves\" on public.post_saves for select to authenticated using(user_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 105,
+      "statement": "create policy \"Save visible posts\" on public.post_saves for insert to authenticated with check(user_id=auth.uid() and exists(select 1 from public.posts where id=post_id));"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 106,
+      "statement": "create policy \"Delete own saves\" on public.post_saves for delete to authenticated using(user_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 107,
+      "statement": "create policy \"Visible missions\" on public.missions for select to authenticated using(not hidden or author_id=auth.uid() or public.community_is_admin());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 108,
+      "statement": "create policy \"Create own missions\" on public.missions for insert to authenticated with check(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 109,
+      "statement": "create policy \"Delete own missions\" on public.missions for delete to authenticated using(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 110,
+      "statement": "create policy \"Private applications\" on public.mission_applications for select to authenticated using(applicant_id=auth.uid() or exists(select 1 from public.missions where id=mission_id and author_id=auth.uid()));"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 111,
+      "statement": "create policy \"Read own reports or moderate\" on public.content_reports for select to authenticated using(reporter_id=auth.uid() or public.community_is_admin());"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 112,
+      "statement": "create policy \"Report visible content\" on public.content_reports for insert to authenticated with check(reporter_id=auth.uid() and (exists(select 1 from public.posts where id=post_id) or exists(select 1 from public.missions where id=mission_id)));"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 236,
+      "statement": "create policy \"Read visible post images\" on storage.objects for select to authenticated\nusing(bucket_id='post-images' and ((storage.foldername(name))[1]=auth.uid()::text or exists(select 1 from public.posts p where p.image_path=name)));"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 238,
+      "statement": "create policy \"Upload own post images\" on storage.objects for insert to authenticated\nwith check(bucket_id='post-images' and name ~ ('^'||auth.uid()::text||'/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'));"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 240,
+      "statement": "create policy \"Delete own unused post images\" on storage.objects for delete to authenticated\nusing(bucket_id='post-images' and (storage.foldername(name))[1]=auth.uid()::text and not exists(select 1 from public.posts p where p.image_path=name));"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 179,
+      "statement": "create policy \"Read visible mission images\" on storage.objects for select to authenticated\nusing(bucket_id='mission-images' and ((storage.foldername(name))[1]=auth.uid()::text or exists(select 1 from public.missions m where m.image_path=name)));"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 181,
+      "statement": "create policy \"Upload own mission images\" on storage.objects for insert to authenticated\nwith check(bucket_id='mission-images' and name ~ ('^'||auth.uid()::text||'/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'));"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 183,
+      "statement": "create policy \"Delete own unused mission images\" on storage.objects for delete to authenticated\nusing(bucket_id='mission-images' and (storage.foldername(name))[1]=auth.uid()::text and not exists(select 1 from public.missions m where m.image_path=name));"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 117,
+      "statement": "create policy \"Read presented profile photos\" on storage.objects for select to authenticated using(bucket_id='profile-media' and public.visible_profile_media(name));"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 157,
+      "statement": "create policy \"Read available showcases or own management\" on public.showcase_items for select to authenticated using(owner_id=auth.uid() or public.community_is_admin() or (status='published' and available and not hidden and public.showcase_owner_visible(owner_id)));"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 159,
+      "statement": "create policy \"Read visible showcase images\" on public.showcase_images for select to authenticated using(exists(select 1 from public.showcase_items s where s.id=item_id));"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 160,
+      "statement": "create policy \"Read own showcase saves\" on public.showcase_saves for select to authenticated using(user_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 161,
+      "statement": "create policy \"Save published showcases\" on public.showcase_saves for insert to authenticated with check(user_id=auth.uid() and exists(select 1 from public.showcase_items s where s.id=item_id and s.status='published' and s.available and not s.hidden));"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 162,
+      "statement": "create policy \"Remove own showcase saves\" on public.showcase_saves for delete to authenticated using(user_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 211,
+      "statement": "create policy \"Read attached showcase photos\" on storage.objects for select to authenticated using(bucket_id='showcase-media' and ((storage.foldername(name))[1]=auth.uid()::text or exists(select 1 from public.showcase_images i where i.path=name)));"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 212,
+      "statement": "create policy \"Upload own showcase photos\" on storage.objects for insert to authenticated with check(bucket_id='showcase-media' and name ~ ('^'||auth.uid()::text||'/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'));"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 213,
+      "statement": "create policy \"Delete unused showcase photos\" on storage.objects for delete to authenticated using(bucket_id='showcase-media' and (storage.foldername(name))[1]=auth.uid()::text and not exists(select 1 from public.showcase_images i where i.path=name));"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 29,
+      "statement": "create policy \"Visible reaction totals\" on public.post_reactions for select to authenticated\n using(exists(select 1 from public.posts p where p.id=post_id and not p.hidden));"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 31,
+      "statement": "create policy \"Recipient notifications\" on public.notifications for select to authenticated\n using(recipient_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 15,
+      "statement": "create policy \"Visible conversation\" on public.post_comments for select to authenticated\n using(exists(select 1 from public.posts p where p.id=post_id and not p.hidden));"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 15,
+      "statement": "create policy \"Interest participants\" on public.post_collaboration_interests for select to authenticated\n using(applicant_id=auth.uid() or exists(select 1 from public.posts p where p.id=post_id and p.author_id=auth.uid()));"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 66,
+      "statement": "create policy \"Private mission drafts\" on public.mission_drafts for select to authenticated using(author_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 67,
+      "statement": "create policy \"Private mission saves\" on public.mission_saves for select to authenticated using(user_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 68,
+      "statement": "create policy \"Organizer finalists\" on public.mission_finalists for select to authenticated using(exists(select 1 from public.missions m where m.id=mission_id and m.author_id=auth.uid()));"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 284,
+      "statement": "create policy \"Delete own unused mission images\" on storage.objects for delete to authenticated\n using(bucket_id='mission-images' and (storage.foldername(name))[1]=auth.uid()::text\n and not exists(select 1 from public.missions m where m.image_path=name)\n and not exists(select 1 from public.mission_drafts d where d.published_at is null and d.data->>'image_path'=name));"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 57,
+      "statement": "create policy \"Own notification preferences\" on public.notification_preferences for select to authenticated using(user_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 442,
+      "statement": "create policy \"Tour input owner reads\" on storage.objects for select to authenticated using(bucket_id='tour-inputs' and split_part(name,'/',1)=auth.uid()::text and not exists(select 1 from public.account_deletion_requests where user_id=auth.uid()));"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 445,
+      "statement": "create policy \"Tour input owner reads\" on storage.objects for select to authenticated using(bucket_id='tour-inputs' and private.tour_asset_read(name) and split_part(name,'/',1)=auth.uid()::text);"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 446,
+      "statement": "create policy \"Tour input draft writes\" on storage.objects for insert to authenticated with check(bucket_id='tour-inputs' and private.tour_input_write(name));"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 447,
+      "statement": "create policy \"Tour assets permitted reads\" on storage.objects for select to authenticated using(bucket_id='tour-assets' and private.tour_asset_read(name));"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 448,
+      "statement": "create policy \"Tour reference inserts\" on storage.objects for insert to authenticated with check(bucket_id='tour-assets' and private.tour_reference_write(name));"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 514,
+      "statement": "create policy \"Tour inputs permitted reads\" on storage.objects for select to authenticated using(bucket_id='tour-inputs' and private.tour_input_read(name));"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 526,
+      "statement": "create policy \"Tour review asset reads\" on storage.objects for select to authenticated using(bucket_id='tour-assets' and private.tour_review_asset(name));"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 12,
+      "statement": "create policy \"Own following\" on public.profile_follows for select to authenticated using(follower_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 53,
+      "statement": "create policy \"Live stories\" on public.stories for select to authenticated using(\n deleted_at is null and expires_at>now() and (not hidden or public.community_is_admin())\n and public.showcase_owner_visible(author_id));"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 56,
+      "statement": "create policy \"Own story views\" on public.story_views for select to authenticated using(viewer_id=auth.uid());"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 57,
+      "statement": "create policy \"Story reports moderation\" on public.story_reports for select to authenticated using(reporter_id=auth.uid() or public.community_is_admin());"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 61,
+      "statement": "create policy \"Upload own story image\" on storage.objects for insert to authenticated\n with check(bucket_id='story-images' and public.showcase_owner_visible(auth.uid()) and name ~ ('^'||auth.uid()::text||'/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'));"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 73,
+      "statement": "create policy \"Read live story image\" on storage.objects for select to authenticated using(bucket_id='story-images' and public.story_image_visible(name));"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 74,
+      "statement": "create policy \"Delete unused story image\" on storage.objects for delete to authenticated using(bucket_id='story-images'\n and (storage.foldername(name))[1]=auth.uid()::text and not exists(select 1 from public.stories s where s.image_path=name));"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 48,
+      "statement": "create policy \"Visible mission reactions\" on public.mission_reactions for select to authenticated\n using(public.mission_social_visible(mission_id) and public.showcase_owner_visible(user_id));"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 50,
+      "statement": "create policy \"Visible mission conversation\" on public.mission_comments for select to authenticated\n using(public.mission_social_visible(mission_id) and public.showcase_owner_visible(author_id));"
+    }
+  ],
+  "rpc_declarations": [
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 73,
+      "statement": "create or replace function public.is_username_available(candidate text)\nreturns boolean"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 92,
+      "statement": "create or replace function public.set_profile_updated_at()\nreturns trigger"
+    },
+    {
+      "path": "supabase/migrations/001_initial_schema.sql",
+      "line": 111,
+      "statement": "create or replace function public.handle_new_user()\nreturns trigger"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 37,
+      "statement": "create function public.protect_published_legal() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 50,
+      "statement": "create function public.registration_policy() returns jsonb"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 65,
+      "statement": "create function public.accept_current_legal(terms text, privacy text, adult boolean) returns void"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 80,
+      "statement": "create or replace function public.handle_new_user() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 132,
+      "statement": "create function public.validate_profile_media() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 157,
+      "statement": "create function public.begin_profile_media_operation(owner_id uuid) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/002_account_completion.sql",
+      "line": 169,
+      "statement": "create function public.request_account_deletion(owner_id uuid) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 2,
+      "statement": "create function public.community_is_admin() returns boolean"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 6,
+      "statement": "create function public.community_active_account() returns uuid"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 114,
+      "statement": "create function public.validate_community_content() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 146,
+      "statement": "create function public.community_profiles(profile_ids uuid[] default null,query_text text default '')\nreturns table(id uuid,full_name text,username text,bio text,user_type text,website text)"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 158,
+      "statement": "create function public.set_mission_status(mission_id uuid,new_status text) returns void"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 169,
+      "statement": "create function public.apply_to_mission(mission_id uuid,application_message text) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 183,
+      "statement": "create function public.withdraw_application(application_id uuid) returns void"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 193,
+      "statement": "create function public.review_application(application_id uuid,decision text) returns void"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 213,
+      "statement": "create function public.moderate_content(content_id uuid,content_kind text,hide_content boolean) returns void"
+    },
+    {
+      "path": "supabase/migrations/003_community.sql",
+      "line": 244,
+      "statement": "create function public.guard_post_image_operation() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 36,
+      "statement": "create function public.validate_mission_lifecycle() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 56,
+      "statement": "create function public.create_mission(mission_input jsonb) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 66,
+      "statement": "create function public.update_mission(mission_id uuid,mission_input jsonb) returns void"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 80,
+      "statement": "create function public.set_mission_status(mission_id uuid,new_status text,cancellation_reason text default null) returns void"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 97,
+      "statement": "create or replace function public.apply_to_mission(mission_id uuid,application_message text) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 114,
+      "statement": "create or replace function public.withdraw_application(application_id uuid) returns void"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 126,
+      "statement": "create or replace function public.review_application(application_id uuid,decision text) returns void"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 148,
+      "statement": "create function public.list_missions(author_filter uuid default null,query_text text default '',category_filter text default null,target_filter text default null,scope_filter text default 'all',page_offset int default 0,mission_filter uuid default null)\nreturns setof jsonb language plpgsql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/005_mission_lifecycle.sql",
+      "line": 185,
+      "statement": "create function public.guard_mission_image_operation() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 17,
+      "statement": "create function public.validate_profile_presentation() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 38,
+      "statement": "create function public.complete_initial_profile(profile_type text,selected_interests text[],selected_goals text[]) returns jsonb"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 60,
+      "statement": "create or replace function public.community_active_account() returns uuid"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 73,
+      "statement": "create or replace function public.validate_community_content() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 99,
+      "statement": "create function public.community_profiles(profile_ids uuid[] default null,query_text text default '')\nreturns table(id uuid,full_name text,username text,bio text,user_type text,website text,avatar_path text,cover_path text,cover_preset text,contact_url text,open_to_collaboration boolean,location text,location_latitude double precision,location_longitude double precision,location_precision text,business_hours jsonb)"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 111,
+      "statement": "create function public.visible_profile_media(media_path text) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 151,
+      "statement": "create function public.showcase_owner_visible(owner_id uuid) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 164,
+      "statement": "create function public.save_showcase(item_input jsonb,item_id uuid default null) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 199,
+      "statement": "create function public.delete_showcase(item_id uuid) returns void"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 214,
+      "statement": "create function public.guard_showcase_photo() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 241,
+      "statement": "create function public.report_showcase(item_id uuid,report_reason text) returns void"
+    },
+    {
+      "path": "supabase/migrations/006_profile_experience.sql",
+      "line": 251,
+      "statement": "create or replace function public.moderate_content(content_id uuid,content_kind text,hide_content boolean) returns void"
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "line": 9,
+      "statement": "create or replace function public.validate_profile_presentation() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "line": 29,
+      "statement": "create or replace function public.complete_initial_profile(profile_type text,selected_interests text[],selected_goals text[]) returns jsonb"
+    },
+    {
+      "path": "supabase/migrations/007_minimal_registration.sql",
+      "line": 52,
+      "statement": "create or replace function public.handle_new_user() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 34,
+      "statement": "create function public.social_post(post_uuid uuid) returns public.posts"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 46,
+      "statement": "create function public.notify_post_reaction() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 68,
+      "statement": "create function public.set_post_reaction(post_uuid uuid,reaction_type text) returns void"
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 81,
+      "statement": "create function public.post_social_stats(post_ids uuid[]) returns table("
+    },
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 92,
+      "statement": "create function public.mark_notifications_read(notification_uuid uuid default null,before_time timestamptz default null) returns void"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 18,
+      "statement": "create function public.create_post_comment(post_uuid uuid,comment_body text,operation_uuid uuid) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 37,
+      "statement": "create function public.delete_post_comment(comment_uuid uuid) returns void"
+    },
+    {
+      "path": "supabase/migrations/010_post_comments.sql",
+      "line": 48,
+      "statement": "create or replace function public.post_social_stats(post_ids uuid[]) returns table("
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 17,
+      "statement": "create function public.send_post_interest(post_uuid uuid,interest_message text) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/011_post_collaboration.sql",
+      "line": 33,
+      "statement": "create or replace function public.post_social_stats(post_ids uuid[]) returns table("
+    },
+    {
+      "path": "supabase/migrations/012_mission_map.sql",
+      "line": 7,
+      "statement": "create function public.list_map_missions(\n  south double precision, west double precision,\n  north double precision, east double precision,\n  query_text text default '', category_filter text default null,\n  starts_from timestamptz default null, starts_before timestamptz default null,\n  center_latitude double precision default null,\n  center_longitude double precision default null,\n  radius_km double precision default null\n) returns jsonb"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 11,
+      "statement": "create function public.lock_mission_compensation() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 23,
+      "statement": "create function public.create_mission(mission_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 32,
+      "statement": "create function public.update_mission(mission_id uuid,mission_input jsonb) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 69,
+      "statement": "create function public.save_mission_draft(draft_id uuid,draft_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 118,
+      "statement": "create function public.publish_mission_draft(draft_id uuid,mission_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 132,
+      "statement": "create function public.delete_mission_draft(draft_id uuid) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 140,
+      "statement": "create function public.set_mission_saved(mission_id uuid,is_saved boolean) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 165,
+      "statement": "create function public.submit_mission_application(mission_id uuid,application_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 195,
+      "statement": "create function public.set_mission_finalist(mission_id uuid,application_id uuid,is_finalist boolean) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 210,
+      "statement": "create function public.confirm_mission_selection(mission_id uuid,application_ids uuid[]) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 233,
+      "statement": "create function public.version_mission_event() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 248,
+      "statement": "create function public.notify_mission_application() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 266,
+      "statement": "create function public.notify_mission_status() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 288,
+      "statement": "create or replace function public.guard_mission_image_operation() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/013_missions_redesign.sql",
+      "line": 312,
+      "statement": "create function public.list_saved_missions(query_text text default '',category_filter text default null,target_filter text default null,page_offset int default 0)\nreturns setof jsonb language plpgsql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 59,
+      "statement": "create function public.set_notification_preferences(activity boolean,marea_messages boolean) returns void"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 71,
+      "statement": "create function public.record_notification_activity(zone text) returns void"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 81,
+      "statement": "create function public.register_notification_device(installation uuid,fcm_token text,permission_granted boolean) returns void"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 93,
+      "statement": "create function public.unregister_notification_device(installation uuid) returns void"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 104,
+      "statement": "create function private.wake_push_worker() returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 118,
+      "statement": "create function private.enqueue_notification_push() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 134,
+      "statement": "create function private.schedule_marea_messages(at_time timestamptz) returns void"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 171,
+      "statement": "create function public.claim_push_jobs(batch_size integer default 20) returns jsonb"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 215,
+      "statement": "create function public.finish_push_job(job uuid,lease uuid,result text) returns void"
+    },
+    {
+      "path": "supabase/migrations/014_android_push.sql",
+      "line": 237,
+      "statement": "create function public.push_job_is_current(job uuid,lease uuid) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 58,
+      "statement": "create function private.tour_visible(p_tour uuid) returns boolean language sql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 64,
+      "statement": "create function private.tour_live_document(p_tour uuid,p_owner uuid,p_doc jsonb) returns jsonb language plpgsql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 82,
+      "statement": "create function private.tour_json(p_tour uuid,p_edit boolean default false) returns jsonb language sql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 89,
+      "statement": "create function public.tours_get(p_tour uuid,p_edit boolean default false) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 96,
+      "statement": "create function public.tours_list(p_owner uuid default null,p_lat double precision default null,p_lng double precision default null) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 108,
+      "statement": "create function private.tour_link(p_kind text,p_id uuid,p_tour uuid,p_owner uuid) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 117,
+      "statement": "create function public.tours_link_search(p_query text) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 130,
+      "statement": "create function private.tour_document(p_tour uuid,p_owner uuid,p_doc jsonb) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 181,
+      "statement": "create function private.tour_space_verified(p_tour uuid,p_owner uuid,p_space jsonb) returns boolean language sql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 186,
+      "statement": "create function public.tours_save(p_tour uuid,p_title text,p_space jsonb,p_document jsonb) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 205,
+      "statement": "create function public.tours_ar_report_test(p_tour uuid,p_point uuid,p_reference_version uuid,p_platform text,p_tracking_seconds integer) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 217,
+      "statement": "create function private.tour_public_document(p_doc jsonb) returns jsonb language plpgsql immutable set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 229,
+      "statement": "create function public.tours_submit(p_tour uuid) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 257,
+      "statement": "create function public.tours_link_request(p_tour uuid,p_point uuid) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 269,
+      "statement": "create function public.tours_requests() returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 273,
+      "statement": "create function public.tours_review(p_request uuid,p_approve boolean,p_reason text) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 308,
+      "statement": "create function public.tours_pause(p_tour uuid,p_paused boolean) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 314,
+      "statement": "create function public.tours_progress(p_tour uuid,p_revision uuid,p_progress jsonb default null) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 331,
+      "statement": "create function private.tour_job_json(p_job uuid) returns jsonb language sql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 334,
+      "statement": "create function public.tours_capture_begin(p_tour uuid,p_scene uuid,p_mode text) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 339,
+      "statement": "create function public.tours_capture_submit(p_capture uuid,p_manifest jsonb) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 354,
+      "statement": "create function public.tours_job_get(p_job uuid) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 356,
+      "statement": "create function public.tours_job_cancel(p_job uuid) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 358,
+      "statement": "create function public.tours_attach_result(p_tour uuid,p_scene uuid,p_job uuid) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 376,
+      "statement": "create function public.tours_claim_jobs() returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 386,
+      "statement": "create function public.tours_job_is_current(p_job uuid,p_lease uuid) returns boolean language sql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 389,
+      "statement": "create function public.tours_begin_output_write(p_job uuid,p_lease uuid) returns boolean language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 396,
+      "statement": "create function public.tours_end_output_write(p_job uuid,p_lease uuid) returns void language sql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 399,
+      "statement": "create function public.tours_finish_job(p_job uuid,p_lease uuid,p_state text,p_result jsonb default null,p_error text default null) returns boolean language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 414,
+      "statement": "create or replace function public.request_account_deletion(owner_id uuid) returns boolean language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 426,
+      "statement": "create function private.tour_input_write(p_path text) returns boolean language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 432,
+      "statement": "create function private.tour_asset_read(p_path text) returns boolean language plpgsql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 439,
+      "statement": "create function private.tour_reference_write(p_path text) returns boolean language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 464,
+      "statement": "create function public.tours_job_context(p_job uuid,p_lease uuid) returns jsonb language sql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 471,
+      "statement": "create function private.wake_tour_dispatcher() returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 480,
+      "statement": "create function private.tour_queue_wake() returns trigger language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 488,
+      "statement": "create function public.tours_claim_cleanup() returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 496,
+      "statement": "create function public.tours_finish_cleanup(p_job uuid,p_lease uuid,p_success boolean) returns boolean language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 506,
+      "statement": "create function private.tour_input_read(p_path text) returns boolean language sql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 518,
+      "statement": "create function private.tour_review_asset(p_path text) returns boolean language sql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 530,
+      "statement": "create function public.tours_completion_receipt(p_job uuid,p_lease uuid) returns jsonb language sql stable security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 536,
+      "statement": "create function public.tours_permission_revoke(p_request uuid) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 550,
+      "statement": "create function public.tours_public_list(p_owner uuid) returns jsonb language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/015_tours.sql",
+      "line": 562,
+      "statement": "create or replace function public.tours_renew_cleanup(p_job uuid,p_lease uuid) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 13,
+      "statement": "create function public.set_profile_follow(author_uuid uuid,following boolean) returns void"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 64,
+      "statement": "create function public.story_image_visible(image_name text) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 77,
+      "statement": "create function public.publish_story(story_uuid uuid,story_body text,story_image text default null) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 94,
+      "statement": "create function public.list_stories() returns jsonb"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 103,
+      "statement": "create function public.mark_story_seen(story_uuid uuid) returns void"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 111,
+      "statement": "create function public.delete_story(story_uuid uuid) returns void"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 118,
+      "statement": "create function public.report_story(story_uuid uuid,report_reason text) returns void"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 127,
+      "statement": "create function public.reported_stories() returns setof jsonb"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 135,
+      "statement": "create function public.moderate_story(story_uuid uuid,hide boolean) returns void"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 156,
+      "statement": "create function public.timestamp_mission_acceptance() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 169,
+      "statement": "create function public.home_feed_candidates(filters jsonb) returns table(kind text,id uuid,created_at timestamptz,content jsonb,score bigint)"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 195,
+      "statement": "create function public.home_feed(filters jsonb,page_cursor jsonb default null) returns jsonb"
+    },
+    {
+      "path": "supabase/migrations/016_home_feed.sql",
+      "line": 226,
+      "statement": "create function public.story_cleanup_images() returns setof text"
+    },
+    {
+      "path": "supabase/migrations/017_story_cleanup_schedule.sql",
+      "line": 4,
+      "statement": "create function public.dispatch_story_cleanup() returns void"
+    },
+    {
+      "path": "supabase/migrations/018_story_publication_retries.sql",
+      "line": 15,
+      "statement": "create or replace function public.publish_story(story_uuid uuid,story_body text,story_image text default null) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/019_story_receipt_upgrade.sql",
+      "line": 2,
+      "statement": "create function public.journal_story_publication() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/019_story_receipt_upgrade.sql",
+      "line": 17,
+      "statement": "create or replace function public.publish_story(story_uuid uuid,story_body text,story_image text default null) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 39,
+      "statement": "create function public.mission_social_visible(mission_uuid uuid) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 53,
+      "statement": "create function public.social_mission(mission_uuid uuid) returns public.missions"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 65,
+      "statement": "create function public.notify_mission_reaction() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 87,
+      "statement": "create function public.set_mission_reaction(mission_uuid uuid,reaction_type text) returns void"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 100,
+      "statement": "create function public.create_mission_comment(mission_uuid uuid,comment_body text,operation_uuid uuid) returns uuid"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 124,
+      "statement": "create function public.retract_mission_comment_notification() returns trigger"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 134,
+      "statement": "create function public.delete_mission_comment(comment_uuid uuid) returns void"
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 144,
+      "statement": "create function public.mission_social_stats(mission_ids uuid[]) returns table("
+    },
+    {
+      "path": "supabase/migrations/020_mission_social.sql",
+      "line": 160,
+      "statement": "create or replace function public.home_feed_candidates(filters jsonb) returns table(kind text,id uuid,created_at timestamptz,content jsonb,score bigint)"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 2,
+      "statement": "create function public.valid_content_city(value jsonb) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 16,
+      "statement": "create function public.content_city_matches_point(value jsonb,latitude double precision,longitude double precision) returns boolean"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 25,
+      "statement": "create function public.invalidate_content_city() returns trigger language plpgsql set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 41,
+      "statement": "create function public.create_mission(mission_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 47,
+      "statement": "create function public.update_mission(mission_id uuid,mission_input jsonb) returns void language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 54,
+      "statement": "create function public.save_mission_draft(draft_id uuid,draft_input jsonb) returns uuid language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 76,
+      "statement": "create function public.claim_geocoding_request(request_id uuid) returns boolean language plpgsql security definer set search_path='' as $$"
+    },
+    {
+      "path": "supabase/migrations/021_content_cities.sql",
+      "line": 83,
+      "statement": "create function public.finish_geocoding_request(request_id uuid) returns void language sql security definer set search_path='' as $$"
+    }
+  ],
+  "realtime": [
+    {
+      "path": "supabase/migrations/009_post_reactions.sql",
+      "line": 106,
+      "statement": "alter publication supabase_realtime add table public.notifications;"
+    }
+  ],
+  "buckets_expected": [
+    "profile-media",
+    "post-images",
+    "mission-images",
+    "showcase-media",
+    "story-images",
+    "tour-inputs",
+    "tour-assets"
+  ],
+  "edge_auth_source": {
+    "delete-account": {
+      "verify_jwt": true,
+      "actor": "getUser"
+    },
+    "profile-media": {
+      "verify_jwt": true,
+      "actor": "getUser"
+    },
+    "send-push": {
+      "verify_jwt": false,
+      "actor": "worker secret"
+    },
+    "tour-dispatch": {
+      "verify_jwt": false,
+      "actor": "worker secret and Google IAM"
+    },
+    "story-cleanup": {
+      "verify_jwt": false,
+      "actor": "worker secret"
+    },
+    "geocoding": {
+      "verify_jwt": false,
+      "actor": "search/reverse public; content_city getUser + RLS"
+    }
+  },
+  "blockers": [
+    "H3 PostgreSQL loopback connection refused; H4 not started",
+    "002 drops an existing RLS policy; 005 drops constraints and an RPC signature; destructive replay forbidden",
+    "017 schedules a Vault/pg_net job; 021 configures a real enabled geocoding provider; these must never become active in this runtime"
+  ],
+  "limits": "Lexical source declarations may include superseded definitions. No migrations, jobs, functions or fixtures executed. Full database inventory pending H4."
+}

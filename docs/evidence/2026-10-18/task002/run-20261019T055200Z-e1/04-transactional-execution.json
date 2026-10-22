@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-19T05:55:15.487452+00:00",
+  "result": "PASS",
+  "proposal_sha256": "c0bd95c94fdde1fb55b17533debc939cae9c7fa8c7d77d2b194e8862978cedde",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "sql": "docs/evidence/2026-10-18/task002/run-20261019T055200Z-e1/E1-LAB-A-EXECUTABLE.sql",
+      "sql_sha256": "3b1925c99e4c581be7a1525ce7d1fdb7b578dc43522d6be990b3ebc858a0bd66",
+      "rollback_all_objects_and_rows_proved": true,
+      "committed": true,
+      "reexecution": {
+        "test": "repeat-execution",
+        "role": "supabase_admin",
+        "sqlstate": "P0001",
+        "result": "PASS",
+        "error": "Expected constraint/guard rejection"
+      },
+      "legacy_author_fk": {
+        "name": "missions_author_id_fkey",
+        "type": "f",
+        "schema": "public",
+        "relation": "missions",
+        "validated": true,
+        "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+        "delete_action": "c",
+        "referenced_relation": "profiles"
+      }
+    },
+    "b": {
+      "result": "PASS",
+      "sql": "docs/evidence/2026-10-18/task002/run-20261019T055200Z-e1/E1-LAB-B-EXECUTABLE.sql",
+      "sql_sha256": "cae965b606ede3a461a2ac98d4643025976262fb5d2ef16137b934af44bfb609",
+      "rollback_all_objects_and_rows_proved": true,
+      "committed": true,
+      "reexecution": {
+        "test": "repeat-execution",
+        "role": "supabase_admin",
+        "sqlstate": "P0001",
+        "result": "PASS",
+        "error": "Expected constraint/guard rejection"
+      },
+      "legacy_author_fk": {
+        "name": "missions_author_id_fkey",
+        "type": "f",
+        "schema": "public",
+        "relation": "missions",
+        "validated": true,
+        "definition": "FOREIGN KEY (author_id) REFERENCES profiles(id) ON DELETE CASCADE",
+        "delete_action": "c",
+        "referenced_relation": "profiles"
+      }
+    }
+  }
+}

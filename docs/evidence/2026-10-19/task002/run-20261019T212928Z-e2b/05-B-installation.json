@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-19T21:34:37.043981+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "DDL_rollback_exact": true,
+      "all_original_rows_sequences_equal": true,
+      "SQL_sha256": "a93eb46ea35729122a05a86200642b4202473b3954b8c6dc82d091634e774d71"
+    },
+    "b": {
+      "result": "PASS",
+      "DDL_rollback_exact": true,
+      "all_original_rows_sequences_equal": true,
+      "SQL_sha256": "a93eb46ea35729122a05a86200642b4202473b3954b8c6dc82d091634e774d71"
+    }
+  },
+  "no_purge_capability": true,
+  "SQL_file": "20261019213207_e2b_private_structural_requests.sql"
+}

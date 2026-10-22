@@ -1,0 +1,86 @@
+{
+  "captured_at": "2026-10-13T06:35:41.130Z",
+  "project_ref": "alxdipzfunbpaywmpndi",
+  "operation": "READ_ONLY_METADATA",
+  "data": {
+    "functions": [
+      {
+        "id": "a77a3d7c-253b-47c5-b3d7-5e3a1e10247c",
+        "slug": "delete-account",
+        "name": "delete-account",
+        "status": "ACTIVE",
+        "version": 10,
+        "created_at": 1789177746608,
+        "updated_at": 1791375891006,
+        "verify_jwt": true,
+        "import_map": false,
+        "entrypoint_path": "file:///tmp/user_fn_alxdipzfunbpaywmpndi_a77a3d7c-253b-47c5-b3d7-5e3a1e10247c_10/source/supabase/functions/delete-account/index.ts",
+        "ezbr_sha256": "bffecd3bea404a5c11acb9e14caf92135b60dc05706af14531f4a7dc5aa97697"
+      },
+      {
+        "id": "cd5ead86-dcb2-4d86-912d-27e0208a4189",
+        "slug": "profile-media",
+        "name": "profile-media",
+        "status": "ACTIVE",
+        "version": 5,
+        "created_at": 1789412727508,
+        "updated_at": 1789412727508,
+        "verify_jwt": true,
+        "import_map": false,
+        "entrypoint_path": "file:///tmp/user_fn_alxdipzfunbpaywmpndi_cd5ead86-dcb2-4d86-912d-27e0208a4189_1/source/supabase/functions/profile-media/index.ts",
+        "ezbr_sha256": "14b219cab6f971a7355f502e9b4e572e6141bd6220b9777970c32d43d7f44bd8"
+      },
+      {
+        "id": "587f85eb-5c45-4764-ae6f-8da33cf98c40",
+        "slug": "send-push",
+        "name": "send-push",
+        "status": "ACTIVE",
+        "version": 6,
+        "created_at": 1791254805132,
+        "updated_at": 1791255306700,
+        "verify_jwt": false,
+        "import_map": false,
+        "entrypoint_path": "file:///tmp/user_fn_alxdipzfunbpaywmpndi_587f85eb-5c45-4764-ae6f-8da33cf98c40_3/source/supabase/functions/send-push/index.ts",
+        "ezbr_sha256": "704e79432fa391aafc5e308bf2f3d1bb116fb52a1456fd4f9d33035e0715c47e"
+      },
+      {
+        "id": "5e38d491-5d61-41ba-93fe-5dbf99781f05",
+        "slug": "tour-dispatch",
+        "name": "tour-dispatch",
+        "status": "ACTIVE",
+        "version": 4,
+        "created_at": 1791313403074,
+        "updated_at": 1791315548593,
+        "verify_jwt": false,
+        "entrypoint_path": "file:///Users/crisis/Proyectos/marea/supabase/functions/tour-dispatch/index.ts",
+        "ezbr_sha256": "53c4b397f3bed86bf57ffd5658d719a14deb7b7b3f941ba5aef39176b6cd27d6"
+      },
+      {
+        "id": "d05ec4c8-0ceb-44a5-ab1c-08edaac0ce77",
+        "slug": "story-cleanup",
+        "name": "story-cleanup",
+        "status": "ACTIVE",
+        "version": 2,
+        "created_at": 1791375865196,
+        "updated_at": 1791375865196,
+        "verify_jwt": false,
+        "import_map": false,
+        "entrypoint_path": "file:///tmp/user_fn_alxdipzfunbpaywmpndi_d05ec4c8-0ceb-44a5-ab1c-08edaac0ce77_1/source/supabase/functions/story-cleanup/index.ts",
+        "ezbr_sha256": "6ffbf596335b5354822961d79dafd3ddf073e458eeaaaff33fc2c3646716635e"
+      },
+      {
+        "id": "5d711a4a-5f1b-45aa-897e-b2f88594413d",
+        "slug": "geocoding",
+        "name": "geocoding",
+        "status": "ACTIVE",
+        "version": 3,
+        "created_at": 1791396611388,
+        "updated_at": 1791398455377,
+        "verify_jwt": false,
+        "import_map": false,
+        "entrypoint_path": "file:///tmp/user_fn_alxdipzfunbpaywmpndi_5d711a4a-5f1b-45aa-897e-b2f88594413d_3/source/supabase/functions/geocoding/index.ts",
+        "ezbr_sha256": "a17dd6a53b32c5904a9d5b7a8806d472a89e78096524e116992c17c19d08f414"
+      }
+    ]
+  }
+}

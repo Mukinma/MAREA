@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-19T19:25:33.834917+00:00",
+  "result": "PASS",
+  "cause": "Lexical verifier falsely rejected CREATE TRIGGER BEFORE TRUNCATE; no DDL reached server",
+  "prior_failure": [
+    "GREEN-FAIL-1792437715259691000.json"
+  ],
+  "old_executor_sha256": "ce0704d38aa2a9ecea6c3040339800026b4f9b84fb02c458793b415281b67af2",
+  "new_executor_sha256": "71c87f45fd76b5c085c9544f6c36ebcce3e599a571fc73f5c2eef6cf7d425eb6",
+  "policy_sha256": "36c6f1f9c33001c18d00439e44bb0ed078c43a937412bfecb251ffbef881692a",
+  "SQL_file": "20261019191834_e2s0_local_fence.sql",
+  "SQL_sha256": "76663ba00cea502e9f4579d244f7be1caab07d022bad93afc5d35d8159acf50a",
+  "only_exact_full_or_rollback_DDL_accepted": true,
+  "actual_TRUNCATE_Auth_profile_DELETE_still_rejected": true,
+  "small_policy_tests_passed": 4,
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "full_DB_snapshot_equal": true,
+      "physical_tree_equal": true
+    },
+    "b": {
+      "result": "PASS",
+      "full_DB_snapshot_equal": true,
+      "physical_tree_equal": true
+    }
+  },
+  "permissions_network_integrity_checks_weakened": false
+}

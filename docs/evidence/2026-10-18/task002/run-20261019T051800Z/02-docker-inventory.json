@@ -1,0 +1,3831 @@
+{
+  "at": "2026-10-19T05:15:57.263945+00:00",
+  "version": "29.8.2",
+  "context_endpoint": "unix:///Users/crisis/.docker/run/docker.sock",
+  "containers": [
+    {
+      "id": "fd679cbdcd42",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "1db500042a66",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "9b85212d732e",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "95a631374730",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "7989159a030a",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b84d18f9c4a5",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "6a5bbf078bdf",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "27ba74addbb0",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "277bdac80128",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "94f01a25ed71",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791919482885-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "b00cd8a9ce6d",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-9",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5ba8a6cadc2c",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "8fef0f80e552",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "177e1c2abb07",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "75f9e0e90f60",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c526a6cb0ce1",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "4c2c01dadf2d",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "cee0cc9a5a59",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "42fc2603bcfc",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c8407d8cb755",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791919413927-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "194db5022f88",
+      "name": "/marea-retain-supabase_edge_runtime_marea-task001-fd0edb3330b2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-fd0edb3330b2",
+          "destination": "/retain",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "0154fe8d7b30",
+      "name": "/supabase_edge_runtime_marea-task001-fd0edb3330b2",
+      "running": false,
+      "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+      "project": "marea-task001-fd0edb3330b2",
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-fd0edb3330b2",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "de1bc8631f06",
+      "name": "/marea-task001-fd0edb3330b2-edge-cache-1791919389171",
+      "running": false,
+      "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-fd0edb3330b2",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "00c1014210f7",
+      "name": "/marea-task001-fd0edb3330b2-type-cache-1791919388896",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-fd0edb3330b2",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "f5b6234bc4cf",
+      "name": "/marea-task001-fd0edb3330b2-type-cache-1791919280005",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-fd0edb3330b2",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "a74fdba6a55f",
+      "name": "/marea-task001-fd0edb3330b2-edge-cache",
+      "running": false,
+      "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-fd0edb3330b2",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "f023c20727b3",
+      "name": "/marea-task001-fd0edb3330b2-type-cache-1791919014399",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-fd0edb3330b2",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "c21306b92363",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791918609103-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "d53c96fd0b83",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791918609103-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "0383a13e3b3c",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791918609103-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "921dfc1cc0e2",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791918609103-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "a52faa02cd05",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791918609103-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "f24ca71c4bcc",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791918609103-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "4f461cd9c2b1",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791918609103-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "ab9b9c98e025",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791918609103-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "12995c1aa695",
+      "name": "/marea-task001-fd0edb3330b2-dns-1791918609103-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "8be3c776119b",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791918545039-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "f08501c8db65",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791918545039-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "6aef93a662a4",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791918545039-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "034bd21d0cac",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791918545039-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "25ec8e802421",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791918545039-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "db3656764214",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791918545039-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "e23f131156d8",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791918545039-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "52fdf5a5c64e",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791918545039-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "65f65a6977fe",
+      "name": "/marea-task001-fd0edb3330b2-probe-1791918545039-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "6eb8a5d1723b",
+      "name": "/marea-task001-fd0edb3330b2-canary",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "16876348e31c",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "f818507ded89",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "0ea4367f18cd",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "4b6f200833c5",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "62ff7f464fca",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "3e7f61253f7a",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "3871ad3a89cc",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "ac7ad455bf9c",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "bc20fc88291d",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "08c453cdc468",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "9b35cd52a97b",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5e4f1c43cfc9",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "fa8d83427b76",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "7b88957f3f77",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "bb8d4629011d",
+      "name": "/marea-task001-d7522760bb90-dns-1791918462518-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "910b61f65332",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "361fdd2fef0c",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b957d7cf44fd",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "3b0d27d323b1",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "7028265965e4",
+      "name": "/marea-task001-8798fbb703ba-dns-1791918461409-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "63b89fb453c0",
+      "name": "/marea-retain-supabase_storage_marea-task001-fd0edb3330b2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_storage_marea-task001-fd0edb3330b2",
+          "destination": "/retain",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "b0eb35911472",
+      "name": "/supabase_storage_marea-task001-fd0edb3330b2",
+      "running": true,
+      "image": "sha256:105a2584129c9600aebed6f5ac49ca4371c92b996ecd1af7179750333e9e2120",
+      "project": "marea-task001-fd0edb3330b2",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_storage_marea-task001-fd0edb3330b2",
+          "destination": "/mnt",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "d3771bfc3631",
+      "name": "/supabase_rest_marea-task001-fd0edb3330b2",
+      "running": true,
+      "image": "sha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e",
+      "project": "marea-task001-fd0edb3330b2",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "da4500560e3c",
+      "name": "/supabase_realtime_marea-task001-fd0edb3330b2",
+      "running": true,
+      "image": "sha256:002193c9ff840a4946918641901bb6aa9e2036dc9ff7590e2b11e91d1e06bf86",
+      "project": "marea-task001-fd0edb3330b2",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "77069e79cc5f",
+      "name": "/supabase_inbucket_marea-task001-fd0edb3330b2",
+      "running": true,
+      "image": "sha256:37a38e48e9338cd7e89dfeb487f37b02ebfcd9cb23111bed2d345e79d37d6dd6",
+      "project": "marea-task001-fd0edb3330b2",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "6eb5dd518a97",
+      "name": "/supabase_auth_marea-task001-fd0edb3330b2",
+      "running": true,
+      "image": "sha256:c0c25187a6b835e65a6f6e6c6b39d090e832d40e6de5186f2c038e0411944232",
+      "project": "marea-task001-fd0edb3330b2",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "0c3811bd1a1f",
+      "name": "/supabase_kong_marea-task001-fd0edb3330b2",
+      "running": true,
+      "image": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "project": "marea-task001-fd0edb3330b2",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "f81d3928bcef",
+      "name": "/marea-retain-supabase_db_marea-task001-fd0edb3330b2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_db_marea-task001-fd0edb3330b2",
+          "destination": "/retain",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "e4cfe131aef8",
+      "name": "/supabase_db_marea-task001-fd0edb3330b2",
+      "running": true,
+      "image": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "project": "marea-task001-fd0edb3330b2",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_db_marea-task001-fd0edb3330b2",
+          "destination": "/var/lib/postgresql/data",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "f1fda61dc268",
+      "name": "/marea-task001-fd0edb3330b2-relay",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-fd0edb3330b2",
+        "marea-task001-fd0edb3330b2-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "b09d993a7433",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "56c2504838dd",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "9cc7eb04f487",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "a852fa0098fd",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c34c749f82d3",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b6aea51b7a0a",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "0ab78bd3d7f3",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "a0e3dbf3950d",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "39ff8985ecbc",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "63286a5dc106",
+      "name": "/marea-task001-d7522760bb90-dns-1791918096921-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "9136d00010f3",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-9",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5ebcc2bbc3e1",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5763536cc744",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "2a16750e3247",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "2bfb34f32e33",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5ab734d7ff6f",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "892ed4673ebc",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "e4ee9e7c0026",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c618c4946116",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b844fcccf388",
+      "name": "/marea-task001-d7522760bb90-probe-1791917996862-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "b9489cd2206a",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "7e1cb6eced06",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "6aff7f5680e6",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c7ee181c9a3d",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "e7a0880751c3",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "59f4806f2526",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "bdc3cdf5b983",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "f99949f5aa50",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "2fc412b18ad0",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "25c1e281d307",
+      "name": "/marea-task001-8798fbb703ba-dns-1791917996841-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "6ef9215202c9",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-9",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "23c8bc6ebf84",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "e8e2b844533b",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c072237322c2",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "36188d95d100",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "7c6dc8eabcc5",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "be2041169667",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "e57005f5b03f",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b26edb1869fa",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "d099db52f837",
+      "name": "/marea-task001-8798fbb703ba-probe-1791917505081-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "349f942a9dad",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5672659f2954",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "153304c06219",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "bbeed9f7d1df",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "9ebd365f42cd",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "7ea8140d36fa",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "7ce7bbd4714c",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "62c86e9e0167",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "f619a9ac6c3c",
+      "name": "/marea-task001-d7522760bb90-type-cache-1791917367142",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-d7522760bb90",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "f9ab268de775",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "da376d38e1c8",
+      "name": "/marea-task001-d7522760bb90-dns-1791917366754-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "dd53efc0e95c",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-9",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5d6f1555c138",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5ec0e20cbb52",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "fab2f0262b43",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "575d315d5e5c",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "2141b053852e",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5d072b1fb6ef",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c196295223fe",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "2185c9eb56fb",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "9f9c9dceb16f",
+      "name": "/marea-task001-d7522760bb90-type-cache-1791917311807",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-d7522760bb90",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "174f7de72400",
+      "name": "/marea-task001-d7522760bb90-probe-1791917303942-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "15cb31b41642",
+      "name": "/marea-task001-8798fbb703ba-type-cache-1791917302272",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-8798fbb703ba",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "56c741311086",
+      "name": "/marea-task001-d7522760bb90-type-cache-1791917281056",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-d7522760bb90",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "93260294934c",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-9",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "207717582b20",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "05bcb9b6d9ae",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "127d805bdba6",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "321a620deeaa",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "316c14ba96ae",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "43021111850c",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "59bdfec0652e",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "7e3b9ceb15c1",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "2835617b0d04",
+      "name": "/marea-task001-d7522760bb90-probe-1791917216897-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "f254af418c78",
+      "name": "/marea-task001-8798fbb703ba-type-cache-1791917215640",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-8798fbb703ba",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "78d2c2288555",
+      "name": "/marea-retain-supabase_edge_runtime_marea-task001-d7522760bb90",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-d7522760bb90",
+          "destination": "/retain",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "0b159e9708f0",
+      "name": "/supabase_edge_runtime_marea-task001-d7522760bb90",
+      "running": false,
+      "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+      "project": "marea-task001-d7522760bb90",
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-d7522760bb90",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "77e6ccc5b4c2",
+      "name": "/marea-task001-d7522760bb90-type-cache-1791917175289",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-d7522760bb90",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "6e6243ed5cc9",
+      "name": "/marea-task001-d7522760bb90-edge-cache",
+      "running": false,
+      "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-d7522760bb90",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "f919dcb59eee",
+      "name": "/marea-task001-8798fbb703ba-type-cache-1791917121891",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-8798fbb703ba",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "834db865271f",
+      "name": "/wizardly_northcutt",
+      "running": false,
+      "image": "sha256:3bf75873714baa410dcf7fabaf76d806d20f0ac8a7579df11577b4ed97416e34",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "none"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "cec68fef8374",
+      "name": "/youthful_antonelli",
+      "running": false,
+      "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "none"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "7720df5428fd",
+      "name": "/goofy_napier",
+      "running": false,
+      "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "none"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "60f39e7397e6",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "fa440b23e35d",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "91d29c5694fe",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "4c34f954c9ec",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "31c9d6c70ca5",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5e29167f34b9",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "629ca569ddab",
+      "name": "/marea-task001-d7522760bb90-dns-1791916437679-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "734265f5ce81",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "6d465ce4d99d",
+      "name": "/marea-task001-d7522760bb90-dns-1791916437679-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "85cf75e20751",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "57938dceae6c",
+      "name": "/marea-task001-d7522760bb90-dns-1791916437679-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5504e2dda728",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "6adcb1714072",
+      "name": "/marea-task001-d7522760bb90-dns-1791916437679-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "af208e218b6b",
+      "name": "/marea-task001-8798fbb703ba-dns-1791916438777-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "ad37806b0bbd",
+      "name": "/marea-task001-d7522760bb90-dns-1791916437679-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "f87660be9636",
+      "name": "/marea-task001-d7522760bb90-dns-1791916437679-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "3a14f3ffd425",
+      "name": "/marea-task001-d7522760bb90-dns-1791916437679-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "8d70e26313a1",
+      "name": "/marea-task001-d7522760bb90-dns-1791916437679-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "2ff79ba880a6",
+      "name": "/marea-task001-d7522760bb90-dns-1791916437679-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "ccf2db29005d",
+      "name": "/marea-task001-d7522760bb90-probe-1791916259017-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c3d0f13658d7",
+      "name": "/marea-task001-d7522760bb90-probe-1791916259017-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b292823826d9",
+      "name": "/marea-task001-d7522760bb90-probe-1791916259017-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "4441b80d78ce",
+      "name": "/marea-task001-d7522760bb90-probe-1791916259017-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "ff4f96fe618f",
+      "name": "/marea-task001-d7522760bb90-probe-1791916259017-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "810d693c0034",
+      "name": "/marea-task001-d7522760bb90-probe-1791916259017-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b3ba4c76c6f5",
+      "name": "/marea-task001-d7522760bb90-probe-1791916259017-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b2a9a6221a3f",
+      "name": "/marea-task001-d7522760bb90-probe-1791916259017-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "698166c7e8d6",
+      "name": "/marea-task001-d7522760bb90-probe-1791916259017-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "fd37445547f2",
+      "name": "/marea-task001-d7522760bb90-canary",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "916329f0bb9c",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-9",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "cafed4eea039",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "30c7daf7116a",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "61bd3cf5fed1",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "f77d5b5034a6",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "6c4e4ed38668",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "4c32f1d9ca73",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "e4f2ae304672",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c5f6475e86a2",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5eb6eb6d0e40",
+      "name": "/marea-task001-8798fbb703ba-probe-1791916203385-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "dce95bd895aa",
+      "name": "/marea-retain-supabase_storage_marea-task001-d7522760bb90",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_storage_marea-task001-d7522760bb90",
+          "destination": "/retain",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "fe82c5896e76",
+      "name": "/supabase_storage_marea-task001-d7522760bb90",
+      "running": true,
+      "image": "sha256:105a2584129c9600aebed6f5ac49ca4371c92b996ecd1af7179750333e9e2120",
+      "project": "marea-task001-d7522760bb90",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_storage_marea-task001-d7522760bb90",
+          "destination": "/mnt",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "bcfc80659267",
+      "name": "/supabase_rest_marea-task001-d7522760bb90",
+      "running": true,
+      "image": "sha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e",
+      "project": "marea-task001-d7522760bb90",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "61a2637522f4",
+      "name": "/supabase_realtime_marea-task001-d7522760bb90",
+      "running": true,
+      "image": "sha256:002193c9ff840a4946918641901bb6aa9e2036dc9ff7590e2b11e91d1e06bf86",
+      "project": "marea-task001-d7522760bb90",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "6ff23cff8f2e",
+      "name": "/supabase_inbucket_marea-task001-d7522760bb90",
+      "running": true,
+      "image": "sha256:37a38e48e9338cd7e89dfeb487f37b02ebfcd9cb23111bed2d345e79d37d6dd6",
+      "project": "marea-task001-d7522760bb90",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "bd93455fbbd6",
+      "name": "/supabase_auth_marea-task001-d7522760bb90",
+      "running": true,
+      "image": "sha256:c0c25187a6b835e65a6f6e6c6b39d090e832d40e6de5186f2c038e0411944232",
+      "project": "marea-task001-d7522760bb90",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "4322dabf9513",
+      "name": "/supabase_kong_marea-task001-d7522760bb90",
+      "running": true,
+      "image": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "project": "marea-task001-d7522760bb90",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "ff78796afdaa",
+      "name": "/marea-retain-supabase_db_marea-task001-d7522760bb90",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_db_marea-task001-d7522760bb90",
+          "destination": "/retain",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "5231ff8f92cd",
+      "name": "/supabase_db_marea-task001-d7522760bb90",
+      "running": true,
+      "image": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "project": "marea-task001-d7522760bb90",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_db_marea-task001-d7522760bb90",
+          "destination": "/var/lib/postgresql/data",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "fa98c1cff9d6",
+      "name": "/marea-task001-d7522760bb90-relay",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-d7522760bb90",
+        "marea-task001-d7522760bb90-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "570b03b25653",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "0b11a4c49d3f",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "54da117da253",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5eb2313b7621",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5b5a040733c4",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "f82edc253941",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "cdc1a38ae066",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "d54766ae0569",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "ce77c09cefc0",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "1eb8dd460300",
+      "name": "/marea-task001-8798fbb703ba-dns-1791915943729-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "84d2d0241f8d",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-9",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "672c96ced638",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "71a6e1c3b75a",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "d8b8d942b8a1",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "ea5d30f8e9c8",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "dc838e62c3c1",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "60635ed5ff03",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b9c16143df25",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "01cf223c94cd",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "d9c1e936d6bb",
+      "name": "/marea-task001-8798fbb703ba-probe-1791915739407-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "355843dc1fb2",
+      "name": "/marea-retain-supabase_edge_runtime_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-8798fbb703ba",
+          "destination": "/retain",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "259afcdee182",
+      "name": "/marea-task001-8798fbb703ba-edge-cache",
+      "running": false,
+      "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_edge_runtime_marea-task001-8798fbb703ba",
+          "destination": "/root/.cache/deno",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "20259a0c7126",
+      "name": "/marea-task001-8798fbb703ba-edge-help",
+      "running": false,
+      "image": "sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "none"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "2fb6f3fbeac7",
+      "name": "/marea-task001-8798fbb703ba-dns-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b9d147a14338",
+      "name": "/marea-task001-8798fbb703ba-dns-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "bcf5e780e5f8",
+      "name": "/marea-task001-8798fbb703ba-dns-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "569685dc39b7",
+      "name": "/marea-task001-8798fbb703ba-dns-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b5b65d873c4f",
+      "name": "/marea-task001-8798fbb703ba-dns-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "d32363f41adb",
+      "name": "/marea-task001-8798fbb703ba-dns-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "3279e3358ae9",
+      "name": "/marea-task001-8798fbb703ba-dns-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "bfd41a998a66",
+      "name": "/marea-task001-8798fbb703ba-dns-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "c2d84b6895a3",
+      "name": "/marea-task001-8798fbb703ba-dns-control",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "f9afd507e84a",
+      "name": "/marea-task001-8798fbb703ba-probe-8",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "5ba157df687e",
+      "name": "/marea-task001-8798fbb703ba-probe-7",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "eb8b9ba5802d",
+      "name": "/marea-task001-8798fbb703ba-probe-6",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "917b7c325d1c",
+      "name": "/marea-task001-8798fbb703ba-probe-5",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "7554b6d63598",
+      "name": "/marea-task001-8798fbb703ba-probe-4",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "b092865eea46",
+      "name": "/marea-task001-8798fbb703ba-probe-3",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "3234cec38efc",
+      "name": "/marea-task001-8798fbb703ba-probe-2",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "75f66b700735",
+      "name": "/marea-task001-8798fbb703ba-probe-1",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "id": "bd8e66907d9b",
+      "name": "/marea-task001-8798fbb703ba-probe-0",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "6b1c391def8c",
+      "name": "/marea-task001-8798fbb703ba-canary",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "9ac4fe463c1e",
+      "name": "/marea-retain-supabase_storage_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_storage_marea-task001-8798fbb703ba",
+          "destination": "/retain",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "9a359390fca4",
+      "name": "/supabase_storage_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:105a2584129c9600aebed6f5ac49ca4371c92b996ecd1af7179750333e9e2120",
+      "project": "marea-task001-8798fbb703ba",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_storage_marea-task001-8798fbb703ba",
+          "destination": "/mnt",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "1288968637d4",
+      "name": "/supabase_rest_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e",
+      "project": "marea-task001-8798fbb703ba",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "56c4b06231c4",
+      "name": "/supabase_realtime_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:002193c9ff840a4946918641901bb6aa9e2036dc9ff7590e2b11e91d1e06bf86",
+      "project": "marea-task001-8798fbb703ba",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "442d8beb4691",
+      "name": "/supabase_inbucket_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:37a38e48e9338cd7e89dfeb487f37b02ebfcd9cb23111bed2d345e79d37d6dd6",
+      "project": "marea-task001-8798fbb703ba",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "24b69d2ff127",
+      "name": "/supabase_auth_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:c0c25187a6b835e65a6f6e6c6b39d090e832d40e6de5186f2c038e0411944232",
+      "project": "marea-task001-8798fbb703ba",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "662a5db5cbf9",
+      "name": "/supabase_kong_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "project": "marea-task001-8798fbb703ba",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "be3332caf00c",
+      "name": "/marea-retain-supabase_db_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_db_marea-task001-8798fbb703ba",
+          "destination": "/retain",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "75180ab11d11",
+      "name": "/supabase_db_marea-task001-8798fbb703ba",
+      "running": false,
+      "image": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "project": "marea-task001-8798fbb703ba",
+      "restart": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba"
+      ],
+      "volumes": [
+        {
+          "name": "supabase_db_marea-task001-8798fbb703ba",
+          "destination": "/var/lib/postgresql/data",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "a80ed36d9709",
+      "name": "/marea-task001-8798fbb703ba-relay",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-8798fbb703ba",
+        "marea-task001-8798fbb703ba-ingress"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "dac2802623bc",
+      "name": "/marea-task001-package-inventory-174515",
+      "running": false,
+      "image": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "none"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "0ed157dd9f40",
+      "name": "/marea-task001-diag-control-174515-peer-0",
+      "running": false,
+      "image": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-diag-control-174515"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "1b2bdae55778",
+      "name": "/marea-task001-diag-control-174515",
+      "running": false,
+      "image": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-diag-control-174515"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "35357cbb15ac",
+      "name": "/marea-task001-diag-internal-174515-peer-0",
+      "running": false,
+      "image": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-diag-internal-174515"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "f6a9af7b90f4",
+      "name": "/marea-task001-diag-internal-174515",
+      "running": false,
+      "image": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "marea-task001-diag-internal-174515"
+      ],
+      "volumes": []
+    },
+    {
+      "id": "c992a2172486",
+      "name": "/marea-task001-diag-tools-174515",
+      "running": false,
+      "image": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "project": null,
+      "restart": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "networks": [
+        "none"
+      ],
+      "volumes": []
+    }
+  ],
+  "volumes": [
+    "supabase_db_marea-task001-8798fbb703ba",
+    "supabase_db_marea-task001-d7522760bb90",
+    "supabase_db_marea-task001-fd0edb3330b2",
+    "supabase_edge_runtime_marea-task001-8798fbb703ba",
+    "supabase_edge_runtime_marea-task001-d7522760bb90",
+    "supabase_edge_runtime_marea-task001-fd0edb3330b2",
+    "supabase_storage_marea-task001-8798fbb703ba",
+    "supabase_storage_marea-task001-d7522760bb90",
+    "supabase_storage_marea-task001-fd0edb3330b2"
+  ]
+}

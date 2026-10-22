@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-20T04:22:16.659089+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "helper_restarts_same_ID_only_new_B_volumes": [
+        {
+          "id": "3eca185ce151e74e9ee7f5426537a6c4b3aa4174b0d72b4126056665a8ad7c06",
+          "name": "task002-e2b-20261019t212928z-a-db-copy",
+          "result": {
+            "result": "PASS",
+            "netns": "net:[4026532568]",
+            "listeners": [],
+            "egress_routes": 0,
+            "forwarding": false
+          }
+        },
+        {
+          "id": "ab7e7a0d1eff928307f4ac21a3d5ddfe700ef01649de6822c2e3c41768e4279a",
+          "name": "task002-e2b-20261019t212928z-a-storage-copy",
+          "result": {
+            "result": "PASS",
+            "netns": "net:[4026532702]",
+            "listeners": [],
+            "egress_routes": 0,
+            "forwarding": false
+          }
+        },
+        {
+          "id": "50711ec5f431ee35e376ecaea39a59c9e6c6d54ca924b8c1ce8b9d8fde7ee9f5",
+          "name": "task002-e2b-20261019t212928z-a-control-v2-copy",
+          "result": {
+            "result": "PASS",
+            "netns": "net:[4026532836]",
+            "listeners": [],
+            "egress_routes": 0,
+            "forwarding": false
+          }
+        }
+      ],
+      "physical_snapshot_exact": true
+    },
+    "b": {
+      "result": "PASS",
+      "helper_restarts_same_ID_only_new_B_volumes": [
+        {
+          "id": "70c02dcc54ed010b8dca3ab5e1365366bd70d1bf53b63f14fc34b8a2606d0ef0",
+          "name": "task002-e2b-20261019t212928z-b-db-copy",
+          "result": {
+            "result": "PASS",
+            "netns": "net:[4026532970]",
+            "listeners": [],
+            "egress_routes": 0,
+            "forwarding": false
+          }
+        },
+        {
+          "id": "e32231500bf7143bb326385e05436a7dae8b2a0d4f889f1d79df61f1632e7aee",
+          "name": "task002-e2b-20261019t212928z-b-storage-copy",
+          "result": {
+            "result": "PASS",
+            "netns": "net:[4026533238]",
+            "listeners": [],
+            "egress_routes": 0,
+            "forwarding": false
+          }
+        },
+        {
+          "id": "f4a5b43e7075b798a6bcd00b1b5b731e2e293c27d57b0be94c786f90b55e6ab1",
+          "name": "task002-e2b-20261019t212928z-b-control-v2-copy",
+          "result": {
+            "result": "PASS",
+            "netns": "net:[4026533372]",
+            "listeners": [],
+            "egress_routes": 0,
+            "forwarding": false
+          }
+        }
+      ],
+      "physical_snapshot_exact": true
+    }
+  },
+  "cause": "Operator copy helpers completed their declared 7200-second sleep during elapsed session. Exit 0; no historical volume or container restarted.",
+  "additional_barrier_fixture_issue": "authenticated has no direct mission UPDATE privilege; raw FOR UPDATE prelock must run as trusted instrumentation before invoking unchanged real authenticated RPC",
+  "policy_case_TTLs_not_extended": true
+}

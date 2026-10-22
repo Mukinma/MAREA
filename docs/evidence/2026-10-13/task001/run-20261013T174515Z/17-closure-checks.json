@@ -1,0 +1,52 @@
+{
+  "id": "E-TASK001-CLOSURE-CHECKS-20261013T174515Z",
+  "at": "2026-10-13T19:49:28.063Z",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "npm test --prefix tool/traceability",
+      "exit_code": 0
+    },
+    {
+      "command": "node tool/traceability/cli.mjs validate",
+      "exit_code": 0
+    },
+    {
+      "command": "node tool/traceability/cli.mjs render",
+      "exit_code": 0
+    },
+    {
+      "command": "node tool/traceability/cli.mjs check",
+      "exit_code": 0
+    }
+  ],
+  "traceability_tests_passed": 21,
+  "guard_tests_passed": 10,
+  "second_generation_without_writes": true,
+  "derived_views": [
+    {
+      "path": "docs/MAREA_TRACKING.md",
+      "sha256": "6130440409c2c2565e4521a9a363d3eb38a8ca147ba57d4a3502ebf490d74b1d",
+      "mtime": 1791920783073.6377
+    },
+    {
+      "path": "docs/MAREA_AUDIT_REPORT.md",
+      "sha256": "cc73391caeae36d62a2625a643cda9f7cf5a536429208914b6fb8ad48b9049bb",
+      "mtime": 1791920783078.6272
+    },
+    {
+      "path": "docs/MAREA_TRACEABILITY.md",
+      "sha256": "9ab5b5d631aa3e06fd7446705b3cd24844d0d7afc165850ad6d5709d55d5618e",
+      "mtime": 1791920783077.7383
+    },
+    {
+      "path": "docs/MAREA_CHANGELOG.md",
+      "sha256": "904bc443bfda10f7ab8afff5f93a8326c05c553e7de6ba0f6f1d87c054f0ba08",
+      "mtime": 1791920783079.0415
+    }
+  ],
+  "srs_sha256": "44087ec119772779a7972063299f248ae60009b26119a5c9b179ee75a7911152",
+  "canonical_before_closure_sha256": "e443b0e4a1913b405107090ddfeff77b88932ac450f6703ce9bcb4f89bb0040f",
+  "complete_requirement_validation": false,
+  "remote_modified": false
+}

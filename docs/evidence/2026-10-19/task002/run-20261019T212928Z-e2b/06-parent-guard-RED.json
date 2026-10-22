@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-19T21:36:17.243140+00:00",
+  "result": "EXPECTED_RED",
+  "sources": {
+    "a": {
+      "result": "EXPECTED_RED",
+      "blocked_owner_candidature_insert_inside_rolled_back_transaction": 1,
+      "persistent_data_unchanged": true
+    },
+    "b": {
+      "result": "EXPECTED_RED",
+      "blocked_owner_candidature_insert_inside_rolled_back_transaction": 1,
+      "persistent_data_unchanged": true
+    }
+  },
+  "fix_required": "Serialize candidature with mission owner request, including ordinary service_role path"
+}

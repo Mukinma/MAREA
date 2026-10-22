@@ -1,0 +1,14 @@
+{
+  "id": "E-TASK001-STOP-20261013T174515Z",
+  "at": "2026-10-13T19:48:53.856Z",
+  "result": "PASS",
+  "project_id": "marea-task001-8798fbb703ba",
+  "services_before": 8,
+  "services_stopped": 7,
+  "functions_gracefully_stopped": true,
+  "volumes_checked": 3,
+  "volumes_preserved": true,
+  "other_two_stacks_unchanged": true,
+  "old_blocked_runtime_untouched": true,
+  "remote_modified": false
+}

@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-19T15:24:47.484034+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "network": {
+        "result": "PASS",
+        "netns": "net:[4026533104]",
+        "listeners": [
+          5432,
+          9999
+        ],
+        "egress_routes": 0,
+        "forwarding": false
+      },
+      "backup_restore": {
+        "archive_sha256": "46a5d340b5dc618b4fa5d78f3458476ef92e025e175a3743265a6adeb7266425",
+        "manifest_sha256": "7cdedb1ab06ce3216b8059f7d97d7c0c1ead69302425957ce0e1b2e0eca4cf9c",
+        "tree_verified_on_new_volume": "task002-e2a-r8-20261019t152005z-a-A-final-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      }
+    },
+    "b": {
+      "network": {
+        "result": "PASS",
+        "netns": "net:[4026533774]",
+        "listeners": [
+          5432,
+          9999
+        ],
+        "egress_routes": 0,
+        "forwarding": false
+      },
+      "backup_restore": {
+        "archive_sha256": "02d238f0429056c32b7c7325bcf88b2e8ba11cb683459a6fbf818827d3f3e313",
+        "manifest_sha256": "f08fcbc8cd18983cf9d810d42a0c972b8db9c8d28259893c3c0250cd049f23ce",
+        "tree_verified_on_new_volume": "task002-e2a-r8-20261019t152005z-b-A-final-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      }
+    }
+  },
+  "DB_full_logical_catalog_acl_data_sequence_recovered": true,
+  "Storage_recovery_already_verified_and_unchanged": true,
+  "no_next_increment": true
+}

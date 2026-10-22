@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-19T05:17:51.415517+00:00",
+  "result": "PASS",
+  "reason": "Docker startup resumed 14 services from two historical successful runtimes; all belonged to their internal networks. Gracefully stopped before read-only cold-volume backup; no blocked/foreign containers started or deleted.",
+  "projects": [
+    "marea-task001-d7522760bb90",
+    "marea-task001-fd0edb3330b2"
+  ],
+  "stopped_services": 14,
+  "all_stopped": true,
+  "offline_before_boot_preserved": true,
+  "limits": "Cold backup point is after daemon startup and graceful quiescence; pre-boot VM clone retained separately. No claim of byte identity of live DB volume across server startup/shutdown."
+}

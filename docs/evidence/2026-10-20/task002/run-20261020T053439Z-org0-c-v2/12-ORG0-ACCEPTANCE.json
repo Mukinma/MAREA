@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-20T05:37:49.494767+00:00",
+  "result": "PASS",
+  "stage": "ORG0_ONLY",
+  "gates": [
+    "05-ORG0-installation.json",
+    "07-ORG0-GREEN.json",
+    "08-ORG0-concurrency-states.json",
+    "08b-ORG0-expiry-integrity.json",
+    "08c-ORG0-legacy-marker-regression.json",
+    "09b-ORG0-conservation-final.json",
+    "10-ORG0-recovery.json"
+  ],
+  "receipt_bindings": {
+    "05-ORG0-installation.json": "d84cca2c51ea47b15419c795f0b1600be95619851b7e0b6e686d490081f919c4",
+    "07-ORG0-GREEN.json": "baee037bf69bfcc87ed37a2f265b36b3f97f1c8ce2eb5ff68b078a89d726c897",
+    "08-ORG0-concurrency-states.json": "234317052565114148ea9a271617f9e828d30f2df0560c72370297ba561fbf08",
+    "08b-ORG0-expiry-integrity.json": "385073c1e37fd1b8a67c78716dc0bdf7d6eb0835aecd385d14124ccecead331d",
+    "08c-ORG0-legacy-marker-regression.json": "f656dd6ae5a40feb67a449d4133878cf128f6261ff752c0146193fda021b7228",
+    "09b-ORG0-conservation-final.json": "da06373503ab71c9712426a53ff40531bd44e7e4ca579463c5d259a14b96348e",
+    "10-ORG0-recovery.json": "79ebc578c34bfa75bce5af701f1f058c285881a7d8cbfb121af83cd5d8f542b6"
+  },
+  "C_started": false,
+  "C_conditional_authorization_now_satisfied": true,
+  "product_or_TASK002_acceptance": false
+}

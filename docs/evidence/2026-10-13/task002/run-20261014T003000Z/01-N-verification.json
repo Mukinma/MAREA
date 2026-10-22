@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-14T00:37:46.983Z",
+  "result": "PASS_DOCUMENTARY_ONLY",
+  "source_before_sha256": "92800504bf77d2930de72485cd8b5e00baf6b7c4988cba086ec2bbdaf96b5e17",
+  "source_after_sha256": "4a1c28594e68d26180390b9aea3affce18a619039ad25ad1c8c528dc3d2f4388",
+  "preserved_v50_sha256": "44087ec119772779a7972063299f248ae60009b26119a5c9b179ee75a7911152",
+  "explicit_ids_preserved": 521,
+  "RF": 313,
+  "canonical_states_unchanged": true,
+  "activation_invariant_scope": "INITIAL_TRANSITION_ONLY",
+  "revision_ttl": "7 natural days server UTC clipped by execution; provisional approval",
+  "organizer_variants": [
+    "PERSONAL",
+    "ORGANIZACIONAL"
+  ],
+  "compatibility_verified": false,
+  "baseline_adopted": false,
+  "remote_authorized": false,
+  "migrations_executed": false,
+  "flutter_modified": false,
+  "complete_requirement_validation": false
+}

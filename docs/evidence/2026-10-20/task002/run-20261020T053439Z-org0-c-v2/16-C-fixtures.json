@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-20T05:38:10.976460+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "new_public_missions": 2,
+      "legacy_missions_changed": 0,
+      "old_synthetic_resource_explicit_org_decision": 1,
+      "concurrent_manifests_pending": 2,
+      "new_Auth_profile_candidature_rows": 0
+    },
+    "b": {
+      "result": "PASS",
+      "new_public_missions": 2,
+      "legacy_missions_changed": 0,
+      "old_synthetic_resource_explicit_org_decision": 1,
+      "concurrent_manifests_pending": 2,
+      "new_Auth_profile_candidature_rows": 0
+    }
+  }
+}

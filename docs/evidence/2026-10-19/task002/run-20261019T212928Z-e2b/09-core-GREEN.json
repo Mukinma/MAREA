@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-19T21:42:37.958705+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "cases": [
+        {
+          "case": "E2-T10",
+          "result": "PASS",
+          "concurrent_requests": 2,
+          "response_discarded_after_SQL_commit": true,
+          "HTTP_integration_claimed": false
+        },
+        {
+          "case": "E2-T11_PARTIAL",
+          "result": "PASS_STRUCTURAL_ONLY",
+          "real_mission_RPC_and_raw_publication_candidatures_denied": true,
+          "contracts_offers_reservations": "NO_IMPLEMENTADO"
+        },
+        {
+          "case": "effective_privileges",
+          "result": "PASS",
+          "raw_reads_inserts_denied": 70,
+          "request_entry_denials": 4,
+          "roles_existing_clients_unchanged": true
+        },
+        {
+          "case": "E2-T09",
+          "result": "PASS_NEGATIVE_ONLY",
+          "ordinary_SQL_Auth_profile_and_real_Auth_API_denied": true,
+          "successful_purges": 0
+        }
+      ],
+      "request_id": "96c8ac26-1257-4e3c-87fb-2caaadcf5965",
+      "source_unequal_request_id": "9cb494ab-edfb-4bbe-8c3c-d6609169f0e2",
+      "successfully_deleted_accounts": 0
+    },
+    "b": {
+      "result": "PASS",
+      "cases": [
+        {
+          "case": "E2-T10",
+          "result": "PASS",
+          "concurrent_requests": 2,
+          "response_discarded_after_SQL_commit": true,
+          "HTTP_integration_claimed": false
+        },
+        {
+          "case": "E2-T11_PARTIAL",
+          "result": "PASS_STRUCTURAL_ONLY",
+          "real_mission_RPC_and_raw_publication_candidatures_denied": true,
+          "contracts_offers_reservations": "NO_IMPLEMENTADO"
+        },
+        {
+          "case": "effective_privileges",
+          "result": "PASS",
+          "raw_reads_inserts_denied": 70,
+          "request_entry_denials": 4,
+          "roles_existing_clients_unchanged": true
+        },
+        {
+          "case": "E2-T09",
+          "result": "PASS_NEGATIVE_ONLY",
+          "ordinary_SQL_Auth_profile_and_real_Auth_API_denied": true,
+          "successful_purges": 0
+        }
+      ],
+      "request_id": "fc4c2855-a7c2-407c-8b1e-964498713342",
+      "source_unequal_request_id": "5b1f6ba2-1090-40f4-a0bf-89324dd64310",
+      "successfully_deleted_accounts": 0
+    }
+  },
+  "blocked": [
+    "complete_Auth_purge",
+    "Flutter",
+    "contractual_T11",
+    "TASK003_revocation",
+    "E2_D",
+    "E2_M"
+  ]
+}

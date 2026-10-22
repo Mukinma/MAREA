@@ -1,0 +1,128 @@
+--- SRS-5.1.0.md
++++ MAREA_SRS-v5.1.1.md
+@@ -1,10 +1,10 @@
+ ---
+ id: MAREA-SRS-5.1
+-version: 5.1.0
++version: 5.1.1
+ fecha: 2026-10-13
+ idioma: es-MX
+ titulo: MAREA — Especificación maestra de requisitos funcionales y técnicos
+-estado: PROPUESTA_CORREGIDA_PENDIENTE_APROBACION
++estado: CONSOLIDACION_DOCUMENTAL_AUTORIZADA_PENDIENTE_COMPATIBILIDAD
+ alcance: producto-definitivo-con-entrega-por-fases
+ plataformas: [web, android, ios]
+ stack_referencia: [flutter, dart, supabase_auth, postgresql, storage, edge_functions]
+@@ -15,7 +15,7 @@
+ criterios_aceptacion_heredados: 26
+ contratos_arquitectura: 38
+ baseline_normativa_aprobada: false
+-trazabilidad_v5_1_integrada: false
++trazabilidad_v5_1_integrada: true
+ repositorio_auditado: false
+ aprobacion_legal: false
+ aprobacion_operativa: false
+@@ -23,11 +23,11 @@
+ validacion_mercado: false
+ ---
+ 
+-# MAREA — Especificación maestra de requisitos v5.1
+-
+-**Candidata a especificación normativa única para producto, ingeniería, diseño, QA y agentes de IA.** Fecha: 13 de octubre de 2026. Esta revisión corregida de v5.1 incorpora las decisiones sobre misiones personales, ofertas, reservas y acuerdos y resuelve inconsistencias de estados y migración. **No sustituye todavía la baseline v5.0 del repositorio:** requiere aprobación del responsable de producto, reconciliación de trazabilidad y comprobación de compatibilidad. Conserva v5.0 y v4.0–v4.2 como antecedentes históricos, nunca como órdenes simultáneas.
+-
+-> **Estado correcto — PROPUESTA CORREGIDA, PENDIENTE DE APROBACIÓN:** las reglas propuestas son verificables, pero NO están adoptadas como baseline ni implementadas. Ninguna modificación del código, migración local o remota, validación integral, aprobación jurídica/operativa/de tiendas o validación de mercado se presume realizada. TASK-001 conserva su baseline v5.0 y sus resultados; la autorización de release depende de las puertas y evidencias de la sección 11.
++# MAREA — Especificación maestra de requisitos v5.1.1
++
++**Revisión documental v5.1.1 autorizada para diseño de TASK-002, con adopción efectiva condicionada.** Fecha: 13 de octubre de 2026. Esta revisión corregida de v5.1 incorpora las decisiones sobre misiones personales, ofertas, reservas y acuerdos y resuelve inconsistencias de estados y migración. **No sustituye todavía la baseline v5.0 del repositorio:** requiere aprobación del responsable de producto, reconciliación de trazabilidad y comprobación de compatibilidad. Conserva v5.0 y v4.0–v4.2 como antecedentes históricos, nunca como órdenes simultáneas.
++
++> **Estado correcto — CONSOLIDACIÓN DOCUMENTAL AUTORIZADA, ADOPCIÓN EFECTIVA PENDIENTE:** las reglas de diseño cuentan con aprobación conceptual condicionada, pero NO están adoptadas como baseline efectiva ni implementadas. Ninguna modificación del código, migración local o remota, validación integral, aprobación jurídica/operativa/de tiendas o validación de mercado se presume realizada. TASK-001 conserva su baseline v5.0 y sus resultados; la autorización de release depende de las puertas y evidencias de la sección 11.
+ 
+ ## 0. Cómo leer y ejecutar esta especificación
+ 
+@@ -54,7 +54,18 @@
+ | `DECISION-51-07` | Pruebas sin IDs individuales | `TC-51-001…021` independientes de RF y evidencias antiguas |
+ | `DECISION-51-08` | Estado documental anticipa aprobación | Documento marcado como propuesta pendiente y baseline anterior vigente hasta reconciliación |
+ 
+-**Puertas de adopción:** (a) aprobación explícita del responsable de producto sobre estas políticas; (b) comprobación de la migración sobre datos sintéticos legados y clients anteriores; (c) reconciliación auditable de YAML, vistas y huellas; (d) revisión jurídica/operativa para retención y lanzamiento. Hasta (a)–(c), el repositorio mantiene v5.0 como norma efectiva.
++**Puertas de adopción:** (a) aprobación del responsable de producto, actualmente conceptual y condicionada; (b) comprobación de migración y compatibilidad en laboratorio aislado; (c) reconciliación auditable de YAML, vistas y huellas; (d) revisión jurídica/operativa para retención y lanzamiento. Hasta satisfacer (a)–(c), v5.0 permanece como baseline efectiva histórica y v5.1.1 es la fuente de diseño autorizada de TASK-002. La prueba con datos sintéticos no acredita todos los datos reales ni autoriza modificar entornos remotos: cualquier aplicación remota requerirá evaluación y autorización futuras independientes.
++
++### 0.2. Autorización documental y límites de TASK-002
++
++El responsable de producto autorizó consolidar esta revisión v5.1.1 y reconciliar herramientas/YAML preservando TASK-001. La aprobación conceptual no autoriza migraciones de TASK-002, código funcional Flutter/backend, cambios remotos ni commits. Antes de cualquiera de esas migraciones o cambios funcionales se presentan resultados N/T, expediente técnico E y decisiones pendientes. E y U0 son análisis/propuestas; U0 exige flujos completos y diseños funcionales revisables de interfaces nuevas y modificadas con la identidad visual actual de MAREA, y aprobación propia antes de implementar Flutter.
++
++- **Organizador autorizado:** titular personal elegible o representante con facultades vigentes de la organización titular. Todos los contratos de ofertas, reservas, acuerdos, revisiones y cierre aplican a ambos; ningún permiso organizacional se exige a una misión personal propia.
++- **Aceptación histórica:** la condición de acuerdo activo y cupo confirmado se verifica en la activación inicial atómica, no permanentemente tras terminación. Se conservan ofertas, firmas y revisiones históricas; las etiquetas actuales se derivan de Agreement.
++- **Cancelación ordinaria:** cualquier parte puede solicitarla con motivo y aviso; sólo el consentimiento expreso de las partes afectadas la convierte en cancelación bilateral. La solicitud, la detención preventiva por seguridad, el bloqueo, la denuncia y la resolución administrativa son registros/procesos separados, no estados canónicos adicionales de Agreement. Ante riesgo, detener participación y reportar no requiere permiso de la contraparte ni implica culpabilidad automática. Causas/facultades de resolución administrativa requieren política aprobada.
++- **Conservación estructural:** la sustitución de la referencia de missions.author_id y retiro de cascadas requiere expediente de dependencias, filas locales, SQL, referencias, recuperación y pruebas, seguido de aprobación técnica específica. No se clasifican automáticamente negocios como organizaciones.
++- **Revocación y privacidad:** los defectos de JWT/Realtime de TASK-003 siguen fuera de alcance; bloquean cualquier validación integral dependiente. Los plazos de retención y procedimientos externos no se presumen aprobados.
++- **Límites de evidencia:** documentación, mocks, pruebas sintéticas o Dart de host no equivalen a implementación validada, compatibilidad de todos los datos reales ni QA de dispositivos. TASK-002 no termina por cerrar N/T.
+ 
+ ## 1. Producto, usuarios y límites
+ 
+@@ -131,7 +142,7 @@
+ |---|---|---|
+ | `Mission` | `BORRADOR`, `EN_REVISION`, `PUBLICADA`, `PAUSADA`, `CERRADA`, `EXPIRADA`, `CANCELADA`, `ARCHIVADA` | `BORRADOR→EN_REVISION/PUBLICADA` (según política); `EN_REVISION→PUBLICADA/BORRADOR`; `PUBLICADA→PAUSADA/CERRADA/EXPIRADA/CANCELADA`; `PAUSADA→PUBLICADA/CERRADA/CANCELADA/EXPIRADA`; `CERRADA/EXPIRADA/CANCELADA→ARCHIVADA`. Nunca revivir terminal: duplicar nueva misión. |
+ | `Application` | `ENVIADA`, `EN_REVISION`, `PRESELECCIONADA`, `OFERTA_DE_ACUERDO`, `NO_SELECCIONADA`, `RETIRADA`, `CADUCADA` | `ENVIADA→EN_REVISION/RETIRADA/CADUCADA/NO_SELECCIONADA`; `EN_REVISION→PRESELECCIONADA/NO_SELECCIONADA/RETIRADA/CADUCADA`; `PRESELECCIONADA→OFERTA_DE_ACUERDO/NO_SELECCIONADA/RETIRADA`; `OFERTA_DE_ACUERDO→NO_SELECCIONADA/RETIRADA` sólo cuando su oferta ya no sea vigente; éxito de contratación se consulta mediante el Agreement enlazado. |
+-| `AgreementOffer` | `PENDIENTE`, `ACEPTADA`, `RECHAZADA`, `EXPIRADA`, `CANCELADA` | `PENDIENTE` significa **organizador ya aceptó los términos al emitir; destinatario aún no**. Solo `PENDIENTE→ACEPTADA/RECHAZADA/EXPIRADA/CANCELADA`, una vez y mediante transacción; `ACEPTADA` implica simultáneamente `Agreement.ACTIVO` y cupo confirmado. No existe oferta terminal aceptada con segunda firma pendiente. |
++| `AgreementOffer` | `PENDIENTE`, `ACEPTADA`, `RECHAZADA`, `EXPIRADA`, `CANCELADA` | `PENDIENTE` significa **organizador ya aceptó los términos al emitir; destinatario aún no**. Solo `PENDIENTE→ACEPTADA/RECHAZADA/EXPIRADA/CANCELADA`, una vez y mediante transacción; La transición inicial a `ACEPTADA` exige simultáneamente `Agreement.ACTIVO`, todas las aceptaciones válidas y cupo confirmado. `ACEPTADA` conserva el hecho histórico inmutable; una terminación, cancelación o confirmación posterior se refleja exclusivamente en `Agreement`, sin revertir la oferta ni exigir actividad permanente. No existe oferta aceptada con segunda firma pendiente o activación fallida. |
+ | `Agreement` | `PROPUESTO`, `PENDIENTE_DE_ACEPTACIONES`, `ACTIVO`, `EJECUCION_DECLARADA`, `CONFIRMADO`, `EN_DISPUTA`, `SIN_RESOLUCION`, `CANCELADO` | `PROPUESTO→PENDIENTE_DE_ACEPTACIONES/CANCELADO`; `PENDIENTE_DE_ACEPTACIONES→ACTIVO/CANCELADO` únicamente al aceptar oferta vigente en una transacción; `ACTIVO→EJECUCION_DECLARADA/CANCELADO/EN_DISPUTA`; `EJECUCION_DECLARADA→CONFIRMADO/EN_DISPUTA/SIN_RESOLUCION`; `EN_DISPUTA→CONFIRMADO/SIN_RESOLUCION`. Proponer una revisión material **no cambia** `ACTIVO` ni su revisión vigente. `CONFIRMADO` exige Outcome bilateral; finales no se reabren. |
+ | `AgreementRevision` (propuesta material) | `PROPUESTA`, `VIGENTE`, `RECHAZADA`, `EXPIRADA`, `RETIRADA`, `SUPERADA` | Como máximo una `PROPUESTA` pendiente por acuerdo. `PROPUESTA→VIGENTE` solo con todas las aceptaciones válidas y promoción atómica; `PROPUESTA→RECHAZADA/EXPIRADA/RETIRADA`; la revisión anteriormente `VIGENTE→SUPERADA` en la misma promoción. Las revisiones terminales son inmutables. |
+ | `PublicActivity` | `PROGRAMADA`, `REPROGRAMADA`, `SUSPENDIDA`, `REALIZADA`, `CANCELADA`, `ARCHIVADA` | `PROGRAMADA→REPROGRAMADA/SUSPENDIDA/REALIZADA/CANCELADA`; `REPROGRAMADA→PROGRAMADA/SUSPENDIDA/CANCELADA`; `SUSPENDIDA→PROGRAMADA/CANCELADA`; `REALIZADA/CANCELADA→ARCHIVADA`. Estado `HELD` está PROHIBIDO. |
+@@ -193,13 +204,13 @@
+ 1. **Preparación (sin compromiso):** el organizador previsualiza todos los términos, parte organizadora y destinatario; un borrador aún no crea `AgreementOffer.PENDIENTE` ni ocupa un cupo. Es explícita la opción «Enviar oferta y aceptar estas condiciones como organizador»; no se infiere la firma por navegar o seleccionar un candidato.
+ 2. **Emisión:** en una transacción con identidad autenticada y facultad actual, verificar misión, revisión inmutable, elegibilidad de ambas contrapartes, cupo, bloqueos y vínculos de control. Persistir firma organizadora, `AgreementOffer.PENDIENTE`, `CapacityReservation` y `Agreement.PENDIENTE_DE_ACEPTACIONES` vinculado, con idempotencia y evento/outbox. Si falta alguna postcondición, revertir **todo**.
+ 3. **Respuesta:** el destinatario, y solo él, consulta la revisión exacta, puede `ACEPTAR` o `RECHAZAR`. Al aceptar dentro de `[issued_at, expires_at)`, revalidar identidad, incompatibilidades y autorización de la parte organizadora según 3.9, registrar firma del destinatario y promover oferta, acuerdo y cupo **en la misma transacción**. La firma histórica del organizador conserva validez si únicamente perdió permiso el representante humano, conforme a 3.9; la oferta sí queda inválida ante cancelación por parte organizadora autorizada, suspensión de entidad o sustitución material de términos.
+-4. **Terminalidad:** `ACEPTADA` implica acuerdo `ACTIVO`; `RECHAZADA`, `EXPIRADA` o `CANCELADA` implican reserva liberada y acuerdo preliminar `CANCELADO` (o desechado si aún no se había creado). Está prohibido `ACEPTADA` con reserva temporal retenida o acuerdo pendiente.
++4. **Terminalidad:** al pasar a `ACEPTADA` se exige acuerdo `ACTIVO` y cupo confirmado en esa misma transacción; la oferta conserva después la aceptación histórica válida aunque cambie el estado del acuerdo; `RECHAZADA`, `EXPIRADA` o `CANCELADA` implican reserva liberada y acuerdo preliminar `CANCELADO` (o desechado si aún no se había creado). Está prohibido `ACEPTADA` con reserva temporal retenida o acuerdo pendiente.
+ 5. **Contención:** colisión aceptar/vencer/cancelar, dos ofertas para un último cupo, reintento y doble clic se resuelven por bloqueos/transacciones, reloj del servidor y claves idempotentes. Ninguna respuesta HTTP exitosa basta sin comprobar persistencia de firmas, estados, outbox y capacidad.
+ 
+ ### 3.7. Modificación de acuerdos ya activos
+ 
+ - `Agreement.revision_activa` representa las condiciones realmente aceptadas. `Agreement.revision_propuesta` representa un borrador material **sin efecto vinculante** y con sus propias aceptaciones. Se permite **máximo una propuesta pendiente** por acuerdo; los cambios editoriales sin alteración material se auditan sin cambiar obligaciones.
+-- Una propuesta requiere versión inmutable, hash, proponente autorizado, `created_at`, `expires_at` y aceptación individual de cada parte distinta. La **política inicial** es `revision_response_ttl=7 días naturales`, parámetro versionado del servidor, acortado hasta la fecha de ejecución cuando la propuesta afecte a obligaciones aún no ejecutadas; jamás amplía automáticamente el plazo contractual original; si el plazo calculado no es posterior a `created_at`, la propuesta debe rechazarse o formularse mediante el procedimiento supervisado de ejecución en curso. Si se requiere cambiar condiciones durante una ejecución en curso, se documenta un nuevo plazo explícito aceptado por ambas partes antes de activar cambios. No se aplica aceptación retroactiva.
++- Una propuesta requiere versión inmutable, hash, proponente autorizado, `created_at`, `expires_at` y aceptación individual de cada parte distinta. La **política inicial del piloto, aprobada provisionalmente**, es `revision_response_ttl=7 días naturales` (siete días consecutivos calculados por servidor en UTC, no días hábiles), parámetro versionado del servidor, acortado hasta la fecha de ejecución cuando la propuesta afecte a obligaciones aún no ejecutadas; jamás amplía automáticamente el plazo contractual original; si el plazo calculado no es posterior a `created_at`, la propuesta debe rechazarse o formularse mediante el procedimiento supervisado de ejecución en curso. Si se requiere cambiar condiciones durante una ejecución en curso, se documenta un nuevo plazo explícito aceptado por ambas partes antes de activar cambios. No se aplica aceptación retroactiva.
+ - Mientras haya propuesta, `Agreement` permanece `ACTIVO` **bajo la revisión anterior**. Si todas las partes aceptan antes del plazo, la propuesta pasa a `VIGENTE`, la anterior a `SUPERADA`, y se actualiza el puntero activo atómicamente con evento/outbox. Un rechazo, vencimiento o retiro termina **únicamente la propuesta**; la revisión anterior sigue vigente.
+ - La propuesta debe advertir qué condiciones vigentes continúan; ninguna parte puede presentar la oferta de cambio como obligación ya aceptada. Una suspensión cautelar por seguridad y la cancelación del acuerdo son **procesos separados** con autoridad, motivo, notificaciones y auditoría; no son efectos implícitos de editar o proponer.
+ - Modificar la persona jurídica/entidad que es contraparte organizadora **no** se trata como una simple revisión de texto: exige cierre documentado o acuerdo nuevo, sin cesión automática. Cambios materiales de `Mission` con candidaturas pendientes requieren reconocimiento de `MissionRevision`; **nunca** reescriben unilateralmente un `Agreement` activo.
+@@ -755,7 +766,7 @@
+ - **CT-SEC-AUT-004** | Aplicar autorización de Storage en lectura, subida, borrado y firma de URL, no solo en la tabla de metadatos.
+ - **CT-SEC-AUT-005** | Revalidar membresía al abrir canales Realtime y al ejecutar operaciones posteriores a revocación.
+ - **CT-SEC-AUT-006** | Implementar idempotencia de emisión con firma organizadora, aceptación de destinatario, expiración/cancelación, promoción de revisión, cierre y confirmación; una clave con distinto payload se rechaza.
+-- **CT-SEC-AUT-007** | Evitar carreras oferta/último cupo/aceptación/expiración/suspensión mediante locks, transacciones y constraints; no permitir `ACEPTADA` sin acuerdo activo y cupo confirmado.
++- **CT-SEC-AUT-007** | Evitar carreras oferta/último cupo/aceptación/expiración/suspensión mediante locks, transacciones y constraints; no permitir la transición inicial a `ACEPTADA` sin acuerdo activo, todas las aceptaciones exigidas y cupo confirmado en la misma transacción. El estado histórico de la oferta no exige que el acuerdo permanezca activo después de una terminación válida.
+ - **CT-SEC-AUT-008** | Validar entradas, límites de paginación, tamaño y tipos permitidos a nivel de servidor.
+ - **CT-SEC-AUT-009** | Impedir uso de un enlace profundo como sustituto de una autorización.
+ - **CT-SEC-AUT-010** | Proteger panel administrativo con cuentas y permisos diferenciados de la interfaz pública.
+@@ -899,7 +910,7 @@
+ 
+ **Nivel:** CRÍTICO. **Área:** M08 / M09 / M10.
+ 
+-- **DEBE:** Emisión de oferta con firma organizadora y reserva atómica; `AgreementOffer` `PENDIENTE` hasta aceptación de destinatario en TTL, entonces `ACEPTADA` + acuerdo activo + cupo confirmado atómicamente. Rechazo/expiración/cancelación liberan reserva. Nunca `ACEPTADA` sin acuerdo activo. Número de acuerdos activos y reservas vigentes no excede cupos.
++- **DEBE:** Emisión de oferta con firma organizadora y reserva atómica; `AgreementOffer` `PENDIENTE` hasta aceptación de destinatario en TTL, entonces `ACEPTADA` + acuerdo activo + cupo confirmado atómicamente. Rechazo/expiración/cancelación liberan reserva. Nunca confirmar la transición inicial a `ACEPTADA` sin acuerdo activo y cupo confirmado. Una terminación posterior del acuerdo no revierte la aceptación histórica de la oferta. Número de acuerdos activos y reservas vigentes no excede cupos.
+ - **Prueba exigida:** Dos selecciones simultáneas y oferta vencida: jamás se supera aforo/cupo, nunca quedan reservas huérfanas, y la oferta caducada no puede aceptarse.
+ 
+ #### ADR42-03 — Cambios de misión con postulaciones existentes
+@@ -1227,7 +1238,7 @@
+ | `TC-51-003` | `RF-09-006, RF-09-012, CT-SEC-AUT-001` | Candidaturas leídas por dueño personal y por tercero | Propietario permitido; tercero denegado en HTTP/RLS/Storage |
+ | `TC-51-004` | `RF-09-007, CTR5-01, AT5-01` | Dos emisores compiten por el último cupo personal y organizacional | Solo una oferta y reserva válidas; sin sobrecupo |
+ | `TC-51-005` | `RF-09-011, RF-10-001, CTR5-03` | Emitir oferta sin aceptación expresa de organizador | Denegado sin oferta, firma, reserva ni outbox parcial |
+-| `TC-51-006` | `RF-10-001, ADR42-02, CTR5-01` | Organizador firma al emitir; destinatario acepta dentro de TTL | Oferta ACEPTADA + Agreement ACTIVO + cupo confirmado en transacción única |
++| `TC-51-006` | `RF-10-001, ADR42-02, CTR5-01` | Organizador firma al emitir; destinatario acepta dentro de TTL | Activación inicial: oferta ACEPTADA + Agreement ACTIVO + cupo confirmado en transacción única; una terminación posterior cambia únicamente Agreement y conserva oferta/firma históricas |
+ | `TC-51-007` | `CTR5-01, CT-SEC-AUT-007, AT5-02` | Aceptar a expires_at exacto; job tarda; reintento/concurrencia expiración | Rechazo por límite [inicio, fin), reserva liberada, sin acuerdo huérfano |
+ | `TC-51-008` | `RF-09-013, ADR42-04, AT5-04` | Titular se autopostula o firma por candidato; control compartido | Rechazo, sin reputación fraudulenta |
+ | `TC-51-009` | `RF-08-011, RF-10-005, AC-08` | Propuesta material con una sola aceptación; posterior rechazo o expiración | Agreement anterior sigue ACTIVO con revisión anterior; propuesta terminal |
+@@ -1395,6 +1406,8 @@
+ 
+ ## 13. Registro editorial
+ 
++- **v5.1.1 (2026-10-13):** consolidación documental autorizada de TASK-002. Se precisa aceptación histórica frente a activación inicial, política provisional de revisión de siete días, organizador autorizado en ambas modalidades, cancelación diferenciada y puertas independientes estructural/UI/remota. IDs y estados canónicos conservados; TASK-001 continúa ligado a v5.0. Integración documental y compatibilidad se registran por evidencia, sin presumir migraciones ni validación del producto.
++
+ - **v5.1 — revisión corregida candidata (2026-10-13, pendiente de aprobación):** se cierran las decisiones `DECISION-51-01…08` de la auditoría documental: emisión firmada del organizador, cierre atómico de oferta y cupo, propuestas materialmente separadas de revisión activa, titularidad legada prudente, versiones móviles seguras, política de revocación y eliminación, y `TC-51-001…021`. No existen todavía migraciones/QA de esta versión ni baseline YAML integrado. **La aprobación y adopción no se presumen.**
+ - **v5.1 — borrador inicial (2026-10-13):** decisión de producto que habilita a **personas elegibles y organizaciones** para gestionar el ciclo completo de misiones, candidaturas, ofertas de 72 horas, reservas y acuerdos bilaterales. Se actualizan matriz 3.4, invariantes, contratos `CTR5-01/03/09`, requisitos afectados, antifraude, compatibilidad de clientes, interfaz y pruebas. Se conservan los IDs y cantidades: 313 RF, 69 CT, 25 RB, 26 AC, 20 ADR41, 18 ADR42, 12 CTR5 y 20 AT5. No implica implementación, validación ni despliegue. El registro canónico YAML y las cuatro vistas deberán reconciliarse antes de considerar integrada la nueva baseline; la evidencia TASK-001 conserva su asociación con el SHA256 de v5.0.
+ - **v5.0 (2026-10-12):** edición normativa limpia sin historial duplicado; se conservan los IDs de 313 RF, 69 CT, 25 RB, 26 AC, 20 ADR41 y 18 ADR42. Contratos `CTR5-01…12` concretan cupos, aceptación, tiempos, precedencia, sesiones, privacidad e idiomas. Separación de diez bloqueos externos.
+@@ -1403,4 +1416,4 @@
+ - **v4.0:** 26 módulos funcionales y catálogo base de RF/CT/RB/AC.
+ - **v3.1:** 52 áreas históricas; sin correspondencia verificada uno-a-uno con v5.0.
+ 
+-**FIN DE LA PROPUESTA CORREGIDA v5.1 — PENDIENTE DE APROBACIÓN E INTEGRACIÓN CANÓNICA.**
++**FIN DE v5.1.1 — CONSOLIDACIÓN DOCUMENTAL AUTORIZADA; ADOPCIÓN EFECTIVA, COMPATIBILIDAD Y RELEASE SUJETOS A PUERTAS PENDIENTES.**

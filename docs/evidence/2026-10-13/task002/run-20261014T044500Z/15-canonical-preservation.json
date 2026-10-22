@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "historical_evidence_preserved": 282,
+  "requirements_preserved": 684,
+  "product_test_cases_unchanged": 21,
+  "test001_and_other_tasks_preserved": true,
+  "baseline_raw_unchanged": true,
+  "product_assessment_unchanged": true,
+  "latest_browser_source_hashes_match": true,
+  "product_validation_added": false,
+  "task002_complete": false
+}

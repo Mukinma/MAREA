@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-19T20:51:36.405137+00:00",
+  "result": "PASS",
+  "CLI_generated_file": "20261019205128_e2s0_space_reference_review.sql",
+  "CLI_version": "2.117.0",
+  "CLI_workdir_private_only": true,
+  "executed_review_patch": "20261019210000_e2s0_space_reference_fix.sql",
+  "executed_review_patch_name_manually_assigned": true,
+  "byte_identical_SHA256": "dacbd0676560d1be5db1001f9c737d71ae4203706042c92fc24b19ea31462c03",
+  "SQL_product_migrations_changed": false,
+  "migration_history_written": false,
+  "original_executed_file_preserved": true,
+  "execution_receipt": "23-space-reference-GREEN.json"
+}

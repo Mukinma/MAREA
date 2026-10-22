@@ -1,0 +1,7 @@
+{
+  "result": "PASS",
+  "path": "supabase/.temp/cli-latest",
+  "cause": "supabase --version refreshed its ignored cli-latest cache; original bytes recovered and hash verified",
+  "sha256_restored": "2f99ec07bad208b0108748390c2fe80fb0a91b1784a8f7bf1d303efda7deeaee",
+  "functional_code_changed": false
+}

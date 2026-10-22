@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-19T05:53:10.737496+00:00",
+  "result": "DIFFERENCE_IDENTIFIED",
+  "changes": {
+    "triggers": {
+      "added": [
+        {
+          "name": "RI_ConstraintTrigger_a_23853",
+          "enabled": "O",
+          "internal": true,
+          "relation": "users",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_23853\" AFTER DELETE ON auth.users FROM collaboration.persons NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_setnull_del\"()"
+        },
+        {
+          "name": "RI_ConstraintTrigger_a_23854",
+          "enabled": "O",
+          "internal": true,
+          "relation": "users",
+          "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_23854\" AFTER UPDATE ON auth.users FROM collaboration.persons NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+        }
+      ],
+      "removed": []
+    }
+  },
+  "legacy_rows_equal": true,
+  "sequences_equal": true,
+  "read_only": true
+}

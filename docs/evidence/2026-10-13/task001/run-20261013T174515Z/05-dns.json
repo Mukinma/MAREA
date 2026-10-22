@@ -1,0 +1,75 @@
+{
+  "id": "E-TASK001-DNS-marea-task001-8798fbb703ba",
+  "at": "2026-10-13T18:00:40.272Z",
+  "result": "PASS",
+  "modality": "real",
+  "control": {
+    "resolved": true,
+    "answers": 8,
+    "rcode": 0
+  },
+  "results": [
+    {
+      "name": "/supabase_storage_marea-task001-8798fbb703ba",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_rest_marea-task001-8798fbb703ba",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_realtime_marea-task001-8798fbb703ba",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_inbucket_marea-task001-8798fbb703ba",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_auth_marea-task001-8798fbb703ba",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_kong_marea-task001-8798fbb703ba",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_db_marea-task001-8798fbb703ba",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/marea-task001-8798fbb703ba-relay",
+      "resolved": false,
+      "answers": 0,
+      "rcode": null,
+      "result": "PASS"
+    }
+  ],
+  "subcases_executed": 9,
+  "limits": [
+    "Official Docker registry DNS used as infrastructure positive control; no business request or credential."
+  ],
+  "remote_modified": false,
+  "private_receipt_sha256": "63709964c496c9098e0f60568380cfc04b5b0ceb2e541e27ae08097784aa2c31"
+}

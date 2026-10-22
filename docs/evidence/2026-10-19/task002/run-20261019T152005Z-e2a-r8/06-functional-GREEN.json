@@ -1,0 +1,203 @@
+{
+  "at": "2026-10-19T15:23:00.683302+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "cases": [
+        {
+          "case": "E2-T08",
+          "result": "PASS",
+          "effective_CRUD_and_function_denials": 45,
+          "roles": [
+            "anon",
+            "authenticated",
+            "service_role"
+          ]
+        },
+        {
+          "case": "E2-T05",
+          "result": "PASS",
+          "parallel_batches": 2,
+          "principal_count": 1,
+          "dry_run_no_delta": true,
+          "hash_and_manifest_conflicts_rejected": true,
+          "idempotent_replay": true
+        },
+        {
+          "case": "E2-T06",
+          "result": "PASS",
+          "non_equal_current_mapping_resolved": true,
+          "non_null_mapping_collision_rejected": true,
+          "missing_control_rejected": true,
+          "blocked_current_identity_rejected": true,
+          "detached_and_suppressed_fixtures_not_relinked": true,
+          "account_deletions": 0,
+          "legacy_pending_deletion_denied": true
+        },
+        {
+          "case": "E2-T02",
+          "result": "PASS",
+          "real_Auth_signups": 3,
+          "minimal_and_standard": true,
+          "principal_and_control_per_signup": 1
+        },
+        {
+          "case": "E2-T04",
+          "result": "PASS",
+          "forged_role_person_org_and_app_metadata_ignored_for_authority": true
+        },
+        {
+          "case": "E2-T03",
+          "result": "PASS",
+          "HTTP_errors_not_success": 5,
+          "counts_unchanged_after_failures": true,
+          "failure_positions": [
+            "legacy_legal",
+            "legacy_profile",
+            "private_control",
+            "after_principal"
+          ],
+          "legal_sequence_gaps_expected_and_recorded": true
+        },
+        {
+          "case": "E2-T44-repair",
+          "result": "PASS",
+          "bounded_timeout_SQLSTATE": "55P03",
+          "elapsed_seconds": 1.58,
+          "retry_attempts": 1,
+          "idempotent_after_retry": true
+        },
+        {
+          "case": "E2-T05-trigger-race",
+          "result": "PASS",
+          "outcome": "EXPLICIT_REVIEW_CONFLICT",
+          "eventual_principal_count": 1
+        }
+      ],
+      "case_count": 8,
+      "acl": {
+        "owner_bypass": false,
+        "service_exec": false,
+        "operator_bypass": false,
+        "app_owner_member": false,
+        "owner_delete_person": false,
+        "operator_direct_person": false
+      },
+      "Auth_trigger_order": [
+        "on_auth_user_created",
+        "zz_e2a_person_after_auth"
+      ],
+      "functional_fixture_insertions_separate_from_A_DDL": true,
+      "Auth_profile_deletions": 0,
+      "T07_executed": false,
+      "final_counts": {
+        "legal": 13,
+        "users": 13,
+        "persons": 15,
+        "controls": 15,
+        "profiles": 13,
+        "identities": 13
+      }
+    },
+    "b": {
+      "result": "PASS",
+      "cases": [
+        {
+          "case": "E2-T08",
+          "result": "PASS",
+          "effective_CRUD_and_function_denials": 45,
+          "roles": [
+            "anon",
+            "authenticated",
+            "service_role"
+          ]
+        },
+        {
+          "case": "E2-T05",
+          "result": "PASS",
+          "parallel_batches": 2,
+          "principal_count": 1,
+          "dry_run_no_delta": true,
+          "hash_and_manifest_conflicts_rejected": true,
+          "idempotent_replay": true
+        },
+        {
+          "case": "E2-T06",
+          "result": "PASS",
+          "non_equal_current_mapping_resolved": true,
+          "non_null_mapping_collision_rejected": true,
+          "missing_control_rejected": true,
+          "blocked_current_identity_rejected": true,
+          "detached_and_suppressed_fixtures_not_relinked": true,
+          "account_deletions": 0,
+          "legacy_pending_deletion_denied": true
+        },
+        {
+          "case": "E2-T02",
+          "result": "PASS",
+          "real_Auth_signups": 3,
+          "minimal_and_standard": true,
+          "principal_and_control_per_signup": 1
+        },
+        {
+          "case": "E2-T04",
+          "result": "PASS",
+          "forged_role_person_org_and_app_metadata_ignored_for_authority": true
+        },
+        {
+          "case": "E2-T03",
+          "result": "PASS",
+          "HTTP_errors_not_success": 5,
+          "counts_unchanged_after_failures": true,
+          "failure_positions": [
+            "legacy_legal",
+            "legacy_profile",
+            "private_control",
+            "after_principal"
+          ],
+          "legal_sequence_gaps_expected_and_recorded": true
+        },
+        {
+          "case": "E2-T44-repair",
+          "result": "PASS",
+          "bounded_timeout_SQLSTATE": "55P03",
+          "elapsed_seconds": 1.577,
+          "retry_attempts": 1,
+          "idempotent_after_retry": true
+        },
+        {
+          "case": "E2-T05-trigger-race",
+          "result": "PASS",
+          "outcome": "EXPLICIT_REVIEW_CONFLICT",
+          "eventual_principal_count": 1
+        }
+      ],
+      "case_count": 8,
+      "acl": {
+        "owner_bypass": false,
+        "service_exec": false,
+        "operator_bypass": false,
+        "app_owner_member": false,
+        "owner_delete_person": false,
+        "operator_direct_person": false
+      },
+      "Auth_trigger_order": [
+        "on_auth_user_created",
+        "zz_e2a_person_after_auth"
+      ],
+      "functional_fixture_insertions_separate_from_A_DDL": true,
+      "Auth_profile_deletions": 0,
+      "T07_executed": false,
+      "final_counts": {
+        "legal": 13,
+        "users": 13,
+        "persons": 15,
+        "controls": 15,
+        "profiles": 13,
+        "identities": 13
+      }
+    }
+  },
+  "scope": "E2-A local only; no whole TASK-002 validation"
+}

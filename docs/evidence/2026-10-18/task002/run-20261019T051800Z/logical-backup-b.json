@@ -1,0 +1,19 @@
+{
+  "result": "PASS",
+  "files": {
+    "db": {
+      "filename": "b-dbcreate.backup",
+      "sha256": "02fa772f26383cc3a4caf182944adf85c5c396d78c59bde2432aeb0c3569cfef",
+      "bytes": 775517,
+      "database_creation_metadata_included": true
+    },
+    "globals": {
+      "sha256": "64dde7934a0838d9ad82e474b321d16019585d51ad5110b4947cc4fce8e4805f",
+      "bytes": 7436
+    },
+    "schema": {
+      "sha256": "7a8510c0c1abb5dfab5d141534f1d03530fdca0003e15da48633c52beaf208e5",
+      "bytes": 610326
+    }
+  }
+}

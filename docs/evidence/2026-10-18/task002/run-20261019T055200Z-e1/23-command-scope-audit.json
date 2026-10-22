@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-19T06:00:37.494684+00:00",
+  "result": "PASS",
+  "commands_audited": 1302,
+  "network_none_run_commands": 8,
+  "all_mounts_new_owned_volumes_or_existing_readonly_backup_directory": true,
+  "original_volume_mounts": 0,
+  "original_start_stop_or_exec_commands": 0,
+  "remote_database_connections": 0,
+  "no_prune_delete_or_image_pull_commands": true,
+  "docker_command_audit_sha256": "eb1fbe30384a60c9202e4c98127eb2b5462485a827f94bad363d71e243046ee9"
+}

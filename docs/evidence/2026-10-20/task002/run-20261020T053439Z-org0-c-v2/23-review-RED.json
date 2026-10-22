@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-20T05:49:32.236364+00:00",
+  "result": "EXPECTED_RED",
+  "sources": {
+    "a": {
+      "result": "EXPECTED_RED",
+      "RR_snapshot_established_before_committed_revocation": true,
+      "stale_authorization_wrongly_allowed": true,
+      "read_committed_denies_revoked": true,
+      "NULL_999_classification_replay_wrongly_accepted": true,
+      "replay_no_delta": true
+    },
+    "b": {
+      "result": "EXPECTED_RED",
+      "RR_snapshot_established_before_committed_revocation": true,
+      "stale_authorization_wrongly_allowed": true,
+      "read_committed_denies_revoked": true,
+      "NULL_999_classification_replay_wrongly_accepted": true,
+      "replay_no_delta": true
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-20T05:29:24.280731+00:00",
+  "result": "DIAGNOSED_SQL_ERROR",
+  "exit": 3,
+  "stderr": "ERROR:  23514: MISSION_VALID_OWNER_REQUIRED_AT_COMMIT\nCONTEXT:  PL/pgSQL function collaboration.mission_owner_at_commit() line 3 at RAISE\nLOCATION:  exec_stmt_raise, pl_exec.c:3911\n",
+  "all_rows_sequences_equal": true
+}

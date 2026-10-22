@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-19T21:49:40.066196+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS_EXPLAINED_FIXTURE_DELTA",
+      "new_preferences": 2,
+      "recipients": "Exactly new main/other fixture Auth IDs",
+      "trigger": "private.enqueue_notification_push() / 014_android_push.sql:121",
+      "minimal_real_trigger_reproduced_inside_rolled_back_transaction": true,
+      "full_snapshot_rollback_exact": true,
+      "original_preferences_preserved": true,
+      "remote_push_enabled": false
+    },
+    "b": {
+      "result": "PASS_EXPLAINED_FIXTURE_DELTA",
+      "new_preferences": 2,
+      "recipients": "Exactly new main/other fixture Auth IDs",
+      "trigger": "private.enqueue_notification_push() / 014_android_push.sql:121",
+      "minimal_real_trigger_reproduced_inside_rolled_back_transaction": true,
+      "full_snapshot_rollback_exact": true,
+      "original_preferences_preserved": true,
+      "remote_push_enabled": false
+    }
+  },
+  "initial_minimal_fixture_constraint_error": "Actor equaled recipient; rejected by existing notifications_check before AFTER trigger, retained private error log; corrected fixture keeps distinct identities",
+  "no_original_data_loss_or_unexplained_drift": true
+}

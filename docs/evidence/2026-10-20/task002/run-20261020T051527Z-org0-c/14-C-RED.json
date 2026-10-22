@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-20T05:27:02.499967+00:00",
+  "result": "EXPECTED_RED",
+  "sources": {
+    "a": {
+      "SQLSTATE": "42883",
+      "rollback_exact": true
+    },
+    "b": {
+      "SQLSTATE": "42883",
+      "rollback_exact": true
+    }
+  }
+}

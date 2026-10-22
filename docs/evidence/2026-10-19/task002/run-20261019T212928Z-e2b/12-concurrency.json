@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-19T21:44:09.507843+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "request_first_candidature_bounded_timeout_then_denied": true,
+      "candidature_first_committed_then_request_bounded_retry": true,
+      "new_request_ids": [
+        "bdac4127-af19-49da-8594-5f9ced94c506",
+        "c99cf289-2501-42f6-972a-15085eca6fae"
+      ],
+      "post_request_failure_all_tables_rollback_exact": true,
+      "deadlocks": 0,
+      "timeouts_SQLSTATE": "55P03",
+      "successful_purge": false
+    },
+    "b": {
+      "result": "PASS",
+      "request_first_candidature_bounded_timeout_then_denied": true,
+      "candidature_first_committed_then_request_bounded_retry": true,
+      "new_request_ids": [
+        "a5fd5822-139d-462f-bec9-fa5a5cf9cd08",
+        "349c504b-9cf8-4538-a862-55a62ad2a4ae"
+      ],
+      "post_request_failure_all_tables_rollback_exact": true,
+      "deadlocks": 0,
+      "timeouts_SQLSTATE": "55P03",
+      "successful_purge": false
+    }
+  }
+}

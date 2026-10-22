@@ -1,0 +1,21 @@
+{
+  "milestone": 1,
+  "result": "PASS",
+  "backup_id": "task001-20261013T164144Z",
+  "captured_at": "2026-10-13T16:45:30.714444+00:00",
+  "entries": 52808,
+  "files": 39879,
+  "symlinks": 111,
+  "runtime_sockets": 5,
+  "bytes": 5956886822,
+  "untracked_paths": 122,
+  "manifest_sha256": "46597bafc0c48e08d8fc04b155666d3b5f7ddd84759dfa31473d741902ff347e",
+  "metadata_archive_sha256": "f6d792de85dedc24175984b158853fa89ac6a81d515468f4d449290657f2ee81",
+  "verification": "All persistent bytes, modes, file mtimes, flags, links and ACLs equal; exact original xattrs verified in private metadata archive; source/Git unchanged",
+  "copy_metadata_limit": "macOS changes provenance/quarantine tags on copies; original values preserved in verified private archive for restoration",
+  "socket_limitation": "Five Git IPC endpoints reconstructed as dormant sockets; live process connections cannot be serialized",
+  "private_parent_mode": "0700",
+  "metadata_archive_mode": "0600",
+  "secret_contents_exported": false,
+  "id": "E-TASK001-BACKUP-20261013T164530Z"
+}

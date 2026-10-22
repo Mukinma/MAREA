@@ -1,0 +1,8 @@
+{
+  "result": "FAIL",
+  "stage": "globals",
+  "exit_code": 3,
+  "private_log": "/Users/crisis/Proyectos/marea-backups/task002-e-20261019T051800Z/a-globals-restore.log",
+  "source_backups_intact": true,
+  "proposed_migration_executed": false
+}

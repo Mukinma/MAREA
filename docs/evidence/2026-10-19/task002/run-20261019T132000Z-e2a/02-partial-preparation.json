@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-19T13:29:39.279369+00:00",
+  "result": "PARTIAL_PREPARATION_ONLY_BLOCKED_ISOLATION",
+  "a_new_E1_snapshot_sha256": "6b48497cc41de70ed3e9080f708d52086f2bca454c63b7d87e22378f39c57c8e",
+  "a_new_E1_backup_sha256": "8fecb92828d930eff692461fa5cb5f7453252af8c4b8117b0c72ad21e17d5d2e",
+  "a_new_E1_backup_manifest_sha256": "31465e3c768b4af641479b16fa3b721aec3e202abb89c74ef38a4c34192f91b9",
+  "baseline_a_tables": 101,
+  "baseline_a_sequences": 7,
+  "E1_backup_restore_comparison_passed_before_Auth": true,
+  "b_started": false,
+  "signup_fixture_files": 0,
+  "E2A_SQL_stub_empty": true,
+  "E2A_functions_roles_trigger_implemented": false,
+  "after_Auth_final_data_comparison": "NOT_RUN_AFTER_ISOLATION_FAILURE",
+  "archive_logs_retained": true
+}

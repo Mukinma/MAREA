@@ -1,0 +1,97 @@
+{
+  "at": "2026-10-19T18:26:13.369917+00:00",
+  "attempts": [
+    {
+      "attempt": "run-20261019T143903Z-e2a-r3",
+      "result": "FAILED_PRESERVED_NOT_REOPENED",
+      "cause": "Probe retained old effective netns after PostgreSQL restart",
+      "bounded_correction_in_new_attempt": "Fresh ephemeral probe per check; empty restart regression rejects stale namespace",
+      "failure_receipts": [
+        {
+          "path": "docs/evidence/2026-10-19/task002/run-20261019T143903Z-e2a-r3/FAILURE-1792421372469992000.json",
+          "sha256": "7ffdbfd0de6f4229525a6046a3dc8c409eb1eef3ba4ef8b63adc6f462197b044",
+          "receipt": {
+            "at": "2026-10-19T14:49:32.470099+00:00",
+            "result": "FAIL_STOPPED",
+            "error": "PG/probe namespace mismatch",
+            "no_scope_expansion": true
+          }
+        }
+      ]
+    },
+    {
+      "attempt": "run-20261019T145310Z-e2a-r4",
+      "result": "FAILED_PRESERVED_NOT_REOPENED",
+      "cause": "DDL rollback rehearsal used default_transaction_read_only instead of current transaction setting",
+      "bounded_correction_in_new_attempt": "Explicit SET LOCAL transaction_read_only=off for authorized write transaction",
+      "failure_receipts": [
+        {
+          "path": "docs/evidence/2026-10-19/task002/run-20261019T145310Z-e2a-r4/FAILURE-1792421873360830000.json",
+          "sha256": "a968fd4405fc89cc365bdc548995c01d3347aee128427b492612367206f5c4b7",
+          "receipt": {
+            "at": "2026-10-19T14:57:53.360872+00:00",
+            "result": "FAIL_STOPPED",
+            "error": "Docker failure: error-1792421873360563000.log",
+            "no_scope_expansion": true
+          }
+        }
+      ]
+    },
+    {
+      "attempt": "run-20261019T150001Z-e2a-r5",
+      "result": "FAILED_PRESERVED_NOT_REOPENED",
+      "cause": "Private sync owner saw no auth.users rows under existing RLS",
+      "bounded_correction_in_new_attempt": "SELECT policy only for new NOLOGIN/NOBYPASS owner with id/deleted_at column grants",
+      "failure_receipts": [
+        {
+          "path": "docs/evidence/2026-10-19/task002/run-20261019T150001Z-e2a-r5/FAILURE-1792422291993979000.json",
+          "sha256": "3adc618e23bc503c5d8e4ec595cb0db4620843ca11815f711542eb34cb072245",
+          "receipt": {
+            "at": "2026-10-19T15:04:51.994028+00:00",
+            "result": "FAIL_STOPPED",
+            "error": "Docker failure: error-1792422291993693000.log",
+            "no_scope_expansion": true
+          }
+        }
+      ]
+    },
+    {
+      "attempt": "run-20261019T150943Z-e2a-r6",
+      "result": "FAILED_PRESERVED_NOT_REOPENED",
+      "cause": "Lock observer parsed PostgreSQL textual bool as JSON",
+      "bounded_correction_in_new_attempt": "Explicit to_jsonb(EXISTS(...)) in observer only",
+      "failure_receipts": [
+        {
+          "path": "docs/evidence/2026-10-19/task002/run-20261019T150943Z-e2a-r6/FAILURE-1792422740411875000.json",
+          "sha256": "8da36a3541d460f71d22fe16d53fb3c4a3e23c359f17dddd1261b118c18ba4d8",
+          "receipt": {
+            "at": "2026-10-19T15:12:20.411982+00:00",
+            "result": "FAIL_STOPPED",
+            "error": "Expecting value: line 1 column 1 (char 0)",
+            "no_scope_expansion": true
+          }
+        }
+      ]
+    },
+    {
+      "attempt": "run-20261019T151405Z-e2a-r7",
+      "result": "FAILED_PRESERVED_NOT_REOPENED",
+      "cause": "Fixture ledger did not include Auth-generated mfa_amr_claims INSERTs",
+      "bounded_correction_in_new_attempt": "Exact expected delta + original hashes + FK provenance for six new AMR/session/refresh rows",
+      "failure_receipts": [
+        {
+          "path": "docs/evidence/2026-10-19/task002/run-20261019T151405Z-e2a-r7/FAILURE-1792423055818362000.json",
+          "sha256": "a2c50ca67b0d64cd8734c0fac7fdd155a435d86756e6537cc667323e6e8dd156",
+          "receipt": {
+            "at": "2026-10-19T15:17:35.818419+00:00",
+            "result": "FAIL_STOPPED",
+            "error": "Unexpected row delta auth.mfa_amr_claims"
+          }
+        }
+      ]
+    }
+  ],
+  "historical_R2_preserved": true,
+  "new_attempt_R8": "PASS functional/integrity/recovery; stopped",
+  "no_integrity_comparison_removed": true
+}

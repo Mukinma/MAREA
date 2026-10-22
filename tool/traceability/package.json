@@ -1,0 +1,7 @@
+{
+  "name": "marea-traceability",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test traceability.test.mjs"},
+  "dependencies": {"yaml": "2.9.1"}
+}

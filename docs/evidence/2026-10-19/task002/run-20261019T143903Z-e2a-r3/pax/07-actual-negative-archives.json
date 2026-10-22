@@ -1,0 +1,32 @@
+{
+  "result": "PASS",
+  "cases": [
+    {
+      "case": "missing",
+      "result": "PASS_REJECTED_ACTUAL_DAMAGED_ARCHIVE",
+      "sha256": "3eb03c53edd5f6a3cba98937df4cbd7981c4d8655a2fdc39844d261d1cf0b98f"
+    },
+    {
+      "case": "precision",
+      "result": "PASS_REJECTED_ACTUAL_DAMAGED_ARCHIVE",
+      "sha256": "f358aa10707e4fe61e2efefe2a3f8a17f88b6e55662f407baec8406f24903057"
+    },
+    {
+      "case": "owner",
+      "result": "PASS_REJECTED_ACTUAL_DAMAGED_ARCHIVE",
+      "sha256": "f77bbd9eeab81ba836b221ba0bbcdf80f84d62e58eecc2516bbe3ed7003b05f9"
+    },
+    {
+      "case": "permissions",
+      "result": "PASS_REJECTED_ACTUAL_DAMAGED_ARCHIVE",
+      "sha256": "8c73a6afb51556a4424ce2cea94e6a23308518e4d110d2146f66462f7309ff02"
+    },
+    {
+      "case": "bytes",
+      "result": "PASS_REJECTED_ACTUAL_DAMAGED_ARCHIVE",
+      "sha256": "d018fd4cce53f61c6ca94256fef48593829db7f5536b0caab0de02565b8c1033"
+    }
+  ],
+  "project_data_used": false,
+  "additional_privileges": false
+}

@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-20T05:51:58.282515+00:00",
+  "result": "EXPECTED_RED",
+  "actual_source_community_active_account_requires_initial_profile": true,
+  "ORG0_wrongly_allowed_pending_profile": true,
+  "rollback_exact": true,
+  "source": "b"
+}

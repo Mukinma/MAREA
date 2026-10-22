@@ -1,0 +1,369 @@
+{
+  "status": "PROPUESTA_PARA_REVISION_NO_FLUTTER",
+  "synthetic_data": true,
+  "backend_calls": false,
+  "screens": [
+    {
+      "id": "U01",
+      "title": "Misiones",
+      "change": "EXISTENTE",
+      "route": "/missions",
+      "audience": "organizador autorizado o candidata",
+      "critical": false,
+      "links": [
+        "U09",
+        "U02",
+        "U22"
+      ]
+    },
+    {
+      "id": "U02",
+      "title": "¿Cómo vas a organizar?",
+      "change": "NUEVA",
+      "route": "hoja de contexto",
+      "audience": "persona elegible",
+      "critical": false,
+      "links": [
+        "U08",
+        "U03"
+      ]
+    },
+    {
+      "id": "U03",
+      "title": "Tus organizaciones",
+      "change": "NUEVA",
+      "route": "/organizations",
+      "audience": "persona autenticada",
+      "critical": false,
+      "links": [
+        "U04",
+        "U05",
+        "U07"
+      ]
+    },
+    {
+      "id": "U04",
+      "title": "Crear organización",
+      "change": "NUEVA",
+      "route": "/organizations/new",
+      "audience": "persona elegible",
+      "critical": true,
+      "links": [
+        "U05"
+      ]
+    },
+    {
+      "id": "U05",
+      "title": "Colectivo Río",
+      "change": "NUEVA",
+      "route": "/organizations/:id",
+      "audience": "miembro autorizado",
+      "critical": false,
+      "links": [
+        "U06",
+        "U12",
+        "U02"
+      ]
+    },
+    {
+      "id": "U06",
+      "title": "Miembros y permisos",
+      "change": "NUEVA",
+      "route": "/organizations/:id/members",
+      "audience": "member.manage vigente",
+      "critical": true,
+      "links": [
+        "U07",
+        "U05"
+      ]
+    },
+    {
+      "id": "U07",
+      "title": "Invitación al colectivo",
+      "change": "NUEVA",
+      "route": "/invitations/:id",
+      "audience": "receptor autenticado",
+      "critical": true,
+      "links": [
+        "U05",
+        "U03"
+      ]
+    },
+    {
+      "id": "U08",
+      "title": "Tu próxima colaboración",
+      "change": "MODIFICADA",
+      "route": "/missions/new · /edit · /drafts/:id/edit",
+      "audience": "organizador autorizado",
+      "critical": true,
+      "links": [
+        "U09",
+        "U17",
+        "U28"
+      ]
+    },
+    {
+      "id": "U09",
+      "title": "Mural de barrio",
+      "change": "MODIFICADA",
+      "route": "/missions/:id",
+      "audience": "proyección pública o parte autorizada",
+      "critical": false,
+      "links": [
+        "U10",
+        "U12",
+        "U23"
+      ]
+    },
+    {
+      "id": "U10",
+      "title": "Tu propuesta",
+      "change": "MODIFICADA",
+      "route": "/missions/:id/apply",
+      "audience": "candidata elegible ajena a titular personal",
+      "critical": true,
+      "links": [
+        "U11",
+        "U26"
+      ]
+    },
+    {
+      "id": "U11",
+      "title": "Mi candidatura",
+      "change": "MODIFICADA",
+      "route": "/missions/:id/sent",
+      "audience": "candidata correspondiente",
+      "critical": false,
+      "links": [
+        "U15",
+        "U09"
+      ]
+    },
+    {
+      "id": "U12",
+      "title": "Candidaturas",
+      "change": "MODIFICADA",
+      "route": "/missions/:id/manage",
+      "audience": "titular personal o application.review",
+      "critical": true,
+      "links": [
+        "U13",
+        "U09",
+        "U27"
+      ]
+    },
+    {
+      "id": "U13",
+      "title": "Revisa la oferta",
+      "change": "NUEVA",
+      "route": "/missions/:id/offers/new",
+      "audience": "organizador autorizado con facultad de oferta y firma",
+      "critical": true,
+      "links": [
+        "U14"
+      ]
+    },
+    {
+      "id": "U14",
+      "title": "Oferta enviada",
+      "change": "NUEVA",
+      "route": "/offers/:id",
+      "audience": "organizador autorizado",
+      "critical": true,
+      "links": [
+        "U12",
+        "U16"
+      ]
+    },
+    {
+      "id": "U15",
+      "title": "Una oferta para ti",
+      "change": "NUEVA",
+      "route": "/offers/:id",
+      "audience": "destinataria única",
+      "critical": true,
+      "links": [
+        "U16",
+        "U11"
+      ]
+    },
+    {
+      "id": "U16",
+      "title": "Tu acuerdo",
+      "change": "NUEVA",
+      "route": "/agreements/:id",
+      "audience": "parte autorizada",
+      "critical": false,
+      "links": [
+        "U17",
+        "U18",
+        "U19",
+        "U20"
+      ]
+    },
+    {
+      "id": "U17",
+      "title": "Cambios propuestos",
+      "change": "NUEVA",
+      "route": "/agreements/:id/revisions/:revision",
+      "audience": "parte autorizada",
+      "critical": true,
+      "links": [
+        "U16",
+        "U18"
+      ]
+    },
+    {
+      "id": "U18",
+      "title": "Versiones y aceptaciones",
+      "change": "NUEVA",
+      "route": "/agreements/:id/history",
+      "audience": "parte autorizada",
+      "critical": false,
+      "links": [
+        "U16"
+      ]
+    },
+    {
+      "id": "U19",
+      "title": "Solicitar cancelación",
+      "change": "NUEVA",
+      "route": "/agreements/:id/cancellation",
+      "audience": "parte autorizada",
+      "critical": true,
+      "links": [
+        "U16",
+        "U20",
+        "U25"
+      ]
+    },
+    {
+      "id": "U20",
+      "title": "Tu participación y seguridad",
+      "change": "NUEVA",
+      "route": "/agreements/:id/safety",
+      "audience": "parte afectada",
+      "critical": true,
+      "links": [
+        "U21",
+        "U19"
+      ]
+    },
+    {
+      "id": "U21",
+      "title": "Seguimiento de tu reporte",
+      "change": "NUEVA",
+      "route": "/cases/:id",
+      "audience": "denunciante o caso autorizado",
+      "critical": false,
+      "links": [
+        "U16"
+      ]
+    },
+    {
+      "id": "U22",
+      "title": "Notificaciones",
+      "change": "MODIFICADA",
+      "route": "bandeja existente",
+      "audience": "destinatario autenticado",
+      "critical": false,
+      "links": [
+        "U15",
+        "U17",
+        "U25"
+      ]
+    },
+    {
+      "id": "U23",
+      "title": "Colaboración histórica",
+      "change": "NUEVO_ESTADO",
+      "route": "/missions/:id",
+      "audience": "lector autorizado a histórico",
+      "critical": false,
+      "links": [
+        "U09",
+        "U24"
+      ]
+    },
+    {
+      "id": "U24",
+      "title": "Actualiza para continuar",
+      "change": "NUEVO_ESTADO",
+      "route": "intercepción de contrato",
+      "audience": "cliente incompatible",
+      "critical": false,
+      "links": [
+        "U01"
+      ]
+    },
+    {
+      "id": "U25",
+      "title": "Responder cancelación",
+      "change": "NUEVA",
+      "route": "/agreements/:id/cancellation/:request",
+      "audience": "contraparte distinta de quien solicitó",
+      "critical": true,
+      "links": [
+        "U16",
+        "U20"
+      ]
+    },
+    {
+      "id": "U26",
+      "title": "Reconocer nuevos términos",
+      "change": "NUEVA",
+      "route": "/missions/:id/revisions/:revision",
+      "audience": "candidata afectada",
+      "critical": true,
+      "links": [
+        "U10",
+        "U11"
+      ]
+    },
+    {
+      "id": "U27",
+      "title": "Cerrar o cancelar misión",
+      "change": "MODIFICADA",
+      "route": "/missions/:id/manage/status",
+      "audience": "organizador autorizado",
+      "critical": true,
+      "links": [
+        "U09",
+        "U16"
+      ]
+    },
+    {
+      "id": "U28",
+      "title": "Borrador de misión",
+      "change": "MODIFICADA",
+      "route": "/missions/drafts/:id/edit",
+      "audience": "titular del borrador",
+      "critical": true,
+      "links": [
+        "U08",
+        "U01"
+      ]
+    }
+  ],
+  "states": [
+    "normal",
+    "loading",
+    "empty",
+    "error",
+    "offline",
+    "denied",
+    "conflict",
+    "sending",
+    "expired",
+    "cancelled",
+    "historical_accepted_terminated"
+  ],
+  "contexts": [
+    "personal",
+    "organization"
+  ],
+  "preview_roles": [
+    "organizer",
+    "candidate"
+  ]
+}

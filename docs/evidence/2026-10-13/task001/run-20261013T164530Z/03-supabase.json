@@ -1,0 +1,90 @@
+{
+  "id": "E-TASK001-SUPABASE-20261013T164530Z",
+  "captured_at": "2026-10-13T16:56:19.599Z",
+  "milestone": 3,
+  "result": "BLOQUEADO",
+  "modality": "real",
+  "git_revision": "989e5b5845deff0afd13703a067a7d7a3775d3bc",
+  "command": "node tool/staging/cli.mjs start <owned-private-runtime>",
+  "project_id": "marea-task001-f539874f1218",
+  "reason": "CLI start failed to connect to PostgreSQL at 127.0.0.1:61002 (ECONNREFUSED) using the owned internal Docker network. Exact root cause remains pending; no network relaxation or retry performed.",
+  "services_healthy": false,
+  "api_health_executed": false,
+  "business_egress_verified": false,
+  "network": {
+    "id": "0168402c94cc009c80304b13fa8b29b067941d3d4b4a6e404d8d3c7c91851fdc",
+    "name": "marea-task001-f539874f1218",
+    "internal": true,
+    "driver": "bridge",
+    "remaining_containers": 0
+  },
+  "cli_auto_cleanup": "CLI printed Stopping containers; no surviving containers or volumes found. Agent did not run cleanup, stop, reset or volume deletion.",
+  "private_log_sha256": "7c0cef88f605f03b79b3b75cc4d136406549f5ee9e2451589f75ef66466f59e1",
+  "private_runtime_mode": "0700",
+  "config_sha256": "3193d1a889befed3df2172761da88f1eff3d339cdcf4fb45ffaefb54839a13a1",
+  "images": [
+    {
+      "tag": "public.ecr.aws/supabase/postgres:17.6.1.167",
+      "id": "sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "digests": [
+        "public.ecr.aws/supabase/postgres@sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb"
+      ],
+      "architecture": "arm64"
+    },
+    {
+      "tag": "public.ecr.aws/supabase/storage-api:v1.72.1",
+      "id": "sha256:105a2584129c9600aebed6f5ac49ca4371c92b996ecd1af7179750333e9e2120",
+      "digests": [
+        "public.ecr.aws/supabase/storage-api@sha256:105a2584129c9600aebed6f5ac49ca4371c92b996ecd1af7179750333e9e2120"
+      ],
+      "architecture": "arm64"
+    },
+    {
+      "tag": "public.ecr.aws/supabase/realtime:v2.130.0",
+      "id": "sha256:002193c9ff840a4946918641901bb6aa9e2036dc9ff7590e2b11e91d1e06bf86",
+      "digests": [
+        "public.ecr.aws/supabase/realtime@sha256:002193c9ff840a4946918641901bb6aa9e2036dc9ff7590e2b11e91d1e06bf86"
+      ],
+      "architecture": "arm64"
+    },
+    {
+      "tag": "public.ecr.aws/supabase/gotrue:v2.196.0",
+      "id": "sha256:c0c25187a6b835e65a6f6e6c6b39d090e832d40e6de5186f2c038e0411944232",
+      "digests": [
+        "public.ecr.aws/supabase/gotrue@sha256:c0c25187a6b835e65a6f6e6c6b39d090e832d40e6de5186f2c038e0411944232"
+      ],
+      "architecture": "arm64"
+    },
+    {
+      "tag": "public.ecr.aws/supabase/postgrest:v16.2",
+      "id": "sha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e",
+      "digests": [
+        "public.ecr.aws/supabase/postgrest@sha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e"
+      ],
+      "architecture": "arm64"
+    },
+    {
+      "tag": "public.ecr.aws/supabase/mailpit:v1.30.2",
+      "id": "sha256:37a38e48e9338cd7e89dfeb487f37b02ebfcd9cb23111bed2d345e79d37d6dd6",
+      "digests": [
+        "public.ecr.aws/supabase/mailpit@sha256:37a38e48e9338cd7e89dfeb487f37b02ebfcd9cb23111bed2d345e79d37d6dd6"
+      ],
+      "architecture": "arm64"
+    },
+    {
+      "tag": "public.ecr.aws/supabase/kong:2.8.1",
+      "id": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "digests": [
+        "public.ecr.aws/supabase/kong@sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d"
+      ],
+      "architecture": "arm64"
+    }
+  ],
+  "remote_modified": false,
+  "secrets_exported": false,
+  "dependent_milestones_stopped": [
+    4,
+    5
+  ],
+  "limits": "Infrastructure downloads only. No MAREA migrations/functions/fixtures copied or executed; no authentication/authorization business tests."
+}

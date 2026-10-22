@@ -1,0 +1,14 @@
+{
+  "result": "PARTIAL_PREPARATION_NOT_ACCEPTED",
+  "source_a_E1_catalog_matches": true,
+  "source_a_all_legacy_table_digests_and_counts_match": true,
+  "source_a_sequences_match": true,
+  "persons_created_at_is_new_lab_time_declared": true,
+  "E2A_objects_present": false,
+  "source_b_started": false,
+  "Auth_started": false,
+  "signup_fixtures": 0,
+  "E2A_DDL_statements": 0,
+  "recovery_acceptance": false,
+  "reason": "Metadata precision loss in new cold tar backup; recovery stopped before starting restored PG"
+}

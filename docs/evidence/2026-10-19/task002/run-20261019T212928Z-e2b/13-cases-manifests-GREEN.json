@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-19T21:46:28.543888+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "E2_T46": "PASS_STRUCTURAL_REAL_DATABASE_IDENTITY",
+      "identity": {
+        "role_guc": "none",
+        "session_user": "marea_b_fixture_reader_a",
+        "effective_role": "marea_b_fixture_reader_a"
+      },
+      "assigned_case_read_audited": 1,
+      "prior_fixture_case_reads_preserved": 1,
+      "case_and_privilege_rejections": 11,
+      "minimal_response_fields": [
+        "completed",
+        "pending_dependency_count",
+        "purge_ready",
+        "request_id",
+        "resource_count",
+        "stage",
+        "version"
+      ],
+      "missing_policy_protected": true,
+      "synthetic_policy_never_authorizes_purge": true,
+      "actual_profile_evidence_or_paths_exposed": false,
+      "fixture_LOGIN_roles_only": [
+        "marea_b_fixture_reader_a",
+        "marea_b_fixture_reader_b"
+      ]
+    },
+    "b": {
+      "result": "PASS",
+      "E2_T46": "PASS_STRUCTURAL_REAL_DATABASE_IDENTITY",
+      "identity": {
+        "role_guc": "none",
+        "session_user": "marea_b_fixture_reader_a",
+        "effective_role": "marea_b_fixture_reader_a"
+      },
+      "assigned_case_read_audited": 1,
+      "prior_fixture_case_reads_preserved": 0,
+      "case_and_privilege_rejections": 11,
+      "minimal_response_fields": [
+        "completed",
+        "pending_dependency_count",
+        "purge_ready",
+        "request_id",
+        "resource_count",
+        "stage",
+        "version"
+      ],
+      "missing_policy_protected": true,
+      "synthetic_policy_never_authorizes_purge": true,
+      "actual_profile_evidence_or_paths_exposed": false,
+      "fixture_LOGIN_roles_only": [
+        "marea_b_fixture_reader_a",
+        "marea_b_fixture_reader_b"
+      ]
+    }
+  },
+  "TASK003_and_Flutter_session_integration": "BLOCKED_NOT_IMPLEMENTED"
+}

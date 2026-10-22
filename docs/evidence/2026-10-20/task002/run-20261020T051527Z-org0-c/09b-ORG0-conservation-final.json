@@ -1,0 +1,85 @@
+{
+  "at": "2026-10-20T05:23:54.605252+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "all_legacy_row_hashes_exact": true,
+      "legacy_rows": 773,
+      "all_sequences_equal": true,
+      "old_roles_RLS_FKs_routine_bodies_preserved": true,
+      "catalog_additions": {
+        "catalog.columns": 0,
+        "catalog.constraints": 29,
+        "catalog.event_triggers": 0,
+        "catalog.extensions": 0,
+        "catalog.grants": 0,
+        "catalog.memberships": 6,
+        "catalog.policies": 5,
+        "catalog.roles": 9,
+        "catalog.routines": 0,
+        "catalog.settings": 0,
+        "catalog.tables": 5,
+        "catalog.triggers": 0,
+        "extra.all_routines": 12,
+        "extra.column_acl": 0,
+        "extra.defaults": 0,
+        "extra.indexes": 8,
+        "extra.private_columns": 34,
+        "extra.publication_tables": 0,
+        "extra.publications": 0,
+        "extra.schemas": 0
+      },
+      "private_row_counts": {
+        "collaboration.org_audit": 16,
+        "collaboration.org_operations": 16,
+        "collaboration.org_session_bindings": 6,
+        "collaboration.organization_memberships": 9,
+        "collaboration.organizations": 3
+      },
+      "raw_private_CRUD_denied": true,
+      "Storage_coordination_bytes_attributes_ns_unchanged": true,
+      "purges": 0
+    },
+    "b": {
+      "result": "PASS",
+      "all_legacy_row_hashes_exact": true,
+      "legacy_rows": 759,
+      "all_sequences_equal": true,
+      "old_roles_RLS_FKs_routine_bodies_preserved": true,
+      "catalog_additions": {
+        "catalog.columns": 0,
+        "catalog.constraints": 29,
+        "catalog.event_triggers": 0,
+        "catalog.extensions": 0,
+        "catalog.grants": 0,
+        "catalog.memberships": 6,
+        "catalog.policies": 5,
+        "catalog.roles": 9,
+        "catalog.routines": 0,
+        "catalog.settings": 0,
+        "catalog.tables": 5,
+        "catalog.triggers": 0,
+        "extra.all_routines": 12,
+        "extra.column_acl": 0,
+        "extra.defaults": 0,
+        "extra.indexes": 8,
+        "extra.private_columns": 34,
+        "extra.publication_tables": 0,
+        "extra.publications": 0,
+        "extra.schemas": 0
+      },
+      "private_row_counts": {
+        "collaboration.org_audit": 16,
+        "collaboration.org_operations": 16,
+        "collaboration.org_session_bindings": 6,
+        "collaboration.organization_memberships": 9,
+        "collaboration.organizations": 3
+      },
+      "raw_private_CRUD_denied": true,
+      "Storage_coordination_bytes_attributes_ns_unchanged": true,
+      "purges": 0
+    }
+  },
+  "existing_client_privileges_expanded": false
+}

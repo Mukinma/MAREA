@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-20T04:54:15.062742+00:00",
+  "result": "EXPECTED_RED",
+  "sources": {
+    "a": {
+      "result": "EXPECTED_RED",
+      "identity_cases": [
+        {
+          "column": "applicant_id",
+          "result": "EXPECTED_RED",
+          "rollback_exact": true
+        },
+        {
+          "column": "mission_id",
+          "result": "EXPECTED_RED",
+          "rollback_exact": true
+        },
+        {
+          "column": "id",
+          "result": "EXPECTED_RED",
+          "rollback_exact": true
+        }
+      ],
+      "real_review_withdraw_RPC_interleaving": true,
+      "candidate_wait_observed": true,
+      "SQLSTATE": "40P01",
+      "withdraw_succeeds_then_rolls_back": true,
+      "full_rollback_exact": true,
+      "legacy_acceptance_committed": false,
+      "Agreement_validation_claimed": false
+    },
+    "b": {
+      "result": "EXPECTED_RED",
+      "identity_cases": [
+        {
+          "column": "applicant_id",
+          "result": "EXPECTED_RED",
+          "rollback_exact": true
+        },
+        {
+          "column": "mission_id",
+          "result": "EXPECTED_RED",
+          "rollback_exact": true
+        },
+        {
+          "column": "id",
+          "result": "EXPECTED_RED",
+          "rollback_exact": true
+        }
+      ],
+      "real_review_withdraw_RPC_interleaving": true,
+      "candidate_wait_observed": true,
+      "SQLSTATE": "40P01",
+      "withdraw_succeeds_then_rolls_back": true,
+      "full_rollback_exact": true,
+      "legacy_acceptance_committed": false,
+      "Agreement_validation_claimed": false
+    }
+  }
+}
