@@ -170,6 +170,15 @@ class AppSessionController extends ChangeNotifier {
         return true;
       }) ??
       false;
+
+  Future<bool> signInWithGoogle({required String redirectTo}) async =>
+      await _run(() async {
+        _recovering = false;
+        await _auth.signInWithGoogle(redirectTo: redirectTo);
+        return true;
+      }) ??
+      false;
+
   Future<SignUpOutcome?> signUp({
     required String fullName,
     required String username,

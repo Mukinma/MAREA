@@ -118,7 +118,10 @@ abstract final class AppRouter {
         GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
         GoRoute(
           path: '/welcome',
-          builder: (_, _) => WelcomeEntryScreen(store: introStore),
+          builder: (_, _) => WelcomeEntryScreen(
+            store: introStore,
+            controller: controller,
+          ),
         ),
         GoRoute(
           path: '/terms',

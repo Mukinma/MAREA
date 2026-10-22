@@ -1,10 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/legal/legal_screens.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({super.key});
+  const WelcomeScreen({this.controller, super.key});
+
+  final AppSessionController? controller;
 
   Widget _brand() => Semantics(
     label: 'MAREA. Conecta. Crea. Explora.',
@@ -51,6 +55,35 @@ class WelcomeScreen extends StatelessWidget {
       ],
     ),
   );
+
+  Widget _googleIcon() => Container(
+    width: 24,
+    height: 24,
+    alignment: Alignment.center,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(6),
+    ),
+    child: const Text(
+      'G',
+      style: TextStyle(
+        color: Color(0xFF4285F4),
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
+      ),
+    ),
+  );
+
+  Future<void> _signInWithGoogle(BuildContext context) async {
+    final controller = this.controller;
+    if (controller == null) return;
+    final redirectTo = Uri.base.origin;
+    await controller.signInWithGoogle(redirectTo: redirectTo);
+    if (!context.mounted || controller.failure == null) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(controller.failure!.message)));
+  }
 
   Widget _actions(BuildContext context, {required bool wide}) => Padding(
     padding: EdgeInsets.symmetric(horizontal: wide ? 40 : 28),
@@ -128,6 +161,37 @@ class WelcomeScreen extends StatelessWidget {
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
           ),
         ),
+        const SizedBox(height: 10),
+        if (kIsWeb && controller != null) ...[
+          AnimatedBuilder(
+            animation: controller!,
+            builder: (context, _) => OutlinedButton.icon(
+              key: const Key('welcome-google'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF172B4D),
+                side: const BorderSide(color: Color(0xFFD0D9E6)),
+                backgroundColor: Colors.white,
+                shape: const StadiumBorder(),
+                minimumSize: const Size(48, 52),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
+              ),
+              onPressed: controller!.isBusy
+                  ? null
+                  : () => _signInWithGoogle(context),
+              icon: _googleIcon(),
+              label: Text(
+                controller!.isBusy ? 'Conectando...' : 'Continuar con Google',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: 12),
         const LegalLinks(compact: true),
         const SizedBox(height: 16),
