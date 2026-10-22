@@ -1,0 +1,31 @@
+{
+  "tasks": 142,
+  "scheduleRows": 299,
+  "stages": 6,
+  "modules": 9,
+  "statuses": {
+    "Completado": 122,
+    "WIP": 1,
+    "Pendiente": 19
+  },
+  "tasksByPerson": {
+    "Josefina": 20,
+    "Fatima": 49,
+    "Santiago": 6,
+    "Alan": 32,
+    "Cristopher": 29,
+    "Ximena": 6
+  },
+  "sourcesVerified": 125,
+  "allBarsVerified": true,
+  "completedRowsAligned": true,
+  "openRealRowsBlank": true,
+  "editablePropagationVerified": true,
+  "markdownMatches": true,
+  "pagesRendered": 9,
+  "savedXlsxVerified": true,
+  "savedMarkdownVerified": true,
+  "mergedRegionsDisjoint": true,
+  "printSettingsVerified": true,
+  "pairPreservingBreaks": 8
+}

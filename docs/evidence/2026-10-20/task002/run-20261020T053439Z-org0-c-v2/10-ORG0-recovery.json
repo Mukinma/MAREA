@@ -1,0 +1,69 @@
+{
+  "at": "2026-10-20T05:37:45.358626+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "DB": {
+        "archive_sha256": "1264299311a55bf912c1c4eebb29132c0728ec1a97cda0a94ea12643737804df",
+        "manifest_sha256": "4be05171a22a7348385a772054ae10b7dc00c41306aa689c8fb0dd106f735f61",
+        "tree_verified_on_new_volume": "task002-orgc-v2-20261020t053439z-a-ORG0-final-v2-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage": {
+        "archive_sha256": "06be79eee3ea27ca8552811ead526359825c8eb907c300d830a1df7d3566d72c",
+        "manifest_sha256": "012581928699dad288aaeffece43befa120551271ff7b66d2f7ac46d38015e5a",
+        "restored_volume": "task002-orgc-v2-20261020t053439z-org0-recovery-a-storage",
+        "restored_copy": "task002-orgc-v2-20261020t053439z-org0-recovery-a-storage-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 49
+      },
+      "coordination": {
+        "archive_sha256": "8806964b019520b8ca14b3f58573dffd2dfb2f79470eb50bdf72d14d1ce5848d",
+        "manifest_sha256": "61168c4408a3de095294bb0f2e18c2afca55d86bf8f6b2c4c2ddaa326788226b",
+        "restored_volume": "task002-orgc-v2-20261020t053439z-org0-recovery-a-control-v2",
+        "restored_copy": "task002-orgc-v2-20261020t053439z-org0-recovery-a-control-v2-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 2
+      },
+      "positive_real_SQL_identity_after_restore": true,
+      "revoked_members_denied_after_restore": true,
+      "DB_logical_and_physical_snapshots_exact": true,
+      "S0_guards": 40,
+      "remote_or_purge_executed": false
+    },
+    "b": {
+      "result": "PASS",
+      "DB": {
+        "archive_sha256": "1120dfe5d1da2947bee1c232b255265ae0dd987a98696d2715d2069a00c6fff9",
+        "manifest_sha256": "810cd48deb5969d72ec8758c80273cc4b7f2bb8a2f7768adadd768193cf1fc11",
+        "tree_verified_on_new_volume": "task002-orgc-v2-20261020t053439z-b-ORG0-final-v2-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage": {
+        "archive_sha256": "b10276d5996489d8f3200c8355718d2e72fc705d6719fb99ecf6003c3e8eb415",
+        "manifest_sha256": "3e31c1946e1286825a45d9689879930cfed7331dfce72a3c14ab3f20c9b78518",
+        "restored_volume": "task002-orgc-v2-20261020t053439z-org0-recovery-b-storage",
+        "restored_copy": "task002-orgc-v2-20261020t053439z-org0-recovery-b-storage-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 54
+      },
+      "coordination": {
+        "archive_sha256": "d790bd87126a0b804a99e815279edea29d12efa9ebbb5e363393d25bacd92ee1",
+        "manifest_sha256": "596dd0f0032c3859d0078a5c14d7cb72e5466e248f5d6c93498257014b61a89c",
+        "restored_volume": "task002-orgc-v2-20261020t053439z-org0-recovery-b-control-v2",
+        "restored_copy": "task002-orgc-v2-20261020t053439z-org0-recovery-b-control-v2-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 2
+      },
+      "positive_real_SQL_identity_after_restore": true,
+      "revoked_members_denied_after_restore": true,
+      "DB_logical_and_physical_snapshots_exact": true,
+      "S0_guards": 40,
+      "remote_or_purge_executed": false
+    }
+  },
+  "not_E2_R_integrated_acceptance": true
+}

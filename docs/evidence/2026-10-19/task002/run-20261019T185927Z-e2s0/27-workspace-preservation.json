@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-19T20:52:50.254023+00:00",
+  "result": "PASS",
+  "preexisting_workspace_files_preserved": 1168,
+  "previous_private_allowlist_preserved": 365,
+  "E2_A_DB_Storage_archives_manifests_and_logical_sources_unchanged": true,
+  "previous_containers_identity_state_mounts_unchanged": 405,
+  "historical_volumes_preserved": 83,
+  "new_volumes_only_owner_labelled": 23,
+  "S0_containers_all_stopped": 96,
+  "running_containers": 0,
+  "original_volumes_mounted": false,
+  "Docker_raw_image_read_or_inventoried": false,
+  "SRS_product_sources_unchanged": true,
+  "HEAD": "989e5b5845deff0afd13703a067a7d7a3775d3bc",
+  "commits_created": 0,
+  "staged_changes": false,
+  "remote_modified": false,
+  "next_increment_started": false
+}

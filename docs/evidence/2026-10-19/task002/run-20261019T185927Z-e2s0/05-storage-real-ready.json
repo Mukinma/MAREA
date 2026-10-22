@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-19T19:06:08.270977+00:00",
+  "result": "PASS",
+  "version": "1.72.1",
+  "baseline_catalog_and_rows_unchanged": true,
+  "sources": [
+    "a",
+    "b"
+  ]
+}

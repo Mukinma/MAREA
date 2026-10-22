@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-20T05:42:11.902361+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "rehearsal_rollback_exact": true,
+      "all_rows_sequences_equal": true,
+      "only_B_parent_branch_replaced": true
+    },
+    "b": {
+      "result": "PASS",
+      "rehearsal_rollback_exact": true,
+      "all_rows_sequences_equal": true,
+      "only_B_parent_branch_replaced": true
+    }
+  },
+  "SQL_file": "20261020054208_e2c_explicit_parent_obligations_v2.sql"
+}

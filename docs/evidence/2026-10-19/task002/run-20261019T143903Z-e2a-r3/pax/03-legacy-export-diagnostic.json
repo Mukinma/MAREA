@@ -1,0 +1,5 @@
+{
+  "returncode": 1,
+  "stderr": "Error response from daemon: Could not find the file /work/data in container task002-pax-20261019t143903z-source\n",
+  "synthetic_only": true
+}

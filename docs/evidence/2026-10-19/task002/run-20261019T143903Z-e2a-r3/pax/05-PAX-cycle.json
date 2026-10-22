@@ -1,0 +1,333 @@
+{
+  "result": "PASS",
+  "archive_sha256": "807450295fbbb8edc94944027f7a059b62fdd3d430e22db12a3a478f1d2eb54d",
+  "entries": 9,
+  "source": [
+    {
+      "path": "data",
+      "mode": 488,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "dir"
+    },
+    {
+      "path": "data/a.bin",
+      "mode": 416,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1792420981550470011,
+      "kind": "file",
+      "size": 16,
+      "sha256": "817abf7bc1b1fc75b645c686d79fb5dadb3c68675a671fa65ddae8f9029ed988"
+    },
+    {
+      "path": "data/empty",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "file",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "data/nested",
+      "mode": 493,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "dir"
+    },
+    {
+      "path": "data/nested/hardlink",
+      "mode": 416,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1792420981550470011,
+      "kind": "hardlink",
+      "size": 16,
+      "sha256": "817abf7bc1b1fc75b645c686d79fb5dadb3c68675a671fa65ddae8f9029ed988",
+      "linkname": "data/a.bin"
+    },
+    {
+      "path": "data/nested/restricted",
+      "mode": 360,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "dir"
+    },
+    {
+      "path": "data/nested/restricted/read only.txt",
+      "mode": 288,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "file",
+      "size": 20,
+      "sha256": "faad7a2f09121bcab41af2026cfed1a1d02f3b70fe3ebf326738864113f2e8ca"
+    },
+    {
+      "path": "data/nested/symlink",
+      "mode": 511,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "symlink",
+      "linkname": "../a.bin",
+      "size": 8
+    },
+    {
+      "path": "data/nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn-\u00f1.txt",
+      "mode": 420,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "file",
+      "size": 25,
+      "sha256": "70f98db7716655dfdea7052084f0d8d2cfe80fd08710bf2a6b7e13cf0c10841a"
+    }
+  ],
+  "PAX_archive": [
+    {
+      "path": "data",
+      "mode": 488,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "dir"
+    },
+    {
+      "path": "data/a.bin",
+      "mode": 416,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1792420981550470011,
+      "kind": "file",
+      "size": 16,
+      "sha256": "817abf7bc1b1fc75b645c686d79fb5dadb3c68675a671fa65ddae8f9029ed988"
+    },
+    {
+      "path": "data/empty",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "file",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "data/nested",
+      "mode": 493,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "dir"
+    },
+    {
+      "path": "data/nested/hardlink",
+      "mode": 416,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1792420981550470011,
+      "kind": "hardlink",
+      "linkname": "data/a.bin",
+      "size": 16,
+      "sha256": "817abf7bc1b1fc75b645c686d79fb5dadb3c68675a671fa65ddae8f9029ed988"
+    },
+    {
+      "path": "data/nested/restricted",
+      "mode": 360,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "dir"
+    },
+    {
+      "path": "data/nested/restricted/read only.txt",
+      "mode": 288,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "file",
+      "size": 20,
+      "sha256": "faad7a2f09121bcab41af2026cfed1a1d02f3b70fe3ebf326738864113f2e8ca"
+    },
+    {
+      "path": "data/nested/symlink",
+      "mode": 511,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "symlink",
+      "linkname": "../a.bin",
+      "size": 8
+    },
+    {
+      "path": "data/nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn-\u00f1.txt",
+      "mode": 420,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "file",
+      "size": 25,
+      "sha256": "70f98db7716655dfdea7052084f0d8d2cfe80fd08710bf2a6b7e13cf0c10841a"
+    }
+  ],
+  "restored": [
+    {
+      "path": "data",
+      "mode": 488,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "dir"
+    },
+    {
+      "path": "data/a.bin",
+      "mode": 416,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1792420981550470011,
+      "kind": "file",
+      "size": 16,
+      "sha256": "817abf7bc1b1fc75b645c686d79fb5dadb3c68675a671fa65ddae8f9029ed988"
+    },
+    {
+      "path": "data/empty",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "file",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "data/nested",
+      "mode": 493,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "dir"
+    },
+    {
+      "path": "data/nested/hardlink",
+      "mode": 416,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1792420981550470011,
+      "kind": "hardlink",
+      "size": 16,
+      "sha256": "817abf7bc1b1fc75b645c686d79fb5dadb3c68675a671fa65ddae8f9029ed988",
+      "linkname": "data/a.bin"
+    },
+    {
+      "path": "data/nested/restricted",
+      "mode": 360,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "dir"
+    },
+    {
+      "path": "data/nested/restricted/read only.txt",
+      "mode": 288,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "file",
+      "size": 20,
+      "sha256": "faad7a2f09121bcab41af2026cfed1a1d02f3b70fe3ebf326738864113f2e8ca"
+    },
+    {
+      "path": "data/nested/symlink",
+      "mode": 511,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "symlink",
+      "linkname": "../a.bin",
+      "size": 8
+    },
+    {
+      "path": "data/nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn-\u00f1.txt",
+      "mode": 420,
+      "uid": 1000,
+      "gid": 1000,
+      "mtime_ns": 1700000000123456789,
+      "atime_ns": 1699999900765432101,
+      "kind": "file",
+      "size": 25,
+      "sha256": "70f98db7716655dfdea7052084f0d8d2cfe80fd08710bf2a6b7e13cf0c10841a"
+    }
+  ],
+  "exact_mtime_atime_ns": true,
+  "safe_symlink_and_hardlink_topology_preserved": true,
+  "source_unchanged": true,
+  "negative_cases": [
+    {
+      "case": "missing",
+      "result": "PASS_REJECTED"
+    },
+    {
+      "case": "precision_loss",
+      "result": "PASS_REJECTED"
+    },
+    {
+      "case": "owner",
+      "result": "PASS_REJECTED"
+    },
+    {
+      "case": "permissions",
+      "result": "PASS_REJECTED"
+    },
+    {
+      "case": "bytes",
+      "result": "PASS_REJECTED"
+    },
+    {
+      "case": "atime_precision",
+      "result": "PASS_REJECTED"
+    },
+    {
+      "case": "actual_bytes",
+      "result": "PASS_REJECTED"
+    },
+    {
+      "case": "actual_permissions",
+      "result": "PASS_REJECTED"
+    }
+  ],
+  "project_data_used": false,
+  "integrity_comparisons_weakened": false,
+  "timestamp_scope": "mtime/atime exact ns; inode ctime/birthtime not restorable; directory allocation size not a tar attribute"
+}

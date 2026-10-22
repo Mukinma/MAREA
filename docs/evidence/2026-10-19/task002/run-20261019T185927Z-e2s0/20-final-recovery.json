@@ -1,0 +1,84 @@
+{
+  "at": "2026-10-19T20:45:53.895183+00:00",
+  "result": "PASS",
+  "services_quiesced_before_backup": [
+    "/task002-e2s0-20261019t185927z-b-ingress-extra-restarted-v2",
+    "/task002-e2s0-20261019t185927z-b-storage-fenced-extra-restarted-v2",
+    "/task002-e2s0-20261019t185927z-a-ingress-extra-restarted-v2",
+    "/task002-e2s0-20261019t185927z-a-storage-fenced-extra-restarted-v2",
+    "/task002-e2s0-20261019t185927z-b-rest-extra-v2",
+    "/task002-e2s0-20261019t185927z-b-auth-extra-v2",
+    "/task002-e2s0-20261019t185927z-a-rest-extra-v2",
+    "/task002-e2s0-20261019t185927z-a-auth-extra-v2"
+  ],
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "DB": {
+        "archive_sha256": "69072163d6d1b7670a9e510564ebdb0979f3a13dcb768c5dbfb323d76f6196ec",
+        "manifest_sha256": "d6a7764bb301fdafe6a3558bc39d72b4eeca384cbe6547b73c561725e95dddd9",
+        "tree_verified_on_new_volume": "task002-e2s0-20261019t185927z-a-S0-final-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage": {
+        "archive_sha256": "06be79eee3ea27ca8552811ead526359825c8eb907c300d830a1df7d3566d72c",
+        "manifest_sha256": "012581928699dad288aaeffece43befa120551271ff7b66d2f7ac46d38015e5a",
+        "restored_volume": "task002-e2s0-20261019t185927z-recovery-a-storage",
+        "restored_copy": "task002-e2s0-20261019t185927z-recovery-a-storage-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 49
+      },
+      "coordination": {
+        "archive_sha256": "3e896ea640d760e69d32e33e4159b206b4cb1e68ee534fe4f0ce38c98c922124",
+        "manifest_sha256": "5eedd854a60ae701d54530ebba8a53c568bcaac7702e448d689c483d7c88eb42",
+        "restored_volume": "task002-e2s0-20261019t185927z-recovery-a-control-v2",
+        "restored_copy": "task002-e2s0-20261019t185927z-recovery-a-control-v2-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 2
+      },
+      "restored_guard_count": 40,
+      "restored_API_read_HTTP": 200,
+      "restored_API_delete_HTTP": 500,
+      "SQLSTATE": "55000",
+      "restored_ingress_delete_HTTP": 503,
+      "missing_recovered_dependencies_fail_closed": true,
+      "final_logical_and_physical_snapshots_equal": true
+    },
+    "b": {
+      "result": "PASS",
+      "DB": {
+        "archive_sha256": "f969ae4750ae529e581ad7b2b7445756627e91f88aabdb1b58f1e5afb1bcf3f6",
+        "manifest_sha256": "d985f3fb991456c02e9107fba4f0a8f2449607b91a9f154ccc77198cb66df4bc",
+        "tree_verified_on_new_volume": "task002-e2s0-20261019t185927z-b-S0-final-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage": {
+        "archive_sha256": "b10276d5996489d8f3200c8355718d2e72fc705d6719fb99ecf6003c3e8eb415",
+        "manifest_sha256": "3e31c1946e1286825a45d9689879930cfed7331dfce72a3c14ab3f20c9b78518",
+        "restored_volume": "task002-e2s0-20261019t185927z-recovery-b-storage",
+        "restored_copy": "task002-e2s0-20261019t185927z-recovery-b-storage-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 54
+      },
+      "coordination": {
+        "archive_sha256": "1bba790681312a92bee05042f4d8ac5382056402bf8b271e7dfee962d39ea333",
+        "manifest_sha256": "36f16d8aa1ee63b0cd4538f83760e7a0e959e224a189d8c3c9d1356f57944ae3",
+        "restored_volume": "task002-e2s0-20261019t185927z-recovery-b-control-v2",
+        "restored_copy": "task002-e2s0-20261019t185927z-recovery-b-control-v2-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 2
+      },
+      "restored_guard_count": 40,
+      "restored_API_read_HTTP": 200,
+      "restored_API_delete_HTTP": 500,
+      "SQLSTATE": "55000",
+      "restored_ingress_delete_HTTP": 503,
+      "missing_recovered_dependencies_fail_closed": true,
+      "final_logical_and_physical_snapshots_equal": true
+    }
+  },
+  "remote_exposure": false,
+  "product_activation_authorized": false
+}

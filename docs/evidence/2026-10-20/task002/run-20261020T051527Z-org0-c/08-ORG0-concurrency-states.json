@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-20T05:21:08.779298+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "states_denied_actual_server": [
+        "PAUSED",
+        "SUSPENDED",
+        "UNOWNED_RESTRICTED",
+        "TRANSFER_PENDING",
+        "CLOSING",
+        "CLOSED"
+      ],
+      "state_fixture_restoration_exact": true,
+      "private_DELETE_denials": 15,
+      "decline_and_terminal_reactivation_denied": true,
+      "revocation_vs_operation_both_orders": true,
+      "while_transaction_open": "55P03",
+      "after_revocation_commit": "42501",
+      "no_contract_or_session_revocation_claim": true
+    },
+    "b": {
+      "result": "PASS",
+      "states_denied_actual_server": [
+        "PAUSED",
+        "SUSPENDED",
+        "UNOWNED_RESTRICTED",
+        "TRANSFER_PENDING",
+        "CLOSING",
+        "CLOSED"
+      ],
+      "state_fixture_restoration_exact": true,
+      "private_DELETE_denials": 15,
+      "decline_and_terminal_reactivation_denied": true,
+      "revocation_vs_operation_both_orders": true,
+      "while_transaction_open": "55P03",
+      "after_revocation_commit": "42501",
+      "no_contract_or_session_revocation_claim": true
+    }
+  }
+}

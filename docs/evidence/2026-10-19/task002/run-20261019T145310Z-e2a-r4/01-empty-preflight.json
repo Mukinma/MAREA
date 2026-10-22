@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-19T14:53:53.761190+00:00",
+  "result": "PASS",
+  "pair": {
+    "result": "PASS",
+    "anchor": {
+      "result": "PASS",
+      "mode": "none",
+      "netns": "net:[4026532568]",
+      "active_interfaces": [
+        "lo"
+      ],
+      "inert_kernel_templates": 9,
+      "egress_routes": 0,
+      "published_ports": 0,
+      "policy_sha256": "fb723eafd579e1e7bd9450fad7fe8f11c025ab2a7e88d7874fa8674c33faab22"
+    },
+    "shared": {
+      "result": "PASS",
+      "mode": "container:7bed7b5c182ca280fa632051abc87183d1087ad53b554774c1eaf79447a253c0",
+      "netns": "net:[4026532568]",
+      "active_interfaces": [
+        "lo"
+      ],
+      "inert_kernel_templates": 9,
+      "egress_routes": 0,
+      "published_ports": 0,
+      "policy_sha256": "fb723eafd579e1e7bd9450fad7fe8f11c025ab2a7e88d7874fa8674c33faab22"
+    }
+  },
+  "independent": {
+    "result": "PASS",
+    "mode": "none",
+    "netns": "net:[4026532708]",
+    "active_interfaces": [
+      "lo"
+    ],
+    "inert_kernel_templates": 9,
+    "egress_routes": 0,
+    "published_ports": 0,
+    "policy_sha256": "fb723eafd579e1e7bd9450fad7fe8f11c025ab2a7e88d7874fa8674c33faab22"
+  },
+  "before_any_restore_or_product_service": true,
+  "no_mounts": true,
+  "no_added_capabilities": true,
+  "Auth_Postgres_started": false
+}

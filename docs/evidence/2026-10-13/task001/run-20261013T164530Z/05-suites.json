@@ -1,0 +1,24 @@
+{
+  "id": "E-TASK001-SUITES-20261013T164530Z",
+  "captured_at": "2026-10-13T17:00:31.963Z",
+  "milestone": 5,
+  "result": "BLOQUEADO",
+  "modality": "inspeccion",
+  "matrix_path": "tool/staging/matrix.json",
+  "planned_cases": 129,
+  "counts": {
+    "BLOQUEADO": 117,
+    "NO_IMPLEMENTADO": 6,
+    "PENDIENTE": 6
+  },
+  "node_http_cases_executed": 0,
+  "pgtap_cases_executed": 0,
+  "dart_local_repository_cases_executed": 0,
+  "device_cases_executed": 0,
+  "mock_cases_executed": 0,
+  "real_business_cases_executed": 0,
+  "complete_requirement_validation": false,
+  "platforms": [],
+  "known_defects_retained": true,
+  "limits": "Matrix is scenario specification, not implemented runnable suites; no allowed/denied/concurrency/expiration business evidence"
+}

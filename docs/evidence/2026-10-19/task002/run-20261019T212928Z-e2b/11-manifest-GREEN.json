@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-19T21:43:26.348997+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "incoming_candidature_id_preserved_in_manifest": true,
+      "manifest_hash": "fba91ecd5e17c679544e59787e58f50c430303aa6a07d31168a930046f772dfa",
+      "private_function_only": true,
+      "no_permission_or_business_RPC_changes": true
+    },
+    "b": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "incoming_candidature_id_preserved_in_manifest": true,
+      "manifest_hash": "23deea35e163a46be4ae5ca0173d4d8a151d7432757a29c948bd9233b7863638",
+      "private_function_only": true,
+      "no_permission_or_business_RPC_changes": true
+    }
+  },
+  "SQL_file": "20261019214311_e2b_incoming_candidature_manifest.sql",
+  "SQL_sha256": "95d67cc253fc9c46d35ab9b8bb11f260fe9c21b16103dbfbb25288eedbd50819"
+}

@@ -1,0 +1,188 @@
+{
+  "id": "E-TASK001-NETWORK-DIAG-20261013T174515Z",
+  "captured_at": "2026-10-13T17:46:57.840Z",
+  "modality": "real",
+  "result": "BLOQUEADO",
+  "root_cause_confirmed": false,
+  "mechanism": "Docker omits host NAT publication for endpoint attached exclusively to an internal bridge without gateway; healthy internal listener is unreachable via requested host port.",
+  "results": [
+    {
+      "mode": "internal",
+      "network_id": "c84540fbbf9cb48fc69b4484af3a29d75b2f1c04a8aa51360faf42f377fb809e",
+      "name": "marea-task001-diag-internal-174515",
+      "image": "public.ecr.aws/supabase/postgres@sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "listener_peer": "PASS",
+      "requested": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "61201"
+          }
+        ]
+      },
+      "published": {
+        "8080/tcp": []
+      },
+      "internal_ip": "172.20.0.2",
+      "host": {
+        "ok": false,
+        "error": "ECONNREFUSED"
+      }
+    },
+    {
+      "mode": "control",
+      "network_id": "4693bdc3fa7807aaf317771e942685d01b9629d7cbe1567435b90f99f21d48bf",
+      "name": "marea-task001-diag-control-174515",
+      "image": "public.ecr.aws/supabase/postgres@sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "listener_peer": "PASS",
+      "requested": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "61202"
+          }
+        ]
+      },
+      "published": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "61202"
+          }
+        ]
+      },
+      "internal_ip": "172.21.0.2",
+      "host": {
+        "ok": true,
+        "body": "SYNTHETIC"
+      }
+    }
+  ],
+  "commands": [
+    [
+      "docker",
+      "network",
+      "create",
+      "--internal",
+      "--opt",
+      "com.docker.network.bridge.host_binding_ipv4=127.0.0.1",
+      "--label",
+      "marea.task001.diagnostic=174515",
+      "marea-task001-diag-internal-174515"
+    ],
+    [
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "marea-task001-diag-internal-174515",
+      "--label",
+      "marea.task001.diagnostic=174515",
+      "--network",
+      "marea-task001-diag-internal-174515",
+      "--user",
+      "10001:10001",
+      "--read-only",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges",
+      "-p",
+      "127.0.0.1:61201:8080",
+      "--entrypoint",
+      "/bin/sh",
+      "public.ecr.aws/supabase/postgres@sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "-c",
+      "while true; do printf 'HTTP/1.1 200 OK\r\nContent-Length: 9\r\nConnection: close\r\n\r\nSYNTHETIC' | nc -l -p 8080; done"
+    ],
+    [
+      "docker",
+      "run",
+      "--name",
+      "marea-task001-diag-internal-174515-peer-0",
+      "--label",
+      "marea.task001.diagnostic=174515",
+      "--network",
+      "marea-task001-diag-internal-174515",
+      "--read-only",
+      "--cap-drop",
+      "ALL",
+      "--entrypoint",
+      "/usr/bin/curl",
+      "public.ecr.aws/supabase/postgres@sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "--silent",
+      "--show-error",
+      "--max-time",
+      "2",
+      "http://marea-task001-diag-internal-174515:8080"
+    ],
+    [
+      "docker",
+      "inspect",
+      "marea-task001-diag-internal-174515"
+    ],
+    [
+      "docker",
+      "network",
+      "create",
+      "--opt",
+      "com.docker.network.bridge.host_binding_ipv4=127.0.0.1",
+      "--label",
+      "marea.task001.diagnostic=174515",
+      "marea-task001-diag-control-174515"
+    ],
+    [
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "marea-task001-diag-control-174515",
+      "--label",
+      "marea.task001.diagnostic=174515",
+      "--network",
+      "marea-task001-diag-control-174515",
+      "--user",
+      "10001:10001",
+      "--read-only",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges",
+      "-p",
+      "127.0.0.1:61202:8080",
+      "--entrypoint",
+      "/bin/sh",
+      "public.ecr.aws/supabase/postgres@sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "-c",
+      "while true; do printf 'HTTP/1.1 200 OK\r\nContent-Length: 9\r\nConnection: close\r\n\r\nSYNTHETIC' | nc -l -p 8080; done"
+    ],
+    [
+      "docker",
+      "run",
+      "--name",
+      "marea-task001-diag-control-174515-peer-0",
+      "--label",
+      "marea.task001.diagnostic=174515",
+      "--network",
+      "marea-task001-diag-control-174515",
+      "--read-only",
+      "--cap-drop",
+      "ALL",
+      "--entrypoint",
+      "/usr/bin/curl",
+      "public.ecr.aws/supabase/postgres@sha256:6942962433a569e87f228b4d4ab7e11db5deca64e43babb3a038443ad6c4f1bb",
+      "--silent",
+      "--show-error",
+      "--max-time",
+      "2",
+      "http://marea-task001-diag-control-174515:8080"
+    ],
+    [
+      "docker",
+      "inspect",
+      "marea-task001-diag-control-174515"
+    ]
+  ],
+  "remote_modified": false,
+  "business_executed": false
+}

@@ -1,0 +1,31 @@
+{
+  "id": "E-TASK001-GUARDS-20261013T164530Z",
+  "captured_at": "2026-10-13T17:00:31.962Z",
+  "result": "PASS",
+  "modality": "unit-host",
+  "command": "node --test tool/staging/guard.test.mjs; guarded seed/test/start negative invocations",
+  "unit_cases": 4,
+  "cli_cases": [
+    {
+      "command": "seed",
+      "result": "PASS",
+      "exit_code": 1,
+      "expected": "Reject blocked dependent work before any business effect"
+    },
+    {
+      "command": "test",
+      "result": "PASS",
+      "exit_code": 1,
+      "expected": "Reject blocked dependent work before any business effect"
+    },
+    {
+      "command": "start",
+      "result": "PASS",
+      "exit_code": 1,
+      "expected": "Reject blocked dependent work before any business effect"
+    }
+  ],
+  "complete_requirement_validation": false,
+  "platforms": [],
+  "limits": "No Supabase authorization/HTTP/mock/provider/device execution; private filesystem fixtures only"
+}

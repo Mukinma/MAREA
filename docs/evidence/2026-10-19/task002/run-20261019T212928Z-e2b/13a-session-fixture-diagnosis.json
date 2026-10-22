@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-19T21:45:48.458239+00:00",
+  "result": "CLASSIFIED_TEST_FIXTURE",
+  "sources": {
+    "a": {
+      "session_user": "supabase_admin",
+      "fixture_super": false,
+      "session_super": true,
+      "service_member": false,
+      "authenticator_member": false
+    },
+    "b": {
+      "session_user": "supabase_admin",
+      "fixture_super": false,
+      "session_super": true,
+      "service_member": false,
+      "authenticator_member": false
+    }
+  },
+  "cause": "SET ROLE authorization uses original authenticated session; trusted supabase_admin session can SET ROLE again. Not a newly granted application privilege.",
+  "correction": "Use actual Unix-socket login sessions for two disposable synthetic case-reader fixtures; existing application and B production roles unchanged",
+  "S0_or_B_business_schema_change": false
+}

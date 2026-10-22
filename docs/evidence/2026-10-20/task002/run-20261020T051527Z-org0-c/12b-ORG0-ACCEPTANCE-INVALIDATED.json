@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-20T05:31:03.928673+00:00",
+  "result": "INVALIDATED",
+  "supersedes": "12-ORG0-ACCEPTANCE.json",
+  "cause": "Missing legacy deletion marker in ORG0 eligibility; reproduced against existing synthetic baseline, not data drift",
+  "C_acceptance": false,
+  "C_partial_fixture_sources_preserved": true,
+  "correction_proven_only_in_rollback": true,
+  "restart_from_B_new_copies_required": true
+}

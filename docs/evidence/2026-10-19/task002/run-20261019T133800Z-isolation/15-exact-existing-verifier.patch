@@ -1,0 +1,62 @@
+--- e2a_lab.before.py
++++ tool/task002/e2a_lab.py
+@@ -18,6 +18,10 @@
+ SQL_PATH=RUN/SQL_NAME
+ ENV={k:v for k,v in os.environ.items() if k in ['PATH','HOME','LANG','TMPDIR']}
+ os.umask(0o077)
++def require_new_E2A_authorization():
++ # Archived failed run: no reuse of receipts, volumes or prior authorization.
++ # The isolation-only authorization explicitly prohibits resuming E2-A.
++ raise RuntimeError('E2-A BLOQUEADO_NO_IMPLEMENTADO: new specific human approval and a new run are required. Use the empty isolation diagnostic only.')
+ def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+ def jhash(x):return hashlib.sha256(json.dumps(x,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+ def save(name,obj):
+@@ -25,6 +29,7 @@
+  p.write_text(json.dumps({'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),**obj},indent=2)+'\n')
+ def private(name,obj): (PRIVATE/name).write_text(json.dumps(obj,sort_keys=True,indent=2))
+ def docker(*args,input=None,check=True,timeout=120):
++ require_new_E2A_authorization()
+  with (PRIVATE/'docker-commands.jsonl').open('a') as f:f.write(json.dumps(list(args))+'\n')
+  r=subprocess.run(['docker',*args],input=input,text=True,capture_output=True,env=ENV,timeout=timeout)
+  if check and r.returncode:
+@@ -63,6 +68,7 @@
+ '''
+  return json.loads(helper(code,v,[root+'/'+archive,root+'/'+manifest],write=True).stdout)
+ def boot(a,recovery=False):
++ require_new_E2A_authorization()
+  name=f'{OWNER}-{a}-'+('recovery-pg' if recovery else 'pg');v=f'{OWNER}-{a}-'+('recovery-db' if recovery else 'db')
+  assert inspect(v,'volume')['Labels'][LABEL]==OWNER
+  script="printf 'local all all trust\\nhost postgres supabase_auth_admin 127.0.0.1/32 trust\\nhost all all all reject\\n' >/tmp/e2a-hba; touch /tmp/e2a.conf; exec postgres -D /pg/data -c config_file=/tmp/e2a.conf -c hba_file=/tmp/e2a-hba -c listen_addresses=127.0.0.1 -c unix_socket_directories=/tmp -c shared_preload_libraries=pg_stat_statements,pg_cron -c cron.launch_active_jobs=off -c default_transaction_read_only=on -c ssl=off -c archive_mode=off -c max_connections=30"
+@@ -94,6 +100,7 @@
+  extra['private_columns']=val(name,"SELECT coalesce(jsonb_agg(to_jsonb(x) ORDER BY table_name,ordinal_position),'[]') FROM information_schema.columns x WHERE table_schema='collaboration';")
+  return {'catalog':cat,'rows':rows,'row_hashes':hashes,'sequences':seq,'extra':extra}
+ def auth_start(a):
++ require_new_E2A_authorization()
+  name=f'{OWNER}-{a}-auth';pg=f'{OWNER}-{a}-pg';owned(pg)
+  cfg={'GOTRUE_API_HOST':'127.0.0.1','GOTRUE_API_PORT':'9999','API_EXTERNAL_URL':'http://127.0.0.1:9999','GOTRUE_SITE_URL':'http://127.0.0.1:9999','GOTRUE_DB_DRIVER':'postgres','GOTRUE_DB_DATABASE_URL':'postgres://supabase_auth_admin@127.0.0.1:5432/postgres?sslmode=disable&options=-c%20default_transaction_read_only%3Doff','GOTRUE_DB_CLEANUP_ENABLED':'false','GOTRUE_JWT_SECRET':secrets.token_hex(32),'GOTRUE_JWT_AUD':'authenticated','GOTRUE_JWT_DEFAULT_GROUP_NAME':'authenticated','GOTRUE_JWT_ADMIN_ROLES':'service_role','GOTRUE_JWT_EXP':'60','GOTRUE_EXTERNAL_EMAIL_ENABLED':'true','GOTRUE_DISABLE_SIGNUP':'false','GOTRUE_MAILER_AUTOCONFIRM':'true','GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED':'false','GOTRUE_SMTP_HOST':'127.0.0.1','GOTRUE_SMTP_PORT':'1025','GOTRUE_SMTP_ADMIN_EMAIL':'auth@e2a.invalid','GOTRUE_RATE_LIMIT_EMAIL_SENT':'1000','GOTRUE_RATE_LIMIT_TOKEN_REFRESH':'1000','GOTRUE_SECURITY_CAPTCHA_ENABLED':'false','GOTRUE_LOG_LEVEL':'info'}
+  path=PRIVATE/f'{a}-auth.env';path.write_text('\n'.join(k+'='+v for k,v in cfg.items())+'\n')
+@@ -153,6 +160,7 @@
+  save('01-preflight.json',{'result':'PASS','local_socket':True,'docker':'29.8.2','running_before':0,'pinned_images':[PG,AUTH,HELPER],'original_volume_access':False,'archives_and_E1_SQL_verified':True})
+  return archives
+ def bootstrap():
++ require_new_E2A_authorization()
+  archives=preflight();result={}
+  for a in ['a','b']:
+   for kind in ['db','storage']:restore(f'{a}-{kind}-cold.tar',f'{a}-{kind}-cold.tar.manifest.json',archives[a][kind]['backup'],f'{OWNER}-{a}-{kind}')
+@@ -184,6 +192,7 @@
+  private(f'{a}-signup-{label}.json',{'request':payload,'response':r,'legal_sequence_delta':after-before})
+  return r,payload,after-before
+ def red():
++ require_new_E2A_authorization()
+  results={}
+  for a in ['a','b']:
+   r,_,delta=signup(a,'red-valid');assert r['status']==200 and r['body'].get('user',{}).get('id')
+@@ -204,6 +213,8 @@
+  for old in json.loads((PRIVATE/'previous-containers.json').read_text()):assert {k:inspect(old['Id'])[k] for k in old}==old,'Previous container metadata changed'
+  save(receipt_name,{'result':'PASS','stopped':results,'previous_container_metadata_unchanged':True,'original_volumes_accessed':False,'all_new_volumes_retained':True})
+ if __name__=='__main__':
++ # Fail before the exception handler can append to the immutable failure run.
++ raise SystemExit('Archived E2-A run blocked; no new execution authorized. No containers or receipts changed.')
+  try:
+   if sys.argv[1:]==['bootstrap']:bootstrap()
+   elif sys.argv[1:]==['red']:red()

@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-14T01:10:34.087Z",
+  "result": "PASS_DOCUMENTARY_CHECKS_ONLY",
+  "prototype_interfaces": 28,
+  "syntax": "PASS",
+  "manifest_consistent": true,
+  "backend_calls": false,
+  "existing_shell_destinations": [
+    "Inicio",
+    "Explorar",
+    "Misiones",
+    "Mapa",
+    "Perfil"
+  ],
+  "contextual_utilities": [
+    "Crear",
+    "Notificaciones"
+  ],
+  "product_modified": false,
+  "flutter_modified": false,
+  "device_qa": false,
+  "complete_requirement_validation": false,
+  "file_refs": [
+    {
+      "path": "docs/task002/U0/index.html",
+      "sha256": "f9747ef4bc5d4423e82317eb8b97aaa1fe17d106a5df2831e81fb9bcfb94d766"
+    },
+    {
+      "path": "docs/task002/U0/screens.json",
+      "sha256": "d670d87286b99e1a284a94a54902a889936f837194daa25fd3fc3eee72a3ddbc"
+    },
+    {
+      "path": "docs/task002/U0-FUNCTIONAL-DESIGN.md",
+      "sha256": "8164cfcaf54a888d16edfcb7f425a4a99f1881a384490c6abec626c657fa3cd4"
+    },
+    {
+      "path": "docs/task002/U0/preview-offer-panel.png",
+      "sha256": "d96c798123d4fac05c589716871756f43f735050d8cc99d42b917caac6eedf49"
+    }
+  ],
+  "browser_receipt": "docs/evidence/2026-10-13/task002/run-20261014T003000Z/U0-browser-review.json",
+  "preview_server": "127.0.0.1:8743; static documentary prototype only; process session 83181; left available for review"
+}

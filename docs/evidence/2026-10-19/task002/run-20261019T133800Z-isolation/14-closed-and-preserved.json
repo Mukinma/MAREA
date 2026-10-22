@@ -1,0 +1,81 @@
+{
+  "result": "PASS_STATE_MOUNTS_IMAGES_NETWORKS_AND_VOLUMES_PRESERVED_WITH_DISCLOSED_EMPTY_DNS_REPRESENTATION_DIFFERENCE",
+  "stopped_empty_containers": [
+    {
+      "id": "fcfed2c297a28e467e2e4d964b11b2963fe98e4296701f837c3ed8f7df673c84",
+      "name": "/task002-isolation-20261019t133800z-corrected-independent",
+      "mounts": [],
+      "stopped": true
+    },
+    {
+      "id": "2db2d5f23c1753e304688ddc0bc87bb62de0290976e9c8351c26d6d76b7b7b3c",
+      "name": "/task002-isolation-20261019t133800z-corrected-shared",
+      "mounts": [],
+      "stopped": true
+    },
+    {
+      "id": "e57ea57a4ad042ea72d3e6df53f3d71ff66163187b561849eecea6575b985f8e",
+      "name": "/task002-isolation-20261019t133800z-corrected-anchor",
+      "mounts": [],
+      "stopped": true
+    },
+    {
+      "id": "7c3dfb65f0f538ee0792e7f279f507d749fb3f579a19487c0ce7a1ba27e03922",
+      "name": "/task002-isolation-20261019t133800z-independent",
+      "mounts": [],
+      "stopped": true
+    },
+    {
+      "id": "822ae52ad8af09cd9c30b55cc4298763855aef9c49c647cce8d256ce8322644d",
+      "name": "/task002-isolation-20261019t133800z-shared",
+      "mounts": [],
+      "stopped": true
+    },
+    {
+      "id": "b96e30b1976baa92611c63cb551bee3ac658907d0afe576c7e9c7c5e12698a1b",
+      "name": "/task002-isolation-20261019t133800z-anchor",
+      "mounts": [],
+      "stopped": true
+    }
+  ],
+  "previous_runtime_state_mounts_images_network_settings_unchanged": 280,
+  "previous_HostConfig_JSON_exact": false,
+  "HostConfig_differences": [
+    {
+      "container": "/task002-e2a-20261019t132000z-a-auth",
+      "changes": [
+        {
+          "path": "/HostConfig/Dns",
+          "before": null,
+          "after": []
+        }
+      ]
+    },
+    {
+      "container": "/task002-e2a-20261019t132000z-a-recovery-pg",
+      "changes": [
+        {
+          "path": "/HostConfig/Dns",
+          "before": null,
+          "after": []
+        }
+      ]
+    },
+    {
+      "container": "/task002-e2a-20261019t132000z-a-pg",
+      "changes": [
+        {
+          "path": "/HostConfig/Dns",
+          "before": null,
+          "after": []
+        }
+      ]
+    }
+  ],
+  "previous_containers_mutated_by_runner": false,
+  "DNS_difference_cause": "Not established; null and [] both carry no explicit DNS server. No repair or old-container mutation attempted. Raw difference retained.",
+  "volumes_inventory_unchanged": true,
+  "created_or_mounted_volumes": 0,
+  "running_after": 0,
+  "Auth_or_Postgres_started": false
+}

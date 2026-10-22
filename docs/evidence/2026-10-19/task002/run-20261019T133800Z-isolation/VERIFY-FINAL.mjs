@@ -1,0 +1,25 @@
+import fs from 'node:fs';import crypto from 'node:crypto';import assert from 'node:assert/strict';import cp from 'node:child_process';
+import {parse} from '../../../../../tool/traceability/node_modules/yaml/dist/index.js';
+const run='docs/evidence/2026-10-19/task002/run-20261019T133800Z-isolation';
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const before=JSON.parse(fs.readFileSync(run+'/00-before.json')),priorRaw=fs.readFileSync(run+'/prior-canonical.yaml','utf8'),prior=parse(priorRaw),raw=fs.readFileSync('docs/MAREA_REQUIREMENTS_STATUS.yaml','utf8'),current=parse(raw);
+const allowed=['docs/MAREA_AUDIT_REPORT.md','docs/MAREA_REQUIREMENTS_STATUS.yaml','docs/MAREA_TRACKING.md','tool/task002/e2a_lab.py'];
+const changed=Object.entries(before.files).filter(([p,h])=>sha(p)!==h).map(([p])=>p);assert.deepEqual(changed.sort(),allowed.sort());
+assert.equal(sha(run+'/e2a_lab.before.py'),before.files['tool/task002/e2a_lab.py']);
+const originalSourceRef=prior.evidence.find(e=>e.id==='E-TASK002-E2A-ISOLATION-20261019').file_refs.find(r=>r.path==='tool/task002/e2a_lab.py');assert.equal(originalSourceRef.sha256,sha(run+'/e2a_lab.before.py'));
+const privateFiles=JSON.parse(fs.readFileSync(run+'/02-private-original-digests.json'));for(const [p,h] of Object.entries(privateFiles))assert.equal(sha(p),h,p);
+const oldManifest=JSON.parse(fs.readFileSync('docs/evidence/2026-10-19/task002/run-20261019T132000Z-e2a/00-before.json')).files;
+const additional=oldManifest.filter(x=>!Object.hasOwn(before.files,x.path));for(const {path,sha256} of additional)assert.equal(sha(path),sha256,path);
+for(const key of Object.keys(prior).filter(k=>!['evidence','evidence_normative_bindings','next_tasks'].includes(k)))assert.deepEqual(current[key],prior[key],key);
+assert.deepEqual(current.evidence.slice(0,prior.evidence.length),prior.evidence);assert.equal(current.evidence.length,prior.evidence.length+5);
+assert.deepEqual(current.evidence_normative_bindings.slice(0,prior.evidence_normative_bindings.length),prior.evidence_normative_bindings);
+const baseline=t=>t.match(/^baseline:\n[\s\S]*?(?=^state_transitions:)/m)[0];assert.equal(baseline(raw),baseline(priorRaw));
+const t=current.next_tasks.find(x=>x.id==='TASK-002');assert.equal(t.documentary_progress.E2_A,'BLOQUEADO_NO_IMPLEMENTADO');assert.equal(t.documentary_progress.E2_A_resume_authorized,false);assert.equal(t.documentary_progress.complete,false);assert.equal(t.documentary_progress.E2_authorized,false);assert.equal(t.documentary_progress.flutter_authorized,false);assert.equal(t.documentary_progress.remote_authorized,false);
+assert.equal(cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),before.head);assert.equal(cp.execFileSync('git',['diff','--cached','--binary'],{encoding:'utf8'}),before.staged);assert.equal(cp.execFileSync('git',['diff','--binary'],{encoding:'utf8'}),'');
+const env=Object.fromEntries(Object.entries(process.env).filter(([k])=>['PATH','HOME','LANG','TMPDIR'].includes(k)));
+assert.equal(cp.execFileSync('docker',['--host','unix:///Users/crisis/.docker/run/docker.sock','ps','-q'],{encoding:'utf8',env}).trim(),'');
+for(const [p,h] of Object.entries(JSON.parse(fs.readFileSync(run+'/20-verifier-source-manifest.json'))))assert.equal(sha(p),h,p);
+for(const e of current.evidence.slice(prior.evidence.length)){assert.equal(e.complete_requirement_validation,false);for(const r of e.file_refs)assert.equal(sha(r.path),r.sha256,r.path);}
+const historical=Object.keys(before.files).filter(p=>p.startsWith('docs/evidence/'));
+const result={at:new Date().toISOString(),result:'PASS_WITH_DISCLOSED_DOCKER_EMPTY_DNS_REPRESENTATION_DIFFERENCES',prior_files_compared:Object.keys(before.files).length,allowed_changes:changed,additional_historical_outputs_compared:additional.length,all_prior_public_evidence_files_unchanged:historical.length,prior_private_files_and_backups_unchanged:Object.keys(privateFiles).length,old_evidence_records_unchanged:prior.evidence.length,new_diagnostic_evidence:5,requirements_unchanged:current.requirements.length,test_cases_unchanged:current.test_cases.length,baseline_raw_bytes_preserved:true,SRS_sha256:sha('docs/MAREA_SRS.md'),tracked_product_diff_empty:true,HEAD_staged_unchanged:true,running_containers:0,old_source_hash_preserved_in_snapshot:true,old_failure_receipts_unchanged:true,E2A:'BLOQUEADO_NO_IMPLEMENTADO',E2A_resume_authorized:false,TASK002_complete:false,raw_Docker_HostConfig_exact:false,DNS_difference_receipt:run+'/14-preservation-first-check-drift.json'};
+assert(!fs.existsSync(run+'/25-final-verification.json'),'No receipt overwrite');fs.writeFileSync(run+'/25-final-verification.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));

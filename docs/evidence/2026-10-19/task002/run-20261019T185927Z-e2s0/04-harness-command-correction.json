@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-19T19:04:41.983604+00:00",
+  "result": "PASS",
+  "cases": [
+    {
+      "case": "RED",
+      "exit": 1,
+      "stdout": "",
+      "error_kind": "MODULE_NOT_FOUND",
+      "mounts": 0,
+      "data": false
+    },
+    {
+      "case": "GREEN",
+      "exit": 0,
+      "stdout": "OK",
+      "error_kind": null,
+      "mounts": 0,
+      "data": false
+    }
+  ],
+  "cause": "entrypoint node duplicated in arguments",
+  "private_error": "a-storage-startup-stderr.json",
+  "guarantees_changed": false
+}

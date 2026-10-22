@@ -1,0 +1,170 @@
+[
+  {
+    "file": "001_initial_schema.sql",
+    "sha256": "e7ebaaf2ba761ebb4f11cfb296f6238a8af9d936c256d1b782e8a7c663a0267a",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "002_account_completion.sql",
+    "sha256": "9d7d4a29eaabd1fd5a2b61ecc519c52caa9f69d94bfb28e9abf6761c1967757b",
+    "review": "Full original reviewed; DROP policy created in 001; ALTER tables additive; legal/settings bootstrap only",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "003_community.sql",
+    "sha256": "f9c89743d848a50165d40ef3e77f4acf0a01489484dd5bf8d94dfd9b16225e15",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "004_post_locations.sql",
+    "sha256": "3128b9ed33f17d7a1f8193c589deea23d2252979fd32d29f6a1811f664a01b74",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "005_mission_lifecycle.sql",
+    "sha256": "6b3ea999f9fbf1500a879de4a39298d567c9ab3354e6422b1abaeef4a614da05",
+    "review": "Full original reviewed; DROP constraints and review_application old signature created in 003; empty lifecycle backfills",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "006_profile_experience.sql",
+    "sha256": "68c3bf4240c9c5b8e25a3af865509ad82077f55187c5ab3a2cea4f622059ea62",
+    "review": "Full original reviewed; DROP directory RPC created in 003 and report constraint created in 003; replacement return schema",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "007_minimal_registration.sql",
+    "sha256": "b814f167a162fb68a17706019d728a44540f45984eefdd00de8728de37a65a85",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "008_recover_minimal_registration.sql",
+    "sha256": "ed690d80e841729aa2838e33f5d10d3f73c3ee4b0934f92f88ddbefad07d2577",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "009_post_reactions.sql",
+    "sha256": "4130e3c3f625e2f9f1933d03283bcf3b24ff82e94062feb6b2c92fe2312c9082",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "010_post_comments.sql",
+    "sha256": "30011ce1cd24dae9ab31bfb0bcf11e1b40ba3e3f2b86e9dc668a3b296c4bbeba",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "011_post_collaboration.sql",
+    "sha256": "4196274a5be5237be41ac33570c01f79dac1fc2495383781dff08ed0ecb17166",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "012_mission_map.sql",
+    "sha256": "ee9bbb15491bf45c60d948ed3675de6f691a4ea17f25d7de987628df8b3b7a59",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "013_missions_redesign.sql",
+    "sha256": "528da9f709a30ca04302a258cc681b2aa8f5bae277b2cc94f8d7ba2ed0e8b26c",
+    "review": "Full original reviewed; Replace notifications constraint from 009 and Storage policy from 003; empty business rows",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "014_android_push.sql",
+    "sha256": "435a15056e800118941e2f74b5db19ac185fca3798a3a2b4ec57632534c83fb5",
+    "review": "Full original reviewed; Replace notifications constraints created in 009/013; remove actor NOT NULL; push disabled by default",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "015_tours.sql",
+    "sha256": "f4f296347d3f0660b729a2c31a5bdd9d8378e06750541318e41045158b86936e",
+    "review": "Full original reviewed; Policy replacement created earlier in same original file; private worker queue + Vault-gated wake; no scheduled job",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "016_home_feed.sql",
+    "sha256": "61bcfbc453b3d6c8ccd78af2dc7657e657c18cb3b89e2737b071f8707f6d0c5b",
+    "review": "Full original reviewed; accepted_at empty backfill; stories/feed definitions only",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "017_story_cleanup_schedule.sql",
+    "sha256": "75cdbbba9abd17a339844906927dbf6c29bef1b8c21d884452eade96e59bfe90",
+    "review": "Full original reviewed; Create pg_cron/pg_net; hourly cleanup scheduled but global launch off; Vault empty",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "018_story_publication_retries.sql",
+    "sha256": "5d857433c18c80cdf446db6a23d3b30b2c7609213e3f13a29786b1cd239730bf",
+    "review": "Full original reviewed; Empty publication receipts backfill",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "019_story_receipt_upgrade.sql",
+    "sha256": "4c728670e50c9cacf8cb8d6b6cb643e759430554d6cc40ef5c189b77188594e7",
+    "review": "Full original reviewed; Empty publication receipts backfill and journal trigger",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "020_mission_social.sql",
+    "sha256": "3e8ba895e0f168cf154e409c3a8fb7dd859e064b28ae7f48ea2390e1c029608e",
+    "review": "Full original reviewed; DDL, functions/policies and static bootstrap on empty local database",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  },
+  {
+    "file": "021_content_cities.sql",
+    "sha256": "9a57c562f63b13af12125156fb159720cffc0a8008254f36c2deeecac4f43d49",
+    "review": "Full original reviewed; Provider bootstrap original real URL retained but unreachable; local overlay disables provider after replay",
+    "business_data_before": 0,
+    "destructive_data_operations_authorized": false,
+    "source_unchanged": true
+  }
+]

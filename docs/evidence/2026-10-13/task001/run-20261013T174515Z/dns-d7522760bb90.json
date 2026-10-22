@@ -1,0 +1,90 @@
+{
+  "id": "E-TASK001-DNS-marea-task001-d7522760bb90",
+  "at": "2026-10-13T19:07:45.206Z",
+  "result": "PASS",
+  "modality": "real",
+  "control": {
+    "resolved": true,
+    "answers": 8,
+    "rcode": 0
+  },
+  "results": [
+    {
+      "name": "/supabase_edge_runtime_marea-task001-d7522760bb90",
+      "namespace": "0b159e9708f027cdf645c9f4d4e1ba02647fec7dbf5a38d25dca1b3d4d708784",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_storage_marea-task001-d7522760bb90",
+      "namespace": "fe82c5896e76059898ffbd3712cbc8b4bca18d80758062603bca973e3e121a55",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_rest_marea-task001-d7522760bb90",
+      "namespace": "bcfc8065926733c922b3f2289f80d482d380855ad6166c5edf1a4a98fa7c10cc",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_realtime_marea-task001-d7522760bb90",
+      "namespace": "61a2637522f4e13688effe0d2601b151002b45d239bdc94e8d874af5fd3eef26",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_inbucket_marea-task001-d7522760bb90",
+      "namespace": "6ff23cff8f2eaa1f023cc7ffc410f3a9e59c19920e2b8c1dd45fcc08bda5115d",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_auth_marea-task001-d7522760bb90",
+      "namespace": "bd93455fbbd647d5510287b35f39a9c0a512b3ad857714d9708a2c076f5f67c5",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_kong_marea-task001-d7522760bb90",
+      "namespace": "4322dabf95130dbb7de5bb5d3dfd7945ad4457d6c3a4194b12a8a7f1b8306e42",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/supabase_db_marea-task001-d7522760bb90",
+      "namespace": "5231ff8f92cd461668454d981a6c9ed0f8d68771a079e00174cf5695f25c1e7a",
+      "resolved": false,
+      "answers": 0,
+      "rcode": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "/marea-task001-d7522760bb90-relay",
+      "namespace": "fa98c1cff9d6609f6c11bff42e909764eeed5ca37928973a0d1ae5485125154f",
+      "resolved": false,
+      "answers": 0,
+      "rcode": null,
+      "result": "PASS"
+    }
+  ],
+  "subcases_executed": 10,
+  "limits": [
+    "Official Docker registry DNS used as infrastructure positive control; no business request or credential."
+  ],
+  "remote_modified": false
+}

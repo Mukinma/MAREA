@@ -1,0 +1,69 @@
+{
+  "id": "E-TASK001-CONTROLS-FINAL-20261013T1710Z",
+  "captured_at": "2026-10-13T17:07:22.589Z",
+  "result": "PASS",
+  "task_result": "BLOQUEADO",
+  "commands": [
+    {
+      "command": "node --test tool/staging/guard.test.mjs",
+      "exit_code": 0
+    },
+    {
+      "command": "npm test --prefix tool/traceability",
+      "exit_code": 0
+    },
+    {
+      "command": "node tool/traceability/cli.mjs validate",
+      "exit_code": 0
+    },
+    {
+      "command": "node tool/traceability/cli.mjs render",
+      "exit_code": 0
+    },
+    {
+      "command": "node tool/traceability/cli.mjs check",
+      "exit_code": 0
+    }
+  ],
+  "guard_tests": 4,
+  "traceability_tests": 21,
+  "cli_negative_gates_previously_verified": 3,
+  "complete_requirement_validation": false,
+  "srs_sha256": "44087ec119772779a7972063299f248ae60009b26119a5c9b179ee75a7911152",
+  "git_revision": "989e5b5845deff0afd13703a067a7d7a3775d3bc",
+  "tracked_changes": 0,
+  "staged_changes": 0,
+  "canonical_sha256": "180225fcc18fb155f740d69ecc2c549b55713d969c6bae4e67c647987d99e9f0",
+  "derived_documents": [
+    {
+      "path": "docs/MAREA_TRACKING.md",
+      "sha256": "03f8dc5bd00db84a42e5596cd088b56fb0610246ad44ef964f565a740101c40d",
+      "mtime_ms": 1791910973133.4287
+    },
+    {
+      "path": "docs/MAREA_AUDIT_REPORT.md",
+      "sha256": "f0af26cb8ce4713a2ee26b1764f42fb110f308620bb3bf3173b829481c88b6b0",
+      "mtime_ms": 1791911240507.7478
+    },
+    {
+      "path": "docs/MAREA_TRACEABILITY.md",
+      "sha256": "c8e7627ce34f30622ce17b494d2465e4858eb8451cfe231ab2ce02b091f63436",
+      "mtime_ms": 1791910973136.5386
+    },
+    {
+      "path": "docs/MAREA_CHANGELOG.md",
+      "sha256": "df70842badc665f84ad58196865056f1e2abfdcab7df352c0f0b14252260eec6",
+      "mtime_ms": 1791910973137.4478
+    }
+  ],
+  "second_render_writes": 0,
+  "second_render_mtimes_unchanged": true,
+  "local_images": 7,
+  "owned_network_internal": true,
+  "owned_containers_running": 0,
+  "business_egress_verified": false,
+  "business_cases_executed": 0,
+  "remote_modified": false,
+  "log_sha256": "7b92fb747798819a2e7b4f7d1af26c78ffc1b801b429f2c2742f902c5f346de7",
+  "limits": "Integrity only; preservation Git cache limitation in separate receipt; no successful Supabase stack or essential business execution"
+}

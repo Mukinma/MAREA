@@ -1,0 +1,84 @@
+{
+  "at": "2026-10-19T20:51:37.400174+00:00",
+  "result": "PASS",
+  "services_quiesced_before_backup": [
+    "/task002-e2s0-20261019t185927z-b-ingress-space-v3",
+    "/task002-e2s0-20261019t185927z-b-auth-space-v3",
+    "/task002-e2s0-20261019t185927z-b-rest-space-v3",
+    "/task002-e2s0-20261019t185927z-b-storage-space-v3",
+    "/task002-e2s0-20261019t185927z-a-ingress-space-v3",
+    "/task002-e2s0-20261019t185927z-a-auth-space-v3",
+    "/task002-e2s0-20261019t185927z-a-rest-space-v3",
+    "/task002-e2s0-20261019t185927z-a-storage-space-v3"
+  ],
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "DB": {
+        "archive_sha256": "d3c4ae3976ceb58c886686e20212215904384511d52af57fcf1137e035b01ee5",
+        "manifest_sha256": "15fbba1ea3b4eba2c1d9e53fc228025dae012d6e1f482cdfb9ab55e2e23bd27a",
+        "tree_verified_on_new_volume": "task002-e2s0-20261019t185927z-a-S0-v3-final-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage": {
+        "archive_sha256": "06be79eee3ea27ca8552811ead526359825c8eb907c300d830a1df7d3566d72c",
+        "manifest_sha256": "012581928699dad288aaeffece43befa120551271ff7b66d2f7ac46d38015e5a",
+        "restored_volume": "task002-e2s0-20261019t185927z-v3-recovery-a-storage",
+        "restored_copy": "task002-e2s0-20261019t185927z-v3-recovery-a-storage-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 49
+      },
+      "coordination": {
+        "archive_sha256": "8806964b019520b8ca14b3f58573dffd2dfb2f79470eb50bdf72d14d1ce5848d",
+        "manifest_sha256": "61168c4408a3de095294bb0f2e18c2afca55d86bf8f6b2c4c2ddaa326788226b",
+        "restored_volume": "task002-e2s0-20261019t185927z-v3-recovery-a-control-v2",
+        "restored_copy": "task002-e2s0-20261019t185927z-v3-recovery-a-control-v2-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 2
+      },
+      "restored_guard_count": 40,
+      "restored_API_read_HTTP": 200,
+      "restored_API_delete_HTTP": 500,
+      "SQLSTATE": "55000",
+      "restored_ingress_delete_HTTP": 503,
+      "missing_recovered_dependencies_fail_closed": true,
+      "final_logical_and_physical_snapshots_equal": true
+    },
+    "b": {
+      "result": "PASS",
+      "DB": {
+        "archive_sha256": "71a58b402adc9c021ad70a0d4b160f1d3806300bdb07451d57f2287812bbb18e",
+        "manifest_sha256": "7b21ff3ab0ccf5c9689e01c760b832581cff0189c477ce49c9b46a2f87c5a9b8",
+        "tree_verified_on_new_volume": "task002-e2s0-20261019t185927z-b-S0-v3-final-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "Storage": {
+        "archive_sha256": "b10276d5996489d8f3200c8355718d2e72fc705d6719fb99ecf6003c3e8eb415",
+        "manifest_sha256": "3e31c1946e1286825a45d9689879930cfed7331dfce72a3c14ab3f20c9b78518",
+        "restored_volume": "task002-e2s0-20261019t185927z-v3-recovery-b-storage",
+        "restored_copy": "task002-e2s0-20261019t185927z-v3-recovery-b-storage-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 54
+      },
+      "coordination": {
+        "archive_sha256": "d790bd87126a0b804a99e815279edea29d12efa9ebbb5e363393d25bacd92ee1",
+        "manifest_sha256": "596dd0f0032c3859d0078a5c14d7cb72e5466e248f5d6c93498257014b61a89c",
+        "restored_volume": "task002-e2s0-20261019t185927z-v3-recovery-b-control-v2",
+        "restored_copy": "task002-e2s0-20261019t185927z-v3-recovery-b-control-v2-copy",
+        "all_bytes_attributes_and_ns_equal": true,
+        "entries": 2
+      },
+      "restored_guard_count": 40,
+      "restored_API_read_HTTP": 200,
+      "restored_API_delete_HTTP": 500,
+      "SQLSTATE": "55000",
+      "restored_ingress_delete_HTTP": 503,
+      "missing_recovered_dependencies_fail_closed": true,
+      "final_logical_and_physical_snapshots_equal": true
+    }
+  },
+  "remote_exposure": false,
+  "product_activation_authorized": false
+}

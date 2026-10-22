@@ -1,0 +1,11 @@
+{
+  "id": "E-TASK001-IMAGE-ARTIFACT-20261013T174515Z",
+  "at": "2026-10-13T19:13:01.975Z",
+  "result": "PASS",
+  "network_image_id": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+  "private_export_sha256": "303a336aef7365f9ac07b5be9893f0c837baed1b080c22d158c5fa0cd13cce38",
+  "private_export_bytes": 21732864,
+  "mode": "0600; parent0700",
+  "purpose": "Immutable cached artifact retained for local reproducibility; rebuild via mutable APK registry not presumed identical",
+  "remote_modified": false
+}

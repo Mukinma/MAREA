@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-19T19:41:18.269938+00:00",
+  "result": "CORRECTED_WITHOUT_WEAKENING",
+  "root_cause": "Storage v1.72.1 statement-level storage.protect_delete raises 42501 before row S0 guard",
+  "GUC_syntax_valid": true,
+  "vendor_guard_disabled": false,
+  "current_snapshot_equals_T49": true,
+  "new_test": "service_role UPDATE protected mission image with forged GUC must raise S0 55000",
+  "original_failed_driver_preserved": "tool/task002/s0_extra.py"
+}

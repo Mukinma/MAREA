@@ -1,0 +1,489 @@
+{
+  "id": "E-TASK001-ISOLATION-marea-task001-8798fbb703ba",
+  "captured_at": "2026-10-13T17:56:53.638Z",
+  "result": "PASS",
+  "modality": "real",
+  "project_id": "marea-task001-8798fbb703ba",
+  "network": {
+    "internal": true,
+    "gateway_mode": "isolated",
+    "ipv6": false
+  },
+  "controls": [
+    {
+      "case": "reachable-canary",
+      "connected": true,
+      "expected_connected": true,
+      "result": "PASS",
+      "reason": "CONNECTED",
+      "seconds": 0.006
+    },
+    {
+      "case": "reachable-host-control",
+      "connected": true,
+      "expected_connected": true,
+      "result": "PASS",
+      "reason": "CONNECTED",
+      "seconds": 0.002
+    }
+  ],
+  "results": [
+    {
+      "name": "/supabase_storage_marea-task001-8798fbb703ba",
+      "namespace": "9a359390fca46e251075160eb1c871d9a93f63fb428ec4c057e9e731c6a34208",
+      "privileged": false,
+      "cap_add": [],
+      "cases": [
+        {
+          "case": "allowed-local-postgres",
+          "connected": true,
+          "expected_connected": true,
+          "result": "PASS",
+          "reason": "CONNECTED",
+          "seconds": 0.006
+        },
+        {
+          "case": "denied-ingress-canary",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-host",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": -3,
+          "seconds": 5.007
+        },
+        {
+          "case": "denied-bridge-gateway",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 111,
+          "seconds": 0.001
+        },
+        {
+          "case": "denied-external-ipv4",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-external-ipv6",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        }
+      ]
+    },
+    {
+      "name": "/supabase_rest_marea-task001-8798fbb703ba",
+      "namespace": "1288968637d4a6955585c4b9a69cd6c245d3a8ffbd57b52543b9707700068eab",
+      "privileged": false,
+      "cap_add": [],
+      "cases": [
+        {
+          "case": "allowed-local-postgres",
+          "connected": true,
+          "expected_connected": true,
+          "result": "PASS",
+          "reason": "CONNECTED",
+          "seconds": 0.006
+        },
+        {
+          "case": "denied-ingress-canary",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-host",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": -3,
+          "seconds": 5.017
+        },
+        {
+          "case": "denied-bridge-gateway",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 111,
+          "seconds": 0.001
+        },
+        {
+          "case": "denied-external-ipv4",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-external-ipv6",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        }
+      ]
+    },
+    {
+      "name": "/supabase_realtime_marea-task001-8798fbb703ba",
+      "namespace": "56c4b06231c4d0b7773c0f654f13edab3a92c70b58e8d72c3a5e1c5b0b3ccf89",
+      "privileged": false,
+      "cap_add": [],
+      "cases": [
+        {
+          "case": "allowed-local-postgres",
+          "connected": true,
+          "expected_connected": true,
+          "result": "PASS",
+          "reason": "CONNECTED",
+          "seconds": 0.006
+        },
+        {
+          "case": "denied-ingress-canary",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-host",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": -3,
+          "seconds": 5.018
+        },
+        {
+          "case": "denied-bridge-gateway",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 111,
+          "seconds": 0.001
+        },
+        {
+          "case": "denied-external-ipv4",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-external-ipv6",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        }
+      ]
+    },
+    {
+      "name": "/supabase_inbucket_marea-task001-8798fbb703ba",
+      "namespace": "442d8beb469141438cfcfef4cdc094681ccce645dcde72297bf58009d32a248e",
+      "privileged": false,
+      "cap_add": [],
+      "cases": [
+        {
+          "case": "allowed-local-postgres",
+          "connected": true,
+          "expected_connected": true,
+          "result": "PASS",
+          "reason": "CONNECTED",
+          "seconds": 0.006
+        },
+        {
+          "case": "denied-ingress-canary",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-host",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": -3,
+          "seconds": 5.021
+        },
+        {
+          "case": "denied-bridge-gateway",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 111,
+          "seconds": 0.001
+        },
+        {
+          "case": "denied-external-ipv4",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-external-ipv6",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        }
+      ]
+    },
+    {
+      "name": "/supabase_auth_marea-task001-8798fbb703ba",
+      "namespace": "24b69d2ff12707d7171f97ab7537f09273b91599fa214f9ea3d9b55e8863c2d4",
+      "privileged": false,
+      "cap_add": [],
+      "cases": [
+        {
+          "case": "allowed-local-postgres",
+          "connected": true,
+          "expected_connected": true,
+          "result": "PASS",
+          "reason": "CONNECTED",
+          "seconds": 0.006
+        },
+        {
+          "case": "denied-ingress-canary",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-host",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": -3,
+          "seconds": 5.015
+        },
+        {
+          "case": "denied-bridge-gateway",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 111,
+          "seconds": 0.001
+        },
+        {
+          "case": "denied-external-ipv4",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-external-ipv6",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        }
+      ]
+    },
+    {
+      "name": "/supabase_kong_marea-task001-8798fbb703ba",
+      "namespace": "662a5db5cbf9c3bdd450c457339e01d337950d10584ebd69b9e8a24e862008e4",
+      "privileged": false,
+      "cap_add": [],
+      "cases": [
+        {
+          "case": "allowed-local-postgres",
+          "connected": true,
+          "expected_connected": true,
+          "result": "PASS",
+          "reason": "CONNECTED",
+          "seconds": 0.007
+        },
+        {
+          "case": "denied-ingress-canary",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-host",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": -3,
+          "seconds": 5.016
+        },
+        {
+          "case": "denied-bridge-gateway",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 111,
+          "seconds": 0.001
+        },
+        {
+          "case": "denied-external-ipv4",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-external-ipv6",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        }
+      ]
+    },
+    {
+      "name": "/supabase_db_marea-task001-8798fbb703ba",
+      "namespace": "75180ab11d117dd384e4c15c9fdc0c7bedda3343272af5f748ad3c5448d70373",
+      "privileged": false,
+      "cap_add": [],
+      "cases": [
+        {
+          "case": "allowed-local-postgres",
+          "connected": true,
+          "expected_connected": true,
+          "result": "PASS",
+          "reason": "CONNECTED",
+          "seconds": 0.006
+        },
+        {
+          "case": "denied-ingress-canary",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-host",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": -3,
+          "seconds": 5.014
+        },
+        {
+          "case": "denied-bridge-gateway",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 111,
+          "seconds": 0
+        },
+        {
+          "case": "denied-external-ipv4",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        },
+        {
+          "case": "denied-external-ipv6",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        }
+      ]
+    },
+    {
+      "name": "/marea-task001-8798fbb703ba-relay",
+      "namespace": "a80ed36d970939371043f7ed5ad6c399f6c0d958abf50265e160eace61ef6939",
+      "privileged": false,
+      "cap_add": [],
+      "cases": [
+        {
+          "case": "allowed-local-postgres",
+          "connected": true,
+          "expected_connected": true,
+          "result": "PASS",
+          "reason": "CONNECTED",
+          "seconds": 0.006
+        },
+        {
+          "case": "denied-ingress-canary",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": "timed out",
+          "seconds": 1.01
+        },
+        {
+          "case": "denied-host",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": -3,
+          "seconds": 5.017
+        },
+        {
+          "case": "denied-bridge-gateway",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": "timed out",
+          "seconds": 1.012
+        },
+        {
+          "case": "denied-external-ipv4",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": "timed out",
+          "seconds": 1.002
+        },
+        {
+          "case": "denied-external-ipv6",
+          "connected": false,
+          "expected_connected": false,
+          "result": "PASS",
+          "reason": 101,
+          "seconds": 0
+        }
+      ]
+    }
+  ],
+  "subcases_executed": 50,
+  "helpers_removed": true,
+  "firewall_rules_sha256": "adfbdc680376bdfd385f29b3d00f699179ea971994d29945446537a29ab1898f",
+  "firewall_rules": "# Generated by iptables-save v1.8.11 (nf_tables) on Tue Oct 13 17:56:53 2026\n*filter\n:INPUT ACCEPT [0:0]\n:FORWARD DROP [0:0]\n:OUTPUT DROP [7:444]\n[19:1615] -A OUTPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT\n[1:60] -A OUTPUT -d 172.30.61.4/32 -p tcp -m tcp --dport 8000 -j ACCEPT\n[1:60] -A OUTPUT -d 172.30.61.3/32 -p tcp -m tcp --dport 5432 -j ACCEPT\n[0:0] -A OUTPUT -d 172.30.61.6/32 -p tcp -m tcp --dport 8025 -j ACCEPT\nCOMMIT\n# Completed on Tue Oct 13 17:56:53 2026\n# Generated by iptables-save v1.8.11 (nf_tables) on Tue Oct 13 17:56:53 2026\n*nat\n:PREROUTING ACCEPT [0:0]\n:INPUT ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n:POSTROUTING ACCEPT [0:0]\n:DOCKER_OUTPUT - [0:0]\n:DOCKER_POSTROUTING - [0:0]\n[4:264] -A OUTPUT -d 127.0.0.11/32 -j DOCKER_OUTPUT\n[0:0] -A POSTROUTING -d 127.0.0.11/32 -j DOCKER_POSTROUTING\n[0:0] -A DOCKER_OUTPUT -d 127.0.0.11/32 -p tcp -m tcp --dport 53 -j DNAT --to-destination 127.0.0.11:38235\n[4:264] -A DOCKER_OUTPUT -d 127.0.0.11/32 -p udp -m udp --dport 53 -j DNAT --to-destination 127.0.0.11:46631\n[0:0] -A DOCKER_POSTROUTING -s 127.0.0.11/32 -p tcp -m tcp --sport 38235 -j SNAT --to-source :53\n[0:0] -A DOCKER_POSTROUTING -s 127.0.0.11/32 -p udp -m udp --sport 46631 -j SNAT --to-source :53\nCOMMIT\n# Completed on Tue Oct 13 17:56:53 2026\n# Generated by ip6tables-save v1.8.11 (nf_tables) on Tue Oct 13 17:56:53 2026\n*filter\n:INPUT ACCEPT [0:0]\n:FORWARD DROP [0:0]\n:OUTPUT DROP [0:0]\nCOMMIT\n# Completed on Tue Oct 13 17:56:53 2026\n",
+  "remote_modified": false,
+  "limits": [
+    "Connection probes use the actual service network namespaces without credentials or business data; product authorization not tested here."
+  ],
+  "private_receipt_sha256": "d6acbfde7576541cea9ad011e37ce1dd8b70798e6829330d56121195c8c3d2a7"
+}

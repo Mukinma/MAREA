@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-19T20:52:42.618114+00:00",
+  "result": "PASS",
+  "initial_preservation_check": "STOPPED_AT_EXPLAINED_CLI_CACHE_DELTA",
+  "path": "supabase/.temp/cli-latest",
+  "cause": "Installed CLI help/migration new refreshed available-version cache; no upgrade, no product schema or data operation",
+  "CLI_installed_version": "2.117.0",
+  "detected_bytes": "v2.121.0",
+  "restored_original_bytes": "v2.120.0",
+  "original_SHA256_proven_before_write": "2f99ec07bad208b0108748390c2fe80fb0a91b1784a8f7bf1d303efda7deeaee",
+  "product_sources_affected": false,
+  "cache_content_restored_exactly": true,
+  "timestamps_not_claimed_restored": true
+}

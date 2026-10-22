@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-20T05:41:35.176445+00:00",
+  "result": "PASS",
+  "command": [
+    "supabase",
+    "--workdir",
+    "/Users/crisis/Proyectos/marea-backups/task002-org0-c-v2-20261020T053439Z/e2c_evidence_binding",
+    "migration",
+    "new",
+    "e2c_evidence_binding"
+  ],
+  "SQL_file": "20261020054130_e2c_evidence_binding.sql",
+  "SQL_sha256": "5dfd9e5ca688f54b371e83c7333cf2d62e46cb3c6b48d9852322d888b1ebd4d4",
+  "source": "tool/task002/c_evidence_binding.sql",
+  "source_sha256": "5dfd9e5ca688f54b371e83c7333cf2d62e46cb3c6b48d9852322d888b1ebd4d4",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "all_rows_sequences_equal": true
+    },
+    "b": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "all_rows_sequences_equal": true
+    }
+  }
+}

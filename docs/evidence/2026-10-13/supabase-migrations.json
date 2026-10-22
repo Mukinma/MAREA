@@ -1,0 +1,93 @@
+{
+  "captured_at": "2026-10-13T06:35:41.130Z",
+  "project_ref": "alxdipzfunbpaywmpndi",
+  "operation": "READ_ONLY_METADATA",
+  "data": {
+    "migrations": [
+      {
+        "version": "001",
+        "name": "initial_schema"
+      },
+      {
+        "version": "002",
+        "name": "account_completion"
+      },
+      {
+        "version": "003",
+        "name": "community"
+      },
+      {
+        "version": "004",
+        "name": "post_locations"
+      },
+      {
+        "version": "005",
+        "name": "mission_lifecycle"
+      },
+      {
+        "version": "006",
+        "name": "profile_experience"
+      },
+      {
+        "version": "007",
+        "name": "minimal_registration"
+      },
+      {
+        "version": "008",
+        "name": "recover_minimal_registration"
+      },
+      {
+        "version": "009",
+        "name": "post_reactions"
+      },
+      {
+        "version": "010",
+        "name": "post_comments"
+      },
+      {
+        "version": "011",
+        "name": "post_collaboration"
+      },
+      {
+        "version": "012",
+        "name": "mission_map"
+      },
+      {
+        "version": "013",
+        "name": "missions_redesign"
+      },
+      {
+        "version": "014",
+        "name": "android_push"
+      },
+      {
+        "version": "015",
+        "name": "tours"
+      },
+      {
+        "version": "016",
+        "name": "home_feed"
+      },
+      {
+        "version": "017",
+        "name": "story_cleanup_schedule"
+      },
+      {
+        "version": "018",
+        "name": "story_publication_retries"
+      },
+      {
+        "version": "019",
+        "name": "story_receipt_upgrade"
+      },
+      {
+        "version": "020",
+        "name": "mission_social"
+      },
+      {
+        "version": "021",
+        "name": "content_cities"
+      }
+    ]
+  }
+}

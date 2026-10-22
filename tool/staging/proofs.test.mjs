@@ -1,0 +1,4 @@
+import{test}from'node:test';import assert from'node:assert/strict';import{mkdtempSync,writeFileSync}from'node:fs';import{join}from'node:path';import{tmpdir}from'node:os';import{latestProof}from'./proofs.mjs';
+test('a newer failed isolation proof overrides an original PASS',()=>{const p=mkdtempSync(join(tmpdir(),'task001-proofs-'));writeFileSync(join(p,'dns-receipt.json'),JSON.stringify({result:'PASS'}));assert.equal(latestProof(p,'dns').result,'PASS');writeFileSync(join(p,'dns-receipt-100.json'),JSON.stringify({result:'BLOQUEADO'}));assert.throws(()=>latestProof(p,'dns'),/Isolation proof/);});
+import{matchCurrentNamespaces}from'./proofs.mjs';
+test('a replaced service cannot inherit a previous network namespace proof',()=>{const old={results:[{namespace:'old'}]};assert.throws(()=>matchCurrentNamespaces(old,old,[{Id:'new'}]),/namespace/);assert.doesNotThrow(()=>matchCurrentNamespaces(old,old,[{Id:'old'}]));});

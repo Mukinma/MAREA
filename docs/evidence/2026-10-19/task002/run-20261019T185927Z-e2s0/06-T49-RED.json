@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-19T19:13:12.647160+00:00",
+  "result": "EXPECTED_RED",
+  "sources": {
+    "a": {
+      "result": "EXPECTED_RED",
+      "HTTP_remove": 200,
+      "real_physical_bytes_deleted": true,
+      "protected_references_left": 2,
+      "Auth_delete_performed": false,
+      "only_new_synthetic_fixture_changed": true,
+      "compensating_API_upload": true,
+      "object_identity_changed_explicitly": true
+    },
+    "b": {
+      "result": "EXPECTED_RED",
+      "HTTP_remove": 200,
+      "real_physical_bytes_deleted": true,
+      "protected_references_left": 2,
+      "Auth_delete_performed": false,
+      "only_new_synthetic_fixture_changed": true,
+      "compensating_API_upload": true,
+      "object_identity_changed_explicitly": true
+    }
+  },
+  "S0_implemented": false,
+  "original_rows_conserved": true
+}

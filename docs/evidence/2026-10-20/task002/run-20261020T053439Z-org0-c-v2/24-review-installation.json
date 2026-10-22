@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-20T05:53:38.592610+00:00",
+  "result": "PASS",
+  "command": [
+    "supabase",
+    "--workdir",
+    "/Users/crisis/Proyectos/marea-backups/task002-org0-c-v2-20261020T053439Z/orgc_final_review_fix",
+    "migration",
+    "new",
+    "orgc_final_review_fix"
+  ],
+  "SQL_file": "20261020055334_orgc_final_review_fix.sql",
+  "SQL_sha256": "14ef4ee9767034eb57ccf474243f431e93d63c41c44ed04bd190bf293a150dc1",
+  "source": "tool/task002/orgc_review_fix.sql",
+  "source_sha256": "14ef4ee9767034eb57ccf474243f431e93d63c41c44ed04bd190bf293a150dc1",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "all_rows_sequences_equal": true
+    },
+    "b": {
+      "result": "PASS",
+      "rollback_exact": true,
+      "all_rows_sequences_equal": true
+    }
+  }
+}

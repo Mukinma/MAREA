@@ -1,0 +1,19 @@
+{
+  "id": "E-TASK001-PRESERVATION-FINAL-20261013T174515Z",
+  "captured_at": "2026-10-13T19:54:58.581154+00:00",
+  "result": "PASS",
+  "verified_files": {
+    "original": 39879,
+    "continuation-project": 39949,
+    "continuation-blocked-runtime": 11,
+    "blocked-origin": 11
+  },
+  "original_files_unchanged": 39936,
+  "authorized_changes_count": 11,
+  "git_preserved": true,
+  "git_preservation_scope": "HEAD, branch and staged entries identical; app index-stat rewrite and expired refs/codex snapshots retained in verified backup, snapshot objects still present",
+  "ephemeral_git_paths": 6,
+  "blocked_runtime_preserved": true,
+  "private_access": "0700",
+  "remote_modified": false
+}

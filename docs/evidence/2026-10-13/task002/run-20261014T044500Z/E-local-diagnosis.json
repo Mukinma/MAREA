@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-14T04:51:56.981703+00:00",
+  "scope": "LOCAL_READ_ONLY_ENVIRONMENT_DIAGNOSIS",
+  "docker_context": {
+    "exit_code": 0,
+    "stdout": "desktop-linux",
+    "stderr": ""
+  },
+  "docker_endpoint": {
+    "exit_code": 0,
+    "stdout": "unix:///Users/crisis/.docker/run/docker.sock",
+    "stderr": ""
+  },
+  "docker_version": {
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "failed to connect to the docker API at unix:///Users/crisis/.docker/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /Users/crisis/.docker/run/docker.sock: connect: no such file or directory"
+  },
+  "socket_exists": false,
+  "desktop_installed": true,
+  "backend_process": {
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  "psql_binary": null,
+  "historical_runtime_receipts": [
+    {
+      "stack": "marea-task001-d7522760bb90",
+      "directory_exists": true,
+      "schema_receipt_exists": true,
+      "restore_receipts_found": 0,
+      "sql_inputs_are_not_backups": 3,
+      "dump_file_found": 0
+    },
+    {
+      "stack": "marea-task001-fd0edb3330b2",
+      "directory_exists": true,
+      "schema_receipt_exists": true,
+      "restore_receipts_found": 2,
+      "sql_inputs_are_not_backups": 3,
+      "dump_file_found": 0
+    },
+    {
+      "stack": "marea-task001-8798fbb703ba",
+      "directory_exists": true,
+      "schema_receipt_exists": true,
+      "restore_receipts_found": 0,
+      "sql_inputs_are_not_backups": 4,
+      "dump_file_found": 0
+    }
+  ],
+  "result": "BLOCKED_NO_LOCAL_DATABASE_CONNECTION",
+  "not_executed": [
+    "TASK002 migrations",
+    "E SQL",
+    "business RPC",
+    "database deletion",
+    "database backup/restore",
+    "remote operations"
+  ],
+  "conservation_database_tests": "NOT_RUN; current row counts/FKs/ACL/Storage digests cannot be measured without verified local runtime. Historical receipts do not establish current state."
+}

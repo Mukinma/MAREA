@@ -1,0 +1,123 @@
+{
+  "at": "2026-10-19T05:19:36.244013+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "db": {
+        "source_project": "marea-task001-d7522760bb90",
+        "backup": {
+          "result": "PASS",
+          "entries": 2128,
+          "files": 2099,
+          "bytes": 82835422,
+          "tree_sha256": "0f0254823e65d09af68ecd80aa24f8380e2ff00c22ff6ee206ddc2abfecfbe9f",
+          "archive_sha256": "a8a972734a669a65628c84aa966c26f491aeb3462a8e2efdfc10631fec9e8386",
+          "source_stable": true
+        },
+        "restores": {
+          "work": {
+            "volume": "task002-e-20261019t051800z-a-work-db",
+            "result": "PASS",
+            "entries": 2128,
+            "file_content_and_metadata_equal": true,
+            "tree_sha256": "0f0254823e65d09af68ecd80aa24f8380e2ff00c22ff6ee206ddc2abfecfbe9f"
+          },
+          "recovery": {
+            "volume": "task002-e-20261019t051800z-a-recovery-db",
+            "result": "PASS",
+            "entries": 2128,
+            "file_content_and_metadata_equal": true,
+            "tree_sha256": "0f0254823e65d09af68ecd80aa24f8380e2ff00c22ff6ee206ddc2abfecfbe9f"
+          }
+        }
+      },
+      "storage": {
+        "source_project": "marea-task001-d7522760bb90",
+        "backup": {
+          "result": "PASS",
+          "entries": 45,
+          "files": 13,
+          "bytes": 1760,
+          "tree_sha256": "c0463f45e4f920704d5b89100294dbabed01675dc3621a7213dcb1abeb6ddb50",
+          "archive_sha256": "fd06ee4cffd04c6335b2f43e00e22ffcafcde2f5275dae087adb653110d85eb5",
+          "source_stable": true
+        },
+        "restores": {
+          "work": {
+            "volume": "task002-e-20261019t051800z-a-work-storage",
+            "result": "PASS",
+            "entries": 45,
+            "file_content_and_metadata_equal": true,
+            "tree_sha256": "c0463f45e4f920704d5b89100294dbabed01675dc3621a7213dcb1abeb6ddb50"
+          },
+          "recovery": {
+            "volume": "task002-e-20261019t051800z-a-recovery-storage",
+            "result": "PASS",
+            "entries": 45,
+            "file_content_and_metadata_equal": true,
+            "tree_sha256": "c0463f45e4f920704d5b89100294dbabed01675dc3621a7213dcb1abeb6ddb50"
+          }
+        }
+      }
+    },
+    "b": {
+      "db": {
+        "source_project": "marea-task001-fd0edb3330b2",
+        "backup": {
+          "result": "PASS",
+          "entries": 2128,
+          "files": 2099,
+          "bytes": 82843614,
+          "tree_sha256": "f9dda680b2790adb70fb0665581b3e6ffa63618402bca9b4953e4da37f5655a3",
+          "archive_sha256": "e86383fb147f81d48a1d844810cb48f8137875678daf2c76d89691b1b68a11da",
+          "source_stable": true
+        },
+        "restores": {
+          "work": {
+            "volume": "task002-e-20261019t051800z-b-work-db",
+            "result": "PASS",
+            "entries": 2128,
+            "file_content_and_metadata_equal": true,
+            "tree_sha256": "f9dda680b2790adb70fb0665581b3e6ffa63618402bca9b4953e4da37f5655a3"
+          },
+          "recovery": {
+            "volume": "task002-e-20261019t051800z-b-recovery-db",
+            "result": "PASS",
+            "entries": 2128,
+            "file_content_and_metadata_equal": true,
+            "tree_sha256": "f9dda680b2790adb70fb0665581b3e6ffa63618402bca9b4953e4da37f5655a3"
+          }
+        }
+      },
+      "storage": {
+        "source_project": "marea-task001-fd0edb3330b2",
+        "backup": {
+          "result": "PASS",
+          "entries": 50,
+          "files": 15,
+          "bytes": 2334,
+          "tree_sha256": "f0795d720f7d2cbf825feee611e7ece47eb47b51f2fd0a4b9b063b072d92a69e",
+          "archive_sha256": "fad46b1cd6c361663f29b3306ae695d6581ed6e9a49d854e513f13c0ed3ca4a6",
+          "source_stable": true
+        },
+        "restores": {
+          "work": {
+            "volume": "task002-e-20261019t051800z-b-work-storage",
+            "result": "PASS",
+            "entries": 50,
+            "file_content_and_metadata_equal": true,
+            "tree_sha256": "f0795d720f7d2cbf825feee611e7ece47eb47b51f2fd0a4b9b063b072d92a69e"
+          },
+          "recovery": {
+            "volume": "task002-e-20261019t051800z-b-recovery-storage",
+            "result": "PASS",
+            "entries": 50,
+            "file_content_and_metadata_equal": true,
+            "tree_sha256": "f0795d720f7d2cbf825feee611e7ece47eb47b51f2fd0a4b9b063b072d92a69e"
+          }
+        }
+      }
+    }
+  },
+  "complete_requirement_validation": false
+}

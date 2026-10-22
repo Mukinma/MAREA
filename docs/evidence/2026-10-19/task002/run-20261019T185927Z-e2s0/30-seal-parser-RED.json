@@ -1,0 +1,8 @@
+{
+  "result": "EXPECTED_RED_TOOL_OUTPUT_FORMAT",
+  "cause": "Node 24 default spec reporter emitted \u2139 fail 0 / \u2139 tests 34; seal expected TAP # markers. All 34 tests passed; no final seal was emitted.",
+  "old_sealer_sha256": "24c62955f69d44fc6cafce75c3c7f28d8a253ee52879eb823ada2e3c929e85a9",
+  "observed_tests": 34,
+  "observed_failed_tests": 0,
+  "database_or_Docker_operations": false
+}

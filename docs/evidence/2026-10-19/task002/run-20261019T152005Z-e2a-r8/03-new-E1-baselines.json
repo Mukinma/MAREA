@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-19T15:20:54.940025+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "E1_reproduced": true,
+      "new_created_at_declared": true,
+      "legacy_and_catalog_match": true,
+      "backup_restore": {
+        "archive_sha256": "12cdd83b2ba5b7050a9903810ca9dc4ba9ade03d8bb58e132328911faf34a151",
+        "manifest_sha256": "56c478c854957280874b0e7ca57ce94472e105aa49e728d2847fe83baab7f29a",
+        "tree_verified_on_new_volume": "task002-e2a-r8-20261019t152005z-a-E1-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "storage_tree_preserved": true,
+      "storage_backup_restore": {
+        "result": "PASS",
+        "entries": 46,
+        "archive_sha256": "6860558d2e25188c524a2045573d0ad7095ab46fccc3fdc95664c5d668b884a4",
+        "restored_bytes_modes_owners_and_times_exact": true
+      }
+    },
+    "b": {
+      "E1_reproduced": true,
+      "new_created_at_declared": true,
+      "legacy_and_catalog_match": true,
+      "backup_restore": {
+        "archive_sha256": "a7b12a394976ea8bc171ea253688f6b50d686015ce2f46be872e4682fbd0d044",
+        "manifest_sha256": "d4ad2b27a28495b72d7efb0f062c982fb4b1f77646030918262202c6e4cb1045",
+        "tree_verified_on_new_volume": "task002-e2a-r8-20261019t152005z-b-E1-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      },
+      "storage_tree_preserved": true,
+      "storage_backup_restore": {
+        "result": "PASS",
+        "entries": 51,
+        "archive_sha256": "50971925d380085cc2668226c699aa81b866b68ebe579655fb0770c7a166904d",
+        "restored_bytes_modes_owners_and_times_exact": true
+      }
+    }
+  },
+  "Auth_started": false,
+  "E2A_DDL_applied": false
+}

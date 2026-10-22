@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-14T01:02:18.151Z",
+  "result": "PASS_PRESERVATION_AND_DOCUMENTARY_SOURCE",
+  "files_checked": 401,
+  "changed_authorized": [
+    "docs/MAREA_AUDIT_REPORT.md",
+    "docs/MAREA_CHANGELOG.md",
+    "docs/MAREA_REQUIREMENTS_STATUS.yaml",
+    "docs/MAREA_SRS.md",
+    "docs/MAREA_TRACEABILITY.md",
+    "docs/MAREA_TRACKING.md",
+    "tool/traceability/README.md",
+    "tool/traceability/render.mjs",
+    "tool/traceability/traceability.mjs",
+    "tool/traceability/traceability.test.mjs"
+  ],
+  "historic_evidence_preserved": 275,
+  "historic_requirements_preserved": 635,
+  "old_baseline_verbatim": true,
+  "new_canonical_records": 684,
+  "pending_normative_review": 144,
+  "all_state_enumerations_preserved": true,
+  "srs_final_sha256": "4a1c28594e68d26180390b9aea3affce18a619039ad25ad1c8c528dc3d2f4388",
+  "SRS_V50_sha256": "44087ec119772779a7972063299f248ae60009b26119a5c9b179ee75a7911152",
+  "lib_supabase_staging_unchanged": true,
+  "migrations_executed": false,
+  "product_modified": false,
+  "remote_modified": false,
+  "commits_created": false,
+  "complete_requirement_validation": false
+}

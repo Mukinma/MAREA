@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-19T15:10:54.214322+00:00",
+  "result": "EXPECTED_RED",
+  "test": "E2-T02",
+  "sources": {
+    "a": {
+      "Auth_HTTP": 200,
+      "expected_persons": 1,
+      "actual_persons": 0,
+      "result": "EXPECTED_RED",
+      "legacy_validation_preserved": true
+    },
+    "b": {
+      "Auth_HTTP": 200,
+      "expected_persons": 1,
+      "actual_persons": 0,
+      "result": "EXPECTED_RED",
+      "legacy_validation_preserved": true
+    }
+  },
+  "A_DDL_applied": false
+}

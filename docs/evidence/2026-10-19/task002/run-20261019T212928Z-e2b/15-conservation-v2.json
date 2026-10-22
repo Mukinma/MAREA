@@ -1,0 +1,425 @@
+{
+  "at": "2026-10-20T04:56:56.897476+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "original_rows": 576,
+      "original_rows_preserved_except_one_explicit_control_update": true,
+      "original_control_update": {
+        "person_id": "39ff8e08-f399-4bd9-8e14-2ef587488611",
+        "original_hash_proven": "1e8591f7e90b875a559aaa28c8037f4e4bf99b8ba26877f1ae5d0ff1818dd41e",
+        "changed_fields": [
+          "sync_blocked",
+          "obligations_blocked",
+          "blocked_reason",
+          "deletion_requested_at",
+          "control_version"
+        ]
+      },
+      "exact_original_table_insertions_and_control_replacement": {
+        "auth.audit_log_entries": 8,
+        "auth.identities": 4,
+        "auth.mfa_amr_claims": 4,
+        "auth.refresh_tokens": 4,
+        "auth.sessions": 4,
+        "auth.users": 4,
+        "collaboration.person_controls": 5,
+        "collaboration.persons": 4,
+        "public.account_deletion_requests": 4,
+        "public.legal_acceptances": 4,
+        "public.mission_applications": 3,
+        "public.missions": 5,
+        "public.notification_preferences": 2,
+        "public.notifications": 3,
+        "public.profiles": 4
+      },
+      "exact_new_private_rows": {
+        "collaboration.deletion_audit": 8,
+        "collaboration.deletion_cases": 12,
+        "collaboration.deletion_dependency_inventory": 98,
+        "collaboration.deletion_manifest_items": 6,
+        "collaboration.deletion_operations": 6,
+        "collaboration.deletion_policies": 2,
+        "collaboration.deletion_requests": 4
+      },
+      "catalog": {
+        "catalog.columns": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.constraints": {
+          "added": 37,
+          "removed_or_modified_original": 0
+        },
+        "catalog.event_triggers": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.extensions": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.grants": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.memberships": {
+          "added": 2,
+          "removed_or_modified_original": 0
+        },
+        "catalog.policies": {
+          "added": 25,
+          "removed_or_modified_original": 0
+        },
+        "catalog.roles": {
+          "added": 5,
+          "removed_or_modified_original": 0
+        },
+        "catalog.routines": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.settings": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.tables": {
+          "added": 7,
+          "removed_or_modified_original": 0
+        },
+        "catalog.triggers": {
+          "added": 2,
+          "removed_or_modified_original": 0
+        },
+        "extra.all_routines": {
+          "added": 9,
+          "removed_or_modified_original": 0
+        },
+        "extra.column_acl": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "extra.defaults": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "extra.indexes": {
+          "added": 8,
+          "removed_or_modified_original": 0
+        },
+        "extra.private_columns": {
+          "added": 48,
+          "removed_or_modified_original": 0
+        },
+        "extra.publication_tables": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "extra.publications": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "extra.schemas": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        }
+      },
+      "private_trigger_inventory": [
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_audit"
+        },
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_dependency_inventory"
+        },
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_manifest_items"
+        },
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_operations"
+        },
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_policies"
+        },
+        {
+          "name": "ab_e2b_control",
+          "enabled": "O",
+          "function": "collaboration.deletion_control_guard()",
+          "relation": "collaboration.person_controls"
+        },
+        {
+          "name": "ab_e2b_obligation",
+          "enabled": "O",
+          "function": "collaboration.deletion_obligation_guard()",
+          "relation": "mission_applications"
+        },
+        {
+          "name": "ab_e2b_obligation",
+          "enabled": "O",
+          "function": "collaboration.deletion_obligation_guard()",
+          "relation": "missions"
+        }
+      ],
+      "private_raw_CRUD_denied_all_clients_and_operators": true,
+      "original_roles_FKs_RLS_business_RPC_and_S0_preserved": true,
+      "sequences": [
+        {
+          "name": "auth.refresh_tokens_id_seq",
+          "fixture_nextvals": 4
+        },
+        {
+          "name": "cron.jobid_seq",
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "cron.runid_seq",
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "net.http_request_queue_id_seq",
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "public.legal_acceptances_id_seq",
+          "fixture_nextvals": 4
+        },
+        {
+          "name": "realtime.subscription_id_seq",
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "supabase_functions.hooks_id_seq",
+          "fixture_nextvals": 0
+        }
+      ],
+      "Storage_all_bytes_and_attributes_ns_equal": true,
+      "Auth_profile_media_purges": 0
+    },
+    "b": {
+      "result": "PASS",
+      "original_rows": 569,
+      "original_rows_preserved_except_one_explicit_control_update": true,
+      "original_control_update": {
+        "person_id": "59cce70f-43d5-4a02-bb81-6cf9afa84a40",
+        "original_hash_proven": "466d3688d2e20faf31df12256a87978d06d65bdd4a591dd6a48a589cd4e985c6",
+        "changed_fields": [
+          "sync_blocked",
+          "obligations_blocked",
+          "blocked_reason",
+          "deletion_requested_at",
+          "control_version"
+        ]
+      },
+      "exact_original_table_insertions_and_control_replacement": {
+        "auth.audit_log_entries": 8,
+        "auth.identities": 4,
+        "auth.mfa_amr_claims": 4,
+        "auth.refresh_tokens": 4,
+        "auth.sessions": 4,
+        "auth.users": 4,
+        "collaboration.person_controls": 5,
+        "collaboration.persons": 4,
+        "public.account_deletion_requests": 4,
+        "public.legal_acceptances": 4,
+        "public.mission_applications": 3,
+        "public.missions": 5,
+        "public.notification_preferences": 2,
+        "public.notifications": 3,
+        "public.profiles": 4
+      },
+      "exact_new_private_rows": {
+        "collaboration.deletion_audit": 7,
+        "collaboration.deletion_cases": 6,
+        "collaboration.deletion_dependency_inventory": 98,
+        "collaboration.deletion_manifest_items": 6,
+        "collaboration.deletion_operations": 6,
+        "collaboration.deletion_policies": 2,
+        "collaboration.deletion_requests": 4
+      },
+      "catalog": {
+        "catalog.columns": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.constraints": {
+          "added": 37,
+          "removed_or_modified_original": 0
+        },
+        "catalog.event_triggers": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.extensions": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.grants": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.memberships": {
+          "added": 2,
+          "removed_or_modified_original": 0
+        },
+        "catalog.policies": {
+          "added": 25,
+          "removed_or_modified_original": 0
+        },
+        "catalog.roles": {
+          "added": 5,
+          "removed_or_modified_original": 0
+        },
+        "catalog.routines": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.settings": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "catalog.tables": {
+          "added": 7,
+          "removed_or_modified_original": 0
+        },
+        "catalog.triggers": {
+          "added": 2,
+          "removed_or_modified_original": 0
+        },
+        "extra.all_routines": {
+          "added": 9,
+          "removed_or_modified_original": 0
+        },
+        "extra.column_acl": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "extra.defaults": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "extra.indexes": {
+          "added": 8,
+          "removed_or_modified_original": 0
+        },
+        "extra.private_columns": {
+          "added": 48,
+          "removed_or_modified_original": 0
+        },
+        "extra.publication_tables": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "extra.publications": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        },
+        "extra.schemas": {
+          "added": 0,
+          "removed_or_modified_original": 0
+        }
+      },
+      "private_trigger_inventory": [
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_audit"
+        },
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_dependency_inventory"
+        },
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_manifest_items"
+        },
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_operations"
+        },
+        {
+          "name": "e2b_append_only",
+          "enabled": "O",
+          "function": "collaboration.deletion_append_only()",
+          "relation": "collaboration.deletion_policies"
+        },
+        {
+          "name": "ab_e2b_control",
+          "enabled": "O",
+          "function": "collaboration.deletion_control_guard()",
+          "relation": "collaboration.person_controls"
+        },
+        {
+          "name": "ab_e2b_obligation",
+          "enabled": "O",
+          "function": "collaboration.deletion_obligation_guard()",
+          "relation": "mission_applications"
+        },
+        {
+          "name": "ab_e2b_obligation",
+          "enabled": "O",
+          "function": "collaboration.deletion_obligation_guard()",
+          "relation": "missions"
+        }
+      ],
+      "private_raw_CRUD_denied_all_clients_and_operators": true,
+      "original_roles_FKs_RLS_business_RPC_and_S0_preserved": true,
+      "sequences": [
+        {
+          "name": "auth.refresh_tokens_id_seq",
+          "fixture_nextvals": 4
+        },
+        {
+          "name": "cron.jobid_seq",
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "cron.runid_seq",
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "net.http_request_queue_id_seq",
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "public.legal_acceptances_id_seq",
+          "fixture_nextvals": 4
+        },
+        {
+          "name": "realtime.subscription_id_seq",
+          "fixture_nextvals": 0
+        },
+        {
+          "name": "supabase_functions.hooks_id_seq",
+          "fixture_nextvals": 0
+        }
+      ],
+      "Storage_all_bytes_and_attributes_ns_equal": true,
+      "Auth_profile_media_purges": 0
+    }
+  },
+  "new_private_roles_NOLOGIN": 3,
+  "synthetic_fixture_LOGIN_roles": 2,
+  "existing_role_privilege_expansions": 0
+}

@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-14T01:05:35.547Z",
+  "result": "PASS_TOOLING_ONLY",
+  "command": "node --test tool/traceability/traceability.test.mjs",
+  "tests": 34,
+  "pass": 34,
+  "fail": 0,
+  "historical_tests": 21,
+  "new_tests": 13,
+  "source_refs": [
+    {
+      "path": "tool/traceability/traceability.mjs",
+      "sha256": "77cbef16989beba8cfe6179c50899e74a96143789d4dd01dde611acc7a3c38b2"
+    },
+    {
+      "path": "tool/traceability/versioning.mjs",
+      "sha256": "2b691a58c1deda04179c3b0f19e04bb4f7dccfc833a164212768c369685174d2"
+    },
+    {
+      "path": "tool/traceability/render.mjs",
+      "sha256": "cfb77ded0f547f7ecae4a56894ba5ac1ae8658e08f2a747a2076ee7ba1b63448"
+    },
+    {
+      "path": "tool/traceability/reconcile-v511.mjs",
+      "sha256": "2a235ed854e57d05745490fccefd8dbfcf62347ed30f4237ae80f23ee5eae0fd"
+    },
+    {
+      "path": "tool/traceability/traceability.test.mjs",
+      "sha256": "7b387a04f2f7d519b7578b774ef0910ff01a3bd18e07e4c2e571a4534c9cc42a"
+    },
+    {
+      "path": "tool/traceability/README.md",
+      "sha256": "d79e1403ca19694a7965781bee63a7d6f9dd23a75c3b237ba8d6cf2feb9103a4"
+    },
+    {
+      "path": "tool/traceability/cli.mjs",
+      "sha256": "cf247fd8094aec78513a394b17d86946060beaa7827f945cfce952973ba24798"
+    }
+  ],
+  "red_green_logs": [
+    "02-T-tests-red.log",
+    "07-T-review-red.log",
+    "09-T-binding-red.log",
+    "11-T-reaudit-red.log",
+    "14-T-tests.log"
+  ],
+  "independent_review": {
+    "findings": 5,
+    "closed_by_code_and_regression": 5,
+    "scope": "DOCUMENTARY_TOOLING_AND_U0_ONLY"
+  },
+  "product_tests_executed": false,
+  "migrations_executed": false,
+  "remote_modified": false,
+  "complete_requirement_validation": false
+}

@@ -1,0 +1,58 @@
+{
+  "id": "E-TASK001-FINAL-CHECKS-20261013T174515Z",
+  "at": "2026-10-13T19:55:40.069Z",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "node tool/traceability/cli.mjs validate",
+      "exit_code": 0
+    },
+    {
+      "command": "node tool/traceability/cli.mjs render",
+      "exit_code": 0
+    },
+    {
+      "command": "node tool/traceability/cli.mjs check",
+      "exit_code": 0
+    }
+  ],
+  "second_generation_without_writes": true,
+  "derived_views": [
+    {
+      "path": "docs/MAREA_TRACKING.md",
+      "sha256": "3df4d22b9e62ec04c47a15e7cffd8fcc418d9d913d3e8c95fb7f05b0551d1555",
+      "mtime": 1791921038524.5884
+    },
+    {
+      "path": "docs/MAREA_AUDIT_REPORT.md",
+      "sha256": "e4eb3ee0eb8424238985a06514a530b0e52dc4f4c6d63df288171ce6d12baade",
+      "mtime": 1791921038524.791
+    },
+    {
+      "path": "docs/MAREA_TRACEABILITY.md",
+      "sha256": "9ab5b5d631aa3e06fd7446705b3cd24844d0d7afc165850ad6d5709d55d5618e",
+      "mtime": 1791920783077.7383
+    },
+    {
+      "path": "docs/MAREA_CHANGELOG.md",
+      "sha256": "904bc443bfda10f7ab8afff5f93a8326c05c553e7de6ba0f6f1d87c054f0ba08",
+      "mtime": 1791920783079.0415
+    }
+  ],
+  "canonical_sha256": "8593cc126d0db5aae937497c1e6beb24975ce26b3356e35f1d5e4a4698bd0fe5",
+  "evidence_count": 275,
+  "requirements_count": 635,
+  "task_state": "COMPLETADO",
+  "new_partial_suites_integral_validation": false,
+  "traceability_tests": 21,
+  "guards": 10,
+  "srs_sha256": "44087ec119772779a7972063299f248ae60009b26119a5c9b179ee75a7911152",
+  "git": {
+    "head": "989e5b5845deff0afd13703a067a7d7a3775d3bc",
+    "branch": "Chris/modern-interactions-push",
+    "tracked_changes": 0,
+    "staged_changes": 0,
+    "commit_created": false
+  },
+  "remote_modified": false
+}

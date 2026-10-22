@@ -1,0 +1,29 @@
+{
+  "tasks": 939,
+  "groups": 62,
+  "sources": 145,
+  "estimatedBars": 1030,
+  "realBars": 0,
+  "statuses": {
+    "Completado": 782,
+    "Sustituido": 23,
+    "WIP": 22,
+    "Pendiente": 106,
+    "Bloqueado": 6
+  },
+  "sourceExistence": "verified",
+  "inventoryMatch": "verified",
+  "namesBlank": "verified",
+  "realTimesBlank": "verified",
+  "editPropagation": "verified",
+  "renderedGroups": 62,
+  "exported": true,
+  "savedXlsxVerified": true,
+  "printTitlesVerified": true,
+  "pairPreservingPageBreaks": 58,
+  "markdownVerified": true,
+  "wholeDateSerialsVerified": true,
+  "sha256": "c199879b30b605a6c896706ab06e08738110a8a4db96ab22da658ba0333ed08d",
+  "workbookBytes": 508181,
+  "markdownBytes": 551888
+}

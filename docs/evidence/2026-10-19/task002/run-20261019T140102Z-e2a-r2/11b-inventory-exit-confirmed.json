@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-19T14:29:49.297308+00:00",
+  "result": "PROCESS_TERMINATED_CONFIRMED",
+  "ps_returncode": 1,
+  "ps_stdout": "",
+  "exec_session": 41724,
+  "exec_session_final_exit_code": 137,
+  "prior_observation_retained": "11-initial-inventory-process-status.json",
+  "no_host_Docker_or_VM_restart": true,
+  "no_new_raw_image_read_requested": true
+}

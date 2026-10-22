@@ -1,0 +1,78 @@
+{
+  "result": "PASS",
+  "at": "2026-10-20T05:02:49.680Z",
+  "commands": [
+    {
+      "command": "validate",
+      "output": "Integridad aprobada: 684 registros, 348 evidencias.",
+      "exit": 0
+    },
+    {
+      "command": "check",
+      "output": "Integridad y documentos consistentes.",
+      "exit": 0
+    },
+    {
+      "command": "second_render",
+      "output": "Generación completa: 0 archivos modificados.",
+      "exit": 0
+    }
+  ],
+  "traceability_tests": 34,
+  "traceability_tests_failed": 0,
+  "second_render_bytes_and_mtime_unchanged": true,
+  "baseline_bytes_unchanged": true,
+  "requirements_unchanged": 684,
+  "canonical_test_cases_unchanged": 21,
+  "test_runs_unchanged": true,
+  "historical_evidence_objects_preserved": 338,
+  "new_scoped_evidence": 10,
+  "evidence_count": 348,
+  "historical_normative_bindings_preserved": true,
+  "TASK001_and_all_other_tasks_unchanged": true,
+  "prior_TASK002_history_preserved": true,
+  "E2A_and_S0_status_unchanged": true,
+  "complete_requirement_promotions": 0,
+  "TASK002_complete": false,
+  "next_increment_authorized": false,
+  "modified_preexisting_files": [
+    {
+      "path": "docs/MAREA_AUDIT_REPORT.md",
+      "previous_sha256": "2c95d009f0ff2f1a037d9c67ddc644f539af17268a1c00d00d10c4a96e1de734",
+      "sha256": "c05a0064bab5b549e6c1c797cc38492eb056d042b7ea6227e6c04962cd2414e9"
+    },
+    {
+      "path": "docs/MAREA_REQUIREMENTS_STATUS.yaml",
+      "previous_sha256": "3d97531ced237f32c2b68e4f8bb9ecfeb1b77aea1d1a4c01d2c2fcd34199e8cf",
+      "sha256": "f3aa6fead590791496e9ebb4aaacbda77c76c62b06cfa4027541557c6f14caab"
+    }
+  ],
+  "HEAD": "989e5b5845deff0afd13703a067a7d7a3775d3bc",
+  "commits_created": 0,
+  "staged_changes": false,
+  "SRS_sha256": "4a1c28594e68d26180390b9aea3affce18a619039ad25ad1c8c528dc3d2f4388",
+  "report_sha256": "cc4aeb1b8224aa280fa2baedb5e6be289dceecd92641a1c44b657a76762b7a84",
+  "canonical_sha256": "f3aa6fead590791496e9ebb4aaacbda77c76c62b06cfa4027541557c6f14caab",
+  "views": [
+    {
+      "path": "docs/MAREA_TRACKING.md",
+      "sha256": "38b77bee526b9d00c0b663983ba7e9895d4b29caf4180f2e076ba51b1788a1c7",
+      "mtime_ns": "1792417918197077337"
+    },
+    {
+      "path": "docs/MAREA_AUDIT_REPORT.md",
+      "sha256": "c05a0064bab5b549e6c1c797cc38492eb056d042b7ea6227e6c04962cd2414e9",
+      "mtime_ns": "1792472555376693241"
+    },
+    {
+      "path": "docs/MAREA_TRACEABILITY.md",
+      "sha256": "7def46db10782582dbd14318c4b8c54e780cf8af015aa3ffbc5efb5621fc37e2",
+      "mtime_ns": "1791938325855728302"
+    },
+    {
+      "path": "docs/MAREA_CHANGELOG.md",
+      "sha256": "01e4af6ee525dc0ff1877639b88a31c8e17f5ba860d93210b9e6a961fe26a2be",
+      "mtime_ns": "1791954765222692681"
+    }
+  ]
+}

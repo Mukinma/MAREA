@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-14T00:56:15.099Z",
+  "result": "FAILED_PROTOTYPE_LOCATOR",
+  "reason": "Cancellation button still had old label/target; inspected DOM and corrected exact source. No backend action.",
+  "checks_completed": [
+    {
+      "case": "organizer_explicit_consent_to_pending_offer",
+      "mode": "personal",
+      "result": "PASS_PROTOTYPE_ONLY"
+    },
+    {
+      "case": "organizer_explicit_consent_to_pending_offer",
+      "mode": "organization",
+      "result": "PASS_PROTOTYPE_ONLY"
+    },
+    {
+      "case": "private_agreement_hidden_offline",
+      "result": "PASS_PROTOTYPE_ONLY"
+    },
+    {
+      "case": "expired_acceptance_disabled",
+      "result": "PASS_PROTOTYPE_ONLY"
+    }
+  ],
+  "complete_requirement_validation": false
+}

@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-19T21:30:34.625688+00:00",
+  "result": "PASS",
+  "endpoint": "unix:///Users/crisis/.docker/run/docker.sock",
+  "adapter_sha256": "e5ca3870310c577a49031c434c95a101de0b53e36150842b37cf60202b237a48",
+  "source_bindings": {
+    "tool/task002/s0_lab_v2.py": "71c87f45fd76b5c085c9544f6c36ebcce3e599a571fc73f5c2eef6cf7d425eb6",
+    "tool/task002/s0_sql_policy.py": "36c6f1f9c33001c18d00439e44bb0ed078c43a937412bfecb251ffbef881692a",
+    "tool/task002/pax_transport.py": "4bae53e9b3ac4782100434cfc3c0cf93fe242015614756c8be1487e8ae8aaa70",
+    "tool/task002/e2a_isolation.py": "db5ff9793fe1cef1ad1cf04a0f416c07433cc49f9847f7f831ae21c1bf219aab",
+    "tool/task002/e2a_isolation_policy.json": "fb723eafd579e1e7bd9450fad7fe8f11c025ab2a7e88d7874fa8674c33faab22",
+    "tool/task002/e2a_r2_network.py": "d41184ac1176c6cd3609096f61507156294fb2f6e0b8f1dd0a1fd8f90f85ab90",
+    "tool/task002/e_inventory.py": "fdcb361297c0d3ffae69e850b94a80d6569e969e8947e5fb11ab3125547ad549",
+    "tool/task002/e1_lab.py": "ab319f69a1ff10b190dd753f62bd163e792cb8690609451b89e1e67fb96e05d8",
+    "docs/evidence/2026-10-19/task002/run-20261019T185927Z-e2s0/26-final-recovery-v3.json": "e2d3dc692dc29ba158038274ce85efdf219556e399b94839945ce6b2ac743960",
+    "docs/evidence/2026-10-19/task002/run-20261019T185927Z-e2s0/31-artifact-manifest.json": "598e6c0190824756d6d532b67b8b3cf71c6f074650b17ea8db619ab35a0b39b0"
+  },
+  "empty_sha256": "0ec78502c57b5e0011f33fc2b7c5405c7b9010894580c942f682ca0352f61e75",
+  "source_archives_verified": true,
+  "source": "S0-v3-final-verified",
+  "original_volumes_mounted": false
+}

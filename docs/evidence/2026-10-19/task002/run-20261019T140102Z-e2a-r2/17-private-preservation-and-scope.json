@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-19T14:32:07.709977+00:00",
+  "result": "PASS_SCOPED_CONSERVATION",
+  "previous_private_files_hashes_equal": 103,
+  "excluded_non_input_VM_image_size_inode_mtime_unchanged": true,
+  "VM_image_content_digest_not_revalidated": true,
+  "new_container_runs": 8,
+  "added_capabilities_or_published_ports": false,
+  "new_mounts_only_owner_volumes_verified_by_close_receipt": true,
+  "Auth_container_started": false,
+  "signup_fixtures": 0,
+  "A_SQL_files": 0,
+  "SQL_scope": "Read-only catalog/data snapshots plus exact approved E1 replay only",
+  "functional_cases_passed": 0
+}

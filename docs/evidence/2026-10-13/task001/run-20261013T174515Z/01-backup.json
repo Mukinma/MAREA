@@ -1,0 +1,25 @@
+{
+  "id": "E-TASK001-BACKUP-CONTINUATION-20261013T174222Z",
+  "captured_at": "2026-10-13T17:45:15.827076+00:00",
+  "result": "PASS",
+  "backup_id": "task001-continuation-20261013T174222Z",
+  "counts": {
+    "directory": 12819,
+    "file": 39960,
+    "socket": 5,
+    "symlink": 111
+  },
+  "bytes": 5958394295,
+  "source_stable": true,
+  "copy_verified": true,
+  "private_root_mode": "0700",
+  "manifest_sha256": {
+    "project-source-private.json": "09250d746f7f1d10561a8509cc00088d327ddb5c38bc0ab3519cf8812a576d09",
+    "blocked-runtime-source-private.json": "fb16b1f8ddf4a376d6cc2152df85c4cbdd138634019e7b798e942010b2028674"
+  },
+  "xattrs_modified_by_macos_copy": 1332,
+  "limits": [
+    "Original xattrs retained in verified private manifests; dormant sockets; no restore exercise."
+  ],
+  "initial_failures_retained": true
+}

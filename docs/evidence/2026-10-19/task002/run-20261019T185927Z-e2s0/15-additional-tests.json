@@ -1,0 +1,447 @@
+{
+  "at": "2026-10-19T19:46:33.669742+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "cases": [
+        {
+          "case": "single",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "bulk",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "empty_bucket",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "delete_bucket",
+          "result": "PASS",
+          "HTTP": 400,
+          "API_error": "ResourceNotEmpty"
+        },
+        {
+          "case": "copy",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "move",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "overwrite",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_0",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_1",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_2",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_3",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_4",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_5",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_6",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "SQL_service_role",
+          "result": "PASS",
+          "SQLSTATE": "42501",
+          "denial_origin": "installed_Storage_protect_delete"
+        },
+        {
+          "case": "SQL_supabase_storage_admin",
+          "result": "PASS",
+          "SQLSTATE": "42501",
+          "denial_origin": "installed_Storage_protect_delete"
+        },
+        {
+          "case": "reference_GUC_bypass_denied",
+          "result": "PASS",
+          "SQLSTATE": "55000"
+        },
+        {
+          "case": "no_replication_role_bypass",
+          "result": "PASS",
+          "SQLSTATE": "42501"
+        },
+        {
+          "case": "Auth_admin_delete",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": 500
+        },
+        {
+          "case": "profile_direct_delete",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "55000"
+        },
+        {
+          "case": "physical_root_uid_backstop",
+          "result": "PASS",
+          "errno": "EROFS"
+        },
+        {
+          "case": "producer_story-cleanup",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "producer_profile-media",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "producer_tour-dispatch",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "ingress_REST",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "ingress_TUS",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "ingress_S3",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "state_unknown",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "state_inconsistent",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "state_preparing",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "activation_reconciliation",
+          "result": "PASS",
+          "epoch": "5bde5b9c-9957-411a-a29d-d84cf7c15cbf"
+        },
+        {
+          "case": "Auth_unavailable",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "lost_response_and_concurrent_retries",
+          "result": "PASS",
+          "concurrent": 2,
+          "sequential_retry": 1,
+          "markers": 1,
+          "response_bytes_read": 0,
+          "all_POST_HTTP": 503,
+          "completed": false
+        },
+        {
+          "case": "late_valid_credential_after_restart",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "read_available_after_restart",
+          "result": "PASS",
+          "HTTP": 200,
+          "sha256": "f3ec9e14b9c085b55edc96155f7bd26b6fdeda2462f02af4e0279d8319b365e3"
+        }
+      ],
+      "case_count": 35,
+      "new_request_markers": 1,
+      "all_other_rows_catalog_sequences_unchanged": true,
+      "physical_tree_exactly_equal": true,
+      "Auth_profiles_deleted": 0
+    },
+    "b": {
+      "result": "PASS",
+      "cases": [
+        {
+          "case": "single",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "bulk",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "empty_bucket",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "delete_bucket",
+          "result": "PASS",
+          "HTTP": 400,
+          "API_error": "ResourceNotEmpty"
+        },
+        {
+          "case": "copy",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "move",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "overwrite",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_0",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_1",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_2",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_3",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_4",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_5",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "existing_bucket_6",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "SQL_service_role",
+          "result": "PASS",
+          "SQLSTATE": "42501",
+          "denial_origin": "installed_Storage_protect_delete"
+        },
+        {
+          "case": "SQL_supabase_storage_admin",
+          "result": "PASS",
+          "SQLSTATE": "42501",
+          "denial_origin": "installed_Storage_protect_delete"
+        },
+        {
+          "case": "reference_GUC_bypass_denied",
+          "result": "PASS",
+          "SQLSTATE": "55000"
+        },
+        {
+          "case": "no_replication_role_bypass",
+          "result": "PASS",
+          "SQLSTATE": "42501"
+        },
+        {
+          "case": "Auth_admin_delete",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": 500
+        },
+        {
+          "case": "profile_direct_delete",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "55000"
+        },
+        {
+          "case": "physical_root_uid_backstop",
+          "result": "PASS",
+          "errno": "EROFS"
+        },
+        {
+          "case": "producer_story-cleanup",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "producer_profile-media",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "producer_tour-dispatch",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "ingress_REST",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "ingress_TUS",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "ingress_S3",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "state_unknown",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "state_inconsistent",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "state_preparing",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "activation_reconciliation",
+          "result": "PASS",
+          "epoch": "f80c5153-7276-43c6-ad2a-292847eb4a71"
+        },
+        {
+          "case": "Auth_unavailable",
+          "result": "PASS",
+          "HTTP": 503,
+          "API_error": null
+        },
+        {
+          "case": "lost_response_and_concurrent_retries",
+          "result": "PASS",
+          "concurrent": 2,
+          "sequential_retry": 1,
+          "markers": 1,
+          "response_bytes_read": 0,
+          "all_POST_HTTP": 503,
+          "completed": false
+        },
+        {
+          "case": "late_valid_credential_after_restart",
+          "result": "PASS",
+          "HTTP": 500,
+          "API_error": "DatabaseError"
+        },
+        {
+          "case": "read_available_after_restart",
+          "result": "PASS",
+          "HTTP": 200,
+          "sha256": "f3ec9e14b9c085b55edc96155f7bd26b6fdeda2462f02af4e0279d8319b365e3"
+        }
+      ],
+      "case_count": 35,
+      "new_request_markers": 1,
+      "all_other_rows_catalog_sequences_unchanged": true,
+      "physical_tree_exactly_equal": true,
+      "Auth_profiles_deleted": 0
+    }
+  },
+  "account_lifecycle_complete": false
+}

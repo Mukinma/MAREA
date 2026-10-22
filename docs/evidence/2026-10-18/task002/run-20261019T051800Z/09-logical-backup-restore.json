@@ -1,0 +1,90 @@
+{
+  "at": "2026-10-19T05:30:52.447947+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "backup": {
+        "db": {
+          "filename": "a-dbcreate.backup",
+          "sha256": "4e7b3474e3a878d8c640ba99d8965bfced003e377ec34b7ba5f371af10161e45",
+          "bytes": 775264,
+          "database_creation_metadata_included": true
+        },
+        "globals": {
+          "sha256": "544aa1f76070e5155d476b2ff6f9d4a5fb0eef19aeeb6af79fd505ce75080ec2",
+          "bytes": 7436
+        },
+        "schema": {
+          "sha256": "02bd14ae140716622bd9462b5906eb5ede7bd118d42c7dcdfdee0a4f4bfa1f56",
+          "bytes": 610326
+        }
+      },
+      "restore": {
+        "globals": {
+          "exit_code": 0,
+          "previous_globals_receipt_preserved": true,
+          "input_sha256": "544aa1f76070e5155d476b2ff6f9d4a5fb0eef19aeeb6af79fd505ce75080ec2"
+        },
+        "db": {
+          "exit_code": 0,
+          "input_sha256": "4e7b3474e3a878d8c640ba99d8965bfced003e377ec34b7ba5f371af10161e45",
+          "single_transaction": false,
+          "restored_stream_sha256": "4e7b3474e3a878d8c640ba99d8965bfced003e377ec34b7ba5f371af10161e45",
+          "bootstrap_exception": null
+        }
+      },
+      "checks": {
+        "rows": true,
+        "sequences": true,
+        "catalog": true,
+        "runtime_setting_values": true
+      },
+      "row_tables": 100,
+      "role_limit": "All source roles/attributes/memberships compared, original bootstrap role retained; no extra role or exposed Data API.",
+      "complete_requirement_validation": false
+    },
+    "b": {
+      "backup": {
+        "db": {
+          "filename": "b-dbcreate.backup",
+          "sha256": "02fa772f26383cc3a4caf182944adf85c5c396d78c59bde2432aeb0c3569cfef",
+          "bytes": 775517,
+          "database_creation_metadata_included": true
+        },
+        "globals": {
+          "sha256": "64dde7934a0838d9ad82e474b321d16019585d51ad5110b4947cc4fce8e4805f",
+          "bytes": 7436
+        },
+        "schema": {
+          "sha256": "7a8510c0c1abb5dfab5d141534f1d03530fdca0003e15da48633c52beaf208e5",
+          "bytes": 610326
+        }
+      },
+      "restore": {
+        "globals": {
+          "exit_code": 0,
+          "input_sha256": "64dde7934a0838d9ad82e474b321d16019585d51ad5110b4947cc4fce8e4805f",
+          "single_transaction": false,
+          "restored_stream_sha256": "1c0c0084d56411b5dff3149dc535b9202b137c76f7e687d37499190d546c2820",
+          "bootstrap_exception": "Only CREATE ROLE supabase_admin skipped because initdb created the same original bootstrap role; ALTER properties and all grants unchanged"
+        },
+        "db": {
+          "exit_code": 0,
+          "input_sha256": "02fa772f26383cc3a4caf182944adf85c5c396d78c59bde2432aeb0c3569cfef",
+          "single_transaction": false,
+          "restored_stream_sha256": "02fa772f26383cc3a4caf182944adf85c5c396d78c59bde2432aeb0c3569cfef",
+          "bootstrap_exception": null
+        }
+      },
+      "checks": {
+        "rows": true,
+        "sequences": true,
+        "catalog": true,
+        "runtime_setting_values": true
+      },
+      "row_tables": 100,
+      "role_limit": "All source roles/attributes/memberships compared, original bootstrap role retained; no extra role or exposed Data API.",
+      "complete_requirement_validation": false
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-19T20:49:10.054594+00:00",
+  "result": "EXPECTED_RED",
+  "finding": "UPDATE OF omitted space on tours and tour_revisions",
+  "no_committed_loss": true,
+  "sources": {
+    "a": {
+      "result": "EXPECTED_RED",
+      "cases": [
+        {
+          "table": "tours",
+          "role": "service_role",
+          "reference_removed_inside_transaction": 1,
+          "explicit_rollback": true,
+          "persistent_snapshot_exact": true
+        },
+        {
+          "table": "tour_revisions",
+          "role": "service_role",
+          "reference_removed_inside_transaction": 1,
+          "explicit_rollback": true,
+          "persistent_snapshot_exact": true
+        }
+      ]
+    },
+    "b": {
+      "result": "EXPECTED_RED",
+      "cases": [
+        {
+          "table": "tours",
+          "role": "service_role",
+          "reference_removed_inside_transaction": 1,
+          "explicit_rollback": true,
+          "persistent_snapshot_exact": true
+        },
+        {
+          "table": "tour_revisions",
+          "role": "service_role",
+          "reference_removed_inside_transaction": 1,
+          "explicit_rollback": true,
+          "persistent_snapshot_exact": true
+        }
+      ]
+    }
+  }
+}

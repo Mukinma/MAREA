@@ -1,0 +1,14 @@
+{
+  "result": "PASS",
+  "logged_commands": 53,
+  "empty_helper_runs": 6,
+  "all_run_images": "sha256:c0d4530ddaae7a3295b5f8dbb8f60557884660bde2675df064cd67c9dd3b7983",
+  "all_runs_no_mounts_or_published_ports_or_added_capabilities": true,
+  "all_exec_and_stop_targets_are_new_owned_empty_helpers": true,
+  "all_exec_python_programs_have_no_IP_connection_or_urllib_calls": true,
+  "all_run_entrypoints": "python: sleep only",
+  "Docker_endpoint": "Explicit local Unix socket after initial local-context confirmation; Docker env overrides excluded",
+  "product_services_started": 0,
+  "volumes_created_or_mounted": 0,
+  "external_connection_probes": 0
+}

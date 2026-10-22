@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-20T05:35:31.379827+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "S0_snapshot_equal": true,
+      "new_empty_DB_Storage_control_destinations": true,
+      "source_backup_restore": {
+        "archive_sha256": "f3094060c2aef4bb9c8c1531ed1c0e7c20f369b6a8cb06f0a45dcfa732ce90c4",
+        "manifest_sha256": "1b9f090d92e51391e59654ecd44a88891669724e34ebeb234c4d3275980956b8",
+        "tree_verified_on_new_volume": "task002-orgc-v2-20261020t053439z-a-orgc-source-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      }
+    },
+    "b": {
+      "result": "PASS",
+      "S0_snapshot_equal": true,
+      "new_empty_DB_Storage_control_destinations": true,
+      "source_backup_restore": {
+        "archive_sha256": "82b259f8ae07c82490e8a0dd219ef0c8e6ba4dc17912c93804f2a0053eab9eb3",
+        "manifest_sha256": "794c0bfa43618100bedb80f7def8775bb043449a83e37f679c8eb0dcc703c692",
+        "tree_verified_on_new_volume": "task002-orgc-v2-20261020t053439z-b-orgc-source-verified-recovery-db",
+        "mtime_atime_nanoseconds_exact": true,
+        "restored_Postgres_booted_and_logical_snapshot_equal": true
+      }
+    }
+  },
+  "ORG0_implemented": false
+}

@@ -1,0 +1,12 @@
+{
+  "id": "E-TASK001-INTEGRITY-20261013T164530Z",
+  "captured_at": "2026-10-13T17:01:06.779Z",
+  "result": "PASS",
+  "command": "npm test --prefix tool/traceability",
+  "cases": 21,
+  "failures": 0,
+  "modality": "unit-host",
+  "complete_requirement_validation": false,
+  "platforms": [],
+  "limits": "Integrity of traceability only; final validate/render/check in final-integrity.json"
+}

@@ -1,0 +1,5 @@
+FROM docker.io/library/python@sha256:e7cff362a12454395f8dc99607c21a602ea880cdce03538877b90c2ba932b16f
+RUN apk add --no-cache iptables
+COPY relay.py /relay.py
+USER 10001:10001
+ENTRYPOINT ["python", "-B", "/relay.py"]

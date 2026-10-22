@@ -1,0 +1,2870 @@
+{
+  "captured_at": "2026-10-13T06:35:41.130Z",
+  "project_ref": "alxdipzfunbpaywmpndi",
+  "operation": "SELECT_SYSTEM_METADATA_ONLY",
+  "personal_data_queried": false,
+  "data": {
+    "tables": [
+      {
+        "rls": true,
+        "name": "push_queue",
+        "schema": "private",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "push_settings",
+        "schema": "private",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "tour_ar_tests",
+        "schema": "private",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "tour_captures",
+        "schema": "private",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "tour_jobs",
+        "schema": "private",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "tour_output_writes",
+        "schema": "private",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "tour_permissions",
+        "schema": "private",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "account_deletion_requests",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "content_reports",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "geocoding_cache",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "geocoding_provider",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "home_feed_snapshots",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "legal_acceptances",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "legal_documents",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "mission_application_operations",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "mission_applications",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "mission_comment_operations",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "mission_comments",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "mission_drafts",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "mission_finalists",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "mission_reactions",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "mission_saves",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "missions",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": true,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "notification_devices",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "notification_preferences",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "notifications",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "post_collaboration_interests",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "post_comments",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "post_reactions",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "post_saves",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": true,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "posts",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": true,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "profile_follows",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "profile_media_operations",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "profiles",
+        "schema": "public",
+        "force_rls": true,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "registration_settings",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "showcase_images",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "showcase_items",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "showcase_saves",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": true,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "stories",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "story_publications",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "story_reports",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "story_views",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": true,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "tour_progress",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "tour_requests",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "tour_revisions",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      },
+      {
+        "rls": true,
+        "name": "tours",
+        "schema": "public",
+        "force_rls": false,
+        "anon_select": false,
+        "authenticated_delete": false,
+        "authenticated_insert": false,
+        "authenticated_select": false,
+        "authenticated_update": false
+      }
+    ],
+    "buckets": [
+      {
+        "id": "mission-images",
+        "public": false,
+        "file_size_limit": 4194304,
+        "allowed_mime_types": [
+          "image/png"
+        ]
+      },
+      {
+        "id": "post-images",
+        "public": false,
+        "file_size_limit": 4194304,
+        "allowed_mime_types": [
+          "image/png"
+        ]
+      },
+      {
+        "id": "profile-media",
+        "public": false,
+        "file_size_limit": 4194304,
+        "allowed_mime_types": [
+          "image/png"
+        ]
+      },
+      {
+        "id": "showcase-media",
+        "public": false,
+        "file_size_limit": 4194304,
+        "allowed_mime_types": [
+          "image/png"
+        ]
+      },
+      {
+        "id": "story-images",
+        "public": false,
+        "file_size_limit": 4194304,
+        "allowed_mime_types": [
+          "image/png"
+        ]
+      },
+      {
+        "id": "tour-assets",
+        "public": false,
+        "file_size_limit": 33554432,
+        "allowed_mime_types": [
+          "image/jpeg"
+        ]
+      },
+      {
+        "id": "tour-inputs",
+        "public": false,
+        "file_size_limit": 33554432,
+        "allowed_mime_types": [
+          "image/jpeg"
+        ]
+      }
+    ],
+    "policies": [
+      {
+        "name": "Read own reports or moderate",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "content_reports",
+        "using": "((reporter_id = auth.uid()) OR community_is_admin())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Report visible content",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "content_reports",
+        "using": null,
+        "schema": "public",
+        "command": "INSERT",
+        "with_check": "((reporter_id = auth.uid()) AND ((EXISTS ( SELECT 1\n   FROM posts\n  WHERE (posts.id = content_reports.post_id))) OR (EXISTS ( SELECT 1\n   FROM missions\n  WHERE (missions.id = content_reports.mission_id)))))"
+      },
+      {
+        "name": "Own legal history",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "legal_acceptances",
+        "using": "(user_id = ( SELECT auth.uid() AS uid))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Private applications",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "mission_applications",
+        "using": "((applicant_id = auth.uid()) OR (EXISTS ( SELECT 1\n   FROM missions\n  WHERE ((missions.id = mission_applications.mission_id) AND (missions.author_id = auth.uid())))))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Visible mission conversation",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "mission_comments",
+        "using": "(mission_social_visible(mission_id) AND showcase_owner_visible(author_id))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Private mission drafts",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "mission_drafts",
+        "using": "(author_id = auth.uid())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Organizer finalists",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "mission_finalists",
+        "using": "(EXISTS ( SELECT 1\n   FROM missions m\n  WHERE ((m.id = mission_finalists.mission_id) AND (m.author_id = auth.uid()))))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Visible mission reactions",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "mission_reactions",
+        "using": "(mission_social_visible(mission_id) AND showcase_owner_visible(user_id))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Private mission saves",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "mission_saves",
+        "using": "(user_id = auth.uid())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Create own missions",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "missions",
+        "using": null,
+        "schema": "public",
+        "command": "INSERT",
+        "with_check": "(author_id = auth.uid())"
+      },
+      {
+        "name": "Delete own missions",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "missions",
+        "using": "(author_id = auth.uid())",
+        "schema": "public",
+        "command": "DELETE",
+        "with_check": null
+      },
+      {
+        "name": "Visible missions",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "missions",
+        "using": "((NOT hidden) OR (author_id = auth.uid()) OR community_is_admin())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Own notification preferences",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "notification_preferences",
+        "using": "(user_id = auth.uid())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Recipient notifications",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "notifications",
+        "using": "(recipient_id = auth.uid())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Interest participants",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "post_collaboration_interests",
+        "using": "((applicant_id = auth.uid()) OR (EXISTS ( SELECT 1\n   FROM posts p\n  WHERE ((p.id = post_collaboration_interests.post_id) AND (p.author_id = auth.uid())))))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Visible conversation",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "post_comments",
+        "using": "(EXISTS ( SELECT 1\n   FROM posts p\n  WHERE ((p.id = post_comments.post_id) AND (NOT p.hidden))))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Visible reaction totals",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "post_reactions",
+        "using": "(EXISTS ( SELECT 1\n   FROM posts p\n  WHERE ((p.id = post_reactions.post_id) AND (NOT p.hidden))))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Delete own saves",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "post_saves",
+        "using": "(user_id = auth.uid())",
+        "schema": "public",
+        "command": "DELETE",
+        "with_check": null
+      },
+      {
+        "name": "Read own saves",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "post_saves",
+        "using": "(user_id = auth.uid())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Save visible posts",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "post_saves",
+        "using": null,
+        "schema": "public",
+        "command": "INSERT",
+        "with_check": "((user_id = auth.uid()) AND (EXISTS ( SELECT 1\n   FROM posts\n  WHERE (posts.id = post_saves.post_id))))"
+      },
+      {
+        "name": "Create own posts",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "posts",
+        "using": null,
+        "schema": "public",
+        "command": "INSERT",
+        "with_check": "(author_id = auth.uid())"
+      },
+      {
+        "name": "Delete own posts",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "posts",
+        "using": "(author_id = auth.uid())",
+        "schema": "public",
+        "command": "DELETE",
+        "with_check": null
+      },
+      {
+        "name": "Edit own posts",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "posts",
+        "using": "(author_id = auth.uid())",
+        "schema": "public",
+        "command": "UPDATE",
+        "with_check": "(author_id = auth.uid())"
+      },
+      {
+        "name": "Visible posts",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "posts",
+        "using": "((NOT hidden) OR (author_id = auth.uid()) OR community_is_admin())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Own following",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "profile_follows",
+        "using": "(follower_id = auth.uid())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Users can create their profile",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "profiles",
+        "using": null,
+        "schema": "public",
+        "command": "INSERT",
+        "with_check": "(( SELECT auth.uid() AS uid) = id)"
+      },
+      {
+        "name": "Users can read their profile",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "profiles",
+        "using": "(( SELECT auth.uid() AS uid) = id)",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Users can update their profile",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "profiles",
+        "using": "(( SELECT auth.uid() AS uid) = id)",
+        "schema": "public",
+        "command": "UPDATE",
+        "with_check": "(( SELECT auth.uid() AS uid) = id)"
+      },
+      {
+        "name": "Read visible showcase images",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "showcase_images",
+        "using": "(EXISTS ( SELECT 1\n   FROM showcase_items s\n  WHERE (s.id = showcase_images.item_id)))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Read available showcases or own management",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "showcase_items",
+        "using": "((owner_id = auth.uid()) OR community_is_admin() OR ((status = 'published'::text) AND available AND (NOT hidden) AND showcase_owner_visible(owner_id)))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Read own showcase saves",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "showcase_saves",
+        "using": "(user_id = auth.uid())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Remove own showcase saves",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "showcase_saves",
+        "using": "(user_id = auth.uid())",
+        "schema": "public",
+        "command": "DELETE",
+        "with_check": null
+      },
+      {
+        "name": "Save published showcases",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "showcase_saves",
+        "using": null,
+        "schema": "public",
+        "command": "INSERT",
+        "with_check": "((user_id = auth.uid()) AND (EXISTS ( SELECT 1\n   FROM showcase_items s\n  WHERE ((s.id = showcase_saves.item_id) AND (s.status = 'published'::text) AND s.available AND (NOT s.hidden)))))"
+      },
+      {
+        "name": "Live stories",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "stories",
+        "using": "((deleted_at IS NULL) AND (expires_at > now()) AND ((NOT hidden) OR community_is_admin()) AND showcase_owner_visible(author_id))",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Story reports moderation",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "story_reports",
+        "using": "((reporter_id = auth.uid()) OR community_is_admin())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Own story views",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "story_views",
+        "using": "(viewer_id = auth.uid())",
+        "schema": "public",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Delete own unused mission images",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'mission-images'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text) AND (NOT (EXISTS ( SELECT 1\n   FROM missions m\n  WHERE (m.image_path = objects.name)))) AND (NOT (EXISTS ( SELECT 1\n   FROM mission_drafts d\n  WHERE ((d.published_at IS NULL) AND ((d.data ->> 'image_path'::text) = objects.name))))))",
+        "schema": "storage",
+        "command": "DELETE",
+        "with_check": null
+      },
+      {
+        "name": "Delete own unused post images",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'post-images'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text) AND (NOT (EXISTS ( SELECT 1\n   FROM posts p\n  WHERE (p.image_path = objects.name)))))",
+        "schema": "storage",
+        "command": "DELETE",
+        "with_check": null
+      },
+      {
+        "name": "Delete unused showcase photos",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'showcase-media'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text) AND (NOT (EXISTS ( SELECT 1\n   FROM showcase_images i\n  WHERE (i.path = objects.name)))))",
+        "schema": "storage",
+        "command": "DELETE",
+        "with_check": null
+      },
+      {
+        "name": "Delete unused story image",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'story-images'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text) AND (NOT (EXISTS ( SELECT 1\n   FROM stories s\n  WHERE (s.image_path = objects.name)))))",
+        "schema": "storage",
+        "command": "DELETE",
+        "with_check": null
+      },
+      {
+        "name": "Read attached showcase photos",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'showcase-media'::text) AND (((storage.foldername(name))[1] = (auth.uid())::text) OR (EXISTS ( SELECT 1\n   FROM showcase_images i\n  WHERE (i.path = objects.name)))))",
+        "schema": "storage",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Read live story image",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'story-images'::text) AND story_image_visible(name))",
+        "schema": "storage",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Read own profile media",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'profile-media'::text) AND ((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text))",
+        "schema": "storage",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Read presented profile photos",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'profile-media'::text) AND visible_profile_media(name))",
+        "schema": "storage",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Read visible mission images",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'mission-images'::text) AND (((storage.foldername(name))[1] = (auth.uid())::text) OR (EXISTS ( SELECT 1\n   FROM missions m\n  WHERE (m.image_path = objects.name)))))",
+        "schema": "storage",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Read visible post images",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'post-images'::text) AND (((storage.foldername(name))[1] = (auth.uid())::text) OR (EXISTS ( SELECT 1\n   FROM posts p\n  WHERE (p.image_path = objects.name)))))",
+        "schema": "storage",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Tour assets permitted reads",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'tour-assets'::text) AND private.tour_asset_read(name))",
+        "schema": "storage",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Tour input draft writes",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": null,
+        "schema": "storage",
+        "command": "INSERT",
+        "with_check": "((bucket_id = 'tour-inputs'::text) AND private.tour_input_write(name))"
+      },
+      {
+        "name": "Tour inputs permitted reads",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'tour-inputs'::text) AND private.tour_input_read(name))",
+        "schema": "storage",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Tour reference inserts",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": null,
+        "schema": "storage",
+        "command": "INSERT",
+        "with_check": "((bucket_id = 'tour-assets'::text) AND private.tour_reference_write(name))"
+      },
+      {
+        "name": "Tour review asset reads",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'tour-assets'::text) AND private.tour_review_asset(name))",
+        "schema": "storage",
+        "command": "SELECT",
+        "with_check": null
+      },
+      {
+        "name": "Upload own mission images",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": null,
+        "schema": "storage",
+        "command": "INSERT",
+        "with_check": "((bucket_id = 'mission-images'::text) AND (name ~ (('^'::text || (auth.uid())::text) || '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'::text)))"
+      },
+      {
+        "name": "Upload own post images",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": null,
+        "schema": "storage",
+        "command": "INSERT",
+        "with_check": "((bucket_id = 'post-images'::text) AND (name ~ (('^'::text || (auth.uid())::text) || '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'::text)))"
+      },
+      {
+        "name": "Upload own showcase photos",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": null,
+        "schema": "storage",
+        "command": "INSERT",
+        "with_check": "((bucket_id = 'showcase-media'::text) AND (name ~ (('^'::text || (auth.uid())::text) || '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'::text)))"
+      },
+      {
+        "name": "Upload own story image",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": null,
+        "schema": "storage",
+        "command": "INSERT",
+        "with_check": "((bucket_id = 'story-images'::text) AND showcase_owner_visible(auth.uid()) AND (name ~ (('^'::text || (auth.uid())::text) || '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.png$'::text)))"
+      }
+    ],
+    "realtime": [
+      {
+        "table": "notifications",
+        "schema": "public",
+        "publication": "supabase_realtime"
+      }
+    ],
+    "functions": [
+      {
+        "name": "enqueue_notification_push",
+        "schema": "private",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "ef38926524e486c9c9c5e113e4a54d85",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "schedule_marea_messages",
+        "schema": "private",
+        "arguments": "at_time timestamp with time zone",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "4a9062dd2e48d40dafa0971a29786ec9",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tour_asset_read",
+        "schema": "private",
+        "arguments": "p_path text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "63c999416b82345ab9ee961814817ee6",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tour_document",
+        "schema": "private",
+        "arguments": "p_tour uuid, p_owner uuid, p_doc jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "eb4503d619d24b1c76f8acd591affd6c",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tour_input_read",
+        "schema": "private",
+        "arguments": "p_path text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "b80ce414887b0a3cbf20724a69081819",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tour_input_write",
+        "schema": "private",
+        "arguments": "p_path text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "8024abb44de9b83008330ed6b4068a32",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tour_job_json",
+        "schema": "private",
+        "arguments": "p_job uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "c09dfc4deaf5d6bca9ca59c150254927",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tour_json",
+        "schema": "private",
+        "arguments": "p_tour uuid, p_edit boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "d509e1932587cb04a0be2f0182b88bea",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tour_link",
+        "schema": "private",
+        "arguments": "p_kind text, p_id uuid, p_tour uuid, p_owner uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "6e2edfbe446c6dd145fb05ad59e90d7d",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tour_live_document",
+        "schema": "private",
+        "arguments": "p_tour uuid, p_owner uuid, p_doc jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "d5d07e98f533454bc3ef73756ec28f2b",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tour_public_document",
+        "schema": "private",
+        "arguments": "p_doc jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "e6b85e98e2a1bd3c312c0219ed2a98d6",
+        "security_definer": false,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tour_queue_wake",
+        "schema": "private",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "d771f27e01b0ddf0ececd6e67c9de972",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tour_reference_write",
+        "schema": "private",
+        "arguments": "p_path text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "fc5fce433cd5332cd75ad0104b84d416",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tour_review_asset",
+        "schema": "private",
+        "arguments": "p_path text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "60afb529febdb1bb23404d3f597c054a",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tour_space_verified",
+        "schema": "private",
+        "arguments": "p_tour uuid, p_owner uuid, p_space jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "462b39d0809e66165cf490c975908b0d",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tour_visible",
+        "schema": "private",
+        "arguments": "p_tour uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "e5021fbc97025688647b074c67bec0ab",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "wake_push_worker",
+        "schema": "private",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "61156fed85896076321a957bbd3a3a32",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "wake_tour_dispatcher",
+        "schema": "private",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "994c2d8ea79a69f4a1c9a29a64516bec",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "accept_current_legal",
+        "schema": "public",
+        "arguments": "terms text, privacy text, adult boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "8f3ecdd1d7a18ecdc50db5e020470ba3",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "apply_to_mission",
+        "schema": "public",
+        "arguments": "mission_id uuid, application_message text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "2c4e9a0dc5ba20b06bfad864240512bb",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "begin_profile_media_operation",
+        "schema": "public",
+        "arguments": "owner_id uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "980a2dd1f20fd173d53505e5eaf99508",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "claim_geocoding_request",
+        "schema": "public",
+        "arguments": "request_id uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "f55f8fc5dd70e05de208aabe57330997",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "claim_push_jobs",
+        "schema": "public",
+        "arguments": "batch_size integer",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "ac4e136f7ef691c3db1b2a63546101ff",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "community_active_account",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "8774016f69fe81fdf85d15f1818f39ff",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "community_is_admin",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "6e44cd128b4c927d2811b8db5df8cf83",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "community_profiles",
+        "schema": "public",
+        "arguments": "profile_ids uuid[], query_text text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "dcd886f7f0e5e5069e20efcded1bd6b4",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "complete_initial_profile",
+        "schema": "public",
+        "arguments": "profile_type text, selected_interests text[], selected_goals text[]",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "07c13c95d7a7f431f9988da43d58ed08",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "confirm_mission_selection",
+        "schema": "public",
+        "arguments": "mission_id uuid, application_ids uuid[]",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "20fa6a21819b44ee4a900581473f3b4a",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "content_city_matches_point",
+        "schema": "public",
+        "arguments": "value jsonb, latitude double precision, longitude double precision",
+        "anon_execute": true,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "14ac07beaea9e87fe238a03708356725",
+        "security_definer": false,
+        "authenticated_execute": true
+      },
+      {
+        "name": "create_mission",
+        "schema": "public",
+        "arguments": "mission_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "ce9c6eeb9e54fb0eb61b710129355d6b",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "create_mission_before_city",
+        "schema": "public",
+        "arguments": "mission_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "9113065d9bbcd75847e8469d3f8d2f2d",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "create_mission_comment",
+        "schema": "public",
+        "arguments": "mission_uuid uuid, comment_body text, operation_uuid uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "1b0b288c5008027f83de7eea17401480",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "create_mission_legacy",
+        "schema": "public",
+        "arguments": "mission_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "622c85d8fa87a51e584412bbf3b830ef",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "create_post_comment",
+        "schema": "public",
+        "arguments": "post_uuid uuid, comment_body text, operation_uuid uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "8cc7da1bdf0396e866c6e7d8697b684c",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "delete_mission_comment",
+        "schema": "public",
+        "arguments": "comment_uuid uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "9adc23c3a296fcc30e8d9b1e11bd9039",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "delete_mission_draft",
+        "schema": "public",
+        "arguments": "draft_id uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "0a7e354386f263ba6ef74d5228c29114",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "delete_post_comment",
+        "schema": "public",
+        "arguments": "comment_uuid uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "e2c4d2e2ce41141f7516e0aaa73a817a",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "delete_showcase",
+        "schema": "public",
+        "arguments": "item_id uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "586fdde7ef29925edd7d3f52f3b52f2e",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "delete_story",
+        "schema": "public",
+        "arguments": "story_uuid uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "a0ccf70533c13ee299c27fb9f4694c2b",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "dispatch_story_cleanup",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "e0a663d6d0556c5510a911ab60495652",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "finish_geocoding_request",
+        "schema": "public",
+        "arguments": "request_id uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "3bccd7725137522e1090d8aa0d6b84eb",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "finish_push_job",
+        "schema": "public",
+        "arguments": "job uuid, lease uuid, result text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "86752f9b1953fb6272a92ef77d0d7794",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "guard_mission_image_operation",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "cd3e17f38ff04e86a515e82bb3864a5d",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "guard_post_image_operation",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "52f324e66dcc39d613e8bb5aeaeb7333",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "guard_showcase_photo",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "2298090579e9c456ca2945ef00e5d4c6",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "handle_new_user",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "eb5d99bd0f1a593ac2d2fd746735b5b6",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "home_feed",
+        "schema": "public",
+        "arguments": "filters jsonb, page_cursor jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "a5ce5240fa03625a66f2921a4c8103c3",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "home_feed_candidates",
+        "schema": "public",
+        "arguments": "filters jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "99ec9239be9c97be54ddc37834aab2e5",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "invalidate_content_city",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": true,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "ef0879656e43b57bc142fe7a32e4032b",
+        "security_definer": false,
+        "authenticated_execute": true
+      },
+      {
+        "name": "is_username_available",
+        "schema": "public",
+        "arguments": "candidate text",
+        "anon_execute": true,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "25452a7c6afb9a5a32261760f5b06e13",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "journal_story_publication",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "cf7a712dfdcfd290cf4b2dd4f4af85de",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "list_map_missions",
+        "schema": "public",
+        "arguments": "south double precision, west double precision, north double precision, east double precision, query_text text, category_filter text, starts_from timestamp with time zone, starts_before timestamp with time zone, center_latitude double precision, center_longitude double precision, radius_km double precision",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "328f3e2d8e88906dd5d48714057a0240",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "list_missions",
+        "schema": "public",
+        "arguments": "author_filter uuid, query_text text, category_filter text, target_filter text, scope_filter text, page_offset integer, mission_filter uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "ddab2bb799b0e5b5dea7de5530a82ea8",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "list_saved_missions",
+        "schema": "public",
+        "arguments": "query_text text, category_filter text, target_filter text, page_offset integer",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "e4758226b6506361102dae60a108714b",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "list_stories",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "09a3fe4e98c2d20d4d6a448b5039e950",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "lock_mission_compensation",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "f30e30f8ff8ae956c31949395d6e12f9",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "mark_notifications_read",
+        "schema": "public",
+        "arguments": "notification_uuid uuid, before_time timestamp with time zone",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "989717192022a7625b3e114b31c96926",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "mark_story_seen",
+        "schema": "public",
+        "arguments": "story_uuid uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "2b163607fe3767b688c0353f19a10bfa",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "mission_social_stats",
+        "schema": "public",
+        "arguments": "mission_ids uuid[]",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "185f9437f07f070452ab348b5fb13127",
+        "security_definer": false,
+        "authenticated_execute": true
+      },
+      {
+        "name": "mission_social_visible",
+        "schema": "public",
+        "arguments": "mission_uuid uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "2a2af3429dbec08404bcb63d44262989",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "moderate_content",
+        "schema": "public",
+        "arguments": "content_id uuid, content_kind text, hide_content boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "9ebb364dfca2f1299ee45d4926017268",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "moderate_story",
+        "schema": "public",
+        "arguments": "story_uuid uuid, hide boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "18c848a37b2b72e84cd52a86d05abcfc",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "notify_mission_application",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "07a3df709da63840f55c8592ff03b59b",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "notify_mission_reaction",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "0b1ebffd305b8a2cbfd004fd92f36c22",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "notify_mission_status",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "6a198e6befab540ca5dec906a4f0048c",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "notify_post_reaction",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "97866d85b85ab83fa1c6ed87ac8f6af8",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "post_social_stats",
+        "schema": "public",
+        "arguments": "post_ids uuid[]",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "9ad37ac6485509b5db9840566cec6db1",
+        "security_definer": false,
+        "authenticated_execute": true
+      },
+      {
+        "name": "protect_published_legal",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "2d5ac5449b416334780564c68dfc9482",
+        "security_definer": false,
+        "authenticated_execute": false
+      },
+      {
+        "name": "publish_mission_draft",
+        "schema": "public",
+        "arguments": "draft_id uuid, mission_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "1703ef7729bcce00cb749d6597e15bf5",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "publish_story",
+        "schema": "public",
+        "arguments": "story_uuid uuid, story_body text, story_image text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "4938713504165cbaab6194cb9cba28db",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "push_job_is_current",
+        "schema": "public",
+        "arguments": "job uuid, lease uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "69567e4869480387da8407509f401ff2",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "record_notification_activity",
+        "schema": "public",
+        "arguments": "zone text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "d0c59d60f8b07008a871a44e3bab0204",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "register_notification_device",
+        "schema": "public",
+        "arguments": "installation uuid, fcm_token text, permission_granted boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "304370598b348b8d9965dacb5ddab81c",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "registration_policy",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": true,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "b43a4fe4192a1d281dfda6c607d2aee3",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "report_showcase",
+        "schema": "public",
+        "arguments": "item_id uuid, report_reason text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "d26cd009f6170b45444775f6f849ef57",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "report_story",
+        "schema": "public",
+        "arguments": "story_uuid uuid, report_reason text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "847418477473354b9b743733c3280dff",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "reported_stories",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "e1576eb3f6350d11af107086a4187e89",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "request_account_deletion",
+        "schema": "public",
+        "arguments": "owner_id uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "039f15acf3fd8f7a686fb2d996f835b6",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "retract_mission_comment_notification",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "60a001f92a98f1285060151e4defc79a",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "review_application",
+        "schema": "public",
+        "arguments": "application_id uuid, decision text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "dd0f8677e587b290850d6d6c470aafa3",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "rls_auto_enable",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": true,
+        "configuration": [
+          "search_path=pg_catalog"
+        ],
+        "definition_md5": "6998ea6b4c2480f5d2e34b5dcf3f8d36",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "save_mission_draft",
+        "schema": "public",
+        "arguments": "draft_id uuid, draft_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "ce910d58548cbb0e29cc3879d81c63d5",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "save_mission_draft_before_city",
+        "schema": "public",
+        "arguments": "draft_id uuid, draft_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "70bdec4c897b9c908553606dfc201042",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "save_showcase",
+        "schema": "public",
+        "arguments": "item_input jsonb, item_id uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "c1f7751069e9fa6af989c375d5f23706",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "send_post_interest",
+        "schema": "public",
+        "arguments": "post_uuid uuid, interest_message text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "9317cdd4db509383e70abe96d5b80c9a",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "set_mission_finalist",
+        "schema": "public",
+        "arguments": "mission_id uuid, application_id uuid, is_finalist boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "6759943bc18b5e02b64341790c478437",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "set_mission_reaction",
+        "schema": "public",
+        "arguments": "mission_uuid uuid, reaction_type text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "790a77c2abc9453f5d756f5a984e4330",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "set_mission_saved",
+        "schema": "public",
+        "arguments": "mission_id uuid, is_saved boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "df850a7767cb5b32d99088bedfbe1a81",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "set_mission_status",
+        "schema": "public",
+        "arguments": "mission_id uuid, new_status text, cancellation_reason text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "d1f6083b6dccda5260c5898f5d3432c2",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "set_notification_preferences",
+        "schema": "public",
+        "arguments": "activity boolean, marea_messages boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "d1fba3c3be5c007c7e74ba2a2711b372",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "set_post_reaction",
+        "schema": "public",
+        "arguments": "post_uuid uuid, reaction_type text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "91822d3f6e4d578e81c8ca566f760185",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "set_profile_follow",
+        "schema": "public",
+        "arguments": "author_uuid uuid, following boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "2912dbc055dc01b84c92684a0df5d0c4",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "set_profile_updated_at",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "d6577a20f2cf4156375747764a6aff81",
+        "security_definer": false,
+        "authenticated_execute": false
+      },
+      {
+        "name": "showcase_owner_visible",
+        "schema": "public",
+        "arguments": "owner_id uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "3fe4accfb4b7ab70a87811d3685440c0",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "social_mission",
+        "schema": "public",
+        "arguments": "mission_uuid uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "43c0101c867840bc134b76ff77fd9007",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "social_post",
+        "schema": "public",
+        "arguments": "post_uuid uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "5b759e7f928dc0d13fd67a757a6c94e1",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "story_cleanup_images",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "07a89b96fdfceddc5be3b0a6b986dede",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "story_image_visible",
+        "schema": "public",
+        "arguments": "image_name text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "33bfbacab97e7d178b366c9662ae6f94",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "submit_mission_application",
+        "schema": "public",
+        "arguments": "mission_id uuid, application_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "895c200dab4601c35216b3680cbd2865",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "timestamp_mission_acceptance",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": true,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "4113d638647a0d6045f2311a92a27558",
+        "security_definer": false,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_ar_report_test",
+        "schema": "public",
+        "arguments": "p_tour uuid, p_point uuid, p_reference_version uuid, p_platform text, p_tracking_seconds integer",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "bb7101faf9104b11547aff8ea60a4846",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_attach_result",
+        "schema": "public",
+        "arguments": "p_tour uuid, p_scene uuid, p_job uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "2ca804edd6c48196c69f8b6881cb757b",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_begin_output_write",
+        "schema": "public",
+        "arguments": "p_job uuid, p_lease uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "ed90779896b36c1c997031f3a02a2ef3",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_capture_begin",
+        "schema": "public",
+        "arguments": "p_tour uuid, p_scene uuid, p_mode text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "e87231f57968677b412e78b4b56b6029",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_capture_submit",
+        "schema": "public",
+        "arguments": "p_capture uuid, p_manifest jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "1f363bd322e3b395043092c183e3d7ff",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_claim_cleanup",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "771bea20a9927cc90f8855d5578717f0",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_claim_jobs",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "a1aabd689fa17d9befe95682140e6d32",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_completion_receipt",
+        "schema": "public",
+        "arguments": "p_job uuid, p_lease uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "c22b7c6734cc7edc111586b6f229f3d2",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_end_output_write",
+        "schema": "public",
+        "arguments": "p_job uuid, p_lease uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "651ae3b0efbcb177a7af87c4c693cb6f",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_finish_cleanup",
+        "schema": "public",
+        "arguments": "p_job uuid, p_lease uuid, p_success boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "89a3065b6f482ab60577c8e22c0fcdc0",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_finish_job",
+        "schema": "public",
+        "arguments": "p_job uuid, p_lease uuid, p_state text, p_result jsonb, p_error text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "15846a31a38dce05183e762e23dfebea",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_get",
+        "schema": "public",
+        "arguments": "p_tour uuid, p_edit boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "86a5719e2cdda0944c577fbe6a042a08",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_job_cancel",
+        "schema": "public",
+        "arguments": "p_job uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "d6ac2b3310deb1a820e1447d457123cb",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_job_context",
+        "schema": "public",
+        "arguments": "p_job uuid, p_lease uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "3aaf39963ac74f76e9bbfdc270d5eaca",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_job_get",
+        "schema": "public",
+        "arguments": "p_job uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "94717efaa880e55e01113568bc430352",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_job_is_current",
+        "schema": "public",
+        "arguments": "p_job uuid, p_lease uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "467d3e8ff7cd1fe7fa5c265f7612b99b",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_link_request",
+        "schema": "public",
+        "arguments": "p_tour uuid, p_point uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "986390e272fbda4169465a0f2d551d04",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_link_search",
+        "schema": "public",
+        "arguments": "p_query text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "c0e2fff8e9dc58fa4824ec227bd1bb7e",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_list",
+        "schema": "public",
+        "arguments": "p_owner uuid, p_lat double precision, p_lng double precision",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "5456cd6feccace7cacf5c91a21ef1748",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_pause",
+        "schema": "public",
+        "arguments": "p_tour uuid, p_paused boolean",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "07f6088db73753712ead3af3f1ca53fd",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_permission_revoke",
+        "schema": "public",
+        "arguments": "p_request uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "b9deabf33aa1964389530b7bb64e65f9",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_progress",
+        "schema": "public",
+        "arguments": "p_tour uuid, p_revision uuid, p_progress jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "404eb2dbe52ead4a9df820cd5d6b462a",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_public_list",
+        "schema": "public",
+        "arguments": "p_owner uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "eaa6c4a2c6ea989b60834c552e6e65f3",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_renew_cleanup",
+        "schema": "public",
+        "arguments": "p_job uuid, p_lease uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "fa3a00b6959da1b3e64455412f66ed2f",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "tours_requests",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "9441257a4c33aee570165b3f5ba8f21d",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_review",
+        "schema": "public",
+        "arguments": "p_request uuid, p_approve boolean, p_reason text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "fbdb47e090182a65d747d75de6e4a286",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_save",
+        "schema": "public",
+        "arguments": "p_tour uuid, p_title text, p_space jsonb, p_document jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "6da31157440eba24e1254a12a76cea27",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "tours_submit",
+        "schema": "public",
+        "arguments": "p_tour uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "f3a82116a80f3bbd77935e8b51e39f25",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "unregister_notification_device",
+        "schema": "public",
+        "arguments": "installation uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "48c666a63ae758e7da25b3e29d433f71",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "update_mission",
+        "schema": "public",
+        "arguments": "mission_id uuid, mission_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "5b0a24027d6c799650beba693819c65b",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "update_mission_before_city",
+        "schema": "public",
+        "arguments": "mission_id uuid, mission_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "da412bf0af54baa0b4791565c9259918",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "update_mission_legacy",
+        "schema": "public",
+        "arguments": "mission_id uuid, mission_input jsonb",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "e2330e90f8cccd82a1598d0bf9e4cb4a",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "valid_content_city",
+        "schema": "public",
+        "arguments": "value jsonb",
+        "anon_execute": true,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "2448bc75f274dd8de4c7625b92712aba",
+        "security_definer": false,
+        "authenticated_execute": true
+      },
+      {
+        "name": "validate_community_content",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "4a1e616267e020c9f533cd40371a0545",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "validate_mission_lifecycle",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "5d8386b72fe0c01aa2e4cb5f9311b623",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "validate_profile_media",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "b4778065413954d0c74ed2790cc1c4d5",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "validate_profile_presentation",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "39fa28720b862f7f35b9151cef7180a6",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "version_mission_event",
+        "schema": "public",
+        "arguments": "",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "98581680aa104c3f2abf2197b3feaf7b",
+        "security_definer": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "visible_profile_media",
+        "schema": "public",
+        "arguments": "media_path text",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "33f4056a9abbb0f585b930ce00fe0a8b",
+        "security_definer": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "withdraw_application",
+        "schema": "public",
+        "arguments": "application_id uuid",
+        "anon_execute": false,
+        "configuration": [
+          "search_path=\"\""
+        ],
+        "definition_md5": "e3bb67301959e397fc867dce54fc5c81",
+        "security_definer": true,
+        "authenticated_execute": true
+      }
+    ]
+  }
+}

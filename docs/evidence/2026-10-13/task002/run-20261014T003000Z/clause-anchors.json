@@ -1,0 +1,1632 @@
+[
+  {
+    "id": "TR-S0-001",
+    "section": "0",
+    "sha256": "03d9fcb4bcad772b3ec95c9c02e3855c2fa76ee7ccf575905274a1a092bdefd4",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 34,
+    "description": "**Jerarquía:** la ley/políticas vigentes prevalecen sobre el texto; dentro de esta versión, los contratos normativos de secciones 3, 4 y 8 precisan los requisitos de secciones 5–7. Ante incompatibilidad real, detener la implementación y abrir un registro `DECISION-XXX` en vez de suponer."
+  },
+  {
+    "id": "TR-S0-002",
+    "section": "0",
+    "sha256": "856cd24d04fe0af5cc7da222ca9cfc0f8b7fcc08366bf08333a262c021aca1c0",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 35,
+    "description": "**Lenguaje:** `DEBE` = obligatorio cuando la función esté habilitada; `NO DEBE` = prohibición; `PUEDE` = permitido; `CONDICIONAL` = propuesta deshabilitada hasta aprobación; `PENDIENTE EXTERNO` = falta evidencia no obtenible mediante documentación."
+  },
+  {
+    "id": "TR-S0-003",
+    "section": "0",
+    "sha256": "100086cb4abf317fca03382f1d692e160b48af2b16c885f0d884c87e52e0604f",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 36,
+    "description": "**Estado de implementación:** `NO_VERIFICADO`, `NO_IMPLEMENTADO`, `PARCIAL`, `IMPLEMENTADO_SIN_PRUEBAS`, `VALIDADO`. Ningún requisito pasa a `VALIDADO` sin ruta de código y evidencia de prueba."
+  },
+  {
+    "id": "TR-S0-004",
+    "section": "0",
+    "sha256": "4dcb091cdbe9eb9f079d09ebc2867cc3d42db6051ec7f689e0fcdc3719dc3074",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 37,
+    "description": "**Convención de alcance:** `BASE` (MVP y cimientos), `PILOTO` (núcleo de oportunidades), `POST` (expansión posterior a métricas), `CONDICIONAL` (hipótesis sin compromiso). Se implementa sólo lo solicitado en la tarea y sus dependencias obligatorias."
+  },
+  {
+    "id": "TR-S0-005",
+    "section": "0",
+    "sha256": "7fe3415eab468c3c02feb12247faef881a5fb32bfd757aca8029c38a9fc2427e",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 38,
+    "description": "**IDs estables:** `RF-NN-NNN`, `CT-...`, `RB-NN`, `AC-NN`, `ADR41-NN`, `ADR42-NN`; no renumerar. Los contratos adicionales `CTR5-NN` amplían la semántica; no sustituyen los IDs anteriores."
+  },
+  {
+    "id": "TR-S0-006",
+    "section": "0",
+    "sha256": "431a426ecf7b464c14dfff9445c31264a36f58fd89e9a04ce5347441254ce649",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 39,
+    "description": "**Fuente única:** este archivo, **una vez aprobado e integrado** como baseline v5.1 en el repositorio y su trazabilidad. Los documentos previos son historia, no un segundo juego de órdenes. No usar las tablas de riesgos históricas con estado «abierto» como semántica de ejecución actual. La sustitución de baseline exige historial, nueva huella SHA256 y reconciliación de evidencias; la huella v5.0 permanece histórica."
+  },
+  {
+    "id": "TR-S0-007",
+    "section": "0",
+    "sha256": "919ac879964766cd272091fa287f76877c55c7466a1502746b7b4d95cd135bd7",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 40,
+    "description": "**Regla de seguridad:** un prototipo visual, una respuesta exitosa del cliente o una prueba aislada NO demuestran autorización del servidor ni habilitan producción."
+  },
+  {
+    "id": "TR-S0.1-001",
+    "section": "0.1",
+    "sha256": "dcb5c8c2ebefb72d0edc1e3e6e0d5a7250840d6540b03de76d58e6ea5fbf5086",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 57,
+    "description": "**Puertas de adopción:** (a) aprobación del responsable de producto, actualmente conceptual y condicionada; (b) comprobación de migración y compatibilidad en laboratorio aislado; (c) reconciliación auditable de YAML, vistas y huellas; (d) revisión jurídica/operativa para retención y lanzamiento. Hasta satisfacer (a)–(c), v5.0 permanece como baseline efectiva histórica y v5.1.1 es la fuente de diseño autorizada de TASK-002. La prueba con datos sintéticos no acredita todos los datos reales ni autoriza modificar entornos remotos: cualquier aplicación remota requerirá evaluación y autorización futuras independientes."
+  },
+  {
+    "id": "TR-S0.2-001",
+    "section": "0.2",
+    "sha256": "5a450d7e3945115b316878e7ce49630532aa69b498f8a5d293b172b9b3087fec",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 61,
+    "description": "El responsable de producto autorizó consolidar esta revisión v5.1.1 y reconciliar herramientas/YAML preservando TASK-001. La aprobación conceptual no autoriza migraciones de TASK-002, código funcional Flutter/backend, cambios remotos ni commits. Antes de cualquiera de esas migraciones o cambios funcionales se presentan resultados N/T, expediente técnico E y decisiones pendientes. E y U0 son análisis/propuestas; U0 exige flujos completos y diseños funcionales revisables de interfaces nuevas y modificadas con la identidad visual actual de MAREA, y aprobación propia antes de implementar Flutter."
+  },
+  {
+    "id": "TR-S0.2-002",
+    "section": "0.2",
+    "sha256": "05457890589bc4986c11c8c3fe8ccd3802c4bbb7fad942bfeb4e0e3f0fdca197",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 63,
+    "description": "**Organizador autorizado:** titular personal elegible o representante con facultades vigentes de la organización titular. Todos los contratos de ofertas, reservas, acuerdos, revisiones y cierre aplican a ambos; ningún permiso organizacional se exige a una misión personal propia."
+  },
+  {
+    "id": "TR-S0.2-003",
+    "section": "0.2",
+    "sha256": "33220786245ff005ae94a178cb459bb44a148b2f66ceef4d769aa8a53be42629",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 64,
+    "description": "**Aceptación histórica:** la condición de acuerdo activo y cupo confirmado se verifica en la activación inicial atómica, no permanentemente tras terminación. Se conservan ofertas, firmas y revisiones históricas; las etiquetas actuales se derivan de Agreement."
+  },
+  {
+    "id": "TR-S0.2-004",
+    "section": "0.2",
+    "sha256": "268c7b468b4eaddc73794f58e4c49003cb20d32a78026b69ffaac5fdd1ce63de",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 65,
+    "description": "**Cancelación ordinaria:** cualquier parte puede solicitarla con motivo y aviso; sólo el consentimiento expreso de las partes afectadas la convierte en cancelación bilateral. La solicitud, la detención preventiva por seguridad, el bloqueo, la denuncia y la resolución administrativa son registros/procesos separados, no estados canónicos adicionales de Agreement. Ante riesgo, detener participación y reportar no requiere permiso de la contraparte ni implica culpabilidad automática. Causas/facultades de resolución administrativa requieren política aprobada."
+  },
+  {
+    "id": "TR-S0.2-005",
+    "section": "0.2",
+    "sha256": "740522fc72e67ecc008489d9273305e4275f78bb4ef20ccabfbfe408d50d912c",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 66,
+    "description": "**Conservación estructural:** la sustitución de la referencia de missions.author_id y retiro de cascadas requiere expediente de dependencias, filas locales, SQL, referencias, recuperación y pruebas, seguido de aprobación técnica específica. No se clasifican automáticamente negocios como organizaciones."
+  },
+  {
+    "id": "TR-S0.2-006",
+    "section": "0.2",
+    "sha256": "368e5a3377c97c41048eef993450b8cce8fe86a48ba8eb7123f0652474d7931f",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 67,
+    "description": "**Revocación y privacidad:** los defectos de JWT/Realtime de TASK-003 siguen fuera de alcance; bloquean cualquier validación integral dependiente. Los plazos de retención y procedimientos externos no se presumen aprobados."
+  },
+  {
+    "id": "TR-S0.2-007",
+    "section": "0.2",
+    "sha256": "b8c717e04773085c2331015214367caba6da95bb9e3e444657628085fe34080c",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 68,
+    "description": "**Límites de evidencia:** documentación, mocks, pruebas sintéticas o Dart de host no equivalen a implementación validada, compatibilidad de todos los datos reales ni QA de dispositivos. TASK-002 no termina por cerrar N/T."
+  },
+  {
+    "id": "TR-S1.1-001",
+    "section": "1.1",
+    "sha256": "f25a31bb3d3f1747e3e7a0f3c1f3f4ec4738472464f157580324f6bbe4f60b94",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "f25a31bb3d3f1747e3e7a0f3c1f3f4ec4738472464f157580324f6bbe4f60b94",
+    "current_line": 84,
+    "description": "| `BASE` | Acceso, perfiles y permisos mínimos, configuración, eliminación, infraestructura y canales de reporte ligados a las funciones realmente expuestas | Autorización RLS y recuperación de cuenta probadas; textos obligatorios y protección de datos revisados para el uso habilitado |"
+  },
+  {
+    "id": "TR-S1.1-002",
+    "section": "1.1",
+    "sha256": "2c29b31b837ab7bdb06fc8b913079aafe401885e9282cf25e78b1e6090499666",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "2c29b31b837ab7bdb06fc8b913079aafe401885e9282cf25e78b1e6090499666",
+    "current_line": 85,
+    "description": "| `PILOTO` | Oportunidades → propuestas → ofertas → acuerdos → actividad/resultado, perfiles, descubrimiento, mapa 2D, coordinación y moderación operativa | Puertas `G0–G4` y `B01–B04/B06/B08/B09` según alcance |"
+  },
+  {
+    "id": "TR-S1.1-003",
+    "section": "1.1",
+    "sha256": "58c67f62b8858e887ab4047483e7b02703de8bdf6619a1490c36259accc23c80",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "58c67f62b8858e887ab4047483e7b02703de8bdf6619a1490c36259accc23c80",
+    "current_line": 86,
+    "description": "| `POST` | Herramientas premium, publicaciones comunitarias amplias, suscripciones y capacidades comerciales | Uso recurrente, disposición de pago, políticas de compra y compliance aprobados |"
+  },
+  {
+    "id": "TR-S1.1-004",
+    "section": "1.1",
+    "sha256": "b0c9275c8b159cb316d26f16b4b890709c876b051a3887b03d1348b8defa1beb",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "b0c9275c8b159cb316d26f16b4b890709c876b051a3887b03d1348b8defa1beb",
+    "current_line": 87,
+    "description": "| `CONDICIONAL` | AR espacial/avanzada, trueque extensivo, tripulaciones, drops, gamificación, IA y marketplace transaccional | Experimento propio, seguridad, presupuesto y aprobación expresa |"
+  },
+  {
+    "id": "TR-S1.2-001",
+    "section": "1.2",
+    "sha256": "38011464adf4879a1a170e5f8a28e6e0640334165fdec8bac5c4a5f5576e476e",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "38011464adf4879a1a170e5f8a28e6e0640334165fdec8bac5c4a5f5576e476e",
+    "current_line": 93,
+    "description": "«Cuenta con 18 años o más» es autodeclaración, NO identidad/edad verificada."
+  },
+  {
+    "id": "TR-S1.2-002",
+    "section": "1.2",
+    "sha256": "d874934c25d1bb61f76c70f2fcdb7996137212d9915bfa31489ac497758cdb0c",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "d874934c25d1bb61f76c70f2fcdb7996137212d9915bfa31489ac497758cdb0c",
+    "current_line": 94,
+    "description": "«Confirmado por ambas partes» NO equivale a certificado independiente, pago recibido ni garantía de satisfacción."
+  },
+  {
+    "id": "TR-S1.2-003",
+    "section": "1.2",
+    "sha256": "7854913ee2a342dda6558b31f019112f71f9f8f8c35eb9853006397fe8118254",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "7854913ee2a342dda6558b31f019112f71f9f8f8c35eb9853006397fe8118254",
+    "current_line": 95,
+    "description": "«Actividad programada» NO equivale a evento realizado; «foto subida» NO equivale a resultado de una misión."
+  },
+  {
+    "id": "TR-S1.2-004",
+    "section": "1.2",
+    "sha256": "b904fa3d735c48393966aa445469ec5ee572b2e5c110e7cdae732f20c6fad5a5",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "b904fa3d735c48393966aa445469ec5ee572b2e5c110e7cdae732f20c6fad5a5",
+    "current_line": 96,
+    "description": "MAREA documenta compensación entre terceros durante el piloto, pero NO gestiona, valida ni garantiza transferencias de dinero."
+  },
+  {
+    "id": "TR-S1.2-005",
+    "section": "1.2",
+    "sha256": "e32dfd3edc42c15f8079f658de9322b1ed9e8403305b6a7bf505d83b6d123ba3",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "e32dfd3edc42c15f8079f658de9322b1ed9e8403305b6a7bf505d83b6d123ba3",
+    "current_line": 97,
+    "description": "La disponibilidad de funciones está limitada a ciudades, categorías, versiones de app y horarios de soporte aprobados y mostrados con veracidad."
+  },
+  {
+    "id": "TR-S2-001",
+    "section": "2",
+    "sha256": "58bf4305b8fea7c299ef1ce64e63b5ec00e58637b977a969121a3810de0a16ee",
+    "review_status": "REVISADA",
+    "review_basis": "STABLE_ENTITY_REVIEW",
+    "previous_sha256": "7feb75bf7945a8066efadb15332600d0db0e3c29e5fc39bac270f2f319faf4e1",
+    "current_line": 103,
+    "description": "| `Person` | Identidad humana autenticada; puede ser organizadora titular de misiones propias bajo elegibilidad y políticas, independientemente de pertenecer a organizaciones; eliminación independiente de organizaciones |"
+  },
+  {
+    "id": "TR-S2-002",
+    "section": "2",
+    "sha256": "d08ec4ba301e50dffcee38cddecb1d4eb467fb496390ebc131f150963c50e0ca",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "d08ec4ba301e50dffcee38cddecb1d4eb467fb496390ebc131f150963c50e0ca",
+    "current_line": 104,
+    "description": "| `CreatorProfile` | Proyección pública opcional de Person; portafolios y capacidades, sin credenciales separadas |"
+  },
+  {
+    "id": "TR-S2-003",
+    "section": "2",
+    "sha256": "09c999249df05129c315671bdcf59f95b429101245e197b4ef11da6e6ce941ac",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "09c999249df05129c315671bdcf59f95b429101245e197b4ef11da6e6ce941ac",
+    "current_line": 105,
+    "description": "| `Organization` | Recurso autónomo; propietarios, miembros y estados de propiedad/operación |"
+  },
+  {
+    "id": "TR-S2-004",
+    "section": "2",
+    "sha256": "f8e36ca816fb77443781437adaea170865a0cbd7dd2ae4f1695d5b9c5a3898ac",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "f8e36ca816fb77443781437adaea170865a0cbd7dd2ae4f1695d5b9c5a3898ac",
+    "current_line": 106,
+    "description": "| `Membership` | Vínculo Person–Organization con rol, vigencia, alcances y revocación |"
+  },
+  {
+    "id": "TR-S2-005",
+    "section": "2",
+    "sha256": "0faa7792a1eaf23729b3c6d8169a1389ca3b22df3abe37efd8de95f86b7090a6",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "0faa7792a1eaf23729b3c6d8169a1389ca3b22df3abe37efd8de95f86b7090a6",
+    "current_line": 107,
+    "description": "| `Venue` | Sede administrada o autorizada; dirección pública solo con derecho suficiente a publicarla |"
+  },
+  {
+    "id": "TR-S2-006",
+    "section": "2",
+    "sha256": "f085d679157feee7769be92a2013ef2f31ddfd4ab4e47c08c1bc567a68f1472e",
+    "review_status": "REVISADA",
+    "review_basis": "STABLE_ENTITY_REVIEW",
+    "previous_sha256": "28e74fb8477dd038b224e462958a5aa2c6dcfd3298c39ebb65e88b847f901334",
+    "current_line": 108,
+    "description": "| `Mission` / `MissionRevision` | Convocatoria perteneciente **o a una persona o a una organización**, con tipo/contexto organizador explícito y snapshots inmutables del contenido conocido por postulantes; una misión personal no se convierte implícitamente en organizacional |"
+  },
+  {
+    "id": "TR-S2-007",
+    "section": "2",
+    "sha256": "7e3bc3434c156bb41c584d4d6738868fcd9735be8c621e09a948fae1b3b52862",
+    "review_status": "REVISADA",
+    "review_basis": "STABLE_ENTITY_REVIEW",
+    "previous_sha256": "c9dc2188614039511ce1d41c3f1392e8b1225952171c019b8eaba92be02e132c",
+    "current_line": 109,
+    "description": "| `Application` | Una candidatura por persona elegible y misión, con historial y estatus; no es acuerdo; no se permite que la misma persona sea simultáneamente organizadora personal y postulante de su propia misión |"
+  },
+  {
+    "id": "TR-S2-008",
+    "section": "2",
+    "sha256": "e24fcf867319dd1077d74b6014f92ffa5d264e57d97eedcc1f92c6f7c6658deb",
+    "review_status": "REVISADA",
+    "review_basis": "STABLE_ENTITY_REVIEW",
+    "previous_sha256": "478e9c6d1f62f52e7c5ff56bb1bfbf958777ea12fba43d573ce497f2405fa01e",
+    "current_line": 110,
+    "description": "| `AgreementOffer` / `CapacityReservation` | Oferta temporal cuyo acto de emisión incluye aceptación expresa de la parte organizadora sobre una revisión inmutable; la reserva sólo se confirma con aceptación válida de la persona destinataria antes del vencimiento |"
+  },
+  {
+    "id": "TR-S2-009",
+    "section": "2",
+    "sha256": "126f358bdb35bfb6dc36f739e26c7eb2f81eadf321bf2807e03909cd3631c443",
+    "review_status": "REVISADA",
+    "review_basis": "STABLE_ENTITY_REVIEW",
+    "previous_sha256": "f21a584e5ca87e9079bbf0294273bbd8f9a5ec1e055cf686e7d09278f4c0241c",
+    "current_line": 111,
+    "description": "| `Agreement` / `AgreementRevision` / `Acceptance` | Compromiso entre organizador personal u organización representada y participante humano. Mantiene revisión activa y, cuando aplique, propuesta separada; aceptación expresa de cada contraparte sobre el mismo hash de términos y actor humano acreditado |"
+  },
+  {
+    "id": "TR-S2-010",
+    "section": "2",
+    "sha256": "e876cf9bd9f43226175780c66686e9fb83e37112e9e036670a91877da2d3cb02",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "e876cf9bd9f43226175780c66686e9fb83e37112e9e036670a91877da2d3cb02",
+    "current_line": 112,
+    "description": "| `PublicActivity` | Publicación de evento/actividad con origen (`MAREA_COLLABORATION` o `EXTERNAL_EDITORIAL`) y vigencia |"
+  },
+  {
+    "id": "TR-S2-011",
+    "section": "2",
+    "sha256": "30736cdbb89904fe8a14751699a9b14e7be10520755d7b37125192531a10aa55",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "30736cdbb89904fe8a14751699a9b14e7be10520755d7b37125192531a10aa55",
+    "current_line": 113,
+    "description": "| `Outcome` / `OutcomeEvidence` | Afirmación de resultado con evidencia y nivel de comprobación |"
+  },
+  {
+    "id": "TR-S2-012",
+    "section": "2",
+    "sha256": "3eef761f03c9efd6399fda407f5c41561d8391bb7889340f59b2a25b34d4b916",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "3eef761f03c9efd6399fda407f5c41561d8391bb7889340f59b2a25b34d4b916",
+    "current_line": 114,
+    "description": "| `Conversation` / `Message` | Conversación de misión/acuerdo, acceso autorizado y adjuntos privados |"
+  },
+  {
+    "id": "TR-S2-013",
+    "section": "2",
+    "sha256": "45074ecf5c05d425d5a929f478d9b9022df493dcbd5b03cd6a61440b8f65dbec",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "45074ecf5c05d425d5a929f478d9b9022df493dcbd5b03cd6a61440b8f65dbec",
+    "current_line": 115,
+    "description": "| `MediaAsset` / `UsagePermission` | Medio con titular, autorización, contexto de uso y retiro por ámbito |"
+  },
+  {
+    "id": "TR-S2-014",
+    "section": "2",
+    "sha256": "dc9259b0fa02dc6a3d4a137339b9ca92c522d2dada826474d1d22bfea56f8578",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "dc9259b0fa02dc6a3d4a137339b9ca92c522d2dada826474d1d22bfea56f8578",
+    "current_line": 116,
+    "description": "| `Report` / `ModerationCase` | Denuncia, evidencia privada, medida preventiva, resolución y apelación separadas |"
+  },
+  {
+    "id": "TR-S2-015",
+    "section": "2",
+    "sha256": "bdc7194f1b7d971f64a062ea7b1c2c17814f3f5f11e13c6e37b766058fd950c5",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "bdc7194f1b7d971f64a062ea7b1c2c17814f3f5f11e13c6e37b766058fd950c5",
+    "current_line": 117,
+    "description": "| `Notification` / `DomainEvent` / `OutboxEvent` | Avisos, eventos versionados y procesamiento seguro ante reintentos |"
+  },
+  {
+    "id": "TR-S2-016",
+    "section": "2",
+    "sha256": "ca7c5bd8209129476cf930c2665402b8fd1df61bd9b0e52915048df1772196c0",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "ca7c5bd8209129476cf930c2665402b8fd1df61bd9b0e52915048df1772196c0",
+    "current_line": 118,
+    "description": "| `AuditEvent` / `DeletionRequest` / `SuppressionRecord` | Registro restringido de cambios privilegiados y borrados pendientes/efectuados |"
+  },
+  {
+    "id": "TR-S2.1-001",
+    "section": "2.1",
+    "sha256": "0758d77f3b7d4281315c1c8489c0490ea84c53bd9f01d6f1236e2b5647d57311",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "80c3ae435bba80875a069f0b4b658a92a8475ce1079bd0b48bfc71e04f122f48",
+    "current_line": 122,
+    "description": "Una misión tiene **exactamente un titular**: `owner_person_id` o `owner_organization_id`, nunca ambos; el tipo de titular no se deriva del perfil visual ni de parámetros de cliente no verificados. La titularidad no cambia por vincular una sede o participar en otra organización."
+  },
+  {
+    "id": "TR-S2.1-002",
+    "section": "2.1",
+    "sha256": "3ad1469c5f98a01b7b59c1b20f2bbe3a3d11ab6dc1e11f398e0a2f8083554e95",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "70d4e134d1f4ebc2ca3f7c789b490780a7024998e1cc7fc91d4c9b4c0c318da1",
+    "current_line": 123,
+    "description": "Cada acción servidor deriva `actor_id` de credencial validada y comprueba recurso, acción y estado. En una misión personal se exige que el actor sea su titular elegible; en una organizacional, membresía vigente y permiso específico sobre organización y misión, además de estado operativo compatible."
+  },
+  {
+    "id": "TR-S2.1-003",
+    "section": "2.1",
+    "sha256": "a538f1a65700aaa8607d90a529344cc002c44b60c79433a037e7bf09e1087097",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "29f5f726b6bc73bf3d25fcafbe8e0caae813b4ed0e0f08ec12eceaf3f4b60130",
+    "current_line": 124,
+    "description": "Toda oferta tiene `reservation_id` y `expires_at` definidos por servidor; en ambas modalidades: `acuerdos_activos_que_ocupan_cupo + reservas_pendientes_vigentes ≤ cupos_totales` con transacciones y reintentos idempotentes. No se cuenta una oferta pendiente como acuerdo confirmado."
+  },
+  {
+    "id": "TR-S2.1-004",
+    "section": "2.1",
+    "sha256": "7076b7eab0a2072af6ccd3a4df3f65eb9112c97fef579d0cb7acb4f63a87691b",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "1387212bd46604fa6d8b825a460351ee2b5b4f3a9525d0ba478cd5606150be22",
+    "current_line": 125,
+    "description": "**La oferta no se emite sin aceptación organizadora.** Crear `AgreementOffer.PENDIENTE`, generar reserva y registrar `Acceptance` explícita del organizador sobre una misma revisión inmutable es una única transacción. La aceptación válida de la persona destinataria antes de `expires_at` transforma atómicamente la oferta en `ACEPTADA`, la reserva en cupo confirmado y el `Agreement` vinculado en `ACTIVO`. Si la parte destinataria no acepta antes del vencimiento, la oferta expira y la reserva se libera; no se conserva ningún estado terminal `ACEPTADA` con acuerdo pendiente de segunda firma."
+  },
+  {
+    "id": "TR-S2.1-005",
+    "section": "2.1",
+    "sha256": "258337447df92ab65ef31706441847ee545155659ff5e74b3b42e3f4c69cffdf",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "26f60f622141679ed51448e5c647a7ef55350d5c00e188c852314774b96701a0",
+    "current_line": 126,
+    "description": "Cada aceptación referencia hash/ID de **versión inmutable** de términos, `actor_id` humano y parte representada. La misma persona no puede aceptar por ambos lados. El `Agreement` tiene una `revision_activa` y, como máximo, una `revision_propuesta` material; la anterior permanece vigente hasta que todas las partes autorizadas acepten expresamente la nueva revisión y el servidor la active en una transacción. Rechazo, vencimiento o retiro de la propuesta no alteran unilateralmente la revisión activa."
+  },
+  {
+    "id": "TR-S2.1-006",
+    "section": "2.1",
+    "sha256": "7438f2343a5e81da0d2a1b0126d7cddfcf0227ff9361ce715e17ce9a6e372ee5",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "7438f2343a5e81da0d2a1b0126d7cddfcf0227ff9361ce715e17ce9a6e372ee5",
+    "current_line": 127,
+    "description": "La cadena temporal de eventos es de servidor, persistida en UTC; la zona IANA de la sede determina la hora local mostrada. Límites de postulación: `[inicio, cierre)`."
+  },
+  {
+    "id": "TR-S2.1-007",
+    "section": "2.1",
+    "sha256": "60f3967d3bd8dfcb1804d8a0f14dd12b326d0fbed47ca91662d4cb2310024834",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "60f3967d3bd8dfcb1804d8a0f14dd12b326d0fbed47ca91662d4cb2310024834",
+    "current_line": 128,
+    "description": "Sólo el resultado `CONFIRMADO_BILATERAL` puede indicarse como confirmado por partes; el nivel `REVISADO_INDEPENDIENTEMENTE` exige evidencia/revisión adicionales; no se obtiene automáticamente por número de «me gusta»."
+  },
+  {
+    "id": "TR-S2.1-008",
+    "section": "2.1",
+    "sha256": "ca2601c45d2b736572777bfde96f272ff467c6ce7d4646a3c610c8e0b3c3e3c0",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "ca2601c45d2b736572777bfde96f272ff467c6ce7d4646a3c610c8e0b3c3e3c0",
+    "current_line": 129,
+    "description": "Una revocación de acceso se hace efectiva en lecturas posteriores aunque un socket siga conectado: el canal no transporta contenido privado después de revocación."
+  },
+  {
+    "id": "TR-S2.1-009",
+    "section": "2.1",
+    "sha256": "2d7415702e50d2179a5223493992d8bc7f20d71480067f7154b330d5ef89d881",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "f2469ba29fc05701dcc5f92b2229e6aa525d96cda37954e0c85997110f9975ad",
+    "current_line": 130,
+    "description": "El inicio de una solicitud de eliminación bloquea obligaciones nuevas del titular personal y activa las transiciones de cierre del apartado 3.10, sin imponer una organización ficticia ni impedir presentar la solicitud. Se distinguen borradores, convocatorias, ofertas, reservas, acuerdos vigentes y evidencias restringidas. Ninguna restauración puede republicar datos suprimidos."
+  },
+  {
+    "id": "TR-S2.1-010",
+    "section": "2.1",
+    "sha256": "5b911f8d3cb9cde80aa9f7209a8d268d808d134e1afa623ba4378f7faa8f1d88",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "5b911f8d3cb9cde80aa9f7209a8d268d808d134e1afa623ba4378f7faa8f1d88",
+    "current_line": 131,
+    "description": "El usuario nunca visualiza como «guardado» un cambio de estado crítico hasta recibir confirmación autenticada del backend."
+  },
+  {
+    "id": "TR-S2.1-011",
+    "section": "2.1",
+    "sha256": "25d67bec09b311994531a3fb89829959cdc7293fc7d3cff8c8d4ece7d1e9e57b",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "25d67bec09b311994531a3fb89829959cdc7293fc7d3cff8c8d4ece7d1e9e57b",
+    "current_line": 132,
+    "description": "Sin personal de moderación responsable y suplente, no se habilitan interacciones públicas de riesgo ni se publicita atención humana continua."
+  },
+  {
+    "id": "TR-S2.1-012",
+    "section": "2.1",
+    "sha256": "cb4be2c30fb81f47dd6325d04bd7edd469fed7b42bf76132e93118222ae32ee2",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "cb4be2c30fb81f47dd6325d04bd7edd469fed7b42bf76132e93118222ae32ee2",
+    "current_line": 133,
+    "description": "Un recurso público retirado no vuelve a publicarse por caché propia, links o backups; las caches de terceros se gestionan por los mecanismos disponibles, sin garantía de purga inmediata."
+  },
+  {
+    "id": "TR-S3.1-001",
+    "section": "3.1",
+    "sha256": "7f612ece1ea59ba368b1b0ba7162e6e4dec40e854a0edd607a2b9d5d550c86d9",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "7f612ece1ea59ba368b1b0ba7162e6e4dec40e854a0edd607a2b9d5d550c86d9",
+    "current_line": 143,
+    "description": "| `Mission` | `BORRADOR`, `EN_REVISION`, `PUBLICADA`, `PAUSADA`, `CERRADA`, `EXPIRADA`, `CANCELADA`, `ARCHIVADA` | `BORRADOR→EN_REVISION/PUBLICADA` (según política); `EN_REVISION→PUBLICADA/BORRADOR`; `PUBLICADA→PAUSADA/CERRADA/EXPIRADA/CANCELADA`; `PAUSADA→PUBLICADA/CERRADA/CANCELADA/EXPIRADA`; `CERRADA/EXPIRADA/CANCELADA→ARCHIVADA`. Nunca revivir terminal: duplicar nueva misión. |"
+  },
+  {
+    "id": "TR-S3.1-002",
+    "section": "3.1",
+    "sha256": "710581d778e235a6f55e578c459ea7a601d13cf570152319fe8533bae1ebbf4f",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "710581d778e235a6f55e578c459ea7a601d13cf570152319fe8533bae1ebbf4f",
+    "current_line": 144,
+    "description": "| `Application` | `ENVIADA`, `EN_REVISION`, `PRESELECCIONADA`, `OFERTA_DE_ACUERDO`, `NO_SELECCIONADA`, `RETIRADA`, `CADUCADA` | `ENVIADA→EN_REVISION/RETIRADA/CADUCADA/NO_SELECCIONADA`; `EN_REVISION→PRESELECCIONADA/NO_SELECCIONADA/RETIRADA/CADUCADA`; `PRESELECCIONADA→OFERTA_DE_ACUERDO/NO_SELECCIONADA/RETIRADA`; `OFERTA_DE_ACUERDO→NO_SELECCIONADA/RETIRADA` sólo cuando su oferta ya no sea vigente; éxito de contratación se consulta mediante el Agreement enlazado. |"
+  },
+  {
+    "id": "TR-S3.1-003",
+    "section": "3.1",
+    "sha256": "37c8b650dbc6f392b2746e7b5a280f7c04b8f06970c235fc18c0633f47ce4165",
+    "review_status": "REVISADA",
+    "review_basis": "STABLE_ENTITY_REVIEW",
+    "previous_sha256": "5dbe9b67568906541ae127e8c1ddccb307a4a2c3c1129063288554ce09a29068",
+    "current_line": 145,
+    "description": "| `AgreementOffer` | `PENDIENTE`, `ACEPTADA`, `RECHAZADA`, `EXPIRADA`, `CANCELADA` | `PENDIENTE` significa **organizador ya aceptó los términos al emitir; destinatario aún no**. Solo `PENDIENTE→ACEPTADA/RECHAZADA/EXPIRADA/CANCELADA`, una vez y mediante transacción; La transición inicial a `ACEPTADA` exige simultáneamente `Agreement.ACTIVO`, todas las aceptaciones válidas y cupo confirmado. `ACEPTADA` conserva el hecho histórico inmutable; una terminación, cancelación o confirmación posterior se refleja exclusivamente en `Agreement`, sin revertir la oferta ni exigir actividad permanente. No existe oferta aceptada con segunda firma pendiente o activación fallida. |"
+  },
+  {
+    "id": "TR-S3.1-004",
+    "section": "3.1",
+    "sha256": "d9aa0d761e689fc1aee2966e60ccc2dca17ad9007d66cca2d6461a9083de67f5",
+    "review_status": "REVISADA",
+    "review_basis": "STABLE_ENTITY_REVIEW",
+    "previous_sha256": "07d7ef6b7457ab70786a4b2c550605c765f6baa4c3ad93fb3aa3126afa31d118",
+    "current_line": 146,
+    "description": "| `Agreement` | `PROPUESTO`, `PENDIENTE_DE_ACEPTACIONES`, `ACTIVO`, `EJECUCION_DECLARADA`, `CONFIRMADO`, `EN_DISPUTA`, `SIN_RESOLUCION`, `CANCELADO` | `PROPUESTO→PENDIENTE_DE_ACEPTACIONES/CANCELADO`; `PENDIENTE_DE_ACEPTACIONES→ACTIVO/CANCELADO` únicamente al aceptar oferta vigente en una transacción; `ACTIVO→EJECUCION_DECLARADA/CANCELADO/EN_DISPUTA`; `EJECUCION_DECLARADA→CONFIRMADO/EN_DISPUTA/SIN_RESOLUCION`; `EN_DISPUTA→CONFIRMADO/SIN_RESOLUCION`. Proponer una revisión material **no cambia** `ACTIVO` ni su revisión vigente. `CONFIRMADO` exige Outcome bilateral; finales no se reabren. |"
+  },
+  {
+    "id": "TR-S3.1-010",
+    "section": "3.1",
+    "sha256": "2493027ea0f4bd503cec021ab6752d9a7ff664aea159dda887af919867aa9a54",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 147,
+    "description": "| `AgreementRevision` (propuesta material) | `PROPUESTA`, `VIGENTE`, `RECHAZADA`, `EXPIRADA`, `RETIRADA`, `SUPERADA` | Como máximo una `PROPUESTA` pendiente por acuerdo. `PROPUESTA→VIGENTE` solo con todas las aceptaciones válidas y promoción atómica; `PROPUESTA→RECHAZADA/EXPIRADA/RETIRADA`; la revisión anteriormente `VIGENTE→SUPERADA` en la misma promoción. Las revisiones terminales son inmutables. |"
+  },
+  {
+    "id": "TR-S3.1-005",
+    "section": "3.1",
+    "sha256": "8e66d045fea33b214a0028b810c7f26e422f51855b287b6fcf4819f453076f45",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "8e66d045fea33b214a0028b810c7f26e422f51855b287b6fcf4819f453076f45",
+    "current_line": 148,
+    "description": "| `PublicActivity` | `PROGRAMADA`, `REPROGRAMADA`, `SUSPENDIDA`, `REALIZADA`, `CANCELADA`, `ARCHIVADA` | `PROGRAMADA→REPROGRAMADA/SUSPENDIDA/REALIZADA/CANCELADA`; `REPROGRAMADA→PROGRAMADA/SUSPENDIDA/CANCELADA`; `SUSPENDIDA→PROGRAMADA/CANCELADA`; `REALIZADA/CANCELADA→ARCHIVADA`. Estado `HELD` está PROHIBIDO. |"
+  },
+  {
+    "id": "TR-S3.1-006",
+    "section": "3.1",
+    "sha256": "2959043b79d0af847b1bce01959200b4500407ce73f74f050a93eab7c5f33600",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "2959043b79d0af847b1bce01959200b4500407ce73f74f050a93eab7c5f33600",
+    "current_line": 149,
+    "description": "| `Outcome` | `AUTODECLARADO`, `ESPERANDO_SEGUNDA_CONFIRMACION`, `CONFIRMADO_BILATERAL`, `DISPUTADO`, `SIN_RESPUESTA` | `AUTODECLARADO→ESPERANDO_SEGUNDA_CONFIRMACION`; esta pasa a `CONFIRMADO_BILATERAL` si hay consentimiento válido de contrapartes no idénticas, a `DISPUTADO` ante objeción, o a `SIN_RESPUESTA` por plazo; no convertir silencio en aceptación. |"
+  },
+  {
+    "id": "TR-S3.1-007",
+    "section": "3.1",
+    "sha256": "3b27f036f9e595a14e1f3b0ce2177a9790bc6626a7567e8616ad3ed62943de8c",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "3b27f036f9e595a14e1f3b0ce2177a9790bc6626a7567e8616ad3ed62943de8c",
+    "current_line": 150,
+    "description": "| `Organization.ownership_status` | `ACTIVE`, `TRANSFER_PENDING`, `UNOWNED_RESTRICTED`, `CLOSING`, `CLOSED` | `ACTIVE→TRANSFER_PENDING/UNOWNED_RESTRICTED/CLOSING`; `TRANSFER_PENDING→ACTIVE/UNOWNED_RESTRICTED`; `UNOWNED_RESTRICTED→ACTIVE/CLOSING` solo tras procedimiento de reclamación aprobado; `CLOSING→CLOSED`. |"
+  },
+  {
+    "id": "TR-S3.1-008",
+    "section": "3.1",
+    "sha256": "cc40cbc91e1ea46d208f9cc88cf19c3ea3ab462e0e05fe19f1b0e7a6f7272429",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "cc40cbc91e1ea46d208f9cc88cf19c3ea3ab462e0e05fe19f1b0e7a6f7272429",
+    "current_line": 151,
+    "description": "| `Organization.operational_status` | `NORMAL`, `PAUSED`, `SUSPENDED` | Independiente del ownership; `PAUSED/SUSPENDED` bloquean nuevas convocatorias/acuerdos. Solo operación autorizada puede levantar `SUSPENDED`. |"
+  },
+  {
+    "id": "TR-S3.1-009",
+    "section": "3.1",
+    "sha256": "4a14babf79031287eb4f691819c9facd4cce4c7330120736b4c88e03ccbe575a",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_DERIVED_PROJECTION",
+    "previous_sha256": "9d610d3697f59f45f72a955ae9129351bf79b8602de8bfbbec8a70422074ba06",
+    "current_line": 153,
+    "description": "**Proyecciones derivadas (no estados nuevos):** `Application.aceptada` legada no prueba acuerdo; la etiqueta «Acuerdo activo» exige `Agreement.ACTIVO` y dos aceptaciones válidas de la revisión corriente. Un cliente incapaz de mostrar esa distinción recibe `UPDATE_REQUIRED` y no obtiene una proyección falsamente confirmada. `Mission.SIN_CUPOS` es capacidad derivada aunque Mission siga `PUBLICADA`; una oportunidad cerrada/expirada no elimina acuerdos activos."
+  },
+  {
+    "id": "TR-S3.2-001",
+    "section": "3.2",
+    "sha256": "83e7764ec02ef693e28f0032734356f7e09ffaeacb55ae3bf5c9dd3462dccbb0",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "6f691773b35419259ef12bea1b7e0edbcb89b74653f43c1e86ec5cad5d51e1e4",
+    "current_line": 157,
+    "description": "Una oferta válida se emite por **titular de misión personal o representante organizacional autorizado**, con acto separado y expreso de aceptación organizadora de los términos mostrados. En la **misma transacción** se fija revisión/hash, `actor_id`, parte organizadora, `issued_at`, `expires_at` y reserva para **un** destinatario y **un** cupo. Un grupo exige una oferta por plaza; el destinatario es otra persona y no puede firmar también por el organizador."
+  },
+  {
+    "id": "TR-S3.2-002",
+    "section": "3.2",
+    "sha256": "8625c2816f291e6748408d7e62b5e1e0a6f7a3385133c24ef374711c3c0ff391",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "ccd99f0d13a2da2d5e4f4d1a6b65f0157a8aaf0322a02194ad6c7ea82e428fe0",
+    "current_line": 158,
+    "description": "`offer_ttl = 72 horas` desde `issued_at` del servidor, con intervalo válido **`[issued_at, expires_at)`**: a `expires_at` exacto se rechaza. No se extiende por cierre de la misión, reintento del cliente, edición ni retraso del job. La aceptación y el proceso de caducidad compiten bajo el mismo bloqueo transaccional; vence el resultado conforme al instante y al orden serializado del servidor. Parámetro versionado, no editable por cliente."
+  },
+  {
+    "id": "TR-S3.2-003",
+    "section": "3.2",
+    "sha256": "d167de30cbcc397fca7cf5ba484abe97a2387423a59e13238d5910bd03234c8e",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "f5dc5d71679a9568c1c2593eb8944a588200cab52a4b50cf88cd7137bbb1e0ac",
+    "current_line": 159,
+    "description": "Al caducar, rechazarse o cancelarse una oferta `PENDIENTE`, liberar la reserva **en la misma transacción** y emitir evento/outbox idempotente. El endpoint de aceptación valida vencimiento y elegibilidad **aunque el job aún no haya corrido**; el job concilia ofertas vencidas y reservas huérfanas sin depender de que alguien abra la app. No caduca una oferta ya `ACEPTADA` ni libera cupos de acuerdos activos por simple vencimiento de la antigua oferta."
+  },
+  {
+    "id": "TR-S3.2-004",
+    "section": "3.2",
+    "sha256": "e0e46bdb439bcb1ba98aac0b25b7597771c556d6e639660339445005d98782f4",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "bdd59bb12e9fb526fdead4e896737c10684ef7664e8fda501e79f19576295785",
+    "current_line": 160,
+    "description": "La creación concurrente usa bloqueo transaccional y restricciones únicas por misión/cupo y destinatario; emitir dos ofertas para el último cupo produce exactamente **una** reserva válida. **No existe** emisión sin aceptación expresa organizadora. La recepción de una oferta `PENDIENTE` nunca implica que el destinatario aceptó ni que el acuerdo está activo. Reintentos con misma clave/cuerpo devuelven el mismo resultado; clave reutilizada con otro cuerpo se rechaza."
+  },
+  {
+    "id": "TR-S3.2-005",
+    "section": "3.2",
+    "sha256": "8f36795b7a69d71751ced2b5fb52de51cd51efc1eeb8fc804da8a35d46e36765",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "2c5a97546ba2c9608e5345d265e1a2c71fad5d23792e4728763a020fcb8644a1",
+    "current_line": 161,
+    "description": "Con misión `CERRADA` o `EXPIRADA` no se emiten nuevas candidaturas u ofertas; las ofertas ya emitidas pueden aceptarse dentro de sus 72 horas salvo cancelación explícita o bloqueo de seguridad. Si la misión pasa a `CANCELADA`, todas las ofertas `PENDIENTE` se cancelan y liberan reservas; los acuerdos `ACTIVO` se resuelven **por su propio procedimiento**, nunca por cascada automática silenciosa."
+  },
+  {
+    "id": "TR-S3.2-006",
+    "section": "3.2",
+    "sha256": "a8588d6adddcb32fa1913bc207e4227650a86e6b584723823eacbeaec71102ca",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "9a1be3b6a47c2da6414b651ecde0a268f8d295700f848b3b470c80a0a6900b8c",
+    "current_line": 162,
+    "description": "Ninguna postulación puede desembocar en acuerdo tras un cambio material de la misión sin aceptar expresamente la revisión actualizada. No se permite la autopostulación a una misión personal propia, ni que un solo humano firme como ambas contrapartes; se detectan vínculos de control en colaboraciones con organizaciones sin revelar datos privados."
+  },
+  {
+    "id": "TR-S3.3-001",
+    "section": "3.3",
+    "sha256": "7be18f8a3d88fd42a49452bbaf916f747ad5f2644550ac935a7a65b820203f46",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "7be18f8a3d88fd42a49452bbaf916f747ad5f2644550ac935a7a65b820203f46",
+    "current_line": 166,
+    "description": "Material: compensación, alcance/entregables, fecha u horario relevante, lugar, identidad del organizador responsable, condiciones de seguridad, cupos que afecten a participantes, política de uso de imagen u obligaciones exigibles. Cambios editoriales: ortografía, formato o etiquetas sin alterar expectativas. Si no se puede determinar con seguridad, tratar el cambio como **material**."
+  },
+  {
+    "id": "TR-S3.4-001",
+    "section": "3.4",
+    "sha256": "84f461f1c763f66d4d85d7a7f3542769c9734276d5c6308716111b6593ebf9ab",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "db21d5fb0ca77063360cc28fbd4be941f472eb72b543fbd3b4b333bd2f6b9923",
+    "current_line": 174,
+    "description": "| Leer recurso público autorizado | Sí | Sí | Sí | Sí | Sí, sin elevar acceso privado |"
+  },
+  {
+    "id": "TR-S3.4-002",
+    "section": "3.4",
+    "sha256": "c724bdc9920d69c6f3a828a28f9c02e676662d139e2958bc7434f337dc84f464",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "f8656fecb38920c734d06e7bc0c6bc69c7a595e9f1c94e3beb10a837060bbce7",
+    "current_line": 175,
+    "description": "| Crear, publicar, editar o cerrar misión personal | No | Sí, **exclusivamente propia**, según elegibilidad, políticas y estado | Sí, **si actúa personalmente**, sobre misión propia | Sí, **si actúa personalmente**, sobre misión propia | No por defecto |"
+  },
+  {
+    "id": "TR-S3.4-003",
+    "section": "3.4",
+    "sha256": "b33aae2d2d7e002b9f3f89bed8fb6c02759bba89282b93b9f7b050df67cb2722",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "4c8f365b6af7cff54221f43cabb0717df9c11357270872213c6d449316565a40",
+    "current_line": 176,
+    "description": "| Publicar/editar misión de organización | No | No como persona | Sí, permiso `mission.manage` de la organización | Sí, si organización en estado compatible y permiso vigente | No por defecto; suspensión auditada |"
+  },
+  {
+    "id": "TR-S3.4-004",
+    "section": "3.4",
+    "sha256": "da2f9c0672b2bfc4fdd21d687cb72e646cc3f55d8e31af50f58fcdf337c2645a",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "943a83a259b43954810eda23516607f6a9d097481772184585646e7a89bd72dc",
+    "current_line": 177,
+    "description": "| Postular a misión ajena | No | Sí, personalmente y sin conflicto impeditivo; **no a la propia** | Sí, sólo actuando como persona y sin conflicto | Sí, sólo personalmente y sin conflicto | No |"
+  },
+  {
+    "id": "TR-S3.4-005",
+    "section": "3.4",
+    "sha256": "d77fd0ceafa77d9d843982239b851233b228470f37e5f8caa66b694a72b020bf",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "a19b8c11fcae1911b963e0ce581e94abe96259425621c29863d6f4c9c5c59e65",
+    "current_line": 178,
+    "description": "| Leer o revisar candidaturas | No | Las propias como candidata; **todas las de su misión propia** como organizadora | Sí, `application.review` para esa misión organizacional | Sí, en su organización con autorización | Sólo caso asignado y justificado |"
+  },
+  {
+    "id": "TR-S3.4-006",
+    "section": "3.4",
+    "sha256": "0676da703d5bfcecf80287fb550a1ea029a73d42cabf19c7f7464b2b2e21da03",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "c75b31ff69937d99b9a0cbf037a5dd83c0380fbe1cd5caf1e7da2d7a0a92f515",
+    "current_line": 179,
+    "description": "| Emitir oferta / reservar cupo | No | **Sí, exclusivamente sobre misión propia**, con autorización de servidor | Sí, `agreement.offer` en misión organizacional representada | Sí, dentro de su organización habilitada | No |"
+  },
+  {
+    "id": "TR-S3.4-013",
+    "section": "3.4",
+    "sha256": "3538bb1d7c4eee27f39c15d3d4b2758acd2e9d5a8b4eea22502c83e2f474eea2",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 180,
+    "description": "| Rechazar candidatura / retirar oferta | No | Sí, en misión personal propia, según estado y obligaciones existentes | Sí, por permiso y estado de misión organizacional | Sí, con autorización organizacional | No por defecto |"
+  },
+  {
+    "id": "TR-S3.4-007",
+    "section": "3.4",
+    "sha256": "0d46f883d9dbdf043a79862b72190bcb33fc4121f6ebaa7f86151c4270bbcd94",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "efe86cdd55da033e6527ff1a14b9c5c24576c8876c7c30b890681daffef85144",
+    "current_line": 181,
+    "description": "| Aceptar o revisar acuerdo | No | Sí, **sólo por su propia parte**: como organizadora personal o participante; nunca por la contraparte | Sí, sólo por parte organizacional explícitamente representada y permiso `agreement.accept`; puede aceptar personalmente si es parte distinta | Sí, como representante autorizado o como parte personal, nunca en nombre de terceros | No en nombre de partes |"
+  },
+  {
+    "id": "TR-S3.4-008",
+    "section": "3.4",
+    "sha256": "0d2a371f21bc2043029d71e25544056b99f51ea1b99567743b7328cd8cfa62a5",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "9501abc1915e59ef916b9e07f2398c5b27b2437885dbf3c7940a865d95269ea1",
+    "current_line": 182,
+    "description": "| Revisar/confirmar resultado | No | Sólo por su propia parte, organizadora personal o participante | Parte legítima con facultad específica | Parte legítima según permiso | Revisar evidencia sin consentir por otros |"
+  },
+  {
+    "id": "TR-S3.4-009",
+    "section": "3.4",
+    "sha256": "0bcc2f57504123da021bb3d2efd7f4d948044adb46ef4e5bdfa66f8b6f87d9d6",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "c1cd6457ede6a547f6ccf3acc292df9fd6ea5c9d552e14b18608eb0f02287127",
+    "current_line": 183,
+    "description": "| Transferir organización | No | Receptor con elegibilidad y aceptación | No sin propiedad y autorizaciones | Propietario verificado y reautenticado | Nunca sin doble revisión documental |"
+  },
+  {
+    "id": "TR-S3.4-010",
+    "section": "3.4",
+    "sha256": "073642bed7b3c2eb3566f89ad2c23ef75edda33b818b67c22f8e8412f7f81fa6",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "be484c6c8154b45986f6a752317dc81d01e247425b5da8934b9170535af8568c",
+    "current_line": 184,
+    "description": "| Ver denuncias o mensajes privados ajenos | No | Sólo sus propios recursos y los expresamente accesibles por su misión | No por mero rol de miembro | No por ser propietario | Únicamente caso asignado, mínimo acceso y auditoría |"
+  },
+  {
+    "id": "TR-S3.4-011",
+    "section": "3.4",
+    "sha256": "6063f4e1532651f52f436f7e67c46d207bb539fd55003d16fe5b4b6fc299d663",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "6063f4e1532651f52f436f7e67c46d207bb539fd55003d16fe5b4b6fc299d663",
+    "current_line": 185,
+    "description": "| Gestionar política/flags | No | No | No | No | Operación técnica autorizada, MFA y bitácora |"
+  },
+  {
+    "id": "TR-S3.4-012",
+    "section": "3.4",
+    "sha256": "d2154f281a6a7ac402a104cf48449252a5fde3d571d9c6d7aa1a8ad21a8bc175",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_ACTION_MAP",
+    "previous_sha256": "4c20fa511a30b49f00b87d3843bad13f065e85c1541f89f5c516344bf9b7aded",
+    "current_line": 187,
+    "description": "**Permisos de membresía:** `organization.view`, `venue.manage`, `mission.manage`, `application.review`, `agreement.offer`, `agreement.accept`, `event.manage`, `member.manage`, `billing.manage` (POST). Estos son permisos organizacionales. **La facultad personal se deriva únicamente de la titularidad personal verificada, elegibilidad y políticas, no de una membresía ficticia.** Un rol visible no sustituye checks de permisos concretos. **Denegación por defecto** ante titularidad, membresía, autorización, elegibilidad o estado insuficientes."
+  },
+  {
+    "id": "TR-S3.5-001",
+    "section": "3.5",
+    "sha256": "6de67c8d33ee8765a8f3d8de613d3f3c972439cf45f151b16822bc7f23850171",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "6de67c8d33ee8765a8f3d8de613d3f3c972439cf45f151b16822bc7f23850171",
+    "current_line": 197,
+    "description": "Se usa UTC para instantes, IANA TZ de la sede para representación local y moneda `MXN` mientras el mercado sea México. Los días/horas visibles no alteran deadlines en servidor."
+  },
+  {
+    "id": "TR-S3.5-002",
+    "section": "3.5",
+    "sha256": "07c205417b180e206cf715f8f2f6cba1d39decfcb165fb3b05fa21a584406404",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "07c205417b180e206cf715f8f2f6cba1d39decfcb165fb3b05fa21a584406404",
+    "current_line": 198,
+    "description": "Los UUID/IDs de recursos se tratan como localizadores, jamás autorizaciones. Endpoints y RLS aplican `actor_id`, pertenencia, visibilidad y políticas de borrado."
+  },
+  {
+    "id": "TR-S3.5-003",
+    "section": "3.5",
+    "sha256": "e715d553060923d587a84de0e64aa014c663e55b38bdebe3aa0b99632bac18f2",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "e715d553060923d587a84de0e64aa014c663e55b38bdebe3aa0b99632bac18f2",
+    "current_line": 199,
+    "description": "`version` entero incrementa en cada cambio material, `updated_at` registra hora servidor, `idempotency_key` preserva unicidad lógica ante reintento y eventos de auditoría enlazan actor/versión/acción."
+  },
+  {
+    "id": "TR-S3.5-004",
+    "section": "3.5",
+    "sha256": "5ce4059cdf40dcf870cac64a0d134b39b09ea77e301f29d850072fd15b3ef2f9",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "5ce4059cdf40dcf870cac64a0d134b39b09ea77e301f29d850072fd15b3ef2f9",
+    "current_line": 200,
+    "description": "Sesión revocada debe perder acceso a peticiones nuevas, canales privados y archivos; la autorización no depende solo de cierre de pantalla."
+  },
+  {
+    "id": "TR-S3.6-001",
+    "section": "3.6",
+    "sha256": "e340701dcf64ede863a041c6d60b4859aba86c8125613efdcf15c94cc069e966",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 204,
+    "description": "**Preparación (sin compromiso):** el organizador previsualiza todos los términos, parte organizadora y destinatario; un borrador aún no crea `AgreementOffer.PENDIENTE` ni ocupa un cupo. Es explícita la opción «Enviar oferta y aceptar estas condiciones como organizador»; no se infiere la firma por navegar o seleccionar un candidato."
+  },
+  {
+    "id": "TR-S3.6-002",
+    "section": "3.6",
+    "sha256": "c5a237aa386d54980ae09c2f96c42de5c27ed72c23ef7571ac3108cb08df7d67",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 205,
+    "description": "**Emisión:** en una transacción con identidad autenticada y facultad actual, verificar misión, revisión inmutable, elegibilidad de ambas contrapartes, cupo, bloqueos y vínculos de control. Persistir firma organizadora, `AgreementOffer.PENDIENTE`, `CapacityReservation` y `Agreement.PENDIENTE_DE_ACEPTACIONES` vinculado, con idempotencia y evento/outbox. Si falta alguna postcondición, revertir **todo**."
+  },
+  {
+    "id": "TR-S3.6-003",
+    "section": "3.6",
+    "sha256": "6add2ca923c4770c5617a2ec49db72dc179e15c289e908fe216a1aedb38a9dd7",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 206,
+    "description": "**Respuesta:** el destinatario, y solo él, consulta la revisión exacta, puede `ACEPTAR` o `RECHAZAR`. Al aceptar dentro de `[issued_at, expires_at)`, revalidar identidad, incompatibilidades y autorización de la parte organizadora según 3.9, registrar firma del destinatario y promover oferta, acuerdo y cupo **en la misma transacción**. La firma histórica del organizador conserva validez si únicamente perdió permiso el representante humano, conforme a 3.9; la oferta sí queda inválida ante cancelación por parte organizadora autorizada, suspensión de entidad o sustitución material de términos."
+  },
+  {
+    "id": "TR-S3.6-004",
+    "section": "3.6",
+    "sha256": "4758be4419312eac619a9b22756f916c0f0b5899f58f0b71ac8ce0c0135c7a6a",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 207,
+    "description": "**Terminalidad:** al pasar a `ACEPTADA` se exige acuerdo `ACTIVO` y cupo confirmado en esa misma transacción; la oferta conserva después la aceptación histórica válida aunque cambie el estado del acuerdo; `RECHAZADA`, `EXPIRADA` o `CANCELADA` implican reserva liberada y acuerdo preliminar `CANCELADO` (o desechado si aún no se había creado). Está prohibido `ACEPTADA` con reserva temporal retenida o acuerdo pendiente."
+  },
+  {
+    "id": "TR-S3.6-005",
+    "section": "3.6",
+    "sha256": "685ee998e243f20cb8964971e9da6f697d3370bc34ab4b42d3a6652bb61f6b58",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 208,
+    "description": "**Contención:** colisión aceptar/vencer/cancelar, dos ofertas para un último cupo, reintento y doble clic se resuelven por bloqueos/transacciones, reloj del servidor y claves idempotentes. Ninguna respuesta HTTP exitosa basta sin comprobar persistencia de firmas, estados, outbox y capacidad."
+  },
+  {
+    "id": "TR-S3.7-001",
+    "section": "3.7",
+    "sha256": "050b2ee80f22b95fdd6ada3b5d2794706cd948341094a5ad6f9b66f841884149",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 212,
+    "description": "`Agreement.revision_activa` representa las condiciones realmente aceptadas. `Agreement.revision_propuesta` representa un borrador material **sin efecto vinculante** y con sus propias aceptaciones. Se permite **máximo una propuesta pendiente** por acuerdo; los cambios editoriales sin alteración material se auditan sin cambiar obligaciones."
+  },
+  {
+    "id": "TR-S3.7-002",
+    "section": "3.7",
+    "sha256": "0fc979c32467bff0ebd31f83dabeb7adbacc18b354946f69b88da27463c0eed1",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 213,
+    "description": "Una propuesta requiere versión inmutable, hash, proponente autorizado, `created_at`, `expires_at` y aceptación individual de cada parte distinta. La **política inicial del piloto, aprobada provisionalmente**, es `revision_response_ttl=7 días naturales` (siete días consecutivos calculados por servidor en UTC, no días hábiles), parámetro versionado del servidor, acortado hasta la fecha de ejecución cuando la propuesta afecte a obligaciones aún no ejecutadas; jamás amplía automáticamente el plazo contractual original; si el plazo calculado no es posterior a `created_at`, la propuesta debe rechazarse o formularse mediante el procedimiento supervisado de ejecución en curso. Si se requiere cambiar condiciones durante una ejecución en curso, se documenta un nuevo plazo explícito aceptado por ambas partes antes de activar cambios. No se aplica aceptación retroactiva."
+  },
+  {
+    "id": "TR-S3.7-003",
+    "section": "3.7",
+    "sha256": "22feb01723654cf5db8c4784d01f3650464a2d9832fcf0906d72404f47fbea8a",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 214,
+    "description": "Mientras haya propuesta, `Agreement` permanece `ACTIVO` **bajo la revisión anterior**. Si todas las partes aceptan antes del plazo, la propuesta pasa a `VIGENTE`, la anterior a `SUPERADA`, y se actualiza el puntero activo atómicamente con evento/outbox. Un rechazo, vencimiento o retiro termina **únicamente la propuesta**; la revisión anterior sigue vigente."
+  },
+  {
+    "id": "TR-S3.7-004",
+    "section": "3.7",
+    "sha256": "9b82d1a2958760e8920f118047b1f5f94d4d07567dc6e737ae3ecd808ce04f0e",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 215,
+    "description": "La propuesta debe advertir qué condiciones vigentes continúan; ninguna parte puede presentar la oferta de cambio como obligación ya aceptada. Una suspensión cautelar por seguridad y la cancelación del acuerdo son **procesos separados** con autoridad, motivo, notificaciones y auditoría; no son efectos implícitos de editar o proponer."
+  },
+  {
+    "id": "TR-S3.7-005",
+    "section": "3.7",
+    "sha256": "4a59c17e0bf3929807b29a7ced8a89ba8a50932740e28569ebc4bf53fed8dc24",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 216,
+    "description": "Modificar la persona jurídica/entidad que es contraparte organizadora **no** se trata como una simple revisión de texto: exige cierre documentado o acuerdo nuevo, sin cesión automática. Cambios materiales de `Mission` con candidaturas pendientes requieren reconocimiento de `MissionRevision`; **nunca** reescriben unilateralmente un `Agreement` activo."
+  },
+  {
+    "id": "TR-S3.8-001",
+    "section": "3.8",
+    "sha256": "7269c310c948eacdc6522517aedac6a214ffa387064cdb8ecbf477ccede04ebc",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 224,
+    "description": "| Misión inequívocamente personal | Vinculación comprobada a persona autenticada y ausencia de reclamación organizacional relevante | Asignar `owner_person_id` conservando autoría/auditoría original; verificar por lote con pruebas de acceso |"
+  },
+  {
+    "id": "TR-S3.8-002",
+    "section": "3.8",
+    "sha256": "eba082f1ada305f9275668afb81f8187001f5be2c75f0b27bf3abd6abacd5ae4",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 225,
+    "description": "| Misión de organización identificable | Existencia de `Organization`, facultad de representación, procedencia y aprobación del titular autorizado verificables | Vincular `owner_organization_id` mediante transferencia explícita auditada, **no** por etiqueta del perfil |"
+  },
+  {
+    "id": "TR-S3.8-003",
+    "section": "3.8",
+    "sha256": "5dc320d3a065eaf1585544aedb5b78a0da394f4adad4b4bc1bf27a6f0105b735",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 226,
+    "description": "| Origen ambiguo, en disputa o sin titular comprobable | Evidencia insuficiente o derechos contradictorios | Mantener en proyección histórica de **solo lectura** con marca interna `REVIEW_REQUIRED`; bloquear publicación, edición, ofertas, nuevas candidaturas y transferencias hasta revisión y consentimiento necesarios |"
+  },
+  {
+    "id": "TR-S3.8-004",
+    "section": "3.8",
+    "sha256": "e5c4e33c41be964a8cde611a2745b7a2e020dfca6ddc6144c912055aa065ae18",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 228,
+    "description": "**Invariante de transición:** toda `Mission` incorporada al **modelo nuevo operativo** cumple XOR de titulares. Un registro legado aún no clasificado **no** se inserta fingiendo propietario: permanece aislado en inventario/vista histórica no operativa, con datos privados minimizados y sin atribuciones públicas engañosas. No se inventan organizaciones ni se fabrican aceptaciones. La clasificación debe ser reanudable, idempotente y trazable por ID y evidencia. Las selecciones legadas `accepted` no equivalen a acuerdos bilaterales; no se borran historiales ni se reinterpreta compensación o consentimiento."
+  },
+  {
+    "id": "TR-S3.9-001",
+    "section": "3.9",
+    "sha256": "8b9f3a82b62a71f97c410142dc5de6be291756c1fc90169ff941c51ae0b0a859",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 232,
+    "description": "**Pérdida de facultad de un representante individual:** impedir de inmediato lecturas/escrituras no autorizadas, acceso a Storage y mensajes privados (regla transversal de revocación); no borrar su firma histórica válida. Si la organización sigue `NORMAL`, mantiene propiedad y la oferta fue emitida válidamente, la **oferta pendiente puede mantenerse** vinculada a la organización. Otro representante con permiso actual gestiona acciones futuras. La persona desvinculada no acepta, cancela ni altera por la organización."
+  },
+  {
+    "id": "TR-S3.9-002",
+    "section": "3.9",
+    "sha256": "7cae7c1246943ec535cec352900cbe591cae422e295988439fc00473a527fd29",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 233,
+    "description": "**Organización `PAUSED`, `SUSPENDED`, `UNOWNED_RESTRICTED` o sin facultad de representación vigente:** no admitir nuevas obligaciones. Al cambiar de estado, cancelar de modo transaccional o mediante operación de cierre de fallo seguro todas las ofertas `PENDIENTE`, liberar reservas y notificar; mientras no termine la conciliación se rechaza la aceptación. Sus acuerdos ya `ACTIVO` pasan a evaluación/cierre por expediente independiente, no a cancelación automática sin registro."
+  },
+  {
+    "id": "TR-S3.9-003",
+    "section": "3.9",
+    "sha256": "c9f06de8a19769df184d3ee9c03218d30387369fa70e4af799daf66315e8ae11",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 234,
+    "description": "**Persona organizadora que deja de ser elegible, pierde cuenta o inicia eliminación:** bloquear nuevas ofertas y aceptación de las ofertas personales pendientes; cancelarlas y liberar reservas. Los compromisos ya activos van al procedimiento de cierre de 3.10."
+  },
+  {
+    "id": "TR-S3.9-004",
+    "section": "3.9",
+    "sha256": "ecb43d315c4253b38dcafede2853231beacea1e0646e5bfd1f6fbe5b42fe9e49",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 235,
+    "description": "**Seguridad temporal:** un riesgo acreditado puede causar cancelación preventiva de ofertas pendientes y revisión de acuerdos activos por moderación autorizada y auditable; quitar permisos a alguien **no borra** compromisos firmados ni permite a soporte firmar por él."
+  },
+  {
+    "id": "TR-S3.9-005",
+    "section": "3.9",
+    "sha256": "71609a6bb1985f1a5fc3a83da78fec4c8c6c9a7b209490139c0a8504972261f0",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 236,
+    "description": "**Atomicidad:** autorizar la aceptación revisando el estado actual de organización/persona y la vigencia de oferta **en el mismo límite transaccional** que confirma el cupo. La operación de suspensión/bloqueo debe invalidar nuevos acuerdos aunque el worker de notificaciones esté retrasado; acciones y eventos usan idempotencia y deduplicación."
+  },
+  {
+    "id": "TR-S3.10-001",
+    "section": "3.10",
+    "sha256": "6b6b8e79f3c61cdd9c253f02422975cb7be34cb8a03b589269f0126ef4ba82c3",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 244,
+    "description": "| Borradores personales sin contraparte | Despublicar/eliminar conforme al plazo de privacidad aprobado; cancelar sincronizaciones pendientes |"
+  },
+  {
+    "id": "TR-S3.10-002",
+    "section": "3.10",
+    "sha256": "6882ef3b814b39903ec860fe1cbd2233f1b3034b311851ab08f9ab93ac5ecce8",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 245,
+    "description": "| Misiones personales publicadas o pausadas | Bloquear nuevas candidaturas, ofertas y ediciones; retirarlas de proyecciones públicas y de nuevos descubrimientos; registrar estado terminal admisible y aviso a candidatos conforme a políticas |"
+  },
+  {
+    "id": "TR-S3.10-003",
+    "section": "3.10",
+    "sha256": "a03a10048105dd42b65cca06fa47c5bce16189a7644085184fba370e9a69af40",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 246,
+    "description": "| Ofertas `PENDIENTE` y reservas personales | Pasar oferta a `CANCELADA`, liberar reserva en la misma transacción, notificar a destinatario sin revelar datos innecesarios |"
+  },
+  {
+    "id": "TR-S3.10-004",
+    "section": "3.10",
+    "sha256": "9d60f9e67fb21d2c352efba1b366dab9878f046d7bd36f0e1c96722914e92e09",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 247,
+    "description": "| Acuerdos preliminares no activos | Cancelar al cancelar su oferta, sin convertirlos artificialmente en acuerdos bilaterales |"
+  },
+  {
+    "id": "TR-S3.10-005",
+    "section": "3.10",
+    "sha256": "80a6c16304a9bbfc97784809a47587f2d6e48484f267a5115524dbef5cc3344a",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 248,
+    "description": "| Acuerdos `ACTIVO`, en ejecución o disputa | Mantener **expediente mínimo restringido** para cierre, evidencia y derechos de contraparte; bloquear obligaciones nuevas y acceso de la persona eliminada; tramitar cancelación/resolución supervisada, sin borrado en cascada de evidencia legítima |"
+  },
+  {
+    "id": "TR-S3.10-006",
+    "section": "3.10",
+    "sha256": "e5e3149a699572b3c76756b482d2f3e4ee0fec82caa24f86ab3c5298c148ada9",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 249,
+    "description": "| Agenda, conversaciones, medios y versiones | Despublicar o anonimizar proyecciones personales; proteger evidencia mínima de acuerdos/casos con acceso específico, causa y retención aprobadas; gestionar solicitudes de terceros por separado |"
+  },
+  {
+    "id": "TR-S3.10-007",
+    "section": "3.10",
+    "sha256": "1c854a2ca8b085e18fd81b916cb5c15050aaffbfb590949d9191e04b4b981b25",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 250,
+    "description": "| Membresías y organizaciones | Revocar facultades personales; conservar recursos propios de organizaciones y aplicar `UNOWNED_RESTRICTED` cuando proceda; **no** transferir organizaciones ni misiones personales automáticamente |"
+  },
+  {
+    "id": "TR-S3.10-008",
+    "section": "3.10",
+    "sha256": "014996e8551f4fce0400a3bea275b6ae56e2651d96ecc7694aaaa6d2d918c494",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 251,
+    "description": "| Backups, índices y Storage | Registrar supresiones minimizadas, reaplicarlas antes de exponer cualquier restauración y verificar que no reaparece contenido público suprimido |"
+  },
+  {
+    "id": "TR-S3.10-009",
+    "section": "3.10",
+    "sha256": "3e75d13c6c7bd9ffb02fd2ca7acfaac67c33496b6692d14bf14c521d65abe0eb",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 253,
+    "description": "La política jurídica y de conservación debe aprobar plazos y excepciones **antes de producción**; estos procedimientos técnicos no crean una exención genérica de supresión. Mantener las acciones de privacidad en una cola auditable sin revelar más datos de los necesarios y permitir conocer el estado de la solicitud."
+  },
+  {
+    "id": "TR-S3.11-001",
+    "section": "3.11",
+    "sha256": "f040e17005909ab668d8db897cb2b5ca99de8d78306e23c1a5b413b33fd68618",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 257,
+    "description": "El servidor publica `min_contract_version` por plataforma/funcionalidad y contratos versionados para proyecciones, respuestas de API, eventos y estados; exige actualización previa a flujos incompatibles. Todas las mutaciones legadas de selección directa, aceptación implícita, edición material o confirmación que eludan ofertas y firmas reciben error estructurado `UPDATE_REQUIRED` **sin mutación**."
+  },
+  {
+    "id": "TR-S3.11-002",
+    "section": "3.11",
+    "sha256": "342e9f2534aefa63eca7be02f327ee2e459ac6b77351fcae4645361e66aecbf4",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 258,
+    "description": "Las lecturas legadas se permiten **únicamente** cuando el cliente anterior puede representar el estado correctamente y la autorización continúa válida. La proyección antigua **no puede devolver `accepted`** para una candidatura sin `Agreement.ACTIVO` firmado; para estados imposibles de representar, se bloquea la lectura privada afectada con indicación de actualización y sin degradar a un falso estado confirmado. No se reescribe un registro histórico como acuerdo ni se conserva por compatibilidad una afirmación falsa."
+  },
+  {
+    "id": "TR-S3.11-003",
+    "section": "3.11",
+    "sha256": "b0308003468860f591e667f31271b8c100bce7914113fb0041b26996a4f8462f",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 259,
+    "description": "La comprobación incluye el **binario anterior real** (Flutter/web según superficie), caché, deep links y sesión recuperada: verificar lo que se dibuja, no solo el JSON. Clientes fuera de soporte quedan impedidos de consultar estados contractuales incompatibles hasta actualizar. **No se promete corregir pantallas offline previamente almacenadas en dispositivos que no vuelvan a conectarse**; las nuevas versiones deben invalidar/corregir cachés antiguas al recuperar red o actualizar."
+  },
+  {
+    "id": "TR-S3.11-004",
+    "section": "3.11",
+    "sha256": "08d05a1355068fd3bfabe92049a4b782844bcf954250a70f68af95f0317e962a",
+    "review_status": "REVISADA",
+    "review_basis": "NEW_CLAUSE",
+    "previous_sha256": null,
+    "current_line": 260,
+    "description": "La retirada de endpoints obsoletos sigue `expand-migrate-contract`, flags/versiones, matriz de compatibilidad y rollback sin restaurar rutas que fabriquen acuerdos unilaterales."
+  },
+  {
+    "id": "TR-S4.1-001",
+    "section": "4.1",
+    "sha256": "cea09a1cb202f35958c98bbebdcc3d4da488d5f711fcd1150300e108ea76fee5",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "cea09a1cb202f35958c98bbebdcc3d4da488d5f711fcd1150300e108ea76fee5",
+    "current_line": 266,
+    "description": "Idioma **publicado en BASE y PILOTO**: `es-MX`, con textos de UI, correos, errores, avisos legales, notificaciones push, formularios y accesibilidad cubiertos; `en-US` queda preparado técnicamente pero **oculto/deshabilitado** hasta alcanzar cobertura y QA integral."
+  },
+  {
+    "id": "TR-S4.1-002",
+    "section": "4.1",
+    "sha256": "0202749eaa2f98fbbde94dd727cb1a68666926efd44aa71e09e6baba4b29393a",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "0202749eaa2f98fbbde94dd727cb1a68666926efd44aa71e09e6baba4b29393a",
+    "current_line": 267,
+    "description": "Selector de idioma: `Sistema / Español (México)` mientras sólo es-MX esté aprobado; cuando inglés esté validado: `Sistema / Español (México) / English (United States)`; nunca ofrecer opción que no funcione."
+  },
+  {
+    "id": "TR-S4.1-003",
+    "section": "4.1",
+    "sha256": "ef09c6d904008cb74dc793c4667057164013accc2d9089bbef411b8b1b788776",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "ef09c6d904008cb74dc793c4667057164013accc2d9089bbef411b8b1b788776",
+    "current_line": 268,
+    "description": "Preferencia efectiva: selección explícita almacenada en cuenta > selección local sin sesión > locale compatible de OS/navegador > `es-MX`. Preferencia explícita prevalece entre dispositivos autenticados; no traducir automáticamente contenido redactado por usuarios."
+  },
+  {
+    "id": "TR-S4.1-004",
+    "section": "4.1",
+    "sha256": "9589a837045945f005794bdb0f0eb5df46bca754bbf77d596925286c6d2a1ee6",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "9589a837045945f005794bdb0f0eb5df46bca754bbf77d596925286c6d2a1ee6",
+    "current_line": 269,
+    "description": "Mensajes localizados por clave (`ARB`/`intl`), formato de zona/fecha/moneda por `intl`; claves faltantes fallan QA de release, no aparecen como identificadores al usuario."
+  },
+  {
+    "id": "TR-S4.1-005",
+    "section": "4.1",
+    "sha256": "bfc0f44d63bb8d1925bd06a429ebb45f6c37c2c5c2d3290bd75fe8dcfc1fe673",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "bfc0f44d63bb8d1925bd06a429ebb45f6c37c2c5c2d3290bd75fe8dcfc1fe673",
+    "current_line": 270,
+    "description": "Soporte de lector de pantalla, escalado de texto, teclado, contraste y movimiento reducido se prueba en flujos habilitados según objetivo WCAG 2.2 AA y equivalentes móviles."
+  },
+  {
+    "id": "TR-S4.2-001",
+    "section": "4.2",
+    "sha256": "409d5be50106af236d7c652bb2a4d071a25ec2bd5bd99679444e3b825bc94f66",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "409d5be50106af236d7c652bb2a4d071a25ec2bd5bd99679444e3b825bc94f66",
+    "current_line": 274,
+    "description": "Pantallas públicas pueden usar caché **con fecha de actualización** y estado «sin conexión»; las lecturas de recursos privados requieren una sesión válida y respeto a revocaciones y expiración."
+  },
+  {
+    "id": "TR-S4.2-002",
+    "section": "4.2",
+    "sha256": "df00a70b039d497bf07e12cb406eb117505bd1e9c2b9266c85c672c4f5a28e50",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "df00a70b039d497bf07e12cb406eb117505bd1e9c2b9266c85c672c4f5a28e50",
+    "current_line": 275,
+    "description": "Borradores personales pueden editarse offline cifrados o protegidos según plataforma; se sincronizan con comparación de versión y resolución de conflicto **explícita** sin sobrescribir otro dispositivo silenciosamente."
+  },
+  {
+    "id": "TR-S4.2-003",
+    "section": "4.2",
+    "sha256": "3f34c8d40dccf475c137107ccb201a4bced90b8c21e67ae6b825b18e02b859f7",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "6f3e6188f23885b512fce10b71967ab137db88b9d02112790fb46b4b2c3fac55",
+    "current_line": 276,
+    "description": "**Nunca encola offline** operaciones de emisión de oferta, reserva/selección contractual, aceptación, cancelación, pagos (no disponibles), transferencias, moderación, eliminación de cuenta ni publicación pública sin reconfirmación del servidor."
+  },
+  {
+    "id": "TR-S4.2-004",
+    "section": "4.2",
+    "sha256": "b2600d697d238d6391118daef94c59755fd40d72e7cc94c02dd6660be931f9e7",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "b2600d697d238d6391118daef94c59755fd40d72e7cc94c02dd6660be931f9e7",
+    "current_line": 277,
+    "description": "La app diferencia `guardado localmente`, `pendiente de sincronizar` y `guardado en servidor`; reintentos con claves idempotentes, sin duplicación lógica."
+  },
+  {
+    "id": "TR-S4.3-001",
+    "section": "4.3",
+    "sha256": "6124f7d54c5418234a80543f95e4aad0bafc883454a79c6ea6c11a5a1306c1ce",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "6124f7d54c5418234a80543f95e4aad0bafc883454a79c6ea6c11a5a1306c1ce",
+    "current_line": 281,
+    "description": "Los medios son privados hasta autorización expresa y pasan por validación de extensión/tipo real, límite de tamaño, metadatos, procesamiento seguro y revisión según categoría."
+  },
+  {
+    "id": "TR-S4.3-002",
+    "section": "4.3",
+    "sha256": "41117cd0013a20610595c95292a2a8786d0cae5249c4499df67f338495b9cdea",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "41117cd0013a20610595c95292a2a8786d0cae5249c4499df67f338495b9cdea",
+    "current_line": 282,
+    "description": "Metadatos EXIF GPS se eliminan de versiones públicas; ubicación precisa personal no se expone en búsquedas; sedes y actividades usan localización autorizada y mecanismos de retiro."
+  },
+  {
+    "id": "TR-S4.3-003",
+    "section": "4.3",
+    "sha256": "f5ac554bc3a18f7c31be95446e5d0b286da713fdf80b05f0225c9a4fd0d27fc2",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "f5ac554bc3a18f7c31be95446e5d0b286da713fdf80b05f0225c9a4fd0d27fc2",
+    "current_line": 283,
+    "description": "Contenido retirado desaparece de proyecciones públicas propias y URLs propias; no prometer desaparición inmediata de capturas o cachés ajenas."
+  },
+  {
+    "id": "TR-S4.3-004",
+    "section": "4.3",
+    "sha256": "901851ebef6af9c61fa1657051df6a78452aaeba3f4a00f5ac200dd4fe9963d4",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "901851ebef6af9c61fa1657051df6a78452aaeba3f4a00f5ac200dd4fe9963d4",
+    "current_line": 284,
+    "description": "Se guarda consentimiento de difusión y créditos por archivo/obra/uso; una colaboración concluida no confiere licencia comercial automática para redes externas."
+  },
+  {
+    "id": "TR-S4.4-001",
+    "section": "4.4",
+    "sha256": "3e8ff7cbcd3f3ad4edfd2ec10f184e55535b665fb2700af44e149c903883ea34",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "3e8ff7cbcd3f3ad4edfd2ec10f184e55535b665fb2700af44e149c903883ea34",
+    "current_line": 288,
+    "description": "Reporte, bloqueo, medida precautoria, revisión, resolución y apelación son registros separados. Los informes nunca son públicamente accesibles."
+  },
+  {
+    "id": "TR-S4.4-002",
+    "section": "4.4",
+    "sha256": "00c0b72c563a57fc7037760dfb7846f47d6bd880cec2a88852c996c7ab883496",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "00c0b72c563a57fc7037760dfb7846f47d6bd880cec2a88852c996c7ab883496",
+    "current_line": 289,
+    "description": "El moderador **no hereda acceso total** a todas las conversaciones; recibe acceso temporal por caso, con auditoría y control reforzado en casos sensibles."
+  },
+  {
+    "id": "TR-S4.4-003",
+    "section": "4.4",
+    "sha256": "e5759526f5882686a9b82036ff5cab1302a580bc8f4c0a6ffc12fd2ff4df6f08",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "20967bd4d890564792ee55f36f587cc53a8feef9c3bd6a06d91b3cc1dcc8a763",
+    "current_line": 290,
+    "description": "Autoevaluación, autopostulación a misión personal propia y colaboraciones bajo control compartido no suman a reputación independiente; la autopostulación propia se rechaza y las colaboraciones vinculadas admisibles sólo pueden registrarse con divulgación proporcional y controles antifraude."
+  },
+  {
+    "id": "TR-S4.4-004",
+    "section": "4.4",
+    "sha256": "3052dc7d2b022657ae83e8fcc4b7b1d37d007abc4127fc69379984d7b94977be",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "3052dc7d2b022657ae83e8fcc4b7b1d37d007abc4127fc69379984d7b94977be",
+    "current_line": 291,
+    "description": "Confirmación bilateral exige aceptación de partes distintas, no solo dos cuentas. `revisado independientemente` es etiqueta separada y auditable."
+  },
+  {
+    "id": "TR-S4.5-001",
+    "section": "4.5",
+    "sha256": "3ef9ee19020f966004f3de55c3c91fc99ff684fc6079e14d23d75cb87e52f667",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "3ef9ee19020f966004f3de55c3c91fc99ff684fc6079e14d23d75cb87e52f667",
+    "current_line": 295,
+    "description": "Sitio web público presenta fichas autorizadas accesibles sin login y páginas indexables mediante renderización HTML/SSR adecuada (no se presupone indexación completa de Flutter Web)."
+  },
+  {
+    "id": "TR-S4.5-002",
+    "section": "4.5",
+    "sha256": "99cf6fb6db14d5d404f45c469065f5349b85eeee6eba8d25fb09a56ffb8aba0c",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "54d32a4d7b7733ef38b93777d2685da0b303e95557b397804d4f205f6e06faab",
+    "current_line": 296,
+    "description": "Clientes web/Android/iOS consumen el **mismo contrato backend** de IDs, permisos y estados; el diseño responsive no habilita accesos adicionales. El selector de identidad actuante y los flujos de misión/oferta/acuerdo DEBEN contemplar titular personal y organización autorizada, con estados de actualización requerida para clientes anteriores."
+  },
+  {
+    "id": "TR-S4.5-003",
+    "section": "4.5",
+    "sha256": "521b62371a0e52fe2ba2fd592dbc1aa1d9335536e4e9be12a9603a31515d1149",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "521b62371a0e52fe2ba2fd592dbc1aa1d9335536e4e9be12a9603a31515d1149",
+    "current_line": 297,
+    "description": "Permisos del SO se solicitan de forma contextual; hay alternativa manual para ubicación, alternativa lista/mapa cuando faltan sensores o compatibilidad AR y alternativa accesible para acciones basadas en cámara."
+  },
+  {
+    "id": "TR-S4.5-004",
+    "section": "4.5",
+    "sha256": "1bb39a1aa89f9d383b92af4f3b4d1846d4c478f5f8ceb569eb93fc8ec6eac366",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "1bb39a1aa89f9d383b92af4f3b4d1846d4c478f5f8ceb569eb93fc8ec6eac366",
+    "current_line": 298,
+    "description": "En iOS el borrado se inicia en la app; en Google Play existe además una ruta externa web claramente accesible. Los datos personales asociados se eliminan con las excepciones legalmente justificadas y explicadas."
+  },
+  {
+    "id": "TR-S4.5-005",
+    "section": "4.5",
+    "sha256": "1c7fd7f3387905b742ea79141248f94e90c97b4ca51f5fa919b9a0c0c278f70b",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "1c7fd7f3387905b742ea79141248f94e90c97b4ca51f5fa919b9a0c0c278f70b",
+    "current_line": 299,
+    "description": "La AR académica `academic_ar_demo` permanece aislada, sin datos de terceros ni afirmaciones de rastreo/precisión superiores al hardware real."
+  },
+  {
+    "id": "TR-S10.1-001",
+    "section": "10.1",
+    "sha256": "3c3ea1c2795e0a7918194f794517f9330cef94c56a12629446a2f2ccb1439ed3",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "3c3ea1c2795e0a7918194f794517f9330cef94c56a12629446a2f2ccb1439ed3",
+    "current_line": 1268,
+    "description": "**Autenticación:** Supabase Auth; no guardar passwords propias; secrets privilegiados sólo en backend; controles de rate limit, OTP y MFA para operaciones privilegiadas."
+  },
+  {
+    "id": "TR-S10.1-002",
+    "section": "10.1",
+    "sha256": "bcab6e570f7a00900686e31bf61910321d920f0560352b3031542c71ee711d0c",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "02d50a9c019123d38a87f8d79622735da9229d60b17c42bc0a339670b03c6993",
+    "current_line": 1269,
+    "description": "**Autorización:** negar por defecto en DB/RLS, Storage, Edge Functions y Realtime; matriz de 3.4; probar suplantación por `owner_person_id` o `organization_id` ajeno; no confiar en el tipo de perfil del front."
+  },
+  {
+    "id": "TR-S10.1-003",
+    "section": "10.1",
+    "sha256": "2d19945254d2c06f06ca2e3673450754304fdea03f5f61fe279ee8bdc6a0ee96",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "2d19945254d2c06f06ca2e3673450754304fdea03f5f61fe279ee8bdc6a0ee96",
+    "current_line": 1270,
+    "description": "**Multitenencia:** recursos organizaciones aislados; logs de cambios de membresía y acceso; revocación efectiva de lectores y emisores incluso con sockets abiertos."
+  },
+  {
+    "id": "TR-S10.1-004",
+    "section": "10.1",
+    "sha256": "fe32b422addb74f89761a252f18db474837093d420c0cc46c721309d95c31307",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "fe32b422addb74f89761a252f18db474837093d420c0cc46c721309d95c31307",
+    "current_line": 1271,
+    "description": "**Datos:** TLS, secretos fuera de repo y de `--dart-define` públicos de web (solo claves públicas apropiadas), minimización por nivel de sensibilidad, borrado y restauración con supresiones."
+  },
+  {
+    "id": "TR-S10.1-005",
+    "section": "10.1",
+    "sha256": "7f243e8bcaf23133b20f55f58b5f5e67004790598a884822310c809de269a306",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "7f243e8bcaf23133b20f55f58b5f5e67004790598a884822310c809de269a306",
+    "current_line": 1272,
+    "description": "**UGC:** reporte/bloqueo/moderación/soporte operativos antes de habilitar chats y encuentros. No describir la plataforma como servicio de seguridad personal o emergencias."
+  },
+  {
+    "id": "TR-S10.1-006",
+    "section": "10.1",
+    "sha256": "958c6fc2bc96b6e82a355c6d5207fb2360537a60cfbe0a85a7fdc02abad64cc5",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "958c6fc2bc96b6e82a355c6d5207fb2360537a60cfbe0a85a7fdc02abad64cc5",
+    "current_line": 1273,
+    "description": "**Pagos:** sin checkout ni custodia en PILOTO. Registrar compensación acordada como dato descriptivo con advertencia clara."
+  },
+  {
+    "id": "TR-S10.1-007",
+    "section": "10.1",
+    "sha256": "dbfb2e2333149b29eb092f8c02b5d52c3ab183cc1209f2d086cd0af0675ec8ca",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "dbfb2e2333149b29eb092f8c02b5d52c3ab183cc1209f2d086cd0af0675ec8ca",
+    "current_line": 1274,
+    "description": "**Suministro:** dependencias fijadas, revisión de vulnerabilidades, entornos separados dev/staging/prod, CI para lint/tests y migraciones versionadas reversibles por expand/migrate/contract."
+  },
+  {
+    "id": "TR-S10.1-008",
+    "section": "10.1",
+    "sha256": "747edf409b47f59621248017fdf1296fb6dfcc6782af37bb3ab60577fa373d05",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "747edf409b47f59621248017fdf1296fb6dfcc6782af37bb3ab60577fa373d05",
+    "current_line": 1275,
+    "description": "**Observabilidad:** trazas por `request_id`, contadores de fallos, audit trail de decisiones privilegiadas, alertas de costo y salubridad de colas, sin registrar contraseñas, tokens, conversaciones completas ni datos médicos."
+  },
+  {
+    "id": "TR-S10.1-009",
+    "section": "10.1",
+    "sha256": "a29addf88d64ae41afed9f0b71798227099e4ff0b29bdbb7d69858b525f987b5",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "a29addf88d64ae41afed9f0b71798227099e4ff0b29bdbb7d69858b525f987b5",
+    "current_line": 1276,
+    "description": "**Continuidad:** backup de DB **y** Storage por separado, restauración aislada, prueba de supresiones, verificación funcional y procedimiento documentado de incidentes."
+  },
+  {
+    "id": "TR-S10.1-010",
+    "section": "10.1",
+    "sha256": "ed06306229fc9af41d62b2e47f33eece4186b54df3a4073dc13dee47f101d8dc",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "ed06306229fc9af41d62b2e47f33eece4186b54df3a4073dc13dee47f101d8dc",
+    "current_line": 1277,
+    "description": "**QA multiplataforma:** teclados, zoom, lectores de pantalla, enlaces, fechas, notificaciones, desconexión, permisos rechazados y versiones antiguas; sistemas de pago/AR sólo si bandera habilitada."
+  },
+  {
+    "id": "TR-S11.3-001",
+    "section": "11.3",
+    "sha256": "eb808b7ecd782b35e97cc191a72c811897badcd1f0c465c855c78df3c3db19f6",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "eb808b7ecd782b35e97cc191a72c811897badcd1f0c465c855c78df3c3db19f6",
+    "current_line": 1326,
+    "description": "Prueba inicial sugerida de 8–10 semanas en una zona y hasta dos categorías, elegidas mediante entrevistas."
+  },
+  {
+    "id": "TR-S11.3-002",
+    "section": "11.3",
+    "sha256": "0924b3e8227e5287b1bf3d939ca81681a0cf673e1e6b6a5bd96f78a4c917f0d7",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "0924b3e8227e5287b1bf3d939ca81681a0cf673e1e6b6a5bd96f78a4c917f0d7",
+    "current_line": 1327,
+    "description": "Hipótesis a evaluar: 12–20 oportunidades auténticas; ≥60 % con 2 propuestas útiles en 7 días; ≥30 % convertidas en colaboración confirmada; ≥25 % de repetición a 60 días entre organizadores elegibles; ≥5 empresas con señal verificable de disposición de pago."
+  },
+  {
+    "id": "TR-S11.3-003",
+    "section": "11.3",
+    "sha256": "0018001a6a0d47f4fdb106fa6a1c77d4439060160c9fc37e242caf045e6c327c",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "0018001a6a0d47f4fdb106fa6a1c77d4439060160c9fc37e242caf045e6c327c",
+    "current_line": 1328,
+    "description": "Cada informe DEBE mostrar numerador, denominador, ventana, tamaño de muestra, captura manual vs orgánica, disputas, incidentes, costo por colaboración y sesgos conocidos."
+  },
+  {
+    "id": "TR-S12.2-001",
+    "section": "12.2",
+    "sha256": "35fe635fbbfa5d975aae6db12f79445e985c9bd8cdf70be023fbdcc9b406c0f9",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "35fe635fbbfa5d975aae6db12f79445e985c9bd8cdf70be023fbdcc9b406c0f9",
+    "current_line": 1393,
+    "description": "Leer este documento antes de diseñar tabla, pantalla o API. Identificar `RF`, `CT`, `RB`, `ADR41`, `ADR42`, `CTR5` y `AC/AT5` aplicables."
+  },
+  {
+    "id": "TR-S12.2-002",
+    "section": "12.2",
+    "sha256": "26c2c42f5872c526df4a9954ac0c0079828244acff4dac90af1c8a9337318ce0",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "26c2c42f5872c526df4a9954ac0c0079828244acff4dac90af1c8a9337318ce0",
+    "current_line": 1394,
+    "description": "Inspeccionar el repositorio y migraciones; **no asumir implementado** lo que aparece en el catálogo. Guardar resultado en matriz `ID | fase | componente/ruta | estado | prueba | evidencia | riesgo`."
+  },
+  {
+    "id": "TR-S12.2-003",
+    "section": "12.2",
+    "sha256": "00f8141b0e327eb75104bd0c31e0cc03e9b2281d95a455638e4ee811a5d4b5be",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "97eb8fd109e66805e560681bcea6a296c0c21b5c7362ec138be34489bb102185",
+    "current_line": 1395,
+    "description": "Diseñar primero permiso, estado, transacción y manejo de fallas; después UI. Para misiones/acuerdos incluir ambas modalidades de organizador y sus pantallas/acciones; cualquier endpoint que requiera privilegios se prueba con identidad sin permisos."
+  },
+  {
+    "id": "TR-S12.2-004",
+    "section": "12.2",
+    "sha256": "3543eff4fa6f8dd6482bac841fcf909c524bcabb531c7aedb1eb1039ea32224b",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "3543eff4fa6f8dd6482bac841fcf909c524bcabb531c7aedb1eb1039ea32224b",
+    "current_line": 1396,
+    "description": "Usar migraciones PostgreSQL versionadas y revisar compatibilidad con clientes iOS/Android existentes. No desplegar cambios destructivos sobre producción sin plan de rollback."
+  },
+  {
+    "id": "TR-S12.2-005",
+    "section": "12.2",
+    "sha256": "5fedf30d91975b29880bcb778f0c696579ca12897bf551359205c5ff91c41273",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "5fedf30d91975b29880bcb778f0c696579ca12897bf551359205c5ff91c41273",
+    "current_line": 1397,
+    "description": "Implementar solamente la tarea/fase pedida y dependencias obligatorias. `POST`/`CONDICIONAL` se mantienen desactivadas salvo autorización explícita."
+  },
+  {
+    "id": "TR-S12.2-006",
+    "section": "12.2",
+    "sha256": "56f43ec12b13ced07c5ba98e33e3daadc47a944d5221e4bf1e8ea4b4fe93dc5d",
+    "review_status": "REVISADA",
+    "review_basis": "REVIEWED_SAME_INVARIANT_OR_CLAUSE",
+    "previous_sha256": "7cd95dbf861ad97258167372ba95d023eec0b55802a1aa1730aebdddb75462c3",
+    "current_line": 1398,
+    "description": "Pruebas mínimas por caso: permitido + denegado + simultáneo/reintento + expiración + restauración cuando aplique + regresión multiplataforma. Para misiones/ofertas/acuerdos aplicar ambas modalidades, impedir firma unilateral, validar revisión vigente/propuesta y ejecutar `TC-51-001…TC-51-021` con evidencia independiente de TASK-001."
+  },
+  {
+    "id": "TR-S12.2-007",
+    "section": "12.2",
+    "sha256": "e7d31911957c793486b8eaf4d02f32013c6b5beccb47acd42a59db93b61658a0",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "e7d31911957c793486b8eaf4d02f32013c6b5beccb47acd42a59db93b61658a0",
+    "current_line": 1399,
+    "description": "Cuando una obligación exige persona, revisión jurídica, contrato, proveedor, dato real o política de tienda, marcar `PENDIENTE EXTERNO` y el ID `Bxx`. No fabricar validaciones."
+  },
+  {
+    "id": "TR-S12.2-008",
+    "section": "12.2",
+    "sha256": "df2a829fd51c806b884e837e269cece01e315cc38a6440986d07ee62ef16ee06",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "df2a829fd51c806b884e837e269cece01e315cc38a6440986d07ee62ef16ee06",
+    "current_line": 1400,
+    "description": "Cada PR debe indicar IDs atendidos, evidencias, migraciones, banderas, compatibilidad y criterio de rollback."
+  },
+  {
+    "id": "TR-S12.2-009",
+    "section": "12.2",
+    "sha256": "68ba1045e8ff7ccc715cf62d7ce21f4eba7670162f5b72f2767e862bc15d3283",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "68ba1045e8ff7ccc715cf62d7ce21f4eba7670162f5b72f2767e862bc15d3283",
+    "current_line": 1401,
+    "description": "Evitar datos inventados en producción. Los registros de demostración deben estar aislados y rotulados explícitamente como demo."
+  },
+  {
+    "id": "TR-S12.3-001",
+    "section": "12.3",
+    "sha256": "9534a09c8e188d6814a26f73369889890d64f8552e976e6c9ab1ab830755533a",
+    "review_status": "REVISADA",
+    "review_basis": "EXACT_FRAGMENT",
+    "previous_sha256": "9534a09c8e188d6814a26f73369889890d64f8552e976e6c9ab1ab830755533a",
+    "current_line": 1405,
+    "description": "`VALIDADO` si, y sólo si: su implementación está localizada, todas las pruebas aplicables pasan, permisos se comprueban en el servidor, estados/casos límite están tratados, textos/idiomas/accesibilidad se verifican, no se rompe compatibilidad y el responsable añade evidencia. El SRS describe comportamiento deseado; no es certificado de calidad o cumplimiento."
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "result": "PASS",
+  "owned_diagnostic_servers": 9,
+  "all_network_none": true,
+  "no_published_ports": true,
+  "all_diagnostic_servers_stopped": true,
+  "historical_services_stopped": true,
+  "blocked_runtime_not_started": true,
+  "volumes_and_private_logs_retained": true,
+  "cron_runs": 0,
+  "vault_secrets": 0,
+  "proposed_migration_executed": false,
+  "remote_modified": false
+}

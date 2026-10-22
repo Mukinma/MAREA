@@ -1,0 +1,26 @@
+{
+  "id": "E-TASK001-PRESERVATION-20261013T1704Z",
+  "captured_at": "2026-10-13T17:05:17.740Z",
+  "result": "PASS_CON_LIMITACION",
+  "modality": "real-filesystem",
+  "preexisting_regular_files_checked": 39879,
+  "symlinks_checked": 111,
+  "missing_paths": 0,
+  "changed_symlink_targets": 0,
+  "allowed_changed_documents": [
+    "docs/MAREA_AUDIT_REPORT.md",
+    "docs/MAREA_CHANGELOG.md",
+    "docs/MAREA_REQUIREMENTS_STATUS.yaml",
+    "docs/MAREA_TRACEABILITY.md",
+    "docs/MAREA_TRACKING.md"
+  ],
+  "additional_changed_path": ".git/index",
+  "index_entries_equal": true,
+  "index_entries_sha256": "4f6754d4195f1f753027afe4bf61fc6c9ddd3d861767dd55120feb202547afae",
+  "tracked_changes": 0,
+  "staged_changes": 0,
+  "reason": "Index bytes changed while Git commands were used; staged modes/object IDs/stages/paths identical to restricted backup. Cache/metadata difference, no staged work loss.",
+  "original_index_retained_privately": true,
+  "prior_failed_check_retained": "preservation.json",
+  "secrets_exported": false
+}

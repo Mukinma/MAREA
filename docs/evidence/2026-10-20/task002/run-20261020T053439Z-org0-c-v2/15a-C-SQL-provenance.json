@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-20T05:38:04.842353+00:00",
+  "result": "PASS",
+  "command": [
+    "supabase",
+    "--workdir",
+    "/Users/crisis/Proyectos/marea-backups/task002-org0-c-v2-20261020T053439Z/c-cli",
+    "migration",
+    "new",
+    "c_private_structural"
+  ],
+  "stdout": "{\"path\":\"/Users/crisis/Proyectos/marea-backups/task002-org0-c-v2-20261020T053439Z/c-cli/supabase/migrations/20261020053802_c_private_structural.sql\",\"message\":\"Migration created\"}\n",
+  "stderr": "A new version of Supabase CLI is available: v2.121.0 (currently installed v2.117.0)\nWe recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli\n",
+  "source": "tool/task002/c_contract.sql",
+  "source_sha256": "c98697d2908635366271e46a3d29ba3e27b077ebcdbdaaba0c84a50fa0c07044",
+  "SQL_file": "20261020053802_c_private_structural.sql",
+  "SQL_sha256": "c98697d2908635366271e46a3d29ba3e27b077ebcdbdaaba0c84a50fa0c07044",
+  "no_operational_migration_written": true
+}

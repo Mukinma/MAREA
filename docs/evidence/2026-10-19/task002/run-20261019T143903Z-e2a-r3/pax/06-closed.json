@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "containers_stopped": [
+    "task002-pax-20261019t143903z-source",
+    "task002-pax-20261019t143903z-restored"
+  ],
+  "new_volume_retained": "task002-pax-20261019t143903z-synthetic-target",
+  "historical_mounts": 0,
+  "data_project_used": false
+}

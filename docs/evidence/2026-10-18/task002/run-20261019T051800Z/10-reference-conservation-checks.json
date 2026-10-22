@@ -1,0 +1,3368 @@
+{
+  "at": "2026-10-19T05:31:32.978608+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "summary": {
+        "authors": 1,
+        "missions": 6,
+        "profiles": 6,
+        "auth_users": 6,
+        "delete_hooks": 0,
+        "missing_auth": 0,
+        "profile_types": {
+          "Artista / creador": 6
+        },
+        "mission_images": 1,
+        "missing_profile": 0,
+        "storage_objects": 13,
+        "mission_statuses": {
+          "open": 5,
+          "closed": 1
+        },
+        "business_profiles": 0,
+        "application_statuses": {
+          "pending": 5,
+          "accepted": 3
+        },
+        "collaboration_schema": 0,
+        "deletion_prepare_hook": false
+      },
+      "fk_checked": 101,
+      "orphan_rows_total": 0,
+      "fk_graph": [
+        {
+          "name": "extensions_tenant_external_id_fkey",
+          "validated": true,
+          "source_table": "extensions",
+          "target_table": "tenants",
+          "delete_action": "c",
+          "source_schema": "_realtime",
+          "target_schema": "_realtime",
+          "source_columns": [
+            "tenant_external_id"
+          ],
+          "target_columns": [
+            "external_id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "identities_user_id_fkey",
+          "validated": true,
+          "source_table": "identities",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mfa_amr_claims_session_id_fkey",
+          "validated": true,
+          "source_table": "mfa_amr_claims",
+          "target_table": "sessions",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "session_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mfa_challenges_auth_factor_id_fkey",
+          "validated": true,
+          "source_table": "mfa_challenges",
+          "target_table": "mfa_factors",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "factor_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mfa_factors_user_id_fkey",
+          "validated": true,
+          "source_table": "mfa_factors",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "oauth_authorizations_client_id_fkey",
+          "validated": true,
+          "source_table": "oauth_authorizations",
+          "target_table": "oauth_clients",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "client_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "oauth_authorizations_user_id_fkey",
+          "validated": true,
+          "source_table": "oauth_authorizations",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "oauth_consents_client_id_fkey",
+          "validated": true,
+          "source_table": "oauth_consents",
+          "target_table": "oauth_clients",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "client_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "oauth_consents_user_id_fkey",
+          "validated": true,
+          "source_table": "oauth_consents",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "one_time_tokens_user_id_fkey",
+          "validated": true,
+          "source_table": "one_time_tokens",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "refresh_tokens_session_id_fkey",
+          "validated": true,
+          "source_table": "refresh_tokens",
+          "target_table": "sessions",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "session_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "saml_providers_sso_provider_id_fkey",
+          "validated": true,
+          "source_table": "saml_providers",
+          "target_table": "sso_providers",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "sso_provider_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "saml_relay_states_flow_state_id_fkey",
+          "validated": true,
+          "source_table": "saml_relay_states",
+          "target_table": "flow_state",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "flow_state_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "saml_relay_states_sso_provider_id_fkey",
+          "validated": true,
+          "source_table": "saml_relay_states",
+          "target_table": "sso_providers",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "sso_provider_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "sessions_oauth_client_id_fkey",
+          "validated": true,
+          "source_table": "sessions",
+          "target_table": "oauth_clients",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "oauth_client_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "sessions_user_id_fkey",
+          "validated": true,
+          "source_table": "sessions",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "sso_domains_sso_provider_id_fkey",
+          "validated": true,
+          "source_table": "sso_domains",
+          "target_table": "sso_providers",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "sso_provider_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "webauthn_challenges_user_id_fkey",
+          "validated": true,
+          "source_table": "webauthn_challenges",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "webauthn_credentials_user_id_fkey",
+          "validated": true,
+          "source_table": "webauthn_credentials",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "push_queue_installation_id_fkey",
+          "validated": true,
+          "source_table": "push_queue",
+          "target_table": "notification_devices",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "installation_id"
+          ],
+          "target_columns": [
+            "installation_id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "push_queue_notification_id_fkey",
+          "validated": true,
+          "source_table": "push_queue",
+          "target_table": "notifications",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "notification_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_ar_tests_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_ar_tests",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_captures_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_captures",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_captures_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_captures",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_jobs_capture_id_fkey",
+          "validated": true,
+          "source_table": "tour_jobs",
+          "target_table": "tour_captures",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "private",
+          "source_columns": [
+            "capture_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_jobs_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_jobs",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_output_writes_job_id_fkey",
+          "validated": true,
+          "source_table": "tour_output_writes",
+          "target_table": "tour_jobs",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "private",
+          "source_columns": [
+            "job_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_output_writes_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_output_writes",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_permissions_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_permissions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_permissions_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_permissions",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "account_deletion_requests_user_id_fkey",
+          "validated": true,
+          "source_table": "account_deletion_requests",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "content_reports_mission_id_fkey",
+          "validated": true,
+          "source_table": "content_reports",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "content_reports_post_id_fkey",
+          "validated": true,
+          "source_table": "content_reports",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "content_reports_reporter_id_fkey",
+          "validated": true,
+          "source_table": "content_reports",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "reporter_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "content_reports_showcase_id_fkey",
+          "validated": true,
+          "source_table": "content_reports",
+          "target_table": "showcase_items",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "showcase_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "home_feed_snapshots_viewer_id_fkey",
+          "validated": true,
+          "source_table": "home_feed_snapshots",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "viewer_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "legal_acceptances_user_id_fkey",
+          "validated": true,
+          "source_table": "legal_acceptances",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_application_operations_applicant_id_fkey",
+          "validated": true,
+          "source_table": "mission_application_operations",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "applicant_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_application_operations_application_id_fkey",
+          "validated": true,
+          "source_table": "mission_application_operations",
+          "target_table": "mission_applications",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "application_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_application_operations_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_application_operations",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_applications_applicant_id_fkey",
+          "validated": true,
+          "source_table": "mission_applications",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "applicant_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_applications_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_applications",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_comment_operations_author_id_fkey",
+          "validated": true,
+          "source_table": "mission_comment_operations",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_comment_operations_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_comment_operations",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_comments_author_id_fkey",
+          "validated": true,
+          "source_table": "mission_comments",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_comments_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_comments",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_drafts_author_id_fkey",
+          "validated": true,
+          "source_table": "mission_drafts",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_drafts_published_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_drafts",
+          "target_table": "missions",
+          "delete_action": "n",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "published_mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_finalists_application_id_fkey",
+          "validated": true,
+          "source_table": "mission_finalists",
+          "target_table": "mission_applications",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "application_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_finalists_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_finalists",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_reactions_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_reactions",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_reactions_user_id_fkey",
+          "validated": true,
+          "source_table": "mission_reactions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_saves_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_saves",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_saves_user_id_fkey",
+          "validated": true,
+          "source_table": "mission_saves",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "missions_author_id_fkey",
+          "validated": true,
+          "source_table": "missions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notification_devices_user_id_fkey",
+          "validated": true,
+          "source_table": "notification_devices",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notification_preferences_user_id_fkey",
+          "validated": true,
+          "source_table": "notification_preferences",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notifications_actor_id_fkey",
+          "validated": true,
+          "source_table": "notifications",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "actor_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notifications_mission_id_fkey",
+          "validated": true,
+          "source_table": "notifications",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notifications_post_id_fkey",
+          "validated": true,
+          "source_table": "notifications",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notifications_recipient_id_fkey",
+          "validated": true,
+          "source_table": "notifications",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "recipient_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_collaboration_interests_applicant_id_fkey",
+          "validated": true,
+          "source_table": "post_collaboration_interests",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "applicant_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_collaboration_interests_post_id_fkey",
+          "validated": true,
+          "source_table": "post_collaboration_interests",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_comments_author_id_fkey",
+          "validated": true,
+          "source_table": "post_comments",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_comments_post_id_fkey",
+          "validated": true,
+          "source_table": "post_comments",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_reactions_post_id_fkey",
+          "validated": true,
+          "source_table": "post_reactions",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_reactions_user_id_fkey",
+          "validated": true,
+          "source_table": "post_reactions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_saves_post_id_fkey",
+          "validated": true,
+          "source_table": "post_saves",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_saves_user_id_fkey",
+          "validated": true,
+          "source_table": "post_saves",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "posts_author_id_fkey",
+          "validated": true,
+          "source_table": "posts",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "profile_follows_author_id_fkey",
+          "validated": true,
+          "source_table": "profile_follows",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "profile_follows_follower_id_fkey",
+          "validated": true,
+          "source_table": "profile_follows",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "follower_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "profile_media_operations_user_id_fkey",
+          "validated": true,
+          "source_table": "profile_media_operations",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "profiles_id_fkey",
+          "validated": true,
+          "source_table": "profiles",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "auth",
+          "source_columns": [
+            "id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "showcase_images_item_id_fkey",
+          "validated": true,
+          "source_table": "showcase_images",
+          "target_table": "showcase_items",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "item_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "showcase_items_owner_id_fkey",
+          "validated": true,
+          "source_table": "showcase_items",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "showcase_saves_item_id_fkey",
+          "validated": true,
+          "source_table": "showcase_saves",
+          "target_table": "showcase_items",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "item_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "showcase_saves_user_id_fkey",
+          "validated": true,
+          "source_table": "showcase_saves",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "stories_author_id_fkey",
+          "validated": true,
+          "source_table": "stories",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_publications_author_id_fkey",
+          "validated": true,
+          "source_table": "story_publications",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_reports_reporter_id_fkey",
+          "validated": true,
+          "source_table": "story_reports",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "reporter_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_reports_story_id_fkey",
+          "validated": true,
+          "source_table": "story_reports",
+          "target_table": "stories",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "story_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_views_story_id_fkey",
+          "validated": true,
+          "source_table": "story_views",
+          "target_table": "stories",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "story_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_views_viewer_id_fkey",
+          "validated": true,
+          "source_table": "story_views",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "viewer_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_progress_revision_id_fkey",
+          "validated": true,
+          "source_table": "tour_progress",
+          "target_table": "tour_revisions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "revision_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_progress_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_progress",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_progress_user_id_fkey",
+          "validated": true,
+          "source_table": "tour_progress",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_requests_requester_id_fkey",
+          "validated": true,
+          "source_table": "tour_requests",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "requester_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_requests_reviewer_id_fkey",
+          "validated": true,
+          "source_table": "tour_requests",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "reviewer_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_requests_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_requests",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_revisions_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_revisions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_revisions_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_revisions",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tours_owner_id_fkey",
+          "validated": true,
+          "source_table": "tours",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "iceberg_namespaces_catalog_id_fkey",
+          "validated": true,
+          "source_table": "iceberg_namespaces",
+          "target_table": "buckets_analytics",
+          "delete_action": "c",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "catalog_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "iceberg_tables_catalog_id_fkey",
+          "validated": true,
+          "source_table": "iceberg_tables",
+          "target_table": "buckets_analytics",
+          "delete_action": "c",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "catalog_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "iceberg_tables_namespace_id_fkey",
+          "validated": true,
+          "source_table": "iceberg_tables",
+          "target_table": "iceberg_namespaces",
+          "delete_action": "c",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "namespace_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "objects_bucketId_fkey",
+          "validated": true,
+          "source_table": "objects",
+          "target_table": "buckets",
+          "delete_action": "a",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "bucket_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "s3_multipart_uploads_bucket_id_fkey",
+          "validated": true,
+          "source_table": "s3_multipart_uploads",
+          "target_table": "buckets",
+          "delete_action": "a",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "bucket_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "s3_multipart_uploads_parts_bucket_id_fkey",
+          "validated": true,
+          "source_table": "s3_multipart_uploads_parts",
+          "target_table": "buckets",
+          "delete_action": "a",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "bucket_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "s3_multipart_uploads_parts_upload_id_fkey",
+          "validated": true,
+          "source_table": "s3_multipart_uploads_parts",
+          "target_table": "s3_multipart_uploads",
+          "delete_action": "c",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "upload_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "vector_indexes_bucket_id_fkey",
+          "validated": true,
+          "source_table": "vector_indexes",
+          "target_table": "buckets_vectors",
+          "delete_action": "a",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "bucket_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        }
+      ],
+      "storage": {
+        "metadata_objects": 13,
+        "physical_files": 13,
+        "missing_files": 0,
+        "unreferenced_files": 0,
+        "matching_layout": "Observed local file backend stub/stub/bucket/name/version; not a remote S3 equivalence claim"
+      },
+      "legacy_cascade_probe": {
+        "result": "PASS_REPRODUCED_LEGACY_CASCADE_AND_ROLLBACK",
+        "steps": [
+          {
+            "stage": "before",
+            "missions": 6,
+            "profiles": 6,
+            "applications": 8
+          },
+          {
+            "stage": "after_delete",
+            "missions": 0,
+            "profiles": 5,
+            "applications": 0
+          }
+        ],
+        "all_table_digests_equal_after_rollback": true,
+        "sequences_equal_after_rollback": true,
+        "scope": "Dedicated recovery clone; no source profile/Auth deletion or FK replacement"
+      },
+      "negative": {
+        "private_schema_read_denied_to_anon": "42501",
+        "read_only_write_denied": "25006"
+      },
+      "preflight_sql_sha256": "dbc074f63c9a25f2c6cde28d6097cb7aafe6b2c226eb16c3ea9bc28cf37b9ab9",
+      "preflight_execution": "PASS",
+      "complete_requirement_validation": false
+    },
+    "b": {
+      "summary": {
+        "authors": 1,
+        "missions": 6,
+        "profiles": 6,
+        "auth_users": 6,
+        "delete_hooks": 0,
+        "missing_auth": 0,
+        "profile_types": {
+          "Artista / creador": 6
+        },
+        "mission_images": 1,
+        "missing_profile": 0,
+        "storage_objects": 15,
+        "mission_statuses": {
+          "open": 5,
+          "closed": 1
+        },
+        "business_profiles": 0,
+        "application_statuses": {
+          "pending": 5,
+          "accepted": 3
+        },
+        "collaboration_schema": 0,
+        "deletion_prepare_hook": false
+      },
+      "fk_checked": 101,
+      "orphan_rows_total": 0,
+      "fk_graph": [
+        {
+          "name": "extensions_tenant_external_id_fkey",
+          "validated": true,
+          "source_table": "extensions",
+          "target_table": "tenants",
+          "delete_action": "c",
+          "source_schema": "_realtime",
+          "target_schema": "_realtime",
+          "source_columns": [
+            "tenant_external_id"
+          ],
+          "target_columns": [
+            "external_id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "identities_user_id_fkey",
+          "validated": true,
+          "source_table": "identities",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mfa_amr_claims_session_id_fkey",
+          "validated": true,
+          "source_table": "mfa_amr_claims",
+          "target_table": "sessions",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "session_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mfa_challenges_auth_factor_id_fkey",
+          "validated": true,
+          "source_table": "mfa_challenges",
+          "target_table": "mfa_factors",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "factor_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mfa_factors_user_id_fkey",
+          "validated": true,
+          "source_table": "mfa_factors",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "oauth_authorizations_client_id_fkey",
+          "validated": true,
+          "source_table": "oauth_authorizations",
+          "target_table": "oauth_clients",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "client_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "oauth_authorizations_user_id_fkey",
+          "validated": true,
+          "source_table": "oauth_authorizations",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "oauth_consents_client_id_fkey",
+          "validated": true,
+          "source_table": "oauth_consents",
+          "target_table": "oauth_clients",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "client_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "oauth_consents_user_id_fkey",
+          "validated": true,
+          "source_table": "oauth_consents",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "one_time_tokens_user_id_fkey",
+          "validated": true,
+          "source_table": "one_time_tokens",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "refresh_tokens_session_id_fkey",
+          "validated": true,
+          "source_table": "refresh_tokens",
+          "target_table": "sessions",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "session_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "saml_providers_sso_provider_id_fkey",
+          "validated": true,
+          "source_table": "saml_providers",
+          "target_table": "sso_providers",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "sso_provider_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "saml_relay_states_flow_state_id_fkey",
+          "validated": true,
+          "source_table": "saml_relay_states",
+          "target_table": "flow_state",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "flow_state_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "saml_relay_states_sso_provider_id_fkey",
+          "validated": true,
+          "source_table": "saml_relay_states",
+          "target_table": "sso_providers",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "sso_provider_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "sessions_oauth_client_id_fkey",
+          "validated": true,
+          "source_table": "sessions",
+          "target_table": "oauth_clients",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "oauth_client_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "sessions_user_id_fkey",
+          "validated": true,
+          "source_table": "sessions",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "sso_domains_sso_provider_id_fkey",
+          "validated": true,
+          "source_table": "sso_domains",
+          "target_table": "sso_providers",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "sso_provider_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "webauthn_challenges_user_id_fkey",
+          "validated": true,
+          "source_table": "webauthn_challenges",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "webauthn_credentials_user_id_fkey",
+          "validated": true,
+          "source_table": "webauthn_credentials",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "auth",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "push_queue_installation_id_fkey",
+          "validated": true,
+          "source_table": "push_queue",
+          "target_table": "notification_devices",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "installation_id"
+          ],
+          "target_columns": [
+            "installation_id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "push_queue_notification_id_fkey",
+          "validated": true,
+          "source_table": "push_queue",
+          "target_table": "notifications",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "notification_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_ar_tests_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_ar_tests",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_captures_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_captures",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_captures_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_captures",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_jobs_capture_id_fkey",
+          "validated": true,
+          "source_table": "tour_jobs",
+          "target_table": "tour_captures",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "private",
+          "source_columns": [
+            "capture_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_jobs_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_jobs",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_output_writes_job_id_fkey",
+          "validated": true,
+          "source_table": "tour_output_writes",
+          "target_table": "tour_jobs",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "private",
+          "source_columns": [
+            "job_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_output_writes_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_output_writes",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_permissions_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_permissions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_permissions_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_permissions",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "private",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "account_deletion_requests_user_id_fkey",
+          "validated": true,
+          "source_table": "account_deletion_requests",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "content_reports_mission_id_fkey",
+          "validated": true,
+          "source_table": "content_reports",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "content_reports_post_id_fkey",
+          "validated": true,
+          "source_table": "content_reports",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "content_reports_reporter_id_fkey",
+          "validated": true,
+          "source_table": "content_reports",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "reporter_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "content_reports_showcase_id_fkey",
+          "validated": true,
+          "source_table": "content_reports",
+          "target_table": "showcase_items",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "showcase_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "home_feed_snapshots_viewer_id_fkey",
+          "validated": true,
+          "source_table": "home_feed_snapshots",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "viewer_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "legal_acceptances_user_id_fkey",
+          "validated": true,
+          "source_table": "legal_acceptances",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_application_operations_applicant_id_fkey",
+          "validated": true,
+          "source_table": "mission_application_operations",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "applicant_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_application_operations_application_id_fkey",
+          "validated": true,
+          "source_table": "mission_application_operations",
+          "target_table": "mission_applications",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "application_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_application_operations_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_application_operations",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_applications_applicant_id_fkey",
+          "validated": true,
+          "source_table": "mission_applications",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "applicant_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_applications_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_applications",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_comment_operations_author_id_fkey",
+          "validated": true,
+          "source_table": "mission_comment_operations",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_comment_operations_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_comment_operations",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_comments_author_id_fkey",
+          "validated": true,
+          "source_table": "mission_comments",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_comments_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_comments",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_drafts_author_id_fkey",
+          "validated": true,
+          "source_table": "mission_drafts",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_drafts_published_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_drafts",
+          "target_table": "missions",
+          "delete_action": "n",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "published_mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_finalists_application_id_fkey",
+          "validated": true,
+          "source_table": "mission_finalists",
+          "target_table": "mission_applications",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "application_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_finalists_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_finalists",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_reactions_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_reactions",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_reactions_user_id_fkey",
+          "validated": true,
+          "source_table": "mission_reactions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_saves_mission_id_fkey",
+          "validated": true,
+          "source_table": "mission_saves",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "mission_saves_user_id_fkey",
+          "validated": true,
+          "source_table": "mission_saves",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "missions_author_id_fkey",
+          "validated": true,
+          "source_table": "missions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notification_devices_user_id_fkey",
+          "validated": true,
+          "source_table": "notification_devices",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notification_preferences_user_id_fkey",
+          "validated": true,
+          "source_table": "notification_preferences",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notifications_actor_id_fkey",
+          "validated": true,
+          "source_table": "notifications",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "actor_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notifications_mission_id_fkey",
+          "validated": true,
+          "source_table": "notifications",
+          "target_table": "missions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "mission_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notifications_post_id_fkey",
+          "validated": true,
+          "source_table": "notifications",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "notifications_recipient_id_fkey",
+          "validated": true,
+          "source_table": "notifications",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "recipient_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_collaboration_interests_applicant_id_fkey",
+          "validated": true,
+          "source_table": "post_collaboration_interests",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "applicant_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_collaboration_interests_post_id_fkey",
+          "validated": true,
+          "source_table": "post_collaboration_interests",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_comments_author_id_fkey",
+          "validated": true,
+          "source_table": "post_comments",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_comments_post_id_fkey",
+          "validated": true,
+          "source_table": "post_comments",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_reactions_post_id_fkey",
+          "validated": true,
+          "source_table": "post_reactions",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_reactions_user_id_fkey",
+          "validated": true,
+          "source_table": "post_reactions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_saves_post_id_fkey",
+          "validated": true,
+          "source_table": "post_saves",
+          "target_table": "posts",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "post_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "post_saves_user_id_fkey",
+          "validated": true,
+          "source_table": "post_saves",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "posts_author_id_fkey",
+          "validated": true,
+          "source_table": "posts",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "profile_follows_author_id_fkey",
+          "validated": true,
+          "source_table": "profile_follows",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "profile_follows_follower_id_fkey",
+          "validated": true,
+          "source_table": "profile_follows",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "follower_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "profile_media_operations_user_id_fkey",
+          "validated": true,
+          "source_table": "profile_media_operations",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "auth",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "profiles_id_fkey",
+          "validated": true,
+          "source_table": "profiles",
+          "target_table": "users",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "auth",
+          "source_columns": [
+            "id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "showcase_images_item_id_fkey",
+          "validated": true,
+          "source_table": "showcase_images",
+          "target_table": "showcase_items",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "item_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "showcase_items_owner_id_fkey",
+          "validated": true,
+          "source_table": "showcase_items",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "showcase_saves_item_id_fkey",
+          "validated": true,
+          "source_table": "showcase_saves",
+          "target_table": "showcase_items",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "item_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "showcase_saves_user_id_fkey",
+          "validated": true,
+          "source_table": "showcase_saves",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "stories_author_id_fkey",
+          "validated": true,
+          "source_table": "stories",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_publications_author_id_fkey",
+          "validated": true,
+          "source_table": "story_publications",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_reports_reporter_id_fkey",
+          "validated": true,
+          "source_table": "story_reports",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "reporter_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_reports_story_id_fkey",
+          "validated": true,
+          "source_table": "story_reports",
+          "target_table": "stories",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "story_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_views_story_id_fkey",
+          "validated": true,
+          "source_table": "story_views",
+          "target_table": "stories",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "story_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "story_views_viewer_id_fkey",
+          "validated": true,
+          "source_table": "story_views",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "viewer_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_progress_revision_id_fkey",
+          "validated": true,
+          "source_table": "tour_progress",
+          "target_table": "tour_revisions",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "revision_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_progress_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_progress",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_progress_user_id_fkey",
+          "validated": true,
+          "source_table": "tour_progress",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_requests_requester_id_fkey",
+          "validated": true,
+          "source_table": "tour_requests",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "requester_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_requests_reviewer_id_fkey",
+          "validated": true,
+          "source_table": "tour_requests",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "reviewer_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_requests_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_requests",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_revisions_owner_id_fkey",
+          "validated": true,
+          "source_table": "tour_revisions",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tour_revisions_tour_id_fkey",
+          "validated": true,
+          "source_table": "tour_revisions",
+          "target_table": "tours",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "tour_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "tours_owner_id_fkey",
+          "validated": true,
+          "source_table": "tours",
+          "target_table": "profiles",
+          "delete_action": "c",
+          "source_schema": "public",
+          "target_schema": "public",
+          "source_columns": [
+            "owner_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "iceberg_namespaces_catalog_id_fkey",
+          "validated": true,
+          "source_table": "iceberg_namespaces",
+          "target_table": "buckets_analytics",
+          "delete_action": "c",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "catalog_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "iceberg_tables_catalog_id_fkey",
+          "validated": true,
+          "source_table": "iceberg_tables",
+          "target_table": "buckets_analytics",
+          "delete_action": "c",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "catalog_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "iceberg_tables_namespace_id_fkey",
+          "validated": true,
+          "source_table": "iceberg_tables",
+          "target_table": "iceberg_namespaces",
+          "delete_action": "c",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "namespace_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "objects_bucketId_fkey",
+          "validated": true,
+          "source_table": "objects",
+          "target_table": "buckets",
+          "delete_action": "a",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "bucket_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "s3_multipart_uploads_bucket_id_fkey",
+          "validated": true,
+          "source_table": "s3_multipart_uploads",
+          "target_table": "buckets",
+          "delete_action": "a",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "bucket_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "s3_multipart_uploads_parts_bucket_id_fkey",
+          "validated": true,
+          "source_table": "s3_multipart_uploads_parts",
+          "target_table": "buckets",
+          "delete_action": "a",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "bucket_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "s3_multipart_uploads_parts_upload_id_fkey",
+          "validated": true,
+          "source_table": "s3_multipart_uploads_parts",
+          "target_table": "s3_multipart_uploads",
+          "delete_action": "c",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "upload_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        },
+        {
+          "name": "vector_indexes_bucket_id_fkey",
+          "validated": true,
+          "source_table": "vector_indexes",
+          "target_table": "buckets_vectors",
+          "delete_action": "a",
+          "source_schema": "storage",
+          "target_schema": "storage",
+          "source_columns": [
+            "bucket_id"
+          ],
+          "target_columns": [
+            "id"
+          ],
+          "orphan_rows": 0
+        }
+      ],
+      "storage": {
+        "metadata_objects": 15,
+        "physical_files": 15,
+        "missing_files": 0,
+        "unreferenced_files": 0,
+        "matching_layout": "Observed local file backend stub/stub/bucket/name/version; not a remote S3 equivalence claim"
+      },
+      "legacy_cascade_probe": {
+        "result": "PASS_REPRODUCED_LEGACY_CASCADE_AND_ROLLBACK",
+        "steps": [
+          {
+            "stage": "before",
+            "missions": 6,
+            "profiles": 6,
+            "applications": 8
+          },
+          {
+            "stage": "after_delete",
+            "missions": 0,
+            "profiles": 5,
+            "applications": 0
+          }
+        ],
+        "all_table_digests_equal_after_rollback": true,
+        "sequences_equal_after_rollback": true,
+        "scope": "Dedicated recovery clone; no source profile/Auth deletion or FK replacement"
+      },
+      "negative": {
+        "private_schema_read_denied_to_anon": "42501",
+        "read_only_write_denied": "25006"
+      },
+      "preflight_sql_sha256": "dbc074f63c9a25f2c6cde28d6097cb7aafe6b2c226eb16c3ea9bc28cf37b9ab9",
+      "preflight_execution": "PASS",
+      "complete_requirement_validation": false
+    }
+  }
+}

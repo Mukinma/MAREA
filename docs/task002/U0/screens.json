@@ -1,0 +1,1970 @@
+{
+  "status": "CORRECCION_PARA_APROBACION_FORMAL_U0_NO_FLUTTER",
+  "synthetic_data": true,
+  "backend_calls": false,
+  "screens": [
+    {
+      "id": "U01",
+      "title": "Misiones",
+      "change": "EXISTENTE",
+      "route": "/missions",
+      "audience": "organizador autorizado o candidata",
+      "critical": false,
+      "links": [
+        "U09",
+        "U02",
+        "U22"
+      ]
+    },
+    {
+      "id": "U02",
+      "title": "¿Cómo vas a organizar?",
+      "change": "NUEVA",
+      "route": "hoja de contexto",
+      "audience": "persona elegible",
+      "critical": false,
+      "links": [
+        "U08",
+        "U03"
+      ]
+    },
+    {
+      "id": "U03",
+      "title": "Tus organizaciones",
+      "change": "NUEVA",
+      "route": "/organizations",
+      "audience": "persona autenticada",
+      "critical": false,
+      "links": [
+        "U04",
+        "U05",
+        "U07"
+      ]
+    },
+    {
+      "id": "U04",
+      "title": "Crear organización",
+      "change": "NUEVA",
+      "route": "/organizations/new",
+      "audience": "persona elegible",
+      "critical": true,
+      "links": [
+        "U05"
+      ]
+    },
+    {
+      "id": "U05",
+      "title": "Colectivo Río",
+      "change": "NUEVA",
+      "route": "/organizations/:id",
+      "audience": "miembro autorizado",
+      "critical": false,
+      "links": [
+        "U06",
+        "U12",
+        "U02"
+      ]
+    },
+    {
+      "id": "U06",
+      "title": "Miembros y permisos",
+      "change": "NUEVA",
+      "route": "/organizations/:id/members",
+      "audience": "member.manage vigente",
+      "critical": true,
+      "links": [
+        "U07",
+        "U05"
+      ]
+    },
+    {
+      "id": "U07",
+      "title": "Invitación al colectivo",
+      "change": "NUEVA",
+      "route": "/invitations/:id",
+      "audience": "receptor autenticado",
+      "critical": true,
+      "links": [
+        "U05",
+        "U03"
+      ]
+    },
+    {
+      "id": "U08",
+      "title": "Tu próxima colaboración",
+      "change": "MODIFICADA",
+      "route": "/missions/new · /edit · /drafts/:id/edit",
+      "audience": "organizador autorizado",
+      "critical": true,
+      "links": [
+        "U09",
+        "U28"
+      ]
+    },
+    {
+      "id": "U09",
+      "title": "Mural de barrio",
+      "change": "MODIFICADA",
+      "route": "/missions/:id",
+      "audience": "proyección pública o parte autorizada",
+      "critical": false,
+      "links": [
+        "U10",
+        "U12",
+        "U23"
+      ]
+    },
+    {
+      "id": "U10",
+      "title": "Tu propuesta",
+      "change": "MODIFICADA",
+      "route": "/missions/:id/apply",
+      "audience": "candidata elegible ajena a titular personal",
+      "critical": true,
+      "links": [
+        "U11",
+        "U26"
+      ]
+    },
+    {
+      "id": "U11",
+      "title": "Mi candidatura",
+      "change": "MODIFICADA",
+      "route": "/missions/:id/sent",
+      "audience": "candidata correspondiente",
+      "critical": false,
+      "links": [
+        "U15",
+        "U09"
+      ]
+    },
+    {
+      "id": "U12",
+      "title": "Candidaturas",
+      "change": "MODIFICADA",
+      "route": "/missions/:id/manage",
+      "audience": "titular personal o application.review",
+      "critical": true,
+      "links": [
+        "U13",
+        "U09",
+        "U27"
+      ]
+    },
+    {
+      "id": "U13",
+      "title": "Revisa la oferta",
+      "change": "NUEVA",
+      "route": "/missions/:id/offers/new",
+      "audience": "organizador autorizado con facultad de oferta y firma",
+      "critical": true,
+      "links": [
+        "U14"
+      ]
+    },
+    {
+      "id": "U14",
+      "title": "Oferta enviada",
+      "change": "NUEVA",
+      "route": "/offers/:id",
+      "audience": "organizador autorizado",
+      "critical": true,
+      "links": [
+        "U12",
+        "U16"
+      ]
+    },
+    {
+      "id": "U15",
+      "title": "Una oferta para ti",
+      "change": "NUEVA",
+      "route": "/offers/:id",
+      "audience": "destinataria única",
+      "critical": true,
+      "links": [
+        "U16",
+        "U11"
+      ]
+    },
+    {
+      "id": "U16",
+      "title": "Tu acuerdo",
+      "change": "NUEVA",
+      "route": "/agreements/:id",
+      "audience": "parte autorizada",
+      "critical": false,
+      "links": [
+        "U17",
+        "U18",
+        "U19",
+        "U20"
+      ]
+    },
+    {
+      "id": "U17",
+      "title": "Cambios propuestos",
+      "change": "NUEVA",
+      "route": "/agreements/:id/revisions/:revision",
+      "audience": "parte autorizada",
+      "critical": true,
+      "links": [
+        "U16",
+        "U18"
+      ]
+    },
+    {
+      "id": "U18",
+      "title": "Versiones y aceptaciones",
+      "change": "NUEVA",
+      "route": "/agreements/:id/history",
+      "audience": "parte autorizada",
+      "critical": false,
+      "links": [
+        "U16"
+      ]
+    },
+    {
+      "id": "U19",
+      "title": "Solicitar cancelación",
+      "change": "NUEVA",
+      "route": "/agreements/:id/cancellation",
+      "audience": "parte autorizada",
+      "critical": true,
+      "links": [
+        "U16",
+        "U20",
+        "U25"
+      ]
+    },
+    {
+      "id": "U20",
+      "title": "Tu participación y seguridad",
+      "change": "NUEVA",
+      "route": "/agreements/:id/safety",
+      "audience": "parte afectada",
+      "critical": true,
+      "links": [
+        "U21",
+        "U19"
+      ]
+    },
+    {
+      "id": "U21",
+      "title": "Seguimiento de tu reporte",
+      "change": "NUEVA",
+      "route": "/cases/:id",
+      "audience": "denunciante o caso autorizado",
+      "critical": false,
+      "links": [
+        "U16"
+      ]
+    },
+    {
+      "id": "U22",
+      "title": "Notificaciones",
+      "change": "MODIFICADA",
+      "route": "bandeja existente",
+      "audience": "destinatario autenticado",
+      "critical": false,
+      "links": [
+        "U15",
+        "U17",
+        "U25"
+      ]
+    },
+    {
+      "id": "U23",
+      "title": "Colaboración histórica",
+      "change": "NUEVO_ESTADO",
+      "route": "/missions/:id",
+      "audience": "lector autorizado a histórico",
+      "critical": false,
+      "links": [
+        "U09",
+        "U24"
+      ]
+    },
+    {
+      "id": "U24",
+      "title": "Actualiza para continuar",
+      "change": "NUEVO_ESTADO",
+      "route": "intercepción de contrato",
+      "audience": "cliente incompatible",
+      "critical": false,
+      "links": [
+        "U01"
+      ]
+    },
+    {
+      "id": "U25",
+      "title": "Responder cancelación",
+      "change": "NUEVA",
+      "route": "/agreements/:id/cancellation/:request",
+      "audience": "contraparte distinta de quien solicitó",
+      "critical": true,
+      "links": [
+        "U16",
+        "U20"
+      ]
+    },
+    {
+      "id": "U26",
+      "title": "Reconocer nuevos términos",
+      "change": "NUEVA",
+      "route": "/missions/:id/revisions/:revision",
+      "audience": "candidata afectada",
+      "critical": true,
+      "links": [
+        "U10",
+        "U11"
+      ]
+    },
+    {
+      "id": "U27",
+      "title": "Cerrar o cancelar misión",
+      "change": "MODIFICADA",
+      "route": "/missions/:id/manage/status",
+      "audience": "organizador autorizado",
+      "critical": true,
+      "links": [
+        "U09",
+        "U16"
+      ]
+    },
+    {
+      "id": "U28",
+      "title": "Borrador de misión",
+      "change": "MODIFICADA",
+      "route": "/missions/drafts/:id/edit",
+      "audience": "titular del borrador",
+      "critical": true,
+      "links": [
+        "U08",
+        "U01"
+      ]
+    }
+  ],
+  "states": [
+    "resource_scoped"
+  ],
+  "contexts": [
+    "personal",
+    "organization"
+  ],
+  "preview_roles": [
+    "organizer",
+    "candidate",
+    "member",
+    "editor",
+    "related",
+    "outsider"
+  ],
+  "states_by_resource": {
+    "U01": {
+      "resource": "mission_list",
+      "states": {
+        "available": "Misiones disponibles",
+        "empty": "Sin misiones"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "editor",
+        "related",
+        "member",
+        "outsider"
+      ],
+      "actions": [
+        {
+          "id": "detail",
+          "label": "Ver misión",
+          "target": "U09",
+          "kind": "consult",
+          "states": [
+            "available"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "create",
+          "label": "Crear misión",
+          "target": "U02",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "notices",
+          "label": "Ver avisos",
+          "target": "U22",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U02": {
+      "resource": "acting_context",
+      "states": {
+        "available": "Contextos vigentes",
+        "org_unavailable": "Organización sin facultad vigente"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "editor",
+        "related",
+        "member"
+      ],
+      "actions": [
+        {
+          "id": "personal",
+          "label": "Continuar como persona",
+          "target": "U08",
+          "kind": "context",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "organization",
+          "label": "Continuar por Colectivo Río",
+          "target": "U08",
+          "kind": "context",
+          "states": [
+            "available"
+          ],
+          "roles": [
+            "organizer",
+            "editor",
+            "member"
+          ],
+          "consent": false
+        },
+        {
+          "id": "organizations",
+          "label": "Gestionar organizaciones",
+          "target": "U03",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U03": {
+      "resource": "organization_list",
+      "states": {
+        "available": "Organizaciones vigentes",
+        "empty": "Sin organizaciones"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "editor",
+        "related",
+        "member"
+      ],
+      "actions": [
+        {
+          "id": "create_org",
+          "label": "Crear organización",
+          "target": "U04",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "organization",
+          "label": "Ver organización",
+          "target": "U05",
+          "kind": "consult",
+          "states": [
+            "available"
+          ],
+          "roles": [
+            "organizer",
+            "editor",
+            "member"
+          ],
+          "consent": false
+        },
+        {
+          "id": "invitation",
+          "label": "Consultar invitación separada",
+          "target": "U07",
+          "kind": "consult",
+          "states": null,
+          "roles": [
+            "candidate",
+            "related"
+          ],
+          "consent": false
+        }
+      ]
+    },
+    "U04": {
+      "resource": "organization_draft",
+      "states": {
+        "draft": "Nueva organización"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "editor",
+        "related",
+        "member"
+      ],
+      "actions": [
+        {
+          "id": "create_org",
+          "label": "Crear organización",
+          "target": "U05",
+          "kind": "accept",
+          "states": null,
+          "roles": null,
+          "consent": true
+        }
+      ]
+    },
+    "U05": {
+      "resource": "organization",
+      "states": {
+        "normal": "NORMAL",
+        "suspended": "SUSPENDIDA",
+        "no_owner": "SIN_PROPIETARIO"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "editor",
+        "member",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "members",
+          "label": "Consultar miembros",
+          "target": "U06",
+          "kind": "consult",
+          "states": null,
+          "roles": [
+            "organizer"
+          ],
+          "consent": false
+        },
+        {
+          "id": "manage",
+          "label": "Gestionar misión",
+          "target": "U12",
+          "kind": "consult",
+          "states": [
+            "normal"
+          ],
+          "roles": [
+            "organizer"
+          ],
+          "consent": false
+        },
+        {
+          "id": "create",
+          "label": "Crear por la organización",
+          "target": "U02",
+          "kind": "context",
+          "states": [
+            "normal"
+          ],
+          "roles": [
+            "organizer",
+            "editor",
+            "member"
+          ],
+          "consent": false
+        }
+      ]
+    },
+    "U06": {
+      "resource": "memberships",
+      "states": {
+        "active": "Membresías vigentes",
+        "no_owner": "Última propiedad: procedimiento controlado"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer"
+      ],
+      "actions": [
+        {
+          "id": "invite",
+          "label": "Preparar invitación",
+          "target": "U07",
+          "kind": "consult",
+          "states": [
+            "active"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "organization",
+          "label": "Consultar organización",
+          "target": "U05",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U07": {
+      "resource": "invitation",
+      "states": {
+        "pending": "Invitación pendiente (13 oct)",
+        "member_active": "Invitación aceptada y membresía vigente (14 oct)",
+        "expired": "Invitación vencida",
+        "rejected": "Invitación rechazada"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "candidate",
+        "related",
+        "member"
+      ],
+      "actions": [
+        {
+          "id": "accept_invite",
+          "label": "Aceptar invitación",
+          "target": "U05",
+          "kind": "accept",
+          "states": [
+            "pending"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "reject_invite",
+          "label": "Rechazar invitación",
+          "target": "U03",
+          "kind": "reject",
+          "states": [
+            "pending"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "membership",
+          "label": "Consultar membresía vigente",
+          "target": "U05",
+          "kind": "consult",
+          "states": [
+            "member_active"
+          ],
+          "roles": [
+            "member"
+          ],
+          "consent": false
+        },
+        {
+          "id": "organizations",
+          "label": "Volver a organizaciones",
+          "target": "U03",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U08": {
+      "resource": "mission_draft",
+      "states": {
+        "draft": "Borrador editable",
+        "material": "Edición material de misión publicada"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "editor",
+        "member",
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "publish",
+          "label": "Publicar misión",
+          "target": "U09",
+          "kind": "accept",
+          "states": [
+            "draft"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "save",
+          "label": "Guardar borrador en servidor",
+          "target": "U28",
+          "kind": "write",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "mission_revision",
+          "label": "Revisar edición de misión",
+          "target": "U09",
+          "kind": "consult",
+          "states": [
+            "material"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "draft",
+          "label": "Consultar borrador",
+          "target": "U28",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U09": {
+      "resource": "mission",
+      "states": {
+        "open": "PUBLICADA · admite candidaturas",
+        "closed": "CERRADA",
+        "cancelled": "CANCELADA",
+        "full": "PUBLICADA · sin plazas disponibles",
+        "eligibility_pending": "Vínculo de control: elegibilidad sin resolver"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "editor",
+        "related",
+        "member",
+        "outsider"
+      ],
+      "actions": [
+        {
+          "id": "apply",
+          "label": "Postular personalmente",
+          "target": "U10",
+          "kind": "context",
+          "states": [
+            "open"
+          ],
+          "roles": [
+            "candidate",
+            "related"
+          ],
+          "consent": false
+        },
+        {
+          "id": "manage",
+          "label": "Gestionar como organizador",
+          "target": "U12",
+          "kind": "consult",
+          "states": null,
+          "roles": [
+            "organizer"
+          ],
+          "consent": false
+        },
+        {
+          "id": "edit",
+          "label": "Administrar contenido de misión",
+          "target": "U08",
+          "kind": "consult",
+          "states": null,
+          "roles": [
+            "editor",
+            "member"
+          ],
+          "consent": false
+        },
+        {
+          "id": "eligibility",
+          "label": "Consultar elegibilidad de persona vinculada",
+          "target": "U09",
+          "kind": "query",
+          "states": null,
+          "roles": [
+            "organizer",
+            "editor",
+            "related",
+            "member"
+          ],
+          "consent": false
+        },
+        {
+          "id": "legacy",
+          "label": "Consultar histórico legado",
+          "target": "U23",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U10": {
+      "resource": "application_draft",
+      "states": {
+        "eligible": "Elegibilidad vigente · misión abierta",
+        "unavailable": "Postulación no disponible"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "apply",
+          "label": "Enviar candidatura",
+          "target": "U11",
+          "kind": "accept",
+          "states": [
+            "eligible"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "revision",
+          "label": "Consultar revisión de misión",
+          "target": "U26",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U11": {
+      "resource": "application",
+      "states": {
+        "sent": "ENVIADA",
+        "shortlisted": "PRESELECCIONADA",
+        "offer_pending": "Oferta PENDIENTE",
+        "revision_known": "ENVIADA · revisión v2 reconocida",
+        "expired": "CADUCADA",
+        "resolved": "Candidatura resuelta"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "offer",
+          "label": "Consultar oferta",
+          "target": "U15",
+          "kind": "consult",
+          "states": [
+            "offer_pending"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "mission",
+          "label": "Volver a misión",
+          "target": "U09",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U12": {
+      "resource": "applications",
+      "states": {
+        "available": "Candidaturas preseleccionadas",
+        "empty": "Sin candidaturas",
+        "closed": "Misión CERRADA · sólo consulta",
+        "cancelled": "Misión CANCELADA · sólo consulta"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer"
+      ],
+      "actions": [
+        {
+          "id": "prepare",
+          "label": "Revisar oferta para Lucía",
+          "target": "U13",
+          "kind": "consult",
+          "states": [
+            "available"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "status",
+          "label": "Cerrar o cancelar misión",
+          "target": "U27",
+          "kind": "consult",
+          "states": [
+            "available"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "mission",
+          "label": "Volver a misión",
+          "target": "U09",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U13": {
+      "resource": "offer_preparation",
+      "states": {
+        "available": "Candidatura disponible · plaza disponible",
+        "pending": "Oferta previa PENDIENTE",
+        "expired": "Oferta previa EXPIRADA · elegibilidad aún sin verificar",
+        "resolved": "Oferta previa resuelta · sólo consulta",
+        "unavailable": "Sin plaza / candidatura incompatible"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer"
+      ],
+      "actions": [
+        {
+          "id": "issue",
+          "label": "Enviar oferta y aceptar estas condiciones",
+          "target": "U14",
+          "kind": "accept",
+          "states": [
+            "available"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "existing_offer",
+          "label": "Consultar oferta previa",
+          "target": "U14",
+          "kind": "consult",
+          "states": [
+            "pending",
+            "expired",
+            "resolved"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "eligibility",
+          "label": "Consultar candidatura y cupo actuales",
+          "target": "U12",
+          "kind": "query",
+          "states": [
+            "expired",
+            "unavailable"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "applications",
+          "label": "Volver a candidaturas",
+          "target": "U12",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U14": {
+      "resource": "offer",
+      "states": {
+        "pending": "PENDIENTE · reserva vigente",
+        "expired": "EXPIRADA · reserva liberada",
+        "accepted": "ACEPTADA · aceptación histórica",
+        "rejected": "RECHAZADA · reserva liberada",
+        "cancelled": "CANCELADA · reserva liberada"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer"
+      ],
+      "actions": [
+        {
+          "id": "withdraw",
+          "label": "Retirar oferta pendiente",
+          "target": "U14",
+          "kind": "cancel",
+          "states": [
+            "pending"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "agreement",
+          "label": "Consultar acuerdo vinculado",
+          "target": "U16",
+          "kind": "consult",
+          "states": [
+            "accepted"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "applications",
+          "label": "Volver a candidaturas",
+          "target": "U12",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U15": {
+      "resource": "offer",
+      "states": {
+        "pending": "PENDIENTE · antes de expires_at",
+        "expired": "EXPIRADA · no admite respuesta",
+        "accepted": "ACEPTADA · aceptación histórica",
+        "rejected": "RECHAZADA",
+        "cancelled": "CANCELADA"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "accept_offer",
+          "label": "Aceptar oferta",
+          "target": "U16",
+          "kind": "accept",
+          "states": [
+            "pending"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "reject_offer",
+          "label": "Rechazar oferta",
+          "target": "U11",
+          "kind": "reject",
+          "states": [
+            "pending"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "agreement",
+          "label": "Consultar acuerdo vinculado",
+          "target": "U16",
+          "kind": "consult",
+          "states": [
+            "accepted"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "application",
+          "label": "Volver a candidatura",
+          "target": "U11",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U16": {
+      "resource": "agreement",
+      "states": {
+        "active": "ACTIVO",
+        "revision_pending": "ACTIVO · propuesta de revisión pendiente",
+        "terminated": "TERMINADO",
+        "cancelled": "CANCELADO"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "propose",
+          "label": "Proponer cambios de acuerdo",
+          "target": "U17",
+          "kind": "context",
+          "states": [
+            "active"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "revision",
+          "label": "Consultar propuesta pendiente",
+          "target": "U17",
+          "kind": "consult",
+          "states": [
+            "revision_pending"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "history",
+          "label": "Ver historial",
+          "target": "U18",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "cancel_request",
+          "label": "Solicitar cancelación",
+          "target": "U19",
+          "kind": "context",
+          "states": [
+            "active",
+            "revision_pending"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "safety",
+          "label": "Participación y seguridad",
+          "target": "U20",
+          "kind": "protection",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U17": {
+      "resource": "agreement_revision",
+      "states": {
+        "pending": "Propuesta v2 vigente",
+        "signed": "Aceptación propia registrada · falta contraparte",
+        "expired": "Propuesta EXPIRADA",
+        "rejected": "Propuesta RECHAZADA",
+        "activated": "v2 activada bilateralmente",
+        "agreement_terminal": "Acuerdo TERMINADO · propuesta sin operación vigente"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "accept_revision",
+          "label": "Aceptar cambios por mi parte",
+          "target": "U16",
+          "kind": "accept",
+          "states": [
+            "pending"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "reject_revision",
+          "label": "Rechazar propuesta y conservar v1",
+          "target": "U16",
+          "kind": "reject",
+          "states": [
+            "pending"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "history",
+          "label": "Ver versiones",
+          "target": "U18",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "agreement",
+          "label": "Consultar acuerdo",
+          "target": "U16",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U18": {
+      "resource": "agreement_history",
+      "states": {
+        "active": "Acuerdo ACTIVO · v1 vigente",
+        "revision_pending": "ACTIVO · v2 propuesta",
+        "terminated": "Acuerdo TERMINADO · historial",
+        "revised": "ACTIVO · v2 vigente"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "agreement",
+          "label": "Volver al acuerdo",
+          "target": "U16",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U19": {
+      "resource": "cancellation_preparation",
+      "states": {
+        "available": "Acuerdo activo · sin solicitud pendiente",
+        "pending": "Solicitud ya pendiente",
+        "resolved": "Acuerdo terminal · sólo consulta"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "request_cancel",
+          "label": "Enviar solicitud de cancelación",
+          "target": "U25",
+          "kind": "cancel",
+          "states": [
+            "available"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "request",
+          "label": "Consultar solicitud existente",
+          "target": "U25",
+          "kind": "consult",
+          "states": [
+            "pending"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "agreement",
+          "label": "Consultar acuerdo",
+          "target": "U16",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "safety",
+          "label": "Acciones de seguridad",
+          "target": "U20",
+          "kind": "protection",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U20": {
+      "resource": "personal_safety",
+      "states": {
+        "available": "Protección personal disponible",
+        "contract_sending": "Otra operación contractual en curso",
+        "safety_sending": "Aviso de seguridad en curso",
+        "recorded": "Aviso confirmado por servidor (muestra)"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "stop",
+          "label": "Detener participación y solicitar registro",
+          "target": "U21",
+          "kind": "safety",
+          "states": [
+            "available",
+            "contract_sending"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "report",
+          "label": "Bloquear contacto y solicitar reporte",
+          "target": "U21",
+          "kind": "safety",
+          "states": [
+            "available",
+            "contract_sending"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "case",
+          "label": "Consultar seguimiento",
+          "target": "U21",
+          "kind": "consult",
+          "states": [
+            "recorded"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "agreement",
+          "label": "Consultar acuerdo",
+          "target": "U16",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U21": {
+      "resource": "case",
+      "states": {
+        "unconfirmed": "Sin respuesta de registro",
+        "received": "Reporte recibido (respuesta de muestra)",
+        "resolved": "Caso resuelto (respuesta de muestra)"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "case_status",
+          "label": "Consultar estado del caso",
+          "target": "U21",
+          "kind": "query",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "agreement",
+          "label": "Consultar acuerdo",
+          "target": "U16",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "safety",
+          "label": "Protección personal",
+          "target": "U20",
+          "kind": "protection",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U22": {
+      "resource": "notification_list",
+      "states": {
+        "available": "Notificaciones disponibles",
+        "empty": "Sin notificaciones"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "editor",
+        "related",
+        "member"
+      ],
+      "actions": [
+        {
+          "id": "offer",
+          "label": "Consultar oferta",
+          "target": "U15",
+          "kind": "consult",
+          "states": [
+            "available"
+          ],
+          "roles": [
+            "candidate",
+            "related"
+          ],
+          "consent": false
+        },
+        {
+          "id": "revision",
+          "label": "Consultar cambios",
+          "target": "U17",
+          "kind": "consult",
+          "states": [
+            "available"
+          ],
+          "roles": [
+            "organizer",
+            "candidate",
+            "related"
+          ],
+          "consent": false
+        },
+        {
+          "id": "cancellation",
+          "label": "Consultar cancelación",
+          "target": "U25",
+          "kind": "consult",
+          "states": [
+            "available"
+          ],
+          "roles": [
+            "organizer",
+            "candidate",
+            "related"
+          ],
+          "consent": false
+        }
+      ]
+    },
+    "U23": {
+      "resource": "legacy_record",
+      "states": {
+        "review": "Histórico pendiente de revisión"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "editor",
+        "related",
+        "member"
+      ],
+      "actions": [
+        {
+          "id": "mission",
+          "label": "Volver a ficha segura",
+          "target": "U09",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "update",
+          "label": "Consultar actualización requerida",
+          "target": "U24",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U24": {
+      "resource": "client_capability",
+      "states": {
+        "incompatible": "Cliente incompatible"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "editor",
+        "related",
+        "member",
+        "outsider"
+      ],
+      "actions": [
+        {
+          "id": "missions",
+          "label": "Volver a misiones",
+          "target": "U01",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "safety",
+          "label": "Protección personal",
+          "target": "U20",
+          "kind": "protection",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U25": {
+      "resource": "cancellation_request",
+      "states": {
+        "requested": "Solicitud pendiente · acuerdo ACTIVO",
+        "rejected": "Solicitud RECHAZADA · acuerdo ACTIVO",
+        "completed": "Cancelación bilateral completada · acuerdo CANCELADO",
+        "withdrawn": "Solicitud RETIRADA · acuerdo ACTIVO",
+        "requester": "Persona solicitante · no es contraparte receptora"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "accept_cancel",
+          "label": "Aceptar cancelación por mi parte",
+          "target": "U16",
+          "kind": "cancel",
+          "states": [
+            "requested"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "reject_cancel",
+          "label": "Rechazar solicitud y conservar acuerdo",
+          "target": "U16",
+          "kind": "reject",
+          "states": [
+            "requested"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "agreement",
+          "label": "Consultar acuerdo",
+          "target": "U16",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "safety",
+          "label": "Participación y seguridad",
+          "target": "U20",
+          "kind": "protection",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U26": {
+      "resource": "mission_revision_ack",
+      "states": {
+        "pending": "Revisión v2 vigente · reconocimiento pendiente",
+        "conflict": "Revisión v2 superada por v3",
+        "expired": "Candidatura CADUCADA · sin transición admisible",
+        "acknowledged": "Reconocimiento v2 registrado",
+        "current": "Revisión ya conocida · sin cambio material"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "candidate",
+        "related"
+      ],
+      "actions": [
+        {
+          "id": "acknowledge",
+          "label": "Reconocer revisión de misión",
+          "target": "U11",
+          "kind": "acknowledge",
+          "states": [
+            "pending"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "current_revision",
+          "label": "Consultar revisión vigente en servidor",
+          "target": "U26",
+          "kind": "query",
+          "states": [
+            "conflict"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "application",
+          "label": "Volver a candidatura",
+          "target": "U11",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U27": {
+      "resource": "mission_transition",
+      "states": {
+        "open": "PUBLICADA",
+        "closed": "CERRADA",
+        "cancelled": "CANCELADA"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "sending",
+        "error",
+        "conflict",
+        "offline",
+        "denied",
+        "retry_ready"
+      ],
+      "actors": [
+        "organizer"
+      ],
+      "actions": [
+        {
+          "id": "close",
+          "label": "Cerrar convocatoria",
+          "target": "U09",
+          "kind": "write",
+          "states": [
+            "open"
+          ],
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "cancel",
+          "label": "Cancelar misión y ofertas pendientes",
+          "target": "U09",
+          "kind": "cancel",
+          "states": [
+            "open",
+            "closed"
+          ],
+          "roles": null,
+          "consent": true
+        },
+        {
+          "id": "agreements",
+          "label": "Consultar acuerdos existentes",
+          "target": "U16",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    },
+    "U28": {
+      "resource": "mission_draft",
+      "states": {
+        "local": "Borrador local",
+        "server": "Borrador servidor",
+        "conflict": "Versiones en conflicto"
+      },
+      "transports": [
+        "ready",
+        "loading",
+        "error",
+        "offline",
+        "denied"
+      ],
+      "actors": [
+        "organizer",
+        "candidate",
+        "editor",
+        "related",
+        "member"
+      ],
+      "actions": [
+        {
+          "id": "edit",
+          "label": "Editar borrador",
+          "target": "U08",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        },
+        {
+          "id": "missions",
+          "label": "Volver a misiones",
+          "target": "U01",
+          "kind": "consult",
+          "states": null,
+          "roles": null,
+          "consent": false
+        }
+      ]
+    }
+  },
+  "synthetic_scenarios": {
+    "C": "Lucía candidata externa; Alex firma como organizador; Sofía editora. Sin invitación/membresía Lucía.",
+    "I": "13 oct 09:00: Lucía invitada; aún no miembro ni candidata.",
+    "M": "14 oct 09:00: Lucía editora tras invitación; no candidata en C.",
+    "V": "Lucía vinculada; admisibilidad servidor y divulgación necesarias. Firma organizadora por humano distinto; no reputación independiente."
+  },
+  "matrix_rows": 7944
+}

@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-20T04:55:21.744098+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "identity_cases": [
+        {
+          "column": "applicant_id",
+          "result": "PASS",
+          "rollback_exact": true
+        },
+        {
+          "column": "mission_id",
+          "result": "PASS",
+          "rollback_exact": true
+        },
+        {
+          "column": "id",
+          "result": "PASS",
+          "rollback_exact": true
+        }
+      ],
+      "real_review_withdraw_RPC_interleaving": true,
+      "candidate_wait_observed": true,
+      "SQLSTATE": "55P03",
+      "withdraw_succeeds_then_rolls_back": true,
+      "full_rollback_exact": true,
+      "legacy_acceptance_committed": false,
+      "Agreement_validation_claimed": false
+    },
+    "b": {
+      "result": "PASS",
+      "identity_cases": [
+        {
+          "column": "applicant_id",
+          "result": "PASS",
+          "rollback_exact": true
+        },
+        {
+          "column": "mission_id",
+          "result": "PASS",
+          "rollback_exact": true
+        },
+        {
+          "column": "id",
+          "result": "PASS",
+          "rollback_exact": true
+        }
+      ],
+      "real_review_withdraw_RPC_interleaving": true,
+      "candidate_wait_observed": true,
+      "SQLSTATE": "55P03",
+      "withdraw_succeeds_then_rolls_back": true,
+      "full_rollback_exact": true,
+      "legacy_acceptance_committed": false,
+      "Agreement_validation_claimed": false
+    }
+  }
+}

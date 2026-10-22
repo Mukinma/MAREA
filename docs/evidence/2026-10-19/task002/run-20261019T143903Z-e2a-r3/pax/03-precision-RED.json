@@ -1,0 +1,8 @@
+{
+  "result": "EXPECTED_RED",
+  "expected_mtime_ns": 1700000000123456789,
+  "archive_mtime_ns": 1700000000000000000,
+  "method": "Synthetic USTAR integer-only export; previous actual Docker cp loss independently preserved in R2 evidence",
+  "why_legacy_tmpfs_cp_not_reused": "Docker cp cannot see this private tmpfs path; direct exec export is the authorized new transport",
+  "project_data_used": false
+}

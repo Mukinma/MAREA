@@ -1,0 +1,2048 @@
+{
+  "at": "2026-10-19T15:24:03.352024+00:00",
+  "result": "PASS",
+  "sources": {
+    "a": {
+      "result": "PASS",
+      "DDL_catalog_delta": {
+        "columns": {
+          "preserved": 699,
+          "added": 0
+        },
+        "constraints": {
+          "preserved": 370,
+          "added": 10
+        },
+        "event_triggers": {
+          "preserved": 6,
+          "added": 0
+        },
+        "extensions": {
+          "preserved": 7,
+          "added": 0
+        },
+        "grants": {
+          "preserved": 1331,
+          "added": 0
+        },
+        "memberships": {
+          "preserved": 25,
+          "added": 0
+        },
+        "policies": {
+          "preserved": 57,
+          "added": 9
+        },
+        "roles": {
+          "preserved": 31,
+          "added": 2
+        },
+        "routines": {
+          "preserved": 160,
+          "added": 0
+        },
+        "settings": {
+          "preserved": 6,
+          "added": 0
+        },
+        "tables": {
+          "preserved": 108,
+          "added": 2
+        },
+        "triggers": {
+          "preserved": 431,
+          "added": 1
+        },
+        "extra.all_routines": {
+          "preserved": 256,
+          "added": 5
+        },
+        "extra.column_acl": {
+          "preserved": 34,
+          "added": 0
+        },
+        "extra.defaults": {
+          "preserved": 30,
+          "added": 0
+        },
+        "extra.indexes": {
+          "preserved": 232,
+          "added": 2
+        },
+        "extra.private_columns": {
+          "preserved": 3,
+          "added": 14
+        },
+        "extra.publication_tables": {
+          "preserved": 8,
+          "added": 0
+        },
+        "extra.publications": {
+          "preserved": 2,
+          "added": 0
+        },
+        "extra.schemas": {
+          "preserved": 14,
+          "added": 0
+        }
+      },
+      "row_conservation_and_separate_fixtures": [
+        {
+          "table": "_realtime.extensions",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "_realtime.feature_flags",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "_realtime.schema_migrations",
+          "existing": 33,
+          "preserved": 33,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "_realtime.tenants",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.audit_log_entries",
+          "existing": 33,
+          "preserved": 33,
+          "fixture_insertions": 12,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.custom_oauth_providers",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.flow_state",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.identities",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 7,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.instances",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.mfa_amr_claims",
+          "existing": 17,
+          "preserved": 17,
+          "fixture_insertions": 6,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.mfa_challenges",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.mfa_factors",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.oauth_authorizations",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.oauth_client_states",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.oauth_clients",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.oauth_consents",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.one_time_tokens",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.refresh_tokens",
+          "existing": 17,
+          "preserved": 17,
+          "fixture_insertions": 6,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.saml_providers",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.saml_relay_states",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.schema_migrations",
+          "existing": 77,
+          "preserved": 77,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.sessions",
+          "existing": 17,
+          "preserved": 17,
+          "fixture_insertions": 6,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.sso_domains",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.sso_providers",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.users",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 7,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.webauthn_challenges",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.webauthn_credentials",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "collaboration.persons",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 9,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "cron.job",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "cron.job_run_details",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "net._http_response",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "net.http_request_queue",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.push_queue",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.push_settings",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_ar_tests",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_captures",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_jobs",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_output_writes",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_permissions",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.account_deletion_requests",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.content_reports",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.geocoding_cache",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.geocoding_provider",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.home_feed_snapshots",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.legal_acceptances",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 7,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.legal_documents",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_application_operations",
+          "existing": 8,
+          "preserved": 8,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_applications",
+          "existing": 8,
+          "preserved": 8,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_comment_operations",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_comments",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_drafts",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_finalists",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_reactions",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_saves",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.missions",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.notification_devices",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.notification_preferences",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.notifications",
+          "existing": 14,
+          "preserved": 14,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.post_collaboration_interests",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.post_comments",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.post_reactions",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.post_saves",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.posts",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.profile_follows",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.profile_media_operations",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.profiles",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 7,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.registration_settings",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.showcase_images",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.showcase_items",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.showcase_saves",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.stories",
+          "existing": 3,
+          "preserved": 3,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.story_publications",
+          "existing": 4,
+          "preserved": 4,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.story_reports",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.story_views",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.tour_progress",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.tour_requests",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.tour_revisions",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.tours",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_16",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_17",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_18",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_19",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_20",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_21",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_22",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.schema_migrations",
+          "existing": 81,
+          "preserved": 81,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.subscription",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.buckets",
+          "existing": 7,
+          "preserved": 7,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.buckets_analytics",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.buckets_vectors",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.iceberg_namespaces",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.iceberg_tables",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.migrations",
+          "existing": 68,
+          "preserved": 68,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.objects",
+          "existing": 13,
+          "preserved": 13,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.s3_multipart_uploads",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.s3_multipart_uploads_parts",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.vector_indexes",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "supabase_functions.hooks",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "supabase_functions.migrations",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "vault.secrets",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        }
+      ],
+      "sequence_accounting": [
+        {
+          "sequence": "auth.refresh_tokens_id_seq",
+          "initial": 22,
+          "final": 28,
+          "successful_fixture_rows": 6,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 6
+        },
+        {
+          "sequence": "cron.jobid_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        },
+        {
+          "sequence": "cron.runid_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        },
+        {
+          "sequence": "net.http_request_queue_id_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        },
+        {
+          "sequence": "public.legal_acceptances_id_seq",
+          "initial": 7,
+          "final": 19,
+          "successful_fixture_rows": 7,
+          "rolled_back_nextvals": 5,
+          "expected_delta": 12
+        },
+        {
+          "sequence": "realtime.subscription_id_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        },
+        {
+          "sequence": "supabase_functions.hooks_id_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        }
+      ],
+      "exact_fixture_deltas": {
+        "auth.audit_log_entries": 12,
+        "auth.identities": 7,
+        "auth.mfa_amr_claims": 6,
+        "auth.refresh_tokens": 6,
+        "auth.sessions": 6,
+        "auth.users": 7,
+        "collaboration.persons": 9,
+        "public.legal_acceptances": 7,
+        "public.profiles": 7
+      },
+      "Auth_fixture_provenance": {
+        "new_AMR": 6,
+        "new_refresh": 6,
+        "new_sessions": 6
+      },
+      "effective_hardening": {
+        "client_schema": false,
+        "new_functions": 5,
+        "operator_ensure": false,
+        "role_memberships": 0,
+        "owner_auth_update": false,
+        "function_hardening": true,
+        "private_tables_rls": true,
+        "owner_person_update": false,
+        "owner_auth_email_read": false
+      },
+      "new_role_direct_ACL_exact": [
+        {
+          "object": "column:auth.users.deleted_at",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "column:auth.users.id",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "column:collaboration.person_repair_manifests.executed_at",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "object": "column:collaboration.person_repair_manifests.result",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "object": "column:public.account_deletion_requests.requested_at",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "column:public.account_deletion_requests.user_id",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "function:collaboration.ensure_person_for_auth(uuid,text)",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.person_after_auth_insert()",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.person_sync_status(uuid)",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.reconcile_persons(uuid,text,boolean)",
+          "grantee": "marea_person_repair_operator",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.reconcile_persons(uuid,text,boolean)",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.stage_person_repair(uuid,uuid[])",
+          "grantee": "marea_person_repair_operator",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.stage_person_repair(uuid,uuid[])",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "schema:auth",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "object": "schema:collaboration",
+          "grantee": "marea_person_repair_operator",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "object": "schema:collaboration",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "object": "schema:public",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "object": "table:collaboration.person_controls",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "object": "table:collaboration.person_controls",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "table:collaboration.person_repair_manifests",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "object": "table:collaboration.person_repair_manifests",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "table:collaboration.persons",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "object": "table:collaboration.persons",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        }
+      ],
+      "Storage_bytes_metadata_ns_unchanged": true,
+      "business_RLS_FK_routines_unchanged": true
+    },
+    "b": {
+      "result": "PASS",
+      "DDL_catalog_delta": {
+        "columns": {
+          "preserved": 699,
+          "added": 0
+        },
+        "constraints": {
+          "preserved": 370,
+          "added": 10
+        },
+        "event_triggers": {
+          "preserved": 6,
+          "added": 0
+        },
+        "extensions": {
+          "preserved": 7,
+          "added": 0
+        },
+        "grants": {
+          "preserved": 1331,
+          "added": 0
+        },
+        "memberships": {
+          "preserved": 25,
+          "added": 0
+        },
+        "policies": {
+          "preserved": 57,
+          "added": 9
+        },
+        "roles": {
+          "preserved": 31,
+          "added": 2
+        },
+        "routines": {
+          "preserved": 160,
+          "added": 0
+        },
+        "settings": {
+          "preserved": 6,
+          "added": 0
+        },
+        "tables": {
+          "preserved": 108,
+          "added": 2
+        },
+        "triggers": {
+          "preserved": 431,
+          "added": 1
+        },
+        "extra.all_routines": {
+          "preserved": 256,
+          "added": 5
+        },
+        "extra.column_acl": {
+          "preserved": 34,
+          "added": 0
+        },
+        "extra.defaults": {
+          "preserved": 30,
+          "added": 0
+        },
+        "extra.indexes": {
+          "preserved": 232,
+          "added": 2
+        },
+        "extra.private_columns": {
+          "preserved": 3,
+          "added": 14
+        },
+        "extra.publication_tables": {
+          "preserved": 8,
+          "added": 0
+        },
+        "extra.publications": {
+          "preserved": 2,
+          "added": 0
+        },
+        "extra.schemas": {
+          "preserved": 14,
+          "added": 0
+        }
+      },
+      "row_conservation_and_separate_fixtures": [
+        {
+          "table": "_realtime.extensions",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "_realtime.feature_flags",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "_realtime.schema_migrations",
+          "existing": 33,
+          "preserved": 33,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "_realtime.tenants",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.audit_log_entries",
+          "existing": 33,
+          "preserved": 33,
+          "fixture_insertions": 12,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.custom_oauth_providers",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.flow_state",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.identities",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 7,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.instances",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.mfa_amr_claims",
+          "existing": 17,
+          "preserved": 17,
+          "fixture_insertions": 6,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.mfa_challenges",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.mfa_factors",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.oauth_authorizations",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.oauth_client_states",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.oauth_clients",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.oauth_consents",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.one_time_tokens",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.refresh_tokens",
+          "existing": 17,
+          "preserved": 17,
+          "fixture_insertions": 6,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.saml_providers",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.saml_relay_states",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.schema_migrations",
+          "existing": 77,
+          "preserved": 77,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.sessions",
+          "existing": 17,
+          "preserved": 17,
+          "fixture_insertions": 6,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.sso_domains",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.sso_providers",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.users",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 7,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.webauthn_challenges",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "auth.webauthn_credentials",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "collaboration.persons",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 9,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "cron.job",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "cron.job_run_details",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "net._http_response",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "net.http_request_queue",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.push_queue",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.push_settings",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_ar_tests",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_captures",
+          "existing": 3,
+          "preserved": 3,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_jobs",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_output_writes",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "private.tour_permissions",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.account_deletion_requests",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.content_reports",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.geocoding_cache",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.geocoding_provider",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.home_feed_snapshots",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.legal_acceptances",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 7,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.legal_documents",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_application_operations",
+          "existing": 8,
+          "preserved": 8,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_applications",
+          "existing": 8,
+          "preserved": 8,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_comment_operations",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_comments",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_drafts",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_finalists",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_reactions",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.mission_saves",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.missions",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.notification_devices",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.notification_preferences",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.notifications",
+          "existing": 14,
+          "preserved": 14,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.post_collaboration_interests",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.post_comments",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.post_reactions",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.post_saves",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.posts",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.profile_follows",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.profile_media_operations",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.profiles",
+          "existing": 6,
+          "preserved": 6,
+          "fixture_insertions": 7,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.registration_settings",
+          "existing": 1,
+          "preserved": 1,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.showcase_images",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.showcase_items",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.showcase_saves",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.stories",
+          "existing": 3,
+          "preserved": 3,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.story_publications",
+          "existing": 4,
+          "preserved": 4,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.story_reports",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.story_views",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.tour_progress",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.tour_requests",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.tour_revisions",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "public.tours",
+          "existing": 3,
+          "preserved": 3,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_16",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_17",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_18",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_19",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_20",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_21",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.messages_2026_10_22",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.schema_migrations",
+          "existing": 81,
+          "preserved": 81,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "realtime.subscription",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.buckets",
+          "existing": 7,
+          "preserved": 7,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.buckets_analytics",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.buckets_vectors",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.iceberg_namespaces",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.iceberg_tables",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.migrations",
+          "existing": 68,
+          "preserved": 68,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.objects",
+          "existing": 15,
+          "preserved": 15,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.s3_multipart_uploads",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.s3_multipart_uploads_parts",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "storage.vector_indexes",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "supabase_functions.hooks",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "supabase_functions.migrations",
+          "existing": 2,
+          "preserved": 2,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        },
+        {
+          "table": "vault.secrets",
+          "existing": 0,
+          "preserved": 0,
+          "fixture_insertions": 0,
+          "original_updates_or_deletions": 0
+        }
+      ],
+      "sequence_accounting": [
+        {
+          "sequence": "auth.refresh_tokens_id_seq",
+          "initial": 22,
+          "final": 28,
+          "successful_fixture_rows": 6,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 6
+        },
+        {
+          "sequence": "cron.jobid_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        },
+        {
+          "sequence": "cron.runid_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        },
+        {
+          "sequence": "net.http_request_queue_id_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        },
+        {
+          "sequence": "public.legal_acceptances_id_seq",
+          "initial": 7,
+          "final": 19,
+          "successful_fixture_rows": 7,
+          "rolled_back_nextvals": 5,
+          "expected_delta": 12
+        },
+        {
+          "sequence": "realtime.subscription_id_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        },
+        {
+          "sequence": "supabase_functions.hooks_id_seq",
+          "initial": 1,
+          "final": 1,
+          "successful_fixture_rows": 0,
+          "rolled_back_nextvals": 0,
+          "expected_delta": 0
+        }
+      ],
+      "exact_fixture_deltas": {
+        "auth.audit_log_entries": 12,
+        "auth.identities": 7,
+        "auth.mfa_amr_claims": 6,
+        "auth.refresh_tokens": 6,
+        "auth.sessions": 6,
+        "auth.users": 7,
+        "collaboration.persons": 9,
+        "public.legal_acceptances": 7,
+        "public.profiles": 7
+      },
+      "Auth_fixture_provenance": {
+        "new_AMR": 6,
+        "new_refresh": 6,
+        "new_sessions": 6
+      },
+      "effective_hardening": {
+        "client_schema": false,
+        "new_functions": 5,
+        "operator_ensure": false,
+        "role_memberships": 0,
+        "owner_auth_update": false,
+        "function_hardening": true,
+        "private_tables_rls": true,
+        "owner_person_update": false,
+        "owner_auth_email_read": false
+      },
+      "new_role_direct_ACL_exact": [
+        {
+          "object": "column:auth.users.deleted_at",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "column:auth.users.id",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "column:collaboration.person_repair_manifests.executed_at",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "object": "column:collaboration.person_repair_manifests.result",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "UPDATE"
+        },
+        {
+          "object": "column:public.account_deletion_requests.requested_at",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "column:public.account_deletion_requests.user_id",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "function:collaboration.ensure_person_for_auth(uuid,text)",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.person_after_auth_insert()",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.person_sync_status(uuid)",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.reconcile_persons(uuid,text,boolean)",
+          "grantee": "marea_person_repair_operator",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.reconcile_persons(uuid,text,boolean)",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.stage_person_repair(uuid,uuid[])",
+          "grantee": "marea_person_repair_operator",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "function:collaboration.stage_person_repair(uuid,uuid[])",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "object": "schema:auth",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "object": "schema:collaboration",
+          "grantee": "marea_person_repair_operator",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "object": "schema:collaboration",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "object": "schema:public",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "USAGE"
+        },
+        {
+          "object": "table:collaboration.person_controls",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "object": "table:collaboration.person_controls",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "table:collaboration.person_repair_manifests",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "object": "table:collaboration.person_repair_manifests",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        },
+        {
+          "object": "table:collaboration.persons",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "INSERT"
+        },
+        {
+          "object": "table:collaboration.persons",
+          "grantee": "marea_person_sync_owner",
+          "grantable": false,
+          "privilege": "SELECT"
+        }
+      ],
+      "Storage_bytes_metadata_ns_unchanged": true,
+      "business_RLS_FK_routines_unchanged": true
+    }
+  }
+}

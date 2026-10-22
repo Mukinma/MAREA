@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-20T05:15:34.159899+00:00",
+  "result": "PASS",
+  "pair": {
+    "result": "PASS",
+    "anchor": {
+      "result": "PASS",
+      "mode": "none",
+      "netns": "net:[4026532568]",
+      "active_interfaces": [
+        "lo"
+      ],
+      "inert_kernel_templates": 9,
+      "egress_routes": 0,
+      "published_ports": 0,
+      "policy_sha256": "fb723eafd579e1e7bd9450fad7fe8f11c025ab2a7e88d7874fa8674c33faab22"
+    },
+    "shared": {
+      "result": "PASS",
+      "mode": "container:1a913a8bfa64b6caa18a2c6e6eb9073cb4124b904a4501e4ecdfbe290cb9fec1",
+      "netns": "net:[4026532568]",
+      "active_interfaces": [
+        "lo"
+      ],
+      "inert_kernel_templates": 9,
+      "egress_routes": 0,
+      "published_ports": 0,
+      "policy_sha256": "fb723eafd579e1e7bd9450fad7fe8f11c025ab2a7e88d7874fa8674c33faab22"
+    }
+  },
+  "independent": {
+    "result": "PASS",
+    "mode": "none",
+    "netns": "net:[4026532708]",
+    "active_interfaces": [
+      "lo"
+    ],
+    "inert_kernel_templates": 9,
+    "egress_routes": 0,
+    "published_ports": 0,
+    "policy_sha256": "fb723eafd579e1e7bd9450fad7fe8f11c025ab2a7e88d7874fa8674c33faab22"
+  },
+  "before_restore_and_all_product_services": true,
+  "no_mounts": true
+}
