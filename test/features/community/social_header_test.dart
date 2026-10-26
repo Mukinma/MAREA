@@ -42,7 +42,7 @@ void main() {
       await tester.pumpAndSettle();
       if (width < 600) {
         expect(find.bySemanticsLabel('Explorar'), findsOneWidget);
-        expect(find.byTooltip('Mensajes (próximamente)'), findsOneWidget);
+        expect(find.byTooltip('Mensajes'), findsOneWidget);
         router.go('/explore?section=saved');
         await tester.pumpAndSettle();
         expect(find.byTooltip('Guardados'), findsOneWidget);

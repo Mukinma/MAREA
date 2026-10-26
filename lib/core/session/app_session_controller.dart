@@ -20,6 +20,7 @@ import 'package:marea/features/legal/legal_repository.dart';
 import 'package:marea/features/profile/data/profile_repository.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
+import 'package:marea/features/chat/data/chat_repository.dart';
 
 enum AuthStatus { initializing, authenticated, unauthenticated }
 
@@ -39,6 +40,7 @@ class AppSessionController extends ChangeNotifier {
     this.missionSocialRepository,
     this.locationRepository,
     this.push,
+    this.chatRepository,
     this.publicUrl = 'https://marea-azul.netlify.app/',
   }) : _auth = authRepository,
        _profiles = profileRepository,
@@ -52,6 +54,7 @@ class AppSessionController extends ChangeNotifier {
   final MissionSocialRepository? missionSocialRepository;
   final LocationRepository? locationRepository;
   final PushController? push;
+  final ChatRepository? chatRepository;
   final String publicUrl;
   NotificationsController? _notifications;
   NotificationsController? get notifications => socialRepository == null

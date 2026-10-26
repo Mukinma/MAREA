@@ -77,7 +77,9 @@ class WelcomeScreen extends StatelessWidget {
   Future<void> _signInWithGoogle(BuildContext context) async {
     final controller = this.controller;
     if (controller == null) return;
-    final redirectTo = Uri.base.origin;
+    final redirectTo = kIsWeb
+        ? Uri.base.origin
+        : 'com.marea.app://login-callback';
     await controller.signInWithGoogle(redirectTo: redirectTo);
     if (!context.mounted || controller.failure == null) return;
     ScaffoldMessenger.of(
@@ -162,7 +164,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        if (kIsWeb && controller != null) ...[
+        if (controller != null) ...[
           AnimatedBuilder(
             animation: controller!,
             builder: (context, _) => OutlinedButton.icon(

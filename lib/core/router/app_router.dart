@@ -36,6 +36,7 @@ import 'package:marea/features/community/presentation/explore_screen.dart';
 import 'package:marea/features/community/presentation/post_composer_screen.dart';
 import 'package:marea/features/community/presentation/missions_screen.dart';
 import 'package:marea/features/community/presentation/moderation_screen.dart';
+import 'package:marea/features/chat/presentation/chat_screen.dart';
 
 abstract final class AppRouter {
   static const _authPaths = {
@@ -118,10 +119,8 @@ abstract final class AppRouter {
         GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
         GoRoute(
           path: '/welcome',
-          builder: (_, _) => WelcomeEntryScreen(
-            store: introStore,
-            controller: controller,
-          ),
+          builder: (_, _) =>
+              WelcomeEntryScreen(store: introStore, controller: controller),
         ),
         GoRoute(
           path: '/terms',
@@ -251,6 +250,14 @@ abstract final class AppRouter {
               path: '/profile',
               builder: (_, _) => ProfileScreen(controller: controller),
             ),
+            GoRoute(
+              path: '/messages',
+              builder: (_, state) => ChatInboxScreen(
+                controller: controller,
+                initialConversationId:
+                    state.uri.queryParameters['conversation'],
+              ),
+            ),
           ],
         ),
         GoRoute(
@@ -361,6 +368,14 @@ abstract final class AppRouter {
             panel: state.uri.queryParameters['panel'],
             commentId: state.uri.queryParameters['comment'],
             notificationId: state.uri.queryParameters['notification'],
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
+          path: '/messages/:id',
+          builder: (_, state) => ChatConversationScreen(
+            controller: controller,
+            conversationId: state.pathParameters['id']!,
           ),
         ),
         GoRoute(

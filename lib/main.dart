@@ -21,6 +21,7 @@ import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/auth/data/auth_repository.dart';
 import 'package:marea/features/auth/presentation/configuration_screen.dart';
 import 'package:marea/features/profile/data/profile_repository.dart';
+import 'package:marea/features/chat/data/chat_repository.dart';
 import 'package:marea/features/legal/legal_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -60,6 +61,7 @@ Future<void> main() async {
         showcaseRepository: SupabaseShowcaseRepository(client),
         mediaRepository: SupabaseProfileMediaRepository(),
         profileRepository: SupabaseProfileRepository(client),
+        chatRepository: SupabaseChatRepository(client),
         legalRepository: SupabaseLegalRepository(client),
       ),
     ),

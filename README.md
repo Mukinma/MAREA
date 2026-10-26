@@ -100,6 +100,11 @@ la aplicación.
 
 Para Android, selecciona el dispositivo real que aparece en `flutter devices` y usa `-d ID_DEL_DISPOSITIVO` con el mismo archivo. VS Code incluye configuraciones que apuntan a la plantilla de ejemplo; cámbialas a tu archivo local para probar un backend propio.
 
+Para el acceso con Google en Android, agrega `com.marea.app://login-callback` a las
+URLs de redirección permitidas en Supabase, en Authentication > URL Configuration.
+La aplicación abre el navegador para autenticar y vuelve a la APK mediante ese
+enlace.
+
 Para compilar con tu backend local:
 
 ```bash

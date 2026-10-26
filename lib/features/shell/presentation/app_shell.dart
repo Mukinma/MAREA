@@ -173,28 +173,28 @@ class AppShell extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: SizedBox(
                       height: 56,
-                      child: Row(
-                        children: [
-                          if (location == '/home') ...[
-                            ..._utilities(context).skip(1),
-                            const Expanded(
-                              child: Center(child: MareaLogo(compact: true)),
+                      child: location == '/home'
+                          ? Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                const Center(child: MareaLogo(compact: true)),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: _notificationButton(context),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: _messageButton(context),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                const MareaLogo(compact: true),
+                                const Spacer(),
+                                ..._utilities(context),
+                              ],
                             ),
-                            const IconButton(
-                              tooltip: 'Mensajes (próximamente)',
-                              onPressed: null,
-                              icon: Icon(
-                                Icons.chat_bubble_outline_rounded,
-                                color: AppColors.brandNavy,
-                              ),
-                            ),
-                          ] else ...[
-                            const MareaLogo(compact: true),
-                            const Spacer(),
-                            ..._utilities(context),
-                          ],
-                        ],
-                      ),
                     ),
                   ),
                 ),
@@ -225,6 +225,44 @@ class AppShell extends StatelessWidget {
       );
     },
   );
+
+  Widget _notificationButton(BuildContext context) {
+    final notifications = controller?.notifications;
+    if (notifications == null) {
+      return const SizedBox(width: 48);
+    }
+    return ListenableBuilder(
+      listenable: notifications,
+      builder: (context, _) => IconButton(
+        tooltip: 'Notificaciones',
+        onPressed: () => openNotifications(context, controller!),
+        icon: Badge(
+          isLabelVisible: notifications.unread > 0,
+          backgroundColor: AppColors.aqua,
+          smallSize: 7,
+          child: const Icon(
+            Icons.notifications_none_rounded,
+            color: AppColors.brandNavy,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _messageButton(BuildContext context) {
+    if (controller?.chatRepository == null) {
+      return const SizedBox(width: 48);
+    }
+    return IconButton(
+      tooltip: 'Mensajes',
+      onPressed: () => context.push('/messages'),
+      icon: const Icon(
+        Icons.chat_bubble_outline_rounded,
+        color: AppColors.brandNavy,
+      ),
+    );
+  }
+
   List<Widget> _utilities(BuildContext context) => [
     IconButton(
       tooltip: 'Guardados',
@@ -235,6 +273,16 @@ class AppShell extends StatelessWidget {
         color: AppColors.textSecondary,
       ),
     ),
+    if (controller?.chatRepository != null)
+      IconButton(
+        tooltip: 'Mensajes',
+        onPressed: () => context.go('/messages'),
+        icon: const Icon(
+          Icons.chat_bubble_outline_rounded,
+          semanticLabel: 'Mensajes',
+          color: AppColors.textSecondary,
+        ),
+      ),
     if (controller?.notifications != null)
       ListenableBuilder(
         listenable: controller!.notifications!,

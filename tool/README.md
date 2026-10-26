@@ -75,6 +75,9 @@ Ejecutar builds web, Android e iOS **secuencialmente**: Flutter comparte archivo
 intermedios. Para comprobar iOS sin distribución: `flutter build ios --no-codesign
 --dart-define-from-file=config/supabase.production.json`.
 
+En Android, el acceso con Google requiere registrar
+`com.marea.app://login-callback` en las URLs de redirección permitidas de Supabase.
+
 ## Mapa de misiones
 
 La migración 012 añade el RPC geográfico y su índice; el gate comprueba ambos y sus permisos. `check_map_database.mjs` valida filtros, visibilidad, radio, antimeridiano y límite de resultados en PostgreSQL aislado. Si la conexión directa por IPv6 no está disponible, `supabase db query --linked` permite inspeccionar el contrato mediante la API de administración; aplicar cambios y su registro de migración en una sola transacción. Ver [Mapa](../docs/map.md).
