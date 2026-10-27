@@ -1,0 +1,73 @@
+final _chatCensoredWords = <RegExp>[
+  for (final word in const [
+    'pendejo',
+    'pendeja',
+    'pendejos',
+    'pendejas',
+    'idiota',
+    'idiotas',
+    'estupido',
+    'estupida',
+    'estupidos',
+    'estupidas',
+    'imbecil',
+    'imbeciles',
+    'cabron',
+    'cabrona',
+    'cabrones',
+    'cabronas',
+    'chingar',
+    'chingada',
+    'chingado',
+    'chingados',
+    'verga',
+    'vergas',
+    'puto',
+    'puta',
+    'putos',
+    'putas',
+    'maricon',
+    'marica',
+    'joto',
+    'jotos',
+    'mierda',
+    'mierdas',
+    'culo',
+    'culos',
+    'polla',
+    'pollas',
+    'pene',
+    'penes',
+    'vagina',
+    'vaginas',
+    'vulva',
+    'vulvas',
+    'teta',
+    'tetas',
+    'senos',
+    'seno',
+    'nalga',
+    'nalgas',
+    'coño',
+    'cono',
+    'zorra',
+    'sudaca',
+    'wetback',
+    'nigger',
+    'negrata',
+    'sexo',
+  ])
+    RegExp(
+      '(?<![\\p{L}\\p{N}_])${RegExp.escape(word)}'
+      '(?![\\p{L}\\p{N}_])',
+      caseSensitive: false,
+      unicode: true,
+    ),
+];
+
+String censorChatMessage(String message) {
+  if (!_chatCensoredWords.any((word) => word.hasMatch(message))) {
+    return message;
+  }
+  return message.replaceAll(RegExp(r'\S'), '#');
+}

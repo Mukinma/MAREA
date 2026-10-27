@@ -2,7 +2,21 @@ import 'package:marea/features/community/models/post_social.dart';
 
 /// Both the in-app inbox and Android open the same destination.
 String notificationDestination(SocialNotification n) {
-  if (n.kind == NotificationKind.mareaMessage) return '/home';
+  if (n.kind == NotificationKind.mareaMessage) {
+    if (n.eventKey?.startsWith('chat_request:') != true) {
+      if (n.sourceId == null) return '/home';
+      return Uri(
+        path: '/messages',
+        queryParameters: {'conversation': n.sourceId!},
+      ).toString();
+    }
+    return Uri(
+      path: '/messages',
+      queryParameters: n.sourceId == null
+          ? null
+          : {'conversation': n.sourceId!},
+    ).toString();
+  }
   if (n.missionId != null) {
     final organizer =
         n.kind == NotificationKind.missionApplication ||

@@ -40,6 +40,7 @@ migrate_working_dir/
 .env.*
 !.env.example
 /config/supabase.production.json
+/config/supabase.local.json
 /config/firebase.android.json
 /config/firebase-service-account*.json
 /supabase/legal/publish-school-v1.sql
