@@ -19,6 +19,22 @@ void main() {
     expect(message.isUnread, isTrue);
     expect(notificationDestination(message), '/home');
   });
+  test('a MAREA chat message opens its conversation', () {
+    final message = SocialNotification(
+      id: 'n',
+      recipientId: 'u',
+      actorId: null,
+      postId: null,
+      kind: NotificationKind.mareaMessage,
+      sourceId: 'conversation',
+      postTitle: 'Nuevo mensaje',
+      createdAt: DateTime.utc(2026),
+    );
+    expect(
+      notificationDestination(message),
+      '/messages?conversation=conversation',
+    );
+  });
   test('comment opens its post and the targeted conversation', () {
     final n = SocialNotification(
       id: 'n',

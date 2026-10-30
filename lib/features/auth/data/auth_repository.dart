@@ -31,6 +31,7 @@ abstract interface class AuthRepository {
   });
 
   Future<void> signIn({required String email, required String password});
+  Future<void> signInWithGoogle({required String redirectTo});
   Future<void> signOut();
   Future<void> clearLocalSession();
   Future<void> deleteAccount();
@@ -117,6 +118,18 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<void> signIn({required String email, required String password}) async {
     try {
       await _client.auth.signInWithPassword(email: email, password: password);
+    } catch (error) {
+      throw AppFailureMapper.from(error);
+    }
+  }
+
+  @override
+  Future<void> signInWithGoogle({required String redirectTo}) async {
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: redirectTo,
+      );
     } catch (error) {
       throw AppFailureMapper.from(error);
     }

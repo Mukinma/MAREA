@@ -98,7 +98,20 @@ cp config/supabase.example.json config/supabase.local.json
 flutter run -d chrome -t lib/main.dart --web-port 7357 --dart-define-from-file=config/supabase.local.json
 ```
 
+El botón `Continuar con Google` usa el proveedor OAuth de Supabase. Antes de probarlo,
+habilita Google en **Supabase > Authentication > Providers > Google**, configura allí
+las credenciales OAuth de Google. En Google Cloud, registra como URI de redirección
+autorizada `https://<tu-project-ref>.supabase.co/auth/v1/callback`; en **Supabase >
+Authentication > URL Configuration**, agrega `http://localhost:7357` como URL de
+redirección permitida. Para producción, agrega también el dominio HTTPS publicado de
+la aplicación.
+
 Para Android, selecciona el dispositivo real que aparece en `flutter devices` y usa `-d ID_DEL_DISPOSITIVO` con el mismo archivo. VS Code incluye configuraciones que apuntan a la plantilla de ejemplo; cámbialas a tu archivo local para probar un backend propio.
+
+Para el acceso con Google en Android, agrega `com.marea.app://login-callback` a las
+URLs de redirección permitidas en Supabase, en Authentication > URL Configuration.
+La aplicación abre el navegador para autenticar y vuelve a la APK mediante ese
+enlace.
 
 Para compilar con tu backend local:
 

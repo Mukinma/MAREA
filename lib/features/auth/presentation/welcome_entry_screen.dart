@@ -4,11 +4,17 @@ import 'package:marea/features/auth/data/mobile_intro_store.dart';
 import 'package:marea/features/auth/presentation/mobile_intro_screen.dart';
 import 'package:marea/features/auth/presentation/splash_screen.dart';
 import 'package:marea/features/auth/presentation/welcome_screen.dart';
+import 'package:marea/core/session/app_session_controller.dart';
 
 /// Lives inside /welcome, so auth, deep links and profile guards stay intact.
 class WelcomeEntryScreen extends StatefulWidget {
-  const WelcomeEntryScreen({required this.store, super.key});
+  const WelcomeEntryScreen({
+    required this.store,
+    required this.controller,
+    super.key,
+  });
   final MobileIntroStore store;
+  final AppSessionController controller;
 
   @override
   State<WelcomeEntryScreen> createState() => _WelcomeEntryScreenState();
@@ -55,7 +61,7 @@ class _WelcomeEntryScreenState extends State<WelcomeEntryScreen> {
   @override
   Widget build(BuildContext context) {
     if (!_mobile || _seen == true || _completedThisVisit) {
-      return const WelcomeScreen();
+      return WelcomeScreen(controller: widget.controller);
     }
     if (_seen == null) return const SplashScreen();
     return MobileIntroScreen(onComplete: _finish);

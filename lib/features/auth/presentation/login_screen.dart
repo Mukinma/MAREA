@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/errors/app_failure.dart';
@@ -25,6 +26,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   String? _confirmationEmail;
+
+  Future<void> _signInWithGoogle() async {
+    FocusScope.of(context).unfocus();
+    if (widget.controller.isBusy) return;
+    await widget.controller.signInWithGoogle(
+      redirectTo: kIsWeb ? Uri.base.origin : 'com.marea.app://login-callback',
+    );
+  }
 
   @override
   void dispose() {
@@ -151,6 +160,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           label: 'Entrar',
                           isLoading: widget.controller.isBusy,
                           onPressed: _submit,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        OutlinedButton.icon(
+                          key: const Key('login-google'),
+                          onPressed: widget.controller.isBusy
+                              ? null
+                              : _signInWithGoogle,
+                          icon: const Text(
+                            'G',
+                            style: TextStyle(
+                              color: Color(0xFF4285F4),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          label: const Text('Continuar con Google'),
                         ),
                         if (_confirmationEmail != null &&
                             widget.controller.failure?.kind ==
