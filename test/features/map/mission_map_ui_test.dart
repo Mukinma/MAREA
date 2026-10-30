@@ -77,11 +77,12 @@ void main() {
   Future<(MapFake, LocationFake)> open(
     WidgetTester tester, {
     double width = 390,
+    double height = 844,
     bool empty = false,
     int count = 1,
     double scale = 1,
   }) async {
-    tester.view.physicalSize = Size(width, 844);
+    tester.view.physicalSize = Size(width, height);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -143,6 +144,62 @@ void main() {
     await tester.pumpAndSettle();
     return (repo, location);
   }
+
+  testWidgets(
+    'map controls stay above mobile dock with large text and safe area',
+    (tester) async {
+      tester.view.padding = const FakeViewPadding(bottom: 34);
+      addTearDown(tester.view.resetPadding);
+      await withTiles(() async {
+        await open(tester, scale: 2);
+        final dockTop = tester
+            .getTopLeft(find.byKey(const Key('mobile-dock')))
+            .dy;
+        expect(
+          tester.getBottomRight(find.byTooltip('Centrar en mi ubicación')).dy,
+          lessThan(dockTop),
+        );
+        final attribution = find.textContaining('OpenStreetMap');
+        expect(tester.getBottomRight(attribution).dy, lessThan(dockTop));
+        await tester.tap(find.byTooltip('Arte local'));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Ver misión'));
+        await tester.pumpAndSettle();
+        expect(find.text('Ver misión').hitTestable(), findsOneWidget);
+        expect(
+          tester.getBottomRight(find.text('Ver misión')).dy,
+          lessThan(dockTop),
+        );
+        expect(tester.takeException(), isNull);
+      });
+    },
+  );
+
+  testWidgets(
+    'selected mission controls remain reachable on a short mobile screen',
+    (tester) async {
+      tester.view.padding = const FakeViewPadding(bottom: 34);
+      addTearDown(tester.view.resetPadding);
+      await withTiles(() async {
+        await open(tester, scale: 2);
+        await tester.tap(find.byTooltip('Arte local'));
+        await tester.pumpAndSettle();
+        tester.view.physicalSize = const Size(320, 568);
+        await tester.pumpAndSettle();
+        final locate = find.byTooltip('Centrar en mi ubicación');
+        expect(tester.getTopLeft(locate).dy, greaterThanOrEqualTo(0));
+        expect(locate.hitTestable(), findsOneWidget);
+        await tester.ensureVisible(find.text('Ver misión'));
+        await tester.pumpAndSettle();
+        expect(find.text('Ver misión').hitTestable(), findsOneWidget);
+        expect(
+          tester.getBottomRight(find.text('Ver misión')).dy,
+          lessThan(tester.getTopLeft(find.byKey(const Key('mobile-dock'))).dy),
+        );
+        expect(tester.takeException(), isNull);
+      });
+    },
+  );
 
   testWidgets('select preview before navigation and retain camera on return', (
     tester,

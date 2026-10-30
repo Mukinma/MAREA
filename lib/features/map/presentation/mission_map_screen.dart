@@ -275,6 +275,8 @@ class _MissionMapScreenState extends State<MissionMapScreen>
       animation: _state,
       builder: (context, _) {
         final selected = _state.selected;
+        // Scaffold.extendBody publishes the actual dock + safe area height.
+        final bottomInset = MediaQuery.paddingOf(context).bottom;
         final previewHeight = math.min(size.maxHeight * .48, 300.0);
         double? distance;
         if (_position != null && selected?.coordinates != null) {
@@ -313,189 +315,194 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                 onTileError: _onTileError,
               ),
             ),
-            Positioned(
-              top: 16,
-              left: 16,
-              right: 16,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 560),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      MapSearchBar(
-                        controller: _search,
-                        filtersActive: _state.filters.isActive,
-                        onSubmitted: _submit,
-                        onFilters: _filters,
-                      ),
-                      if (widget.session.tourRepository != null)
-                        Wrap(
-                          spacing: 8,
-                          children: [
-                            FilterChip(
-                              label: const Text('Locales 360°'),
-                              selected: _showTours,
-                              onSelected: (show) {
-                                setState(() => _showTours = show);
-                                _tourGeneration++;
-                                if (show) _loadTours();
+            Positioned.fill(
+              child: CustomMultiChildLayout(
+                delegate: _MapControlsLayout(
+                  bottomInset: bottomInset,
+                  desiredPreviewHeight: previewHeight,
+                  selected: selected != null,
+                ),
+                children: [
+                  LayoutId(
+                    id: _MapControl.header,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          MapSearchBar(
+                            controller: _search,
+                            filtersActive: _state.filters.isActive,
+                            onSubmitted: _submit,
+                            onFilters: _filters,
+                          ),
+                          if (widget.session.tourRepository != null)
+                            Wrap(
+                              spacing: 8,
+                              children: [
+                                FilterChip(
+                                  label: const Text('Locales 360°'),
+                                  selected: _showTours,
+                                  onSelected: (show) {
+                                    setState(() => _showTours = show);
+                                    _tourGeneration++;
+                                    if (show) _loadTours();
+                                  },
+                                ),
+                                TextButton(
+                                  onPressed: () =>
+                                      context.push('/tours/nearby'),
+                                  child: const Text('Descubrir cerca'),
+                                ),
+                              ],
+                            ),
+                          const SizedBox(height: 8),
+                          MapQuickFilters(
+                            filters: _state.filters,
+                            onChanged: (value) {
+                              _captureViewport();
+                              unawaited(_state.applyFilters(value));
+                            },
+                          ),
+                          if (_state.loading)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 6),
+                              child: LinearProgressIndicator(minHeight: 2),
+                            ),
+                          if (_state.needsAreaSearch)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: FilledButton.icon(
+                                onPressed: _state.loading
+                                    ? null
+                                    : () {
+                                        _captureViewport();
+                                        _state.search(force: true);
+                                      },
+                                icon: const Icon(
+                                  Icons.refresh_rounded,
+                                  size: 18,
+                                ),
+                                label: const Text('Buscar en esta zona'),
+                              ),
+                            ),
+                          if (_tileError)
+                            _notice(
+                              'No pudimos cargar el mapa base. Puedes seguir usando los filtros.',
+                              action: 'Reintentar',
+                              onAction: () => setState(() {
+                                _tileError = false;
+                                ++_tileRevision;
+                              }),
+                            ),
+                          if (_state.error != null)
+                            _notice(
+                              _state.error!,
+                              action: 'Reintentar',
+                              onAction: () => _state.search(force: true),
+                            ),
+                          if (_locationFailure != null)
+                            _notice(
+                              _locationFailure!.message,
+                              action:
+                                  _locationFailure!.kind ==
+                                          DeviceLocationFailureKind
+                                              .deniedForever ||
+                                      _locationFailure!.kind ==
+                                          DeviceLocationFailureKind.disabled
+                                  ? 'Ajustes'
+                                  : 'Cerrar',
+                              onAction: () {
+                                if (_locationFailure!.kind ==
+                                        DeviceLocationFailureKind
+                                            .deniedForever ||
+                                    _locationFailure!.kind ==
+                                        DeviceLocationFailureKind.disabled) {
+                                  _settings();
+                                } else {
+                                  setState(() => _locationFailure = null);
+                                }
                               },
                             ),
-                            TextButton(
-                              onPressed: () => context.push('/tours/nearby'),
-                              child: const Text('Descubrir cerca'),
-                            ),
-                          ],
-                        ),
-                      const SizedBox(height: 8),
-                      MapQuickFilters(
-                        filters: _state.filters,
-                        onChanged: (value) {
-                          _captureViewport();
-                          unawaited(_state.applyFilters(value));
-                        },
+                        ],
                       ),
-                      if (_state.loading)
-                        const Padding(
-                          padding: EdgeInsets.only(top: 6),
-                          child: LinearProgressIndicator(minHeight: 2),
+                    ),
+                  ),
+                  LayoutId(
+                    id: _MapControl.location,
+                    child: MareaSurface(
+                      color: AppColors.surface,
+                      radius: 24,
+                      child: IconButton(
+                        tooltip: _locating
+                            ? 'Buscando ubicación…'
+                            : 'Centrar en mi ubicación',
+                        onPressed: _locating
+                            ? null
+                            : () => _locate(explicit: true),
+                        icon: const Icon(
+                          Icons.my_location_rounded,
+                          color: AppColors.actionBlue,
                         ),
-                      if (_state.needsAreaSearch)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: FilledButton.icon(
-                            onPressed: _state.loading
-                                ? null
-                                : () {
-                                    _captureViewport();
-                                    _state.search(force: true);
-                                  },
-                            icon: const Icon(Icons.refresh_rounded, size: 18),
-                            label: const Text('Buscar en esta zona'),
-                          ),
-                        ),
-                      if (_tileError)
-                        _notice(
-                          'No pudimos cargar el mapa base. Puedes seguir usando los filtros.',
-                          action: 'Reintentar',
-                          onAction: () => setState(() {
-                            _tileError = false;
-                            ++_tileRevision;
-                          }),
-                        ),
-                      if (_state.error != null)
-                        _notice(
-                          _state.error!,
-                          action: 'Reintentar',
-                          onAction: () => _state.search(force: true),
-                        ),
-                      if (_locationFailure != null)
-                        _notice(
-                          _locationFailure!.message,
-                          action:
-                              _locationFailure!.kind ==
-                                      DeviceLocationFailureKind.deniedForever ||
-                                  _locationFailure!.kind ==
-                                      DeviceLocationFailureKind.disabled
-                              ? 'Ajustes'
-                              : 'Cerrar',
-                          onAction: () {
-                            if (_locationFailure!.kind ==
-                                    DeviceLocationFailureKind.deniedForever ||
-                                _locationFailure!.kind ==
-                                    DeviceLocationFailureKind.disabled) {
-                              _settings();
-                            } else {
-                              setState(() => _locationFailure = null);
-                            }
+                      ),
+                    ),
+                  ),
+                  if (selected != null)
+                    LayoutId(
+                      id: _MapControl.preview,
+                      child: SingleChildScrollView(
+                        child: MissionMapPreview(
+                          key: ValueKey(selected.id),
+                          mission: selected,
+                          repository: widget.session.communityRepository,
+                          distanceMeters: distance,
+                          onClose: () => _state.select(null),
+                          onOpen: () async {
+                            await context.push('/missions/${selected.id}');
+                            if (mounted) await _state.search(force: true);
                           },
                         ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              right: 16,
-              bottom: selected == null ? 120 : previewHeight + 108,
-              child: MareaSurface(
-                color: AppColors.surface,
-                radius: 24,
-                child: IconButton(
-                  tooltip: _locating
-                      ? 'Buscando ubicación…'
-                      : 'Centrar en mi ubicación',
-                  onPressed: _locating ? null : () => _locate(explicit: true),
-                  icon: const Icon(
-                    Icons.my_location_rounded,
-                    color: AppColors.actionBlue,
-                  ),
-                ),
-              ),
-            ),
-            if (selected != null)
-              Positioned(
-                left: 16,
-                right: 16,
-                bottom: 96,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: 520,
-                      maxHeight: previewHeight,
+                      ),
                     ),
+                  LayoutId(
+                    id: _MapControl.footer,
                     child: SingleChildScrollView(
-                      child: MissionMapPreview(
-                        key: ValueKey(selected.id),
-                        mission: selected,
-                        repository: widget.session.communityRepository,
-                        distanceMeters: distance,
-                        onClose: () => _state.select(null),
-                        onOpen: () async {
-                          await context.push('/missions/${selected.id}');
-                          if (mounted) await _state.search(force: true);
-                        },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_state.hasLoaded && !_state.loading) ...[
+                            _resultCount(),
+                            const SizedBox(height: 8),
+                          ],
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Material(
+                              color: AppColors.surface.withValues(alpha: .95),
+                              borderRadius: BorderRadius.circular(6),
+                              child: InkWell(
+                                onTap: () => launchUrl(
+                                  Uri.parse(widget.tiles.attributionUrl),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 4,
+                                  ),
+                                  child: Text(
+                                    widget.tiles.attribution,
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ),
-            if (_state.hasLoaded && !_state.loading)
-              Positioned(
-                left: 16,
-                right: 16,
-                bottom: 34,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _resultCount(),
-                ),
-              ),
-            Positioned(
-              bottom: 2,
-              left: 8,
-              child: Material(
-                color: AppColors.surface.withValues(alpha: .95),
-                borderRadius: BorderRadius.circular(6),
-                child: InkWell(
-                  onTap: () =>
-                      launchUrl(Uri.parse(widget.tiles.attributionUrl)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 4,
-                    ),
-                    child: Text(
-                      widget.tiles.attribution,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ),
+                ],
               ),
             ),
           ],
@@ -552,4 +559,103 @@ class _MissionMapScreenState extends State<MissionMapScreen>
       ),
     );
   }
+}
+
+enum _MapControl { header, location, preview, footer }
+
+/// Fits overlays between the search tools and the actual responsive dock.
+/// Scrollable header/preview/footer retain access when text or insets grow.
+class _MapControlsLayout extends MultiChildLayoutDelegate {
+  _MapControlsLayout({
+    required this.bottomInset,
+    required this.desiredPreviewHeight,
+    required this.selected,
+  });
+  final double bottomInset, desiredPreviewHeight;
+  final bool selected;
+
+  @override
+  void performLayout(Size size) {
+    const side = 16.0, gap = 12.0, top = 16.0;
+    final width = math.max(0.0, size.width - side * 2);
+    final bottom = math.max(top, size.height - bottomInset - 12);
+    final location = layoutChild(
+      _MapControl.location,
+      BoxConstraints.loose(Size(width, 48)),
+    );
+    // Reserve usable scrolling windows for search and the preview action before
+    // allocating space to the informational footer at large text scales.
+    const minimumHeaderHeight = 48.0, minimumPreviewHeight = 120.0;
+    final footer = layoutChild(
+      _MapControl.footer,
+      BoxConstraints(
+        maxWidth: width,
+        maxHeight: math.max(
+          0,
+          bottom -
+              top -
+              location.height -
+              minimumHeaderHeight -
+              (selected ? minimumPreviewHeight + gap * 3 : gap * 2),
+        ),
+      ),
+    );
+    final footerTop = bottom - footer.height;
+    positionChild(_MapControl.footer, Offset(side, footerTop));
+    final headerWidth = math.min(width, 560.0);
+    final header = layoutChild(
+      _MapControl.header,
+      BoxConstraints(
+        minWidth: headerWidth,
+        maxWidth: headerWidth,
+        maxHeight: math.max(
+          0,
+          footerTop -
+              top -
+              location.height -
+              gap * 2 -
+              (selected ? minimumPreviewHeight + gap : 0),
+        ),
+      ),
+    );
+    positionChild(
+      _MapControl.header,
+      Offset((size.width - header.width) / 2, top),
+    );
+    var locationBottom = footerTop - gap;
+    if (selected) {
+      final available = math.max(
+        0.0,
+        footerTop - gap - (top + header.height + gap) - location.height - gap,
+      );
+      final previewWidth = math.min(width, 520.0);
+      final preview = layoutChild(
+        _MapControl.preview,
+        BoxConstraints(
+          minWidth: previewWidth,
+          maxWidth: previewWidth,
+          maxHeight: math.min(desiredPreviewHeight, available),
+        ),
+      );
+      final previewTop = footerTop - gap - preview.height;
+      positionChild(
+        _MapControl.preview,
+        Offset((size.width - preview.width) / 2, previewTop),
+      );
+      locationBottom = previewTop - gap;
+    }
+    positionChild(
+      _MapControl.location,
+      Offset(
+        size.width - side - location.width,
+        locationBottom - location.height,
+      ),
+    );
+  }
+
+  @override
+  bool shouldRelayout(_MapControlsLayout oldDelegate) =>
+      bottomInset != oldDelegate.bottomInset ||
+      desiredPreviewHeight != oldDelegate.desiredPreviewHeight ||
+      selected != oldDelegate.selected;
 }

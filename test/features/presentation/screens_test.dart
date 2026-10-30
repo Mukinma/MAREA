@@ -139,7 +139,7 @@ void main() {
   });
 
   for (final width in [390.0, 1366.0]) {
-    testWidgets('shell exposes six labelled actions at $width', (
+    testWidgets('shell exposes responsive labelled actions at $width', (
       tester,
     ) async {
       tester.view.physicalSize = Size(width, 844);
@@ -149,14 +149,10 @@ void main() {
       await tester.pumpWidget(
         testApp(const AppShell(location: '/home', child: Text('contenido'))),
       );
-      for (final label in [
-        'Inicio',
-        'Explorar',
-        'Crear',
-        'Misiones',
-        'Mapa',
-        'Perfil',
-      ]) {
+      for (final label
+          in width < 600
+              ? ['Inicio', 'Descubrir', 'Mapa', 'Perfil']
+              : ['Inicio', 'Explorar', 'Crear', 'Misiones', 'Mapa', 'Perfil']) {
         expect(find.byTooltip(label).hitTestable(), findsOneWidget);
       }
       expect(find.byType(NavigationRail), findsNothing);
