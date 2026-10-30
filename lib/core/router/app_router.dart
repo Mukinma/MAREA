@@ -1,3 +1,4 @@
+import 'package:marea/features/discover/presentation/discover_screen.dart';
 import 'package:marea/features/home_feed/presentation/story_composer.dart';
 import 'package:marea/features/tours/presentation/tour_management_screen.dart';
 import 'package:marea/features/tours/presentation/tour_editor_screen.dart';
@@ -209,6 +210,10 @@ abstract final class AppRouter {
                 key: ValueKey(controller.profile?.id),
                 controller: controller,
               ),
+            ),
+            GoRoute(
+              path: '/discover',
+              builder: (_, _) => const DiscoverScreen(),
             ),
             GoRoute(
               path: '/explore',

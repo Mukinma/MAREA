@@ -2,6 +2,8 @@
 
 SMTP de Gmail está activo y la plantilla publicada de confirmación incluye el código. Consulta el [estado y las pruebas de correo](docs/email-setup.md); la entrega con cuentas nuevas todavía requiere validación real.
 
+Para preparar un equipo desde cero, consulta la [guía de instalación local para Android y Web](docs/instalacion-local.md).
+
 MAREA para Android, Web e iOS, con publicaciones y funciones diferenciadas por perfil. Consulta [Comunidad y misiones](docs/community.md) para los flujos y permisos de esta entrega. La app incluye registro e inicio de sesión con persistencia, perfil social editable, portafolio/catálogo/servicios independientes, cierre de sesión y eliminación completa de cuenta. La interfaz parte del mockup oficial: azul marino, aqua, superficies claras, pasteles, formas suaves y navegación social responsive.
 
 ## Stack
@@ -51,6 +53,12 @@ un cliente contra un esquema desactualizado. Ver [gate de despliegue](tool/READM
 Los tokens visuales están documentados en [`docs/design-system.md`](docs/design-system.md). Los assets provisionales de mascota permanecen desacoplados hasta su aprobación; logo y estados actuales usan recursos vectoriales propios del código.
 
 ## Crear y configurar Supabase
+
+La configuración del backend se realiza con la CLI o desde el panel de
+Supabase por la persona responsable del proyecto. Para instalar y ejecutar
+MAREA con un proyecto ya preparado no necesitas instalar Supabase CLI; consulta
+la [guía de instalación local](docs/instalacion-local.md) y utiliza únicamente
+la URL y la clave pública que te proporcione el equipo.
 
 1. Crea un proyecto hospedado en Supabase y ejecuta `supabase login`.
 2. Vincula este repositorio:

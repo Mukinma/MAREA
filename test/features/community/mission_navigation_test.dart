@@ -1,3 +1,5 @@
+import 'package:marea/features/shell/presentation/app_shell.dart';
+import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marea/core/errors/app_failure.dart';
@@ -65,7 +67,16 @@ void main() {
         '/missions',
         captureKey: key,
       );
-      await tapVisible(tester, find.byTooltip('Crear'));
+      if (width < 600) {
+        final shell = tester.widget<AppShell>(find.byType(AppShell));
+        showCreateMenu(
+          tester.element(find.byType(AppShell)),
+          shell.controller!,
+        );
+        await tester.pumpAndSettle();
+      } else {
+        await tapVisible(tester, find.byTooltip('Crear'));
+      }
       final pixels = width.toInt();
       await capture(tester, key, 'mission-create-menu-$pixels');
       expect(find.text('Pon tu idea en movimiento'), findsOneWidget);
