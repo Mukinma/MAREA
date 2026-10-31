@@ -171,6 +171,8 @@ Creación y edición en cuatro pasos, candidaturas en tres, confirmación, borra
 
 ## Recorridos 360° y AR
 
+Para probar el flujo Mapa → Misión → RA sin producción, consultar el [laboratorio local de RA](docs/implementation/business-ar.md#laboratorio-local-sin-producción). Incluye datos ficticios, lámina imprimible y cámara nativa real; se ejecuta con `powershell -ExecutionPolicy Bypass -File .\tool\ar-local.ps1 -Action Run -Device ID_DEL_DISPOSITIVO`, sin archivos Supabase.
+
 Editor desde Crear y perfil profesional, captura esférica guiada Android/iOS o importación GPano, visita por panoramas y conexiones, referencias AR con ancho físico, solicitudes y revisión de espacios. Supabase mantiene originales y borradores privados; Cloud Run Jobs procesa con Hugin/Enblend. Negocios conservan Servicios.
 
 La implementación local, las pruebas ejecutadas y las verificaciones pendientes están en [entrega y piloto](docs/implementation/tours-360-delivery.md). Consultar [diseño y seis láminas](docs/ar-experience-design.md), [canales nativos](docs/implementation/tours-native.md) y [despliegue del procesador](processing/tours/README.md). No se han aplicado migraciones ni desplegado estos servicios en producción; las pruebas físicas de captura y AR siguen pendientes.

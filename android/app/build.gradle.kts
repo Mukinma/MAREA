@@ -23,6 +23,13 @@ require(firebaseDefines.isEmpty() || firebaseResources.keys.all { !firebaseDefin
     "Provide all four Firebase Android defines together."
 }
 
+// Keep the manual, offline AR laboratory separate from the installed MAREA app.
+val arLocalTarget = (project.findProperty("target") as? String)
+    ?.replace('\\', '/')?.endsWith("test/manual/business_ar_probe.dart") == true
+require(!arLocalTarget || gradle.startParameter.taskNames.none {
+    it.contains("release", ignoreCase = true) || it.contains("profile", ignoreCase = true)
+}) { "The local AR laboratory must only be built in debug mode." }
+
 android {
     namespace = "com.marea.app"
     buildFeatures {
@@ -38,7 +45,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.marea.app"
+        applicationId = if (arLocalTarget) "com.marea.app.arqa" else "com.marea.app"
+        manifestPlaceholders["mareaAppLabel"] = if (arLocalTarget) "MAREA RA local" else "MAREA"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24

@@ -34,6 +34,7 @@ migrate_working_dir/
 /coverage/
 .playwright-cli/
 /output/
+/outputs/ar-local/
 /output/playwright/
 /test/_visual/
 .env

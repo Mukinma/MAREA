@@ -2,6 +2,19 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "MAREA RA local · sin backend",
+      "request": "launch",
+      "type": "dart",
+      "program": "test/manual/business_ar_probe.dart",
+      "flutterMode": "debug",
+      "env": {
+        "PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"
+      },
+      "toolArgs": [
+        "--dart-define=MAP_TILE_URL=http://127.0.0.1:38765/tiles/{z}/{x}/{y}.png"
+      ]
+    },
+    {
       "name": "MAREA Web · configuración local",
       "request": "launch",
       "type": "dart",

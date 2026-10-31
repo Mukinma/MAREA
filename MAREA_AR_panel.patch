@@ -1,0 +1,52 @@
+diff --git a/test/features/tours/business_ar_test.dart b/test/features/tours/business_ar_test.dart
+--- a/test/features/tours/business_ar_test.dart
++++ b/test/features/tours/business_ar_test.dart
+@@ -88,6 +88,27 @@
+   await tester.pump();
+ }
+ 
++// Platform cancellation may complete outside the test's fake-async zone.
++// Wait for the visible destination, allowing both real microtasks and frames.
++Future<void> _waitForPlatformWidget(WidgetTester tester, Finder target) async {
++  for (var frame = 0; frame < 60; frame++) {
++    await tester.runAsync(() async {
++      await Future<void>.delayed(Duration.zero);
++    });
++    await tester.pump(const Duration(milliseconds: 16));
++    if (target.evaluate().isNotEmpty) {
++      await tester.pumpAndSettle();
++      return;
++    }
++  }
++  final texts = tester
++      .widgetList<Text>(find.byType(Text))
++      .map((widget) => widget.data ?? '')
++      .where((text) => text.isNotEmpty)
++      .join(' | ');
++  fail('La transición no mostró $target. Textos presentes: $texts');
++}
++
+ void main() {
+   TestWidgetsFlutterBinding.ensureInitialized();
+   const methods = MethodChannel('marea/tour_ar');
+@@ -296,7 +317,7 @@
+         'quad': [.2, .3, .8, .3, .8, .6, .2, .6],
+       });
+       await tester.tap(find.text('Toca para ver más'));
+-      await tester.pumpAndSettle();
++      await _waitForPlatformWidget(tester, find.text('Descripción pública'));
+       expect(find.byKey(const ValueKey('native-camera')), findsNothing);
+       expect(find.text('Descripción pública'), findsOneWidget);
+       expect(find.text('Misión active'), findsOneWidget);
+@@ -304,7 +325,10 @@
+         expect(find.text('Misión $id'), findsNothing);
+       }
+       await tester.tap(find.byTooltip('Volver a cámara'));
+-      await tester.pumpAndSettle();
++      await _waitForPlatformWidget(
++        tester,
++        find.byKey(const ValueKey('native-camera')),
++      );
+       expect(find.byKey(const ValueKey('native-camera')), findsOneWidget);
+       expect(params!['sessionId'], isNot(oldSession));
+       expect(find.text('Toca para ver más'), findsNothing);
