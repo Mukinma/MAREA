@@ -59,7 +59,10 @@ void main() {
     final c = await authenticatedController();
     addTearDown(c.dispose);
     await tester.pumpWidget(testApp(EditProfileScreen(controller: c)));
-    final name = find.widgetWithText(TextField, 'Nombre completo');
+    final name = find.descendant(
+      of: find.byKey(const ValueKey('edit-field-Nombre completo')),
+      matching: find.byType(TextField),
+    );
     await tester.ensureVisible(name);
     await tester.showKeyboard(name);
     final editable = tester.widget<EditableText>(
@@ -198,7 +201,7 @@ void main() {
     await tester.pumpWidget(testApp(EditProfileScreen(controller: c)));
     await tester.ensureVisible(find.text('Nombre completo'));
     await tester.enterText(
-      find.widgetWithText(TextFormField, 'Nombre completo'),
+      find.byKey(const ValueKey('edit-field-Nombre completo')),
       '',
     );
     await tester.ensureVisible(find.text('Profesional'));

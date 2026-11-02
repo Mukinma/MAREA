@@ -111,7 +111,8 @@ void main() {
     expect(find.text('Nombre de usuario'), findsOneWidget);
     expect(find.text('Tipo de perfil: Artista / creador'), findsOneWidget);
     expect(find.byType(DropdownButtonFormField<UserType>), findsNothing);
-    expect(find.text('Bio'), findsOneWidget);
+    expect(find.text('Sobre mí'), findsOneWidget);
+    expect(find.byKey(const ValueKey('edit-field-Sobre mí')), findsOneWidget);
     expect(find.text(sampleProfile.id), findsNothing);
     expect(find.text('role'), findsNothing);
   });
@@ -139,9 +140,7 @@ void main() {
   });
 
   for (final width in [390.0, 1366.0]) {
-    testWidgets('shell exposes six labelled actions at $width', (
-      tester,
-    ) async {
+    testWidgets('shell exposes six labelled actions at $width', (tester) async {
       tester.view.physicalSize = Size(width, 844);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
