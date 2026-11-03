@@ -4,6 +4,7 @@ import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/core/theme/app_theme.dart';
+import 'package:marea/features/chat/data/chat_repository.dart';
 import '../../support/fakes.dart';
 
 class Social implements SocialRepository {
@@ -13,6 +14,11 @@ class Social implements SocialRepository {
   Future<int> unreadCount() async => 0;
   @override
   dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
+}
+
+class HeaderChat implements ChatRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
@@ -29,6 +35,7 @@ void main() {
         authRepository: FakeAuthRepository(),
         profileRepository: FakeProfileRepository(),
         socialRepository: Social(),
+        chatRepository: HeaderChat(),
       );
       await controller.initialize();
       addTearDown(controller.dispose);

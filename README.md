@@ -1,5 +1,7 @@
 # MAREA
 
+Para continuar este trabajo en otro equipo, consultar [Cambiar de laptop y retomar con Codex](docs/implementation/continue-on-another-laptop.md): rama, herramientas, configuración privada, firma Android y estado de la prueba.
+
 SMTP de Gmail está activo y la plantilla publicada de confirmación incluye el código. Consulta el [estado y las pruebas de correo](docs/email-setup.md); la entrega con cuentas nuevas todavía requiere validación real.
 
 Para preparar un equipo desde cero, consulta la [guía de instalación local para Android y Web](docs/instalacion-local.md).
@@ -179,8 +181,14 @@ Creación y edición en cuatro pasos, candidaturas en tres, confirmación, borra
 
 ## Recorridos 360° y AR
 
+Para probar el flujo Mapa → Misión → RA sin producción, consultar el [laboratorio local de RA](docs/implementation/business-ar.md#laboratorio-local-sin-producción). Incluye datos ficticios, lámina imprimible y cámara nativa real; se ejecuta con `powershell -ExecutionPolicy Bypass -File .\tool\ar-local.ps1 -Action Run -Device ID_DEL_DISPOSITIVO`, sin archivos Supabase.
+
+El [piloto con backend de desarrollo](docs/implementation/ar-development-pilot.md) utiliza la app normal, un proyecto Supabase independiente y la variante **MAREA Desarrollo**. Incluye configuración protegida, diagnóstico de sólo lectura y validación local de panoramas GPano.
+
+La continuación autorizada en la base actual usa **MAREA Prueba RA** (`com.marea.app.pilot`) y exclusivamente cuentas y borradores nuevos del lote documentado en el mismo piloto. Esa variante separa instalación y sesión; sigue conectada a producción. La nueva referencia ya tiene reconocimiento observado y reporte persistido en el OPPO; faltan el panorama, su procesamiento y la publicación mediante las reglas existentes.
+
 Editor desde Crear y perfil profesional, captura esférica guiada Android/iOS o importación GPano, visita por panoramas y conexiones, referencias AR con ancho físico, solicitudes y revisión de espacios. Supabase mantiene originales y borradores privados; Cloud Run Jobs procesa con Hugin/Enblend. Negocios conservan Servicios.
 
-La implementación local, las pruebas ejecutadas y las verificaciones pendientes están en [entrega y piloto](docs/implementation/tours-360-delivery.md). Consultar [diseño y seis láminas](docs/ar-experience-design.md), [canales nativos](docs/implementation/tours-native.md) y [despliegue del procesador](processing/tours/README.md). No se han aplicado migraciones ni desplegado estos servicios en producción; las pruebas físicas de captura y AR siguen pendientes.
+La implementación local, las pruebas ejecutadas y las verificaciones pendientes están en [entrega y piloto](docs/implementation/tours-360-delivery.md). Consultar [diseño y seis láminas](docs/ar-experience-design.md), [canales nativos](docs/implementation/tours-native.md) y [despliegue del procesador](processing/tours/README.md). Esta entrega no aplica migraciones ni despliega servicios; quedan pendientes la captura física y el flujo público completo. El reconocimiento y guardado de la nueva referencia del piloto se comprobaron en el OPPO, según la guía del piloto.
 
 Para los recorridos360°, consultar [el piloto Docker + Supabase](docs/implementation/tours-local-pilot-report.md) y [los comandos del procesador local](processing/tours/README.md). Cloud Run espera verificación de facturación; las pruebas físicas de cámara/AR corresponden al propietario del dispositivo.

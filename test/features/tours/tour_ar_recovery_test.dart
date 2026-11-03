@@ -59,6 +59,105 @@ class ARFiles extends MemoryDrafts {
       'local.jpg';
 }
 
+class ReportARRepo extends ARRepo {
+  ReportARRepo() {
+    data = clone(data);
+    for (final point in TourRecord(data).document.points) {
+      point.ar!['tested_version'] = null;
+    }
+  }
+  int reports = 0;
+  void Function(Map<String, dynamic>)? mutateResponse;
+
+  @override
+  Future<TourRecord> reportAR(
+    String tour,
+    String point,
+    String version,
+    String platform,
+    int seconds,
+  ) async {
+    reports++;
+    expect(tour, 'tour');
+    expect(point, 'one');
+    expect(version, 'v-one');
+    expect(platform, 'android');
+    expect(seconds, greaterThanOrEqualTo(3));
+    final result = clone(data);
+    TourRecord(result).document.point(point)!.ar!['tested_version'] = version;
+    mutateResponse?.call(result);
+    return TourRecord(result);
+  }
+}
+
+Future<void> prepareRecognitionReport(
+  WidgetTester tester,
+  ReportARRepo repo,
+) async {
+  tester.view.physicalSize = const Size(800, 1400);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+  final controller = await session(repo);
+  addTearDown(controller.dispose);
+  await tester.pumpWidget(
+    MaterialApp(
+      home: TourARScreen(
+        controller: controller,
+        tourId: 'tour',
+        preview: true,
+        localStore: ARFiles(),
+        referenceLoader: (_) async => Uint8List.fromList([1, 2, 3]),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('Escanear esta imagen'));
+  await tester.pumpAndSettle();
+  expect(
+    find.byType(AndroidView),
+    findsOneWidget,
+    reason: tester
+        .widgetList<Text>(find.byType(Text))
+        .map((t) => t.data)
+        .join(' | '),
+  );
+  expect(
+    tester
+        .widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Guardar prueba de reconocimiento'),
+        )
+        .onPressed,
+    isNull,
+  );
+  expect(repo.reports, 0);
+  tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+    'marea/tour_ar/events',
+    const StandardMethodCodec().encodeSuccessEnvelope({
+      'id': 'one',
+      'state': 'tracking',
+    }),
+    (_) {},
+  );
+  await tester.pump();
+  await tester.pump();
+  // The existing preview measures real elapsed time with DateTime.now(). Only
+  // this automated test supplies a platform event; the app retains native AR.
+  await tester.runAsync(
+    () => Future<void>.delayed(const Duration(milliseconds: 3100)),
+  );
+  await tester.pump(const Duration(seconds: 3));
+  expect(
+    tester
+        .widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Guardar prueba de reconocimiento'),
+        )
+        .onPressed,
+    isNotNull,
+  );
+}
+
 void main() {
   testWidgets(
     'camera-free list completes a stop and advances with large text',
@@ -172,5 +271,99 @@ void main() {
     expect(find.byType(AndroidView), findsNothing);
     expect(tester.takeException(), isNull);
     controller.dispose();
+  });
+
+  group('recognition report confirmation', () {
+    const events = MethodChannel('marea/tour_ar/events');
+    setUp(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(events, (_) async => null);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            SystemChannels.platform_views,
+            (call) async => call.method == 'create' ? 1 : null,
+          );
+    });
+    tearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(events, null);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform_views, null);
+    });
+
+    testWidgets('confirms matching tested reference and releases camera', (
+      tester,
+    ) async {
+      final repo = ReportARRepo();
+      await prepareRecognitionReport(tester, repo);
+      await tester.ensureVisible(find.text('Guardar prueba de reconocimiento'));
+      await tester.tap(find.text('Guardar prueba de reconocimiento'));
+      await tester.pumpAndSettle();
+      expect(repo.reports, 1);
+      expect(
+        find.text('Prueba guardada para esta referencia.'),
+        findsOneWidget,
+      );
+      expect(find.byType(AndroidView), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('rejects missing confirmation or a different reference result', (
+      tester,
+    ) async {
+      final repo = ReportARRepo();
+      await prepareRecognitionReport(tester, repo);
+      final mutations = <void Function(Map<String, dynamic>)>[
+        (result) =>
+            TourRecord(result).document.point('one')!.ar!['tested_version'] =
+                null,
+        (result) => result['id'] = 'another-tour',
+        (result) => result['owner_id'] = 'another-owner',
+        (result) => TourRecord(result).document.point('one')!.data['id'] =
+            'another-point',
+        (result) =>
+            TourRecord(result).document.point('one')!.ar!['reference_version'] =
+                'another-version',
+        (result) =>
+            TourRecord(result).document.point('one')!.ar!['reference_path'] =
+                'another-reference.jpg',
+        (result) =>
+            TourRecord(result).document.point('one')!.ar!['width_cm'] = 30,
+      ];
+      for (final mutate in mutations) {
+        repo.mutateResponse = mutate;
+        await tester.ensureVisible(
+          find.text('Guardar prueba de reconocimiento'),
+        );
+        await tester.tap(find.text('Guardar prueba de reconocimiento'));
+        await tester.pump();
+        await tester.pump();
+        expect(
+          find.text('Prueba guardada para esta referencia.'),
+          findsNothing,
+        );
+        expect(
+          find.textContaining('No pudimos confirmar que la prueba se guardó'),
+          findsOneWidget,
+        );
+        expect(find.byType(AndroidView), findsOneWidget);
+        expect(find.text('Parada one'), findsWidgets);
+        expect(tester.takeException(), isNull);
+      }
+      expect(repo.reports, mutations.length);
+      // A rejected response must not replace the currently selected reference;
+      // the same scan can still receive an exact confirmation on retry.
+      repo.mutateResponse = null;
+      await tester.ensureVisible(find.text('Guardar prueba de reconocimiento'));
+      await tester.tap(find.text('Guardar prueba de reconocimiento'));
+      await tester.pumpAndSettle();
+      expect(repo.reports, mutations.length + 1);
+      expect(
+        find.text('Prueba guardada para esta referencia.'),
+        findsOneWidget,
+      );
+      expect(find.byType(AndroidView), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
   });
 }

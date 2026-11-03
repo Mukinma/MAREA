@@ -1,6 +1,9 @@
+import 'package:marea/features/tours/presentation/business_ar_screen.dart';
 import 'package:marea/features/tours/models/tour_models.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
@@ -453,6 +456,22 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                         child: MissionMapPreview(
                           key: ValueKey(selected.id),
                           mission: selected,
+                          arAction: widget.session.tourRepository == null
+                              ? null
+                              : BusinessARAction(
+                                  ownerId: selected.authorId,
+                                  repository: widget.session.tourRepository!,
+                                  onOpen: (target) => context.push(
+                                    Uri(
+                                      path:
+                                          '/tours/${target.tour.id}/business-ar',
+                                      queryParameters: {
+                                        'owner': selected.authorId,
+                                        'point': target.point.id,
+                                      },
+                                    ).toString(),
+                                  ),
+                                ),
                           repository: widget.session.communityRepository,
                           distanceMeters: distance,
                           onClose: () => _state.select(null),

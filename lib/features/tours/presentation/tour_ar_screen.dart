@@ -263,16 +263,50 @@ class _TourARScreenState extends State<TourARScreen>
 
   Future<void> _report() async {
     if (!_recognized || _seconds < 3 || !widget.preview || _busy) return;
-    setState(() => _busy = true);
+    final tour = _tour!, point = _point!;
+    final reference = Map<String, dynamic>.from(point.ar!);
+    final version = reference['reference_version'] as String;
+    final generation = _scanGeneration;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
     try {
-      await widget.controller.tourRepository!.reportAR(
-        _tour!.id,
-        _point!.id,
-        _point!.ar!['reference_version'] as String,
+      final saved = await widget.controller.tourRepository!.reportAR(
+        tour.id,
+        point.id,
+        version,
         defaultTargetPlatform == TargetPlatform.android ? 'android' : 'ios',
         _seconds,
       );
+      final savedPoint = saved.document.point(point.id);
+      final savedReference = savedPoint?.ar;
+      final width = reference['width_cm'];
+      if (saved.data['id'] != tour.id ||
+          saved.data['owner_id'] != _account ||
+          tour.ownerId != _account ||
+          savedPoint == null ||
+          version.isEmpty ||
+          savedReference?['reference_version'] != version ||
+          savedReference?['tested_version'] != version ||
+          reference['reference_path'] is! String ||
+          (reference['reference_path'] as String).isEmpty ||
+          savedReference?['reference_path'] != reference['reference_path'] ||
+          width is! num ||
+          !width.isFinite ||
+          width <= 0 ||
+          savedReference?['width_cm'] != width) {
+        throw StateError(
+          'No pudimos confirmar que la prueba se guardó para esta referencia. '
+          'Mantén la imagen encuadrada y vuelve a intentarlo.',
+        );
+      }
+      if (generation != _scanGeneration || _point?.id != point.id) return;
       if (mounted && _current) {
+        setState(() {
+          _tour = saved;
+          _point = savedPoint;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Prueba guardada para esta referencia.'),

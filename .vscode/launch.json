@@ -2,6 +2,38 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "MAREA Prueba RA · base actual · cuentas del piloto",
+      "request": "launch",
+      "type": "dart",
+      "program": "test/manual/business_ar_live_probe.dart",
+      "flutterMode": "debug",
+      "env": {"PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"},
+      "toolArgs": ["--dart-define-from-file=config/supabase.production.json"]
+    },
+    {
+      "name": "MAREA Desarrollo · piloto con backend",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "preLaunchTask": "MAREA: preparar desarrollo",
+      "env": {"PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"},
+      "toolArgs": ["--dart-define-from-file=.dart_tool/ar-pilot/defines.json", "--web-port=7358"]
+    },
+    {
+      "name": "MAREA RA local · sin backend",
+      "request": "launch",
+      "type": "dart",
+      "program": "test/manual/business_ar_probe.dart",
+      "flutterMode": "debug",
+      "env": {
+        "PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"
+      },
+      "toolArgs": [
+        "--dart-define=MAP_TILE_URL=http://127.0.0.1:38765/tiles/{z}/{x}/{y}.png"
+      ]
+    },
+    {
       "name": "MAREA Web · configuración local",
       "request": "launch",
       "type": "dart",

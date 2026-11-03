@@ -11,6 +11,8 @@ import '../models/tour_models.dart';
 import '../presentation/tour_widgets.dart';
 import '../presentation/tour_panorama.dart';
 import 'capture_plan.dart';
+import 'capture_motion_gate.dart';
+import 'capture_guidance_panel.dart';
 
 Map<String, dynamic> _preparePhoto(Uint8List source) {
   final image = img.decodeImage(source);
@@ -62,8 +64,9 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       _missingWebFile = false;
   late final String _account = widget.controller.profile!.id;
   double _yaw = 0, _pitch = 0, _roll = 0, _yawOffset = 0, _upload = 0;
-  DateTime? _stableSince, _lastMotion;
-  Timer? _poll;
+  final _motionGate = CaptureMotionGate();
+  bool _motionFresh = false, _motionSteady = false;
+  Timer? _poll, _motionReadiness;
   int _cameraGeneration = 0;
   bool _reviewed = false;
   bool get _current => mounted && widget.controller.profile?.id == _account;
@@ -71,14 +74,8 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   CaptureTarget? get _target => _plan?.targets
       .where((t) => !_frames.any((f) => f['target_id'] == t.id))
       .firstOrNull;
-  bool get _aimed =>
-      _target != null &&
-      angularDistance(_yaw, _pitch, _target!.yaw, _target!.pitch) < 6;
-  bool get _steady =>
-      _lastMotion != null &&
-      DateTime.now().difference(_lastMotion!).inMilliseconds < 300 &&
-      _stableSince != null &&
-      DateTime.now().difference(_stableSince!).inMilliseconds >= 500;
+  bool get _aimed => _motionGate.aimed;
+  bool get _steady => _motionGate.isSteady(DateTime.now());
   String get _key => 'capture-${widget.sceneId}';
   @override
   void initState() {
@@ -136,6 +133,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       _error = null;
     });
     final generation = ++_cameraGeneration;
+    _resetMotion();
     try {
       final cameras = await availableCameras();
       if (!_current ||
@@ -232,25 +230,35 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
         await _release();
         return;
       }
+      _yawOffset = _frames.isEmpty
+          ? 0
+          : (_frames.first['yaw'] as num).toDouble();
       _orientation = _events.receiveBroadcastStream().listen(
         (event) {
-          if (!mounted || !_current) return;
+          if (!mounted ||
+              !_current ||
+              generation != _cameraGeneration ||
+              _camera != c) {
+            return;
+          }
           final now = DateTime.now();
           final y = normalizeYaw((event['yaw'] as num).toDouble() + _yawOffset),
               p = (event['pitch'] as num).toDouble();
-          if (angularDistance(_yaw, _pitch, y, p) > 1.5 || !_aimed) {
-            _stableSince = null;
-          }
-          _lastMotion = now;
-          _stableSince ??= now;
+          _motionGate.update(yaw: y, pitch: p, target: _target, now: now);
           setState(() {
             _yaw = y;
             _pitch = p;
             _roll = (event['roll'] as num).toDouble();
+            _motionFresh = _motionGate.isFresh(now);
+            _motionSteady = _motionGate.isSteady(now);
           });
         },
         onError: (Object e) {
-          if (mounted && _current) {
+          if (mounted &&
+              _current &&
+              generation == _cameraGeneration &&
+              _camera == c) {
+            _resetMotion();
             setState(
               () => _error =
                   'No pudimos leer la orientación. Puedes importar un panorama.',
@@ -259,10 +267,18 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
         },
       );
       await _motion.invokeMethod('start');
-      _aligned = _frames.isEmpty;
-      if (_frames.isNotEmpty) {
-        _yawOffset = (_frames.first['yaw'] as num).toDouble();
+      if (!_current || generation != _cameraGeneration || _camera != c) {
+        return;
       }
+      if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+        await _release();
+        return;
+      }
+      _aligned = _frames.isEmpty;
+      _motionReadiness = Timer.periodic(
+        const Duration(milliseconds: 100),
+        (_) => _refreshReadiness(),
+      );
     } catch (e) {
       await _release();
       if (_current) setState(() => _error = tourError(e));
@@ -272,12 +288,51 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   }
 
   Future<void> _align() async {
-    await _motion.invokeMethod('stop');
-    await _motion.invokeMethod('start');
-    if (mounted && _current) {
+    final camera = _camera;
+    if (_busy || camera == null) return;
+    final generation = _cameraGeneration;
+    bool canAlign() =>
+        _current &&
+        generation == _cameraGeneration &&
+        _camera == camera &&
+        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+    if (!canAlign()) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    _resetMotion();
+    try {
+      await _motion.invokeMethod('stop');
+      if (!canAlign()) return;
+      await _motion.invokeMethod('start');
+      if (!canAlign()) return;
+      setState(() => _aligned = true);
+    } catch (e) {
+      if (canAlign()) {
+        _resetMotion();
+        setState(() => _error = tourError(e));
+      }
+    } finally {
+      if (_current) setState(() => _busy = false);
+    }
+  }
+
+  void _resetMotion() {
+    _motionGate.reset();
+    _motionFresh = false;
+    _motionSteady = false;
+  }
+
+  void _refreshReadiness() {
+    if (!_current || _camera == null) return;
+    final now = DateTime.now();
+    final fresh = _motionGate.isFresh(now);
+    final steady = _motionGate.isSteady(now);
+    if (fresh != _motionFresh || steady != _motionSteady) {
       setState(() {
-        _aligned = true;
-        _stableSince = null;
+        _motionFresh = fresh;
+        _motionSteady = steady;
       });
     }
   }
@@ -308,7 +363,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
         'target_id': target.id,
       });
       await _persist();
-      _stableSince = null;
+      _resetMotion();
     } catch (e) {
       if (_current) setState(() => _error = tourError(e));
     } finally {
@@ -448,6 +503,9 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
 
   Future<void> _release() async {
     _cameraGeneration++;
+    _motionReadiness?.cancel();
+    _motionReadiness = null;
+    _resetMotion();
     final c = _camera;
     _camera = null;
     await _orientation?.cancel();
@@ -484,6 +542,19 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
         leading: TourBackButton(fallback: '/tours/${widget.tourId}/edit'),
         title: const Text('Capturar posición 360°'),
       ),
+      bottomNavigationBar:
+          c != null && c.value.isInitialized && _aligned && _target != null
+          ? CaptureGuidancePanel(
+              target: _target!,
+              yaw: _yaw,
+              pitch: _pitch,
+              fresh: _motionGate.isFresh(DateTime.now()),
+              aimed: _aimed,
+              steady: _steady,
+              busy: _busy,
+              onTake: _take,
+            )
+          : null,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -610,6 +681,8 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                         child: Text(
                           _target == null
                               ? 'Captura completa'
+                              : !_motionFresh
+                              ? 'Esperando orientación del teléfono'
                               : _aimed
                               ? 'Mantén el teléfono estable'
                               : 'Apunta a ${_target!.yaw.toStringAsFixed(0)}° · inclinación ${_target!.pitch.toStringAsFixed(0)}°',
@@ -635,21 +708,17 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                     : const SizedBox(),
               ),
               FilledButton(
-                onPressed: _align,
+                onPressed: _busy ? null : _align,
                 child: const Text('Ya alineé la primera toma'),
               ),
             ],
-            if (c != null && _aligned && _target != null)
-              FilledButton(
-                onPressed: _busy || !_aimed || !_steady ? null : _take,
-                child: const Text('Aceptar toma'),
-              ),
             if (_frames.isNotEmpty && _session['mode'] != 'import')
               OutlinedButton(
                 onPressed: _busy
                     ? null
                     : () async {
                         _frames.removeLast();
+                        _resetMotion();
                         await _persist();
                         if (_current) setState(() {});
                       },

@@ -29,7 +29,11 @@ class TourAR(private val activity: Activity, messenger: BinaryMessenger) {
  val factory=object: PlatformViewFactory(StandardMessageCodec.INSTANCE) {
   override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
    views.toList().forEach { it.dispose() }
-   return TourARView(activity,args as? Map<*,*>,::emit) { views.remove(it) }.also { views.add(it); it.resume() }
+   val params=args as? Map<*,*>
+   val sessionId=params?.get("sessionId") as? String
+   return TourARView(activity,params,{ value ->
+    emit(if(sessionId==null) value else value + mapOf("sessionId" to sessionId))
+   }) { views.remove(it) }.also { views.add(it); it.resume() }
   }
  }
  init {
@@ -55,6 +59,9 @@ class TourARView(private val activity: Activity, private val args: Map<*,*>?, pr
  @Volatile private var running=false
  @Volatile private var width=1; @Volatile private var height=1
  private var texture=0; private var background=0; private var signal=0
+ private val projectedCard=args?.get("projectedCard")==true
+ private var lastProjection=0L
+ private val projectionFrames=TourProjectionFrames()
  private val states=mutableMapOf<String,String>()
  private val anchors=mutableMapOf<String,Anchor>()
  private val points=floatArrayOf(-1f,-1f,1f,-1f,-1f,1f,1f,1f)
@@ -126,14 +133,40 @@ class TourARView(private val activity: Activity, private val args: Map<*,*>?, pr
    attribute(background,"p",2,points); attribute(background,"uv",2,uv)
    GLES20.glActiveTexture(GLES20.GL_TEXTURE0); GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,texture)
    GLES20.glUniform1i(GLES20.glGetUniformLocation(background,"image"),0); GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP,0,4)
+   // Rendering can continue while ARCore returns the same camera frame. Such
+   // cached poses must not keep Flutter's tracking watchdog alive.
+   val freshProjectionFrame=projectionFrames.advance(frame.timestamp)
    for(image in current.getAllTrackables(AugmentedImage::class.java)) {
     val tracked=frame.camera.trackingState==TrackingState.TRACKING && image.trackingState==TrackingState.TRACKING && image.trackingMethod==AugmentedImage.TrackingMethod.FULL_TRACKING
     setState(image.name,if(tracked) "tracking" else "lost")
     if(tracked) {
      val anchor=anchors.getOrPut(image.name) { image.createAnchor(image.centerPose) }
      val model=FloatArray(16); val view=FloatArray(16); val projection=FloatArray(16); val mv=FloatArray(16); val mvp=FloatArray(16)
-     anchor.pose.toMatrix(model,0); frame.camera.getViewMatrix(view,0); frame.camera.getProjectionMatrix(projection,0,0.05f,100f)
+     (if(projectedCard) image.centerPose else anchor.pose).toMatrix(model,0); frame.camera.getViewMatrix(view,0); frame.camera.getProjectionMatrix(projection,0,0.05f,100f)
      Matrix.multiplyMM(mv,0,view,0,model,0); Matrix.multiplyMM(mvp,0,projection,0,mv,0)
+     if(projectedCard) {
+      // Still process tracking loss above, even without a new camera frame.
+      if(!freshProjectionFrame) continue
+      // Four corners of a physical 280:120 card on the recognized image plane.
+      val halfWidth=image.extentX*.4f
+      val halfHeight=halfWidth*120f/280f
+      val quad=mutableListOf<Double>()
+      var visible=true
+      for((x,z) in listOf(-halfWidth to -halfHeight,halfWidth to -halfHeight,halfWidth to halfHeight,-halfWidth to halfHeight)) {
+       val clip=FloatArray(4)
+       Matrix.multiplyMV(clip,0,mvp,0,floatArrayOf(x,.005f,z,1f),0)
+       if(!clip.all { it.isFinite() } || clip[3]<=.001f || clip[2]<-clip[3] || clip[2]>clip[3]) { visible=false; break }
+       quad.add(((clip[0]/clip[3]+1f)*.5f).toDouble())
+       quad.add(((1f-clip[1]/clip[3])*.5f).toDouble())
+      }
+      if(!visible) { setState(image.name,"lost"); continue }
+      val now=android.os.SystemClock.elapsedRealtime()
+      if(now-lastProjection>=50) {
+       lastProjection=now
+       emit(mapOf("id" to image.name,"state" to "tracking","quad" to quad))
+      }
+      continue
+     }
      GLES20.glUseProgram(signal); GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(signal,"m"),1,false,mvp,0)
      val radius=image.extentX*.15f
      attribute(signal,"p",3,floatArrayOf(-radius,.005f,-radius,radius,.005f,-radius,-radius,.005f,radius,radius,.005f,radius))
@@ -149,5 +182,14 @@ class TourARView(private val activity: Activity, private val args: Map<*,*>?, pr
  private fun program(vertex: String,fragment: String): Int {
   fun shader(type: Int,source: String): Int { val shader=GLES20.glCreateShader(type); GLES20.glShaderSource(shader,source); GLES20.glCompileShader(shader); val status=IntArray(1); GLES20.glGetShaderiv(shader,GLES20.GL_COMPILE_STATUS,status,0); check(status[0]!=0) { GLES20.glGetShaderInfoLog(shader) }; return shader }
   val v=shader(GLES20.GL_VERTEX_SHADER,vertex); val f=shader(GLES20.GL_FRAGMENT_SHADER,fragment); val p=GLES20.glCreateProgram(); GLES20.glAttachShader(p,v); GLES20.glAttachShader(p,f); GLES20.glLinkProgram(p); GLES20.glDeleteShader(v); GLES20.glDeleteShader(f); return p
+ }
+}
+
+// Retain the clock across pause/resume; a new native view starts a new clock.
+internal class TourProjectionFrames {
+ private var timestamp=0L
+ fun advance(next: Long): Boolean {
+  if(next<=timestamp) return false
+  timestamp=next; return true
  }
 }

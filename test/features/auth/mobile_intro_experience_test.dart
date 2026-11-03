@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marea/core/theme/app_theme.dart';
@@ -29,6 +30,20 @@ class _PendingStore implements MobileIntroStore {
   Future<void> markSeenIntro() async {}
 }
 
+AppSessionController _welcomeController() {
+  final auth = FakeAuthRepository()..user = null;
+  final controller = AppSessionController(
+    authRepository: auth,
+    profileRepository: FakeProfileRepository(),
+    legalRepository: FakeLegalRepository(),
+  );
+  addTearDown(() async {
+    controller.dispose();
+    await auth.close();
+  });
+  return controller;
+}
+
 void main() {
   setUpAll(() async {
     final fonts = FontLoader('NunitoSans');
@@ -57,7 +72,11 @@ void main() {
     tester,
   ) async {
     final store = _PendingStore();
-    await tester.pumpWidget(testApp(WelcomeEntryScreen(store: store)));
+    await tester.pumpWidget(
+      testApp(
+        WelcomeEntryScreen(controller: _welcomeController(), store: store),
+      ),
+    );
     expect(find.byKey(const Key('welcome-register')), findsNothing);
     expect(find.byKey(const Key('mobile-intro')), findsNothing);
     store.loaded.complete(true);
@@ -69,7 +88,12 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      testApp(WelcomeEntryScreen(store: _UnavailableStore())),
+      testApp(
+        WelcomeEntryScreen(
+          controller: _welcomeController(),
+          store: _UnavailableStore(),
+        ),
+      ),
     );
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
@@ -84,14 +108,23 @@ void main() {
     tester,
   ) async {
     final store = SharedPreferencesMobileIntroStore();
-    await tester.pumpWidget(testApp(WelcomeEntryScreen(store: store)));
+    await tester.pumpWidget(
+      testApp(
+        WelcomeEntryScreen(controller: _welcomeController(), store: store),
+      ),
+    );
     await tester.pump();
     await tester.tap(find.byKey(const Key('intro-dot-2')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pumpWidget(const SizedBox());
     await tester.pumpWidget(
-      testApp(WelcomeEntryScreen(store: SharedPreferencesMobileIntroStore())),
+      testApp(
+        WelcomeEntryScreen(
+          controller: _welcomeController(),
+          store: SharedPreferencesMobileIntroStore(),
+        ),
+      ),
     );
     await tester.pump();
     expect(

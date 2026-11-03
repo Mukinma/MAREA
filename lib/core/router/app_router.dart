@@ -1,3 +1,4 @@
+import 'package:marea/features/tours/presentation/business_ar_screen.dart';
 import 'package:marea/features/discover/presentation/discover_screen.dart';
 import 'package:marea/features/home_feed/presentation/story_composer.dart';
 import 'package:marea/features/tours/presentation/tour_management_screen.dart';
@@ -477,6 +478,17 @@ abstract final class AppRouter {
           ),
         ),
         GoRoute(
+          path: '/tours/:id/business-ar',
+          parentNavigatorKey: rootKey,
+          builder: (_, s) => BusinessARScreen(
+            key: ValueKey('${controller.profile?.id}:${s.uri}'),
+            controller: controller,
+            tourId: s.pathParameters['id']!,
+            ownerId: s.uri.queryParameters['owner'] ?? '',
+            pointId: s.uri.queryParameters['point'] ?? '',
+          ),
+        ),
+        GoRoute(
           path: '/tours/:id/ar',
           parentNavigatorKey: rootKey,
           builder: (_, s) => TourARScreen(
@@ -535,7 +547,7 @@ class AppRouteGuard {
         uri.hasScheme ||
         uri.hasAuthority ||
         !RegExp(
-          r'^/(tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar))?)?|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
+          r'^/(tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
         ).hasMatch(uri.path)) {
       return null;
     }
