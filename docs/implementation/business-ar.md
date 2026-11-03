@@ -23,7 +23,7 @@ Salir de la pantalla, cubrirla con otra ruta, cambiar de cuenta o pasar la app a
 - La imagen física debe ser la misma que se cargó como referencia. Las imágenes con detalles distintivos y buen contraste suelen reconocerse mejor que logotipos simples. El ancho configurado debe corresponder al real.
 - Un teléfono compatible con ARCore/ARKit y permiso de cámara. Web permite consultar la introducción y el perfil; la cámara RA no se habilita allí.
 
-No se crean cuentas, Misiones ni referencias de demostración en producción. La cámara usa un único objetivo seleccionado; no coloca objetos con GPS ni incluye navegación o modelos 3D.
+El flujo normal no crea cuentas, Misiones ni referencias de demostración automáticamente. El laboratorio local tampoco escribe en producción. Un piloto posterior con registros nuevos fue autorizado expresamente por el usuario y se documenta al final. La cámara usa un único objetivo seleccionado; no coloca objetos con GPS ni incluye navegación o modelos 3D.
 
 ## Laboratorio local sin producción
 
@@ -94,3 +94,35 @@ Los cambios nativos necesitan detener y volver a ejecutar la aplicación; hot re
 Probar: referencia correcta/incorrecta; alejar y volver a encuadrar; mover y rotar el teléfono; tocar la tarjeta desde distintas perspectivas; Misiones vigentes/vencidas/ocultas; cerrar y volver del perfil; denegar cámara; desconectar red durante descarga; salir mientras descarga; segundo plano; cambio de cuenta; volver al mapa; referencia pausada o sustituida antes de abrir cámara. Conservar la revisión pública y las restricciones RLS existentes.
 
 Referencia técnica: https://developers.google.com/ar/develop/java/augmented-images/guide
+
+## Preparación en teléfono — 31 de octubre de 2026
+
+Se conectó por USB un OPPO CPH2637 (Reno12 F 5G), Android 16, con Google Play Services for AR 1.57 instalado. La APK independiente del laboratorio volvió a compilar correctamente. Se corrigió el exportador de impresión para eliminar el margen predeterminado del cuerpo y mantener la imagen en 200 × 150 mm; se regeneró `outputs/ar-local/print.html`. Aún debe medirse físicamente el tamaño mostrado o impreso.
+
+La instalación por USB no se completó: después del primer intento ADB dejó de responder a comandos de lectura y pasó a `offline`. Se reinició ADB y se probó su backend USB nativo con `ADB_USB_LEGACY=1` sólo en el proceso servidor, opción documentada para [Platform-Tools 37.0.1](https://developer.android.com/tools/releases/platform-tools). La conexión continuó inestable. No se cambió permanentemente la configuración de Windows ni del proyecto por ese diagnóstico.
+
+La copia por USB volvió a fallar con `Broken pipe` después de seleccionar Transferir archivos, aunque los comandos pequeños respondían. Se continuó mediante Depuración inalámbrica de Android, con vinculación por código y conexión TLS en la red local. La APK se transfirió completamente por Wi-Fi, `adb install --no-streaming` devolvió `Success` y se inició la actividad de `com.marea.app.arqa`; se comprobó el proceso activo. Los códigos de vinculación y las direcciones de conexión no se guardan en esta guía.
+
+Pendiente: comprobar con el usuario arranque de cámara, reconocimiento, perspectiva, pérdida de seguimiento y panel en este teléfono. La instalación y el arranque por Wi-Fi no acreditan esos resultados ópticos. No se escribieron reportes AR ni datos de producción.
+
+## Confirmación manual del usuario — 2 de noviembre de 2026
+
+Al retomar la prueba en el teléfono, el usuario confirmó que el laboratorio funciona y preguntó por el siguiente desarrollo. Se registra una prueba manual reportada como satisfactoria por el usuario; no se recogieron mediciones ni resultados separados para cada caso de aceptación. Esta confirmación corresponde a `MAREA RA local`, con cuentas y publicación ficticias, y no modifica reportes AR ni datos del backend.
+
+El siguiente piloto debe usar `lib/main.dart` contra un entorno de desarrollo independiente. La entrada desde el Mapa, el editor, la revisión y la publicación ya están implementados. Falta preparar la configuración del entorno y validar el flujo completo con cuentas de organizador, visitante y revisor: procesar/importar un panorama 360° válido, adjuntarlo al recorrido, probar una referencia propia con su ancho físico, publicar mediante las reglas existentes y crear una Misión futura geolocalizada del mismo organizador. Después se comprueba la experiencia desde la cuenta visitante, incluidos pausa, sustitución de referencia y recuperación de la cámara.
+
+Actualmente la publicación del recorrido requiere un panorama procesado válido; por ello el piloto necesita también el procesador 360° de desarrollo. El worker y el ejecutor local ya existen. Preparar ese piloto no implica autorizar despliegues, commits, push ni cambios de producción.
+
+La preparación del cliente separado, la configuración protegida, los diagnósticos y el recorrido de aceptación están en [Piloto con backend de desarrollo](ar-development-pilot.md). El proyecto independiente sigue pendiente de configuración.
+
+## Continuación autorizada con registros nuevos — 2 de noviembre de 2026
+
+El usuario pidió usar la base actual y autorizó crear únicamente cuentas y contenido nuevos de prueba. Se crearon dos cuentas ordinarias confirmadas, un recorrido privado con referencia propia y una Misión en borrador; no se modificaron registros existentes ni se publicaron estos recursos. Se comprobó que el autor puede consultar ambos borradores y el visitante no. El laboratorio local continúa sin backend.
+
+La variante **MAREA Prueba RA** (`com.marea.app.pilot`) utiliza la aplicación real y la base actual con sesión independiente. Se instaló en el OPPO y permitió acceder como organizador a **Perfil → Herramientas → Tus recorridos 360°** y al borrador. Se corrigió un fallo de recarga de listas al regresar del editor y al reintentar consultas. La APK corregida compiló, se instaló y abrió el editor y su cámara. El análisis terminó sin incidencias; pasaron 199 pruebas Flutter (dos omisiones existentes) y 79 pruebas Node de ambos pilotos.
+
+En el OPPO se observó «Imagen reconocida» para la nueva referencia. Después se verificó en el backend que la versión actual tiene `tested_version` coincidente y `test_kind = user_reported_tracking`; el editor ofrece «Volver a probar AR». No se fabricó el reporte desde scripts. La medición física del ancho y la aceptación detallada del flujo público siguen pendientes.
+
+Se reforzó la confirmación del guardado en `TourARScreen`: sólo muestra éxito si la respuesta acredita el mismo recorrido, propietario, punto y referencia probada con su ruta y ancho. Pasaron 12 pruebas dirigidas después de este cambio y el análisis volvió a terminar sin incidencias.
+
+El siguiente paso es incorporar un panorama auténtico, procesarlo y completar la revisión independiente. Las condiciones de entrada desde el Mapa se conservan: una Misión y un recorrido públicos del mismo organizador, con la versión actual de la referencia probada. Los recursos privados todavía no habilitan el botón. Consultar los [recursos creados, pasos y límites del piloto](ar-development-pilot.md#piloto-autorizado-en-la-base-actual--2-de-noviembre-de-2026).

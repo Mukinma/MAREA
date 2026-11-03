@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:marea/core/config/app_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -31,7 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
     FocusScope.of(context).unfocus();
     if (widget.controller.isBusy) return;
     await widget.controller.signInWithGoogle(
-      redirectTo: kIsWeb ? Uri.base.origin : 'com.marea.app://login-callback',
+      redirectTo: kIsWeb
+          ? Uri.base.origin
+          : AppConfig.fromEnvironment().mobileOAuthRedirect,
     );
   }
 

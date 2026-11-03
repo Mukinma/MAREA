@@ -25,10 +25,17 @@ import 'package:marea/features/chat/data/chat_repository.dart';
 import 'package:marea/features/legal/legal_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-Future<void> main() async {
+Future<void> main() => startMarea();
+
+Future<void> startMarea({bool productionPilot = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   final config = AppConfig.fromEnvironment();
+  if (productionPilot && (!kDebugMode || config.isDevelopment)) {
+    throw StateError(
+      'El piloto autorizado requiere debug y la configuración actual.',
+    );
+  }
   if (!config.isValid) {
     runApp(ConfigurationScreen(message: config.validationMessage!));
     return;
@@ -37,15 +44,39 @@ Future<void> main() async {
   await Supabase.initialize(
     url: config.supabaseUrl,
     publishableKey: config.supabaseAnonKey,
+    authOptions: productionPilot
+        ? FlutterAuthClientOptions(
+            localStorage: SharedPreferencesLocalStorage(
+              persistSessionKey:
+                  'marea-ra-pilot-${Uri.parse(config.supabaseUrl).host}-auth-token',
+            ),
+            detectSessionInUri: false,
+          )
+        : config.isDevelopment
+        ? FlutterAuthClientOptions(
+            localStorage: SharedPreferencesLocalStorage(
+              persistSessionKey: config.developmentSessionKey,
+            ),
+            detectSessionInUriPredicate: config.acceptsDevelopmentAuthCallback,
+          )
+        : const FlutterAuthClientOptions(),
   );
   final client = Supabase.instance.client;
   runApp(
     MareaApp(
+      development: config.isDevelopment,
+      productionPilot: productionPilot,
       controller: AppSessionController(
-        authRepository: SupabaseAuthRepository(client),
+        authRepository: SupabaseAuthRepository(
+          client,
+          allowGoogleOAuth: !productionPilot,
+        ),
         push: PushController(
           SupabaseNotificationPreferencesRepository(client),
-          !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+          !productionPilot &&
+                  !config.isDevelopment &&
+                  !kIsWeb &&
+                  defaultTargetPlatform == TargetPlatform.android
               ? AndroidPushGateway()
               : InboxOnlyGateway(),
         ),

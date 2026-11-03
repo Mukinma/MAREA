@@ -52,9 +52,10 @@ abstract interface class AuthRepository {
 }
 
 class SupabaseAuthRepository implements AuthRepository {
-  SupabaseAuthRepository(this._client);
+  SupabaseAuthRepository(this._client, {this.allowGoogleOAuth = true});
 
   final SupabaseClient _client;
+  final bool allowGoogleOAuth;
 
   @override
   AuthUser? get currentUser => _mapUser(_client.auth.currentUser);
@@ -125,6 +126,11 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Future<void> signInWithGoogle({required String redirectTo}) async {
+    if (!allowGoogleOAuth) {
+      throw const AppFailure(
+        'Este piloto utiliza las cuentas de prueba por correo.',
+      );
+    }
     try {
       await _client.auth.signInWithOAuth(
         OAuthProvider.google,

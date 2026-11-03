@@ -12,7 +12,8 @@ Future<void> main() async {
   ).writeAsBytes(businessARReferencePng());
   await File('${directory.path}/print.html').writeAsString('''<!doctype html>
 <meta charset="utf-8"><title>MAREA · referencia QA local</title>
-<style>@page{size:A4;margin:5mm}body{font-family:Arial}img{width:20cm;height:15cm}
+<style>@page{size:A4;margin:5mm}body{margin:0;font-family:Arial}
+img{display:block;width:200mm;height:150mm;max-width:none}
 @media print{button{display:none}}</style>
 <h1>MAREA · laboratorio RA local</h1>
 <p>Imprime al 100%, sin ajustar a página. La imagen completa debe medir 20 × 15 cm.
