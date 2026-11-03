@@ -2,6 +2,8 @@
 
 Guía preparada el 2 de noviembre de 2026. Repositorio: `https://github.com/Mukinma/MAREA.git`; rama de este trabajo: **santiago**. Los comandos de clonación deben usarse después de confirmar que se subió el trabajo pendiente a esa rama.
 
+La integración de la navegación reciente de `main` con RA y los pasos para que cada colaborador continúe en su rama están en [Integración con main](ar-main-integration.md). Usar siempre una copia actualizada de la rama al retomar.
+
 ## Instalar las herramientas
 
 1. Instalar Git y **Visual Studio Code**. Para Android no se necesita el IDE Visual Studio completo. La [guía oficial de Flutter con VS Code](https://docs.flutter.dev/install/with-vs-code) reúne la instalación de Git, VS Code, la extensión Flutter y el SDK. La extensión Flutter también instala Dart.

@@ -1,3 +1,4 @@
+import 'package:marea/features/shell/presentation/marea_mobile_navigation.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -95,9 +96,9 @@ class AppShell extends StatelessWidget {
             : MareaRefreshIndicator(onRefresh: onRefresh!, child: child),
       );
       final navigation = MareaSurface(
-        key: Key(desktop ? 'top-navigation' : 'mobile-dock'),
+        key: const Key('top-navigation'),
         floating: true,
-        radius: desktop ? 22 : 32,
+        radius: 22,
         padding: const EdgeInsets.all(6),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -209,15 +210,15 @@ class AppShell extends StatelessWidget {
             child: SafeArea(
               top: false,
               minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-              child: SizedBox(
-                height: 68,
-                child: Row(
-                  children: [
-                    Expanded(child: Center(child: navigation)),
-                    const SizedBox(width: 12),
-                    create,
-                  ],
-                ),
+              child: MareaMobileNavigation(
+                location: location,
+                selectedDestination: MobileDestination.forLocation(location),
+                navigationChanges: GoRouter.maybeOf(context)?.routerDelegate,
+                onSelected: (destination) {
+                  if (location != destination.path) {
+                    context.go(destination.path);
+                  }
+                },
               ),
             ),
           ),

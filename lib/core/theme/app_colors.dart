@@ -16,6 +16,7 @@ abstract final class AppColors {
   static const lavender = Color(0xFFEEE8FB);
   static const peach = Color(0xFFFFF0DF);
   static const pink = Color(0xFFFFE5F0);
+  static const navigationAqua = Color(0xFFBFEDE8);
   static const mint = Color(0xFFDDF5EF);
   // Quiet, slightly warm surfaces balance the cool brand colours.
   static const paper = Color(0xFFFAF9F6);
