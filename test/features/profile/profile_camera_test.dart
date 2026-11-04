@@ -51,7 +51,13 @@ void main() {
         1,
         reason: 'A real pointer must reach the camera button',
       );
-      expect(find.text('Todo guardado'), findsOneWidget);
+      expect(find.text('Guardar cambios'), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const Key('edit-save-button')))
+            .onPressed,
+        isNull,
+      );
 
       final Uint8List bytes = (await tester.runAsync(() => png(80, 80)))!;
       gallery.result = XFile.fromData(
