@@ -140,13 +140,9 @@ void main() {
   });
 
   for (final width in [390.0, 1366.0]) {
-<<<<<<< HEAD
-    testWidgets('shell exposes six labelled actions at $width', (tester) async {
-=======
-    testWidgets('shell exposes responsive labelled actions at $width', (
+        testWidgets('shell exposes responsive labelled actions at $width', (
       tester,
     ) async {
->>>>>>> origin/main
       tester.view.physicalSize = Size(width, 844);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);

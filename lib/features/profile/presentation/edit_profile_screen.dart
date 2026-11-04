@@ -509,6 +509,56 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     ],
   );
 
+  static ({IconData icon, Color foreground, Color background}) _interestStyle(
+    String interest,
+  ) => switch (interest) {
+    'musica' => (
+      icon: Icons.music_note_outlined,
+      foreground: const Color(0xFF7044E8),
+      background: const Color(0xFFEDE4FF),
+    ),
+    'arte' => (
+      icon: Icons.palette_outlined,
+      foreground: const Color(0xFFFA624E),
+      background: const Color(0xFFFFE6DE),
+    ),
+    'moda' => (
+      icon: Icons.checkroom_outlined,
+      foreground: const Color(0xFFEC3884),
+      background: const Color(0xFFFFE4EF),
+    ),
+    'digital' => (
+      icon: Icons.devices_outlined,
+      foreground: const Color(0xFF1463ED),
+      background: const Color(0xFFDEEEFF),
+    ),
+    'gastronomia' => (
+      icon: Icons.restaurant_outlined,
+      foreground: const Color(0xFFE88B14),
+      background: const Color(0xFFFFF4D9),
+    ),
+    'escritura' => (
+      icon: Icons.edit_outlined,
+      foreground: const Color(0xFFE88B14),
+      background: const Color(0xFFFFF4D9),
+    ),
+    'fotografia' => (
+      icon: Icons.camera_alt_outlined,
+      foreground: const Color(0xFF168D91),
+      background: const Color(0xFFDFF3F3),
+    ),
+    'diseno' => (
+      icon: Icons.design_services_outlined,
+      foreground: const Color(0xFF398569),
+      background: const Color(0xFFE4F3E9),
+    ),
+    _ => (
+      icon: Icons.palette_outlined,
+      foreground: const Color(0xFFFA624E),
+      background: const Color(0xFFFFE6DE),
+    ),
+  };
+
   Widget _preferences() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
@@ -569,15 +619,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           for (final interest in _interests)
             Chip(
               avatar: Icon(
-                interest == 'musica'
-                    ? Icons.music_note_outlined
-                    : interest == 'moda'
-                    ? Icons.checkroom_outlined
-                    : Icons.palette_outlined,
+                _interestStyle(interest).icon,
                 size: 16,
-                color: const Color(0xFF7044E8),
+                color: _interestStyle(interest).foreground,
               ),
-              backgroundColor: AppColors.lavender,
+              backgroundColor: _interestStyle(interest).background,
               side: BorderSide.none,
               shape: const StadiumBorder(),
               visualDensity: VisualDensity.compact,
