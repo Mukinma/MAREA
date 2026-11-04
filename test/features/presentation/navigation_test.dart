@@ -40,35 +40,31 @@ void main() {
     );
   });
 
-  testWidgets('mobile navigation reserves space for the create action', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light(),
-        home: const AppShell(
-          location: '/home',
-          child: SizedBox.expand(),
+  testWidgets(
+    'mobile navigation has four labelled destinations and no create action',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light(),
+          home: const AppShell(location: '/home', child: SizedBox.expand()),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
+      for (final label in ['Inicio', 'Descubrir', 'Mapa', 'Perfil']) {
+        expect(find.text(label).hitTestable(), findsOneWidget);
+      }
+      expect(find.byKey(const Key('create-destination')), findsNothing);
+      expect(find.byTooltip('Explorar'), findsNothing);
+      expect(find.byTooltip('Misiones'), findsNothing);
+      expect(tester.getSize(find.byKey(const Key('mobile-dock'))).width, 358);
+    },
+  );
 
-    final navigationRect = tester.getRect(
-      find.byKey(const Key('mobile-dock')),
-    );
-    final createRect = tester.getRect(
-      find.byKey(const Key('create-destination')),
-    );
-    expect(navigationRect.right, lessThanOrEqualTo(createRect.left));
-  });
-
-  const destinations = {
+  const desktopDestinations = {
     'Inicio': '/home',
     'Explorar': '/explore',
     'Crear': '/create',
@@ -78,7 +74,10 @@ void main() {
   };
 
   for (final (width, scale) in const [
+    (320.0, 1.0),
     (360.0, 1.0),
+    (390.0, 2.0),
+    (599.0, 1.0),
     (600.0, 1.0),
     (900.0, 1.0),
     (900.0, 1.35),
@@ -93,6 +92,14 @@ void main() {
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
+        final destinations = width < 600
+            ? const {
+                'Inicio': '/home',
+                'Descubrir': '/discover',
+                'Mapa': '/map',
+                'Perfil': '/profile',
+              }
+            : desktopDestinations;
         final router = GoRouter(
           initialLocation: '/home',
           routes: [

@@ -98,11 +98,13 @@ class SocialNotification {
     required this.createdAt,
     this.missionId,
     this.sourceId,
+    this.eventKey,
     this.readAt,
   });
   final String id, recipientId, postTitle;
   final String? actorId, postId, missionId;
   final String? sourceId;
+  final String? eventKey;
   final NotificationKind kind;
   final DateTime createdAt;
   final DateTime? readAt;
@@ -120,6 +122,7 @@ class SocialNotification {
         sourceId: j['source_id'],
         postTitle: j['post_title'],
         createdAt: DateTime.parse(j['created_at']),
+        eventKey: j['event_key'],
         readAt: j['read_at'] == null ? null : DateTime.parse(j['read_at']),
       );
 }

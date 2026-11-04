@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:marea/core/config/app_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -409,6 +411,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ? _submit
                   : _next,
             ),
+            if (_step == 0) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                key: const Key('register-google'),
+                onPressed: _busy
+                    ? null
+                    : () => widget.controller.signInWithGoogle(
+                        redirectTo: kIsWeb
+                            ? Uri.base.origin
+                            : AppConfig.fromEnvironment().mobileOAuthRedirect,
+                      ),
+                icon: const Text(
+                  'G',
+                  style: TextStyle(
+                    color: Color(0xFF4285F4),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                label: const Text('Continuar con Google'),
+              ),
+            ],
             const SizedBox(height: 12),
             TextButton(
               onPressed: _busy

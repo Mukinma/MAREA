@@ -41,6 +41,47 @@ class _ProfileExperienceState extends State<ProfileExperience> {
       ? 'posts'
       : 'showcase';
   int _revision = 0;
+  String? _conversationId;
+  String? _conversationStatus;
+  bool _conversationIsIncoming = false;
+  bool _chatBusy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadIncomingRequest();
+  }
+
+  Future<void> _loadIncomingRequest() async {
+    final repository = widget.controller.chatRepository;
+    if (repository == null || widget.owner) return;
+    try {
+      final conversations = await repository.conversations();
+      if (mounted) {
+        final conversation = conversations
+            .where(
+              (conversation) =>
+                  (conversation.requesterId == widget.profile.id &&
+                      conversation.recipientId ==
+                          widget.controller.profile?.id) ||
+                  (conversation.recipientId == widget.profile.id &&
+                      conversation.requesterId ==
+                          widget.controller.profile?.id),
+            )
+            .firstOrNull;
+        setState(() {
+          _conversationId = conversation?.id;
+          _conversationStatus = conversation?.status;
+          _conversationIsIncoming =
+              conversation?.requesterId == widget.profile.id &&
+              conversation?.recipientId == widget.controller.profile?.id;
+        });
+      }
+    } catch (_) {
+      // The profile remains usable when chat status cannot be loaded.
+    }
+  }
+
   @override
   void dispose() {
     _scroll.dispose();
@@ -327,6 +368,78 @@ class _ProfileExperienceState extends State<ProfileExperience> {
                   repository: widget.controller.homeFeedRepository!,
                   authorId: widget.profile.id,
                   onChanged: widget.controller.refreshHomeFeed,
+                ),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: _chatBusy
+                      ? null
+                      : () async {
+                          final chat = widget.controller.chatRepository;
+                          if (chat == null) return;
+                          setState(() => _chatBusy = true);
+                          try {
+                            final accepting =
+                                _conversationStatus == 'pending' &&
+                                _conversationIsIncoming;
+                            final viewing =
+                                _conversationStatus == 'accepted' &&
+                                _conversationId != null;
+                            if (viewing) {
+                              if (context.mounted) {
+                                context.push('/messages/$_conversationId');
+                              }
+                              return;
+                            }
+                            if (accepting) {
+                              await chat.accept(_conversationId!);
+                              if (mounted) {
+                                setState(
+                                  () => _conversationStatus = 'accepted',
+                                );
+                              }
+                            } else {
+                              final id = await chat.request(widget.profile.id);
+                              if (mounted) {
+                                setState(() {
+                                  _conversationId = id;
+                                  _conversationStatus = 'pending';
+                                  _conversationIsIncoming = false;
+                                });
+                              }
+                            }
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      accepting
+                                          ? 'Solicitud aceptada. Ya pueden conversar.'
+                                          : 'Solicitud enviada. Podrás escribir cuando la otra persona acepte.',
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                            }
+                          } catch (error) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(error.toString())),
+                              );
+                            }
+                          } finally {
+                            if (mounted) setState(() => _chatBusy = false);
+                          }
+                        },
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  label: Text(
+                    _conversationStatus == 'accepted'
+                        ? 'Ver mensajes'
+                        : _conversationStatus == 'pending' &&
+                              _conversationIsIncoming
+                        ? 'Aceptar solicitud'
+                        : 'Solicitar chat',
+                  ),
                 ),
               ],
             ],

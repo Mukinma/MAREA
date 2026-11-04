@@ -18,7 +18,125 @@ class TourFake implements TourRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class ReloadTourFake extends TourFake {
+  bool failList = false, failRequests = false;
+  int loads = 0, requestLoads = 0;
+  String title = 'Recorrido inicial';
+  @override
+  Future<List<TourRecord>> list({
+    String? owner,
+    double? latitude,
+    double? longitude,
+  }) async {
+    loads++;
+    if (failList && loads == 1) throw StateError('Consulta interrumpida');
+    return [
+      TourRecord({
+        'id': 'tour',
+        'owner_id': sampleProfile.id,
+        'title': title,
+        'state': 'draft',
+      }),
+    ];
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> requests() async {
+    requestLoads++;
+    if (failRequests && requestLoads == 1) {
+      throw StateError('Consulta interrumpida');
+    }
+    return [];
+  }
+}
+
 void main() {
+  testWidgets(
+    'retrying a failed tour list starts a new lookup without an async setState',
+    (tester) async {
+      final repo = ReloadTourFake()..failList = true;
+      final controller = AppSessionController(
+        authRepository: FakeAuthRepository(),
+        profileRepository: FakeProfileRepository(),
+        tourRepository: repo,
+      );
+      await tester.pumpWidget(
+        MaterialApp(home: TourManagementScreen(controller: controller)),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reintentar'));
+      await tester.pumpAndSettle();
+      expect(repo.loads, 2);
+      expect(find.text('Recorrido inicial'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      controller.dispose();
+    },
+  );
+  testWidgets('returning from an editor reloads the owned tour list', (
+    tester,
+  ) async {
+    final repo = ReloadTourFake();
+    final controller = AppSessionController(
+      authRepository: FakeAuthRepository(),
+      profileRepository: FakeProfileRepository(),
+      tourRepository: repo,
+    );
+    final router = GoRouter(
+      initialLocation: '/tours',
+      routes: [
+        GoRoute(
+          path: '/tours',
+          builder: (_, _) => TourManagementScreen(controller: controller),
+        ),
+        GoRoute(
+          path: '/tours/:id/edit',
+          builder: (context, _) => Scaffold(
+            body: TextButton(
+              onPressed: () {
+                repo.title = 'Recorrido actualizado';
+                context.pop();
+              },
+              child: const Text('Regresar al listado'),
+            ),
+          ),
+        ),
+      ],
+    );
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Editar borrador'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Regresar al listado'));
+    await tester.pumpAndSettle();
+    expect(repo.loads, 2);
+    expect(find.text('Recorrido actualizado'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    router.dispose();
+    controller.dispose();
+  });
+  testWidgets('request-list errors can be retried without an async setState', (
+    tester,
+  ) async {
+    final repo = ReloadTourFake()..failRequests = true;
+    final controller = AppSessionController(
+      authRepository: FakeAuthRepository(),
+      profileRepository: FakeProfileRepository(),
+      tourRepository: repo,
+    );
+    await tester.pumpWidget(
+      MaterialApp(home: TourRequestsScreen(controller: controller)),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Reintentar'));
+    await tester.pumpAndSettle();
+    expect(repo.requestLoads, 2);
+    expect(find.text('No hay solicitudes pendientes.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    controller.dispose();
+  });
   testWidgets('un enlace directo a administración tiene salida al perfil', (
     tester,
   ) async {

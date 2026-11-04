@@ -1,3 +1,5 @@
+import 'package:marea/features/tours/presentation/business_ar_screen.dart';
+import 'package:marea/features/discover/presentation/discover_screen.dart';
 import 'package:marea/features/home_feed/presentation/story_composer.dart';
 import 'package:marea/features/tours/presentation/tour_management_screen.dart';
 import 'package:marea/features/tours/presentation/tour_editor_screen.dart';
@@ -36,6 +38,7 @@ import 'package:marea/features/community/presentation/explore_screen.dart';
 import 'package:marea/features/community/presentation/post_composer_screen.dart';
 import 'package:marea/features/community/presentation/missions_screen.dart';
 import 'package:marea/features/community/presentation/moderation_screen.dart';
+import 'package:marea/features/chat/presentation/chat_screen.dart';
 
 abstract final class AppRouter {
   static const _authPaths = {
@@ -118,7 +121,8 @@ abstract final class AppRouter {
         GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
         GoRoute(
           path: '/welcome',
-          builder: (_, _) => WelcomeEntryScreen(store: introStore),
+          builder: (_, _) =>
+              WelcomeEntryScreen(store: introStore, controller: controller),
         ),
         GoRoute(
           path: '/terms',
@@ -211,6 +215,10 @@ abstract final class AppRouter {
               ),
             ),
             GoRoute(
+              path: '/discover',
+              builder: (_, _) => const DiscoverScreen(),
+            ),
+            GoRoute(
               path: '/explore',
               builder: (_, state) => ExploreScreen(
                 key: ValueKey(controller.profile?.id),
@@ -247,6 +255,14 @@ abstract final class AppRouter {
             GoRoute(
               path: '/profile',
               builder: (_, _) => ProfileScreen(controller: controller),
+            ),
+            GoRoute(
+              path: '/messages',
+              builder: (_, state) => ChatInboxScreen(
+                controller: controller,
+                initialConversationId:
+                    state.uri.queryParameters['conversation'],
+              ),
             ),
           ],
         ),
@@ -362,6 +378,14 @@ abstract final class AppRouter {
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
+          path: '/messages/:id',
+          builder: (_, state) => ChatConversationScreen(
+            controller: controller,
+            conversationId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
           path: '/posts/:id',
           builder: (_, state) => PostDetailScreen(
             key: ValueKey(state.uri.toString()),
@@ -454,6 +478,17 @@ abstract final class AppRouter {
           ),
         ),
         GoRoute(
+          path: '/tours/:id/business-ar',
+          parentNavigatorKey: rootKey,
+          builder: (_, s) => BusinessARScreen(
+            key: ValueKey('${controller.profile?.id}:${s.uri}'),
+            controller: controller,
+            tourId: s.pathParameters['id']!,
+            ownerId: s.uri.queryParameters['owner'] ?? '',
+            pointId: s.uri.queryParameters['point'] ?? '',
+          ),
+        ),
+        GoRoute(
           path: '/tours/:id/ar',
           parentNavigatorKey: rootKey,
           builder: (_, s) => TourARScreen(
@@ -512,7 +547,7 @@ class AppRouteGuard {
         uri.hasScheme ||
         uri.hasAuthority ||
         !RegExp(
-          r'^/(tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar))?)?|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
+          r'^/(tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
         ).hasMatch(uri.path)) {
       return null;
     }

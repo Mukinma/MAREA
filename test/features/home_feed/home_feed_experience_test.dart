@@ -27,7 +27,7 @@ void main() {
   for (final width in [360.0, 390.0, 600.0, 1440.0]) {
     for (final scale in [1.0, 2.0]) {
       testWidgets(
-        'mixed home and six navigation buttons fit $width at $scale',
+        'mixed home and responsive navigation fit $width at $scale',
         (tester) async {
           tester.view.physicalSize = Size(width, 1000);
           tester.view.devicePixelRatio = 1;
@@ -58,7 +58,10 @@ void main() {
           await tester.pumpAndSettle();
           expect(find.text('Mariana Torres'), findsWidgets);
           expect(find.byTooltip('Inicio'), findsOneWidget);
-          expect(find.byTooltip('Misiones'), findsOneWidget);
+          expect(
+            find.byTooltip(width < 600 ? 'Descubrir' : 'Misiones'),
+            findsOneWidget,
+          );
           expect(tester.takeException(), isNull);
           await tester.drag(find.byType(ListView).first, const Offset(0, -600));
           await tester.pumpAndSettle();

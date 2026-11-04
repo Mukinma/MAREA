@@ -167,7 +167,13 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
                         _ => Icons.flag_outlined,
                       }, color: AppColors.textSecondary),
                       title: Text(
-                        n.kind == NotificationKind.mareaMessage
+                        n.eventKey?.startsWith('chat_request:') == true
+                            ? '${_authors[n.actorId]?.fullName ?? 'Una persona'} '
+                                  'te envió una solicitud de mensaje.'
+                            : n.eventKey?.startsWith('chat_rejected:') == true
+                            ? '${_authors[n.actorId]?.fullName ?? 'Una persona'} '
+                                  'rechazó tu solicitud de mensaje.'
+                            : n.kind == NotificationKind.mareaMessage
                             ? n.postTitle
                             : '${_authors[n.actorId]?.fullName ?? 'Cuenta no disponible'} ${_verb(n.kind)} «${n.postTitle}».',
                       ),

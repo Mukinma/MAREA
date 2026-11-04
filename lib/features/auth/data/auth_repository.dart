@@ -31,6 +31,7 @@ abstract interface class AuthRepository {
   });
 
   Future<void> signIn({required String email, required String password});
+  Future<void> signInWithGoogle({required String redirectTo});
   Future<void> signOut();
   Future<void> clearLocalSession();
   Future<void> deleteAccount();
@@ -51,9 +52,10 @@ abstract interface class AuthRepository {
 }
 
 class SupabaseAuthRepository implements AuthRepository {
-  SupabaseAuthRepository(this._client);
+  SupabaseAuthRepository(this._client, {this.allowGoogleOAuth = true});
 
   final SupabaseClient _client;
+  final bool allowGoogleOAuth;
 
   @override
   AuthUser? get currentUser => _mapUser(_client.auth.currentUser);
@@ -117,6 +119,23 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<void> signIn({required String email, required String password}) async {
     try {
       await _client.auth.signInWithPassword(email: email, password: password);
+    } catch (error) {
+      throw AppFailureMapper.from(error);
+    }
+  }
+
+  @override
+  Future<void> signInWithGoogle({required String redirectTo}) async {
+    if (!allowGoogleOAuth) {
+      throw const AppFailure(
+        'Este piloto utiliza las cuentas de prueba por correo.',
+      );
+    }
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: redirectTo,
+      );
     } catch (error) {
       throw AppFailureMapper.from(error);
     }

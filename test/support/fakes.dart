@@ -34,6 +34,12 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> signInWithGoogle({required String redirectTo}) async {
+    user = const AuthUser(id: 'user-1', email: 'google@marea.app');
+    _events.add(user);
+  }
+
+  @override
   Future<void> signOut() async {
     user = null;
     _events.add(null);
