@@ -1,4 +1,5 @@
 import 'package:marea/features/shell/presentation/marea_mobile_navigation.dart';
+import 'package:marea/features/profile/presentation/profile_bottom_navigation.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -49,6 +50,8 @@ class AppShell extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, bounds) {
       final desktop = bounds.maxWidth >= 600;
+      final profileLayout =
+          location == '/profile' || location.startsWith('/people/');
       final scaler = MediaQuery.textScalerOf(context);
       final largeText = scaler.scale(14) > 17;
       double measure(String text, {double size = 14, double spacing = 0}) {
@@ -167,7 +170,7 @@ class AppShell extends StatelessWidget {
           bottom: false,
           child: Column(
             children: [
-              if (location != '/map')
+              if (location != '/map' && !profileLayout)
                 ColoredBox(
                   color: AppColors.surface,
                   child: Padding(
@@ -207,20 +210,35 @@ class AppShell extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           onTap: () {},
           child: MareaPanelAwareDock(
-            child: SafeArea(
-              top: false,
-              minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-              child: MareaMobileNavigation(
-                location: location,
-                selectedDestination: MobileDestination.forLocation(location),
-                navigationChanges: GoRouter.maybeOf(context)?.routerDelegate,
-                onSelected: (destination) {
-                  if (location != destination.path) {
-                    context.go(destination.path);
-                  }
-                },
-              ),
-            ),
+            child: profileLayout
+                ? ProfileBottomNavigation(
+                    onNavigate: (path) => context.go(path),
+                    onCreate: () async {
+                      if (controller == null) {
+                        context.go('/create');
+                        return;
+                      }
+                      await showCreateMenu(context, controller!);
+                    },
+                  )
+                : SafeArea(
+                    top: false,
+                    minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                    child: MareaMobileNavigation(
+                      location: location,
+                      selectedDestination: MobileDestination.forLocation(
+                        location,
+                      ),
+                      navigationChanges: GoRouter.maybeOf(
+                        context,
+                      )?.routerDelegate,
+                      onSelected: (destination) {
+                        if (location != destination.path) {
+                          context.go(destination.path);
+                        }
+                      },
+                    ),
+                  ),
           ),
         ),
       );

@@ -38,7 +38,7 @@ void main() {
     expect(find.text('Ahora no'), findsNothing);
   });
   testWidgets(
-    'public presentation hides initial interests and exposes private shortcuts',
+    'own presentation exposes selected interests and private shortcuts',
     (tester) async {
       final profiles = FakeProfileRepository()
         ..value = sampleProfile.copyWith(interests: ['arte']);
@@ -52,7 +52,7 @@ void main() {
         testApp(Scaffold(body: ProfileScreen(controller: c))),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Arte'), findsNothing);
+      expect(find.text('Arte'), findsOneWidget);
       expect(find.text('Guardados'), findsOneWidget);
       expect(find.text('Mis postulaciones'), findsOneWidget);
     },

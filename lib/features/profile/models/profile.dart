@@ -51,6 +51,7 @@ class Profile {
     this.avatarPath,
     this.coverPath,
     this.coverPreset = 'marea',
+    this.waveColors,
     this.website,
     this.interests = const [],
     this.goals = const [],
@@ -78,6 +79,7 @@ class Profile {
       avatarPath: json['avatar_path'] as String?,
       coverPath: json['cover_path'] as String?,
       coverPreset: json['cover_preset'] as String? ?? 'marea',
+      waveColors: readWaveColors(json['wave_colors']),
       website: json['website'] as String?,
       interests: List<String>.from(json['interests'] as List? ?? []),
       goals: List<String>.from(json['goals'] as List? ?? []),
@@ -113,6 +115,7 @@ class Profile {
   final String? avatarPath;
   final String? coverPath;
   final String coverPreset;
+  final List<int>? waveColors;
   final String? website;
   final List<String> interests;
   final List<String> goals;
@@ -167,6 +170,7 @@ class Profile {
     avatarPath: avatarPath,
     coverPath: coverPath,
     coverPreset: coverPreset,
+    waveColors: waveColors,
     website: website,
     contactUrl: contactUrl,
     openToCollaboration: openToCollaboration,
@@ -192,6 +196,7 @@ class Profile {
     Object? coverPath = _unset,
     Object? website = _unset,
     String? coverPreset,
+    List<int>? waveColors,
     List<String>? interests,
     List<String>? goals,
     OnboardingStatus? onboardingStatus,
@@ -223,6 +228,7 @@ class Profile {
           : coverPath as String?,
       website: identical(website, _unset) ? this.website : website as String?,
       coverPreset: coverPreset ?? this.coverPreset,
+      waveColors: waveColors ?? this.waveColors,
       interests: interests ?? this.interests,
       goals: goals ?? this.goals,
       onboardingStatus: onboardingStatus ?? this.onboardingStatus,
@@ -262,6 +268,7 @@ class ProfileUpdateInput {
     this.avatarPath,
     this.coverPath,
     this.coverPreset = 'marea',
+    this.waveColors,
     this.website,
     this.contactUrl,
     this.openToCollaboration = false,
@@ -275,6 +282,7 @@ class ProfileUpdateInput {
     this.setupStep,
   });
   final String fullName, username, coverPreset;
+  final List<int>? waveColors;
   final String? bio,
       avatarUrl,
       avatarPath,
@@ -295,6 +303,7 @@ class ProfileUpdateInput {
     'avatar_path': avatarPath,
     'cover_path': coverPath,
     'cover_preset': coverPreset,
+    if (waveColors != null) 'wave_colors': validateWaveColors(waveColors!),
     'website': _text(website),
     'contact_url': _text(contactUrl),
     'open_to_collaboration': openToCollaboration,
@@ -335,4 +344,22 @@ class InitialProfileInput {
     'selected_interests': ProfilePreferences.normalizeInterests(interests),
     'selected_goals': ProfilePreferences.normalizeGoals(goals),
   };
+}
+
+/// Missing or malformed remote presentation data falls back to the default art.
+List<int>? readWaveColors(dynamic value) {
+  if (value is! List ||
+      value.length != 2 ||
+      value.any((v) => v is! int || v < 0xFF000000 || v > 0xFFFFFFFF)) {
+    return null;
+  }
+  return List<int>.unmodifiable(value.cast<int>());
+}
+
+List<int> validateWaveColors(List<int> value) {
+  final colors = readWaveColors(value);
+  if (colors == null) {
+    throw ArgumentError('Expected two opaque RGB wave colors');
+  }
+  return colors;
 }
