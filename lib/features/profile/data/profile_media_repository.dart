@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart' show PlatformException;
+import 'package:file_selector/file_selector.dart' as files;
 import 'package:image_picker/image_picker.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -41,12 +43,52 @@ class SupabaseProfileMediaRepository implements ProfileMediaRepository {
       _client.storage.from('profile-media').createSignedUrl(path, 600);
 }
 
+enum ProfilePhotoSource { gallery, camera, files }
+
 abstract final class ProfileImagePicker {
-  static Future<Uint8List?> pick({required bool avatar}) async {
-    final file = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      requestFullMetadata: false,
-    );
+  static Future<Uint8List?> pick({
+    required bool avatar,
+    ProfilePhotoSource source = ProfilePhotoSource.gallery,
+  }) async {
+    final XFile? file;
+    try {
+      file = source == ProfilePhotoSource.files
+          ? await files.openFile(
+              acceptedTypeGroups: const [
+                files.XTypeGroup(
+                  label: 'Imágenes',
+                  extensions: ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'],
+                  mimeTypes: [
+                    'image/jpeg',
+                    'image/png',
+                    'image/webp',
+                    'image/heic',
+                    'image/heif',
+                  ],
+                  uniformTypeIdentifiers: ['public.image'],
+                ),
+              ],
+            )
+          : await ImagePicker().pickImage(
+              source: source == ProfilePhotoSource.camera
+                  ? ImageSource.camera
+                  : ImageSource.gallery,
+              requestFullMetadata: false,
+            );
+    } on PlatformException catch (error) {
+      if (error.code.contains('denied') || error.code.contains('restricted')) {
+        throw const AppFailure(
+          'Permite el acceso a la cámara o a tus fotos en los ajustes del dispositivo para continuar.',
+        );
+      }
+      throw const AppFailure(
+        'No pudimos abrir esa opción. Prueba Galería o Explorar archivos.',
+      );
+    } on UnsupportedError {
+      throw const AppFailure(
+        'Esta opción no está disponible en tu dispositivo. Prueba Explorar archivos.',
+      );
+    }
     if (file == null) return null;
     if (await file.length() > 10 * 1024 * 1024) {
       throw const AppFailure('Elige una imagen de menos de 10 MB.');

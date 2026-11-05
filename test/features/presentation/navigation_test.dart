@@ -151,6 +151,9 @@ void main() {
             expect(tester.takeException(), isNull);
           }
           // Large accessibility text must not make any destination unreachable.
+          // Profile has its separately tested five-action presentation.
+          router.go('/home');
+          await tester.pumpAndSettle();
           await tester.pumpWidget(
             MaterialApp.router(
               theme: AppTheme.light(),

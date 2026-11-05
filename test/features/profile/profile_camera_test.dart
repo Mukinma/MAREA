@@ -93,6 +93,9 @@ void main() {
       await tester.ensureVisible(cover);
       await tester.tap(cover);
       await tester.pumpAndSettle();
+      expect(find.text('Cambiar foto de portada'), findsWidgets);
+      await tester.tap(find.text('Galería'));
+      await tester.pumpAndSettle();
       expect(gallery.calls, 4);
       await tester.pumpWidget(const SizedBox());
     });

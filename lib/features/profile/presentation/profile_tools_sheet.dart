@@ -36,6 +36,9 @@ class _ProfileTools extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (controller.profile?.id != profile.id) {
+      return _VisitorProfileTools(profile: profile);
+    }
     final type = profile.userType;
     Widget action(IconData icon, String title, String subtitle, String route) =>
         ListTile(
@@ -146,6 +149,37 @@ class _ProfileTools extends StatelessWidget {
               ),
             const Divider(height: 28),
             action(
+              Icons.map_outlined,
+              'Mapa',
+              'Explora las misiones en el mapa.',
+              '/map',
+            ),
+            if (controller.socialRepository != null)
+              action(
+                Icons.notifications_none_rounded,
+                'Notificaciones',
+                'Revisa tus avisos.',
+                '#notifications',
+              ),
+            action(
+              Icons.bookmark_border,
+              'Guardados',
+              'Contenido que guardaste.',
+              '/explore?section=saved',
+            ),
+            action(
+              Icons.flag_outlined,
+              'Mis misiones',
+              'Misiones de tu cuenta.',
+              '/missions?section=own',
+            ),
+            action(
+              Icons.assignment_outlined,
+              'Mis postulaciones',
+              'Revisa tus candidaturas.',
+              '/missions?section=applications',
+            ),
+            action(
               Icons.auto_awesome_outlined,
               (controller.profile?.setupStep ?? 0) >= type.setupSteps
                   ? 'Guía de perfil'
@@ -164,7 +198,7 @@ class _ProfileTools extends StatelessWidget {
                     : ''}.',
                 '/profile/edit?section=professional',
               ),
-            if (admin)
+            if (admin && controller.profile?.role == ProfileRole.admin)
               action(
                 Icons.shield_outlined,
                 'Moderación',
@@ -189,4 +223,53 @@ class _ProfileTools extends StatelessWidget {
       ),
     );
   }
+}
+
+class _VisitorProfileTools extends StatelessWidget {
+  const _VisitorProfileTools({required this.profile});
+  final CommunityProfile profile;
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 0, 12, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'Opciones del perfil',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                ),
+              ),
+              IconButton(
+                tooltip: 'Cerrar menú',
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close),
+              ),
+            ],
+          ),
+          if (profile.userType.showcaseKinds.isNotEmpty)
+            ListTile(
+              leading: const Icon(Icons.grid_view_outlined),
+              title: Text(
+                'Ver ${profile.userType.showcaseLabel.toLowerCase()}',
+              ),
+              onTap: () => Navigator.pop(context, '#showcase'),
+            ),
+          ListTile(
+            leading: const Icon(Icons.flag_outlined),
+            title: const Text('Ver misiones del perfil'),
+            onTap: () => Navigator.pop(context, '#missions'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.article_outlined),
+            title: const Text('Ver publicaciones'),
+            onTap: () => Navigator.pop(context, '#posts'),
+          ),
+        ],
+      ),
+    ),
+  );
 }

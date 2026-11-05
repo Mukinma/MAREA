@@ -1,6 +1,9 @@
 import 'package:marea/shared/widgets/marea_tabs.dart';
 
 import 'dart:convert';
+import 'package:marea/features/profile/presentation/profile_waves.dart';
+import 'package:marea/features/profile/presentation/wave_color_editor.dart';
+import 'package:marea/features/profile/presentation/cover_photo_editor.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +20,8 @@ import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/shared/widgets/social_avatar.dart';
 import 'package:marea/shared/widgets/profile_image.dart';
 import 'package:marea/shared/widgets/session_feedback.dart';
+
+enum _CoverChoice { gallery, styles }
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({
@@ -66,6 +71,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _original.locationPrecision ?? 'exact',
           ),
         );
+  late List<int>? _waveColors = _original?.waveColors;
   late String _preset = _original?.coverPreset ?? 'marea';
   late String? _avatarPath = _original?.avatarPath,
       _coverPath = _original?.coverPath;
@@ -99,6 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     avatarPath: _avatarPath,
     coverPath: _coverPath,
     coverPreset: _preset,
+    waveColors: _waveColors,
   );
   bool get _dirty =>
       _avatarBytes != null ||
@@ -170,13 +177,74 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
   }
 
-  Future<void> _pick(bool avatar) async {
+  Future<void> _chooseCoverPhoto() async {
+    FocusScope.of(context).unfocus();
+    final choice = await showModalBottomSheet<_CoverChoice>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  'Cambiar foto de portada',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Galería'),
+                onTap: () => Navigator.pop(ctx, _CoverChoice.gallery),
+              ),
+              ListTile(
+                leading: const Icon(Icons.landscape_outlined),
+                title: const Text('Estilos de MAREA'),
+                onTap: () => Navigator.pop(ctx, _CoverChoice.styles),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancelar'),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (choice == null || !mounted) return;
+    if (choice == _CoverChoice.styles) {
+      await _chooseCover();
+    } else {
+      await _pick(false, source: ProfilePhotoSource.gallery);
+    }
+  }
+
+  Future<void> _pick(
+    bool avatar, {
+    ProfilePhotoSource source = ProfilePhotoSource.gallery,
+  }) async {
     setState(() {
       _saving = true;
       _error = null;
     });
     try {
-      final bytes = await ProfileImagePicker.pick(avatar: avatar);
+      var bytes = await ProfileImagePicker.pick(avatar: avatar, source: source);
+      if (!avatar && bytes != null && mounted) {
+        final selected = bytes;
+        bytes = await showModalBottomSheet<Uint8List>(
+          context: context,
+          isScrollControlled: true,
+          useSafeArea: true,
+          builder: (_) => SingleChildScrollView(
+            child: CoverPhotoEditor(
+              bytes: selected,
+              waveColors: _waveColors ?? ProfileWaves.defaultColors,
+            ),
+          ),
+        );
+      }
       if (mounted && bytes != null) {
         setState(() {
           if (avatar) {
@@ -299,22 +367,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           height: 94,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: ProfileImage(
-              path: _coverPath,
-              preview: _coverBytes,
-              repository: _media,
-              fallback: ProfileCover(preset: _preset),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ProfileImage(
+                  path: _coverPath,
+                  preview: _coverBytes,
+                  repository: _media,
+                  fallback: ProfileCover(preset: _preset),
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: 65,
+                  child: ProfileWaves(
+                    colors: _waveColors ?? ProfileWaves.defaultColors,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ),
-        Positioned(
-          top: 44,
-          right: 12,
-          child: _MediaAction(
-            key: const Key('edit-cover-action'),
-            icon: Icons.photo_camera_outlined,
-            label: 'Cambiar portada',
-            onPressed: _saving ? null : () => _pick(false),
           ),
         ),
         Positioned(
@@ -419,32 +491,65 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _customizeWaves() async {
+    FocusScope.of(context).unfocus();
+    final colors = await showModalBottomSheet<List<int>>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => FractionallySizedBox(
+        heightFactor: .94,
+        child: WaveColorEditor(
+          colors: _waveColors ?? ProfileWaves.defaultColors,
+          cover: ProfileImage(
+            path: _coverPath,
+            preview: _coverBytes,
+            repository: _media,
+            fallback: ProfileCover(preset: _preset),
+          ),
+        ),
+      ),
+    );
+    if (colors != null && mounted) setState(() => _waveColors = colors);
+  }
+
   Future<void> _chooseCover() async {
     FocusScope.of(context).unfocus();
     final value = await showModalBottomSheet<String>(
       context: context,
       builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text('Estilo de portada'),
-            ),
-            for (final entry in ProfilePreferences.covers.entries)
-              ListTile(
-                title: Text(entry.value),
-                leading: ClipOval(
-                  child: SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: ProfileCover(preset: entry.key),
-                  ),
-                ),
-                trailing: _preset == entry.key ? const Icon(Icons.check) : null,
-                onTap: () => Navigator.pop(ctx, entry.key),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(20),
+                child: Text('Estilos de MAREA'),
               ),
-          ],
+              for (final entry in ProfilePreferences.covers.entries)
+                ListTile(
+                  title: Text(entry.value),
+                  leading: ClipOval(
+                    child: SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: ProfileCover(preset: entry.key),
+                    ),
+                  ),
+                  trailing:
+                      _coverPath == null &&
+                          _coverBytes == null &&
+                          _preset == entry.key
+                      ? const Icon(Icons.check)
+                      : null,
+                  onTap: () => Navigator.pop(ctx, entry.key),
+                ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancelar'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -562,32 +667,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _preferences() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      const Text('Estilo de portada', style: TextStyle(fontSize: 14)),
-      const SizedBox(height: 8),
-      Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFD5E7F1)),
-        ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14),
-          leading: ClipOval(
-            child: SizedBox(
-              width: 30,
-              height: 30,
-              child: ProfileCover(preset: _preset),
-            ),
-          ),
-          title: Text(
-            ProfilePreferences.covers[_preset] ?? 'Marea',
-            style: const TextStyle(fontSize: 14),
-          ),
-          trailing: TextButton(
-            onPressed: _chooseCover,
-            child: const Text('Cambiar'),
+      ListTile(
+        key: const Key('edit-cover-action'),
+        contentPadding: EdgeInsets.zero,
+        leading: const Icon(Icons.add_photo_alternate_outlined),
+        title: const Text('Cambiar foto de portada'),
+        subtitle: const Text('Elige una foto o usa un estilo predeterminado'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: _saving ? null : _chooseCoverPhoto,
+      ),
+      ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: SizedBox(
+          width: 48,
+          height: 32,
+          child: ProfileWaves(
+            colors: _waveColors ?? ProfileWaves.defaultColors,
           ),
         ),
+        title: const Text('Personalizar olitas'),
+        subtitle: const Text('Colores independientes de tu fotografía'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: _saving ? null : _customizeWaves,
       ),
       const SizedBox(height: 8),
       Row(
@@ -1049,32 +1150,6 @@ class _EditorField extends StatelessWidget {
         ),
       ),
     ],
-  );
-}
-
-class _MediaAction extends StatelessWidget {
-  const _MediaAction({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-    super.key,
-  });
-  final IconData icon;
-  final String label;
-  final VoidCallback? onPressed;
-  @override
-  Widget build(BuildContext context) => FilledButton.tonalIcon(
-    style: FilledButton.styleFrom(
-      minimumSize: const Size(48, 36),
-      shape: const StadiumBorder(),
-      backgroundColor: Colors.white,
-      foregroundColor: AppColors.brandNavy,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      textStyle: const TextStyle(fontFamily: 'NunitoSans', fontSize: 11),
-    ),
-    onPressed: onPressed,
-    icon: Icon(icon, size: 16),
-    label: Text(label),
   );
 }
 
