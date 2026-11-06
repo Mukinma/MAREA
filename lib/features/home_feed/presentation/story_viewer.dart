@@ -34,8 +34,7 @@ class _StoryViewerState extends State<StoryViewer>
   late final AnimationController _progress;
   Timer? _expiry;
   int _index = 0;
-  bool _paused = false,
-      _holding = false,
+  bool _holding = false,
       _background = false,
       _profileOpen = false,
       _menuOpen = false,
@@ -45,13 +44,7 @@ class _StoryViewerState extends State<StoryViewer>
   String? _error;
   Story get _story => widget.stories[_index];
   bool get _shouldPause =>
-      _paused ||
-      _holding ||
-      _background ||
-      _profileOpen ||
-      _menuOpen ||
-      !_loaded ||
-      _busy;
+      _holding || _background || _profileOpen || _menuOpen || !_loaded || _busy;
   @override
   void initState() {
     super.initState();
@@ -59,7 +52,10 @@ class _StoryViewerState extends State<StoryViewer>
     _progress =
         AnimationController(vsync: this, duration: const Duration(seconds: 5))
           ..addStatusListener((s) {
-            if (s == AnimationStatus.completed) _move(1);
+            if (s == AnimationStatus.completed) {
+              _progress.reset();
+              _sync();
+            }
           });
     _prepare();
     _expiry = Timer.periodic(const Duration(milliseconds: 500), (_) {
@@ -122,6 +118,7 @@ class _StoryViewerState extends State<StoryViewer>
         !widget.stories[next].isAvailableAt(widget.batch.now)) {
       next += direction;
     }
+
     if (next >= widget.stories.length) {
       Navigator.of(context).pop();
       return;
@@ -135,6 +132,11 @@ class _StoryViewerState extends State<StoryViewer>
       _index = next;
       _prepare();
     });
+  }
+
+  void _handleContentTap(TapUpDetails details, Size size) {
+    if (_busy || _profileOpen || _menuOpen || _background) return;
+    _move(details.localPosition.dx < size.width / 2 ? -1 : 1);
   }
 
   Future<void> _profile() async {
@@ -232,10 +234,6 @@ class _StoryViewerState extends State<StoryViewer>
       bindings: {
         const SingleActivator(LogicalKeyboardKey.arrowLeft): () => _move(-1),
         const SingleActivator(LogicalKeyboardKey.arrowRight): () => _move(1),
-        const SingleActivator(LogicalKeyboardKey.space): () {
-          setState(() => _paused = !_paused);
-          _sync();
-        },
         const SingleActivator(LogicalKeyboardKey.escape): () =>
             Navigator.of(context).pop(),
       },
@@ -254,14 +252,6 @@ class _StoryViewerState extends State<StoryViewer>
               ),
             ),
             actions: [
-              IconButton(
-                tooltip: _paused ? 'Reanudar historia' : 'Pausar historia',
-                onPressed: () {
-                  setState(() => _paused = !_paused);
-                  _sync();
-                },
-                icon: Icon(_paused ? Icons.play_arrow : Icons.pause),
-              ),
               PopupMenuButton<String>(
                 enabled: !_busy,
                 onOpened: () {
@@ -325,95 +315,106 @@ class _StoryViewerState extends State<StoryViewer>
                   ),
                 ),
                 Expanded(
-                  child: GestureDetector(
-                    onLongPressStart: (_) {
-                      _holding = true;
-                      _sync();
-                    },
-                    onLongPressEnd: (_) {
-                      _holding = false;
-                      _sync();
-                    },
-                    onLongPressCancel: () {
-                      _holding = false;
-                      _sync();
-                    },
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          if (_url != null)
-                            FutureBuilder<String>(
-                              future: _url,
-                              builder: (_, snapshot) {
-                                if (snapshot.hasError) return _imageError();
-                                if (!snapshot.hasData) {
-                                  return const Padding(
-                                    padding: EdgeInsets.all(40),
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                                return Image.network(
-                                  snapshot.data!,
-                                  fit: BoxFit.contain,
-                                  frameBuilder: (_, child, frame, synchronous) {
-                                    if (frame != null || synchronous) {
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback(
-                                            (_) => _ready(story.id),
-                                          );
+                  child: LayoutBuilder(
+                    builder: (context, constraints) => GestureDetector(
+                      onTapUp: (details) =>
+                          _handleContentTap(details, constraints.biggest),
+                      onLongPressStart: (_) {
+                        _holding = true;
+                        _sync();
+                      },
+                      onLongPressEnd: (_) {
+                        _holding = false;
+                        _sync();
+                      },
+                      onLongPressCancel: () {
+                        _holding = false;
+                        _sync();
+                      },
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            if (_url != null)
+                              SizedBox(
+                                width: constraints.maxWidth,
+                                height: constraints.maxHeight * .82,
+                                child: FutureBuilder<String>(
+                                  future: _url,
+                                  builder: (_, snapshot) {
+                                    if (snapshot.hasError) return _imageError();
+                                    if (!snapshot.hasData) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
                                     }
-                                    return child;
+                                    return Image.network(
+                                      snapshot.data!,
+                                      width: constraints.maxWidth,
+                                      height: constraints.maxHeight * .82,
+                                      fit: BoxFit.contain,
+                                      frameBuilder:
+                                          (_, child, frame, synchronous) {
+                                            if (frame != null || synchronous) {
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback(
+                                                    (_) => _ready(story.id),
+                                                  );
+                                            }
+                                            return child;
+                                          },
+                                      errorBuilder: (_, _, _) => _imageError(),
+                                    );
                                   },
-                                  errorBuilder: (_, _, _) => _imageError(),
-                                );
-                              },
-                            ),
-                          if (story.text.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Text(
-                                story.text,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: story.imagePath == null ? 26 : 18,
-                                  height: 1.4,
                                 ),
                               ),
-                            ),
-                          if (_error != null)
+                            if (story.text.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Text(
+                                  story.text,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: story.imagePath == null ? 26 : 18,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
                             Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Text(
-                                _error!,
-                                style: const TextStyle(color: Colors.white),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  _storyTag(
+                                    Icons.sell_outlined,
+                                    communityCategories[story.category] ??
+                                        'Otros',
+                                  ),
+                                  if (story.targetType != null)
+                                    _storyTag(
+                                      Icons.people_outline,
+                                      story.targetType!.databaseValue,
+                                    ),
+                                ],
                               ),
                             ),
-                        ],
+                            if (_error != null)
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  _error!,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      tooltip: 'Historia anterior',
-                      color: Colors.white,
-                      onPressed: _busy ? null : () => _move(-1),
-                      icon: const Icon(Icons.chevron_left),
-                    ),
-                    Text(
-                      '${_index + 1}/${widget.stories.length}',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    IconButton(
-                      tooltip: 'Historia siguiente',
-                      color: Colors.white,
-                      onPressed: _busy ? null : () => _move(1),
-                      icon: const Icon(Icons.chevron_right),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -422,6 +423,24 @@ class _StoryViewerState extends State<StoryViewer>
       ),
     );
   }
+
+  Widget _storyTag(IconData icon, String label) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: Colors.black54,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: Colors.white),
+          const SizedBox(width: 5),
+          Text(label, style: const TextStyle(color: Colors.white)),
+        ],
+      ),
+    ),
+  );
 
   Widget _imageError() => Padding(
     padding: const EdgeInsets.all(24),

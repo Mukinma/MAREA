@@ -9,7 +9,7 @@
       "deviceId": "chrome",
       "toolArgs": [
         "--web-port=7357",
-        "--dart-define-from-file=config/supabase.example.json"
+        "--dart-define-from-file=config/supabase.local.json"
       ]
     },
     {
@@ -18,7 +18,7 @@
       "type": "dart",
       "program": "lib/main.dart",
       "toolArgs": [
-        "--dart-define-from-file=config/supabase.example.json"
+        "--dart-define-from-file=config/supabase.local.json"
       ]
     }
   ]

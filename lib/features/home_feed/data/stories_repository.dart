@@ -26,6 +26,27 @@ class SupabaseStoriesRepository implements StoriesRepository {
       if (e is PostgrestException && e.message.contains('story_unavailable')) {
         throw const AppFailure('Esta historia ya no está disponible.');
       }
+      if (e is PostgrestException &&
+          (e.code == 'PGRST202' ||
+              e.code == 'PGRST204' ||
+              e.code == 'PGRST205' ||
+              e.code == '42703' ||
+              e.code == '42P01') &&
+          (e.message.contains('publish_story') ||
+              e.message.contains('story_') ||
+              e.message.contains('stories') ||
+              e.message.contains('schema cache'))) {
+        if (e.code == 'PGRST202' || e.code == 'PGRST204' || e.code == '42703') {
+          throw AppFailure(
+            'El servidor rechazó el RPC de historias '
+            '(${e.code}): ${e.message}',
+          );
+        }
+        throw const AppFailure(
+          'Supabase aún no tiene activadas las migraciones 016, 018, 019 y 034 '
+          'para historias. Aplica las migraciones y vuelve a intentarlo.',
+        );
+      }
       throw communityFailure(e);
     }
   }
@@ -44,7 +65,7 @@ class SupabaseStoriesRepository implements StoriesRepository {
   });
   @override
   Future<String> upload(String storyId, Uint8List bytes) => _run(() async {
-    final user = client.auth.currentUser?.id;
+    final user = client.auth.currentSession?.user.id;
     if (user == null) throw const AppFailure('Inicia sesión nuevamente.');
     final path = '$user/$storyId.png';
     try {
@@ -67,12 +88,17 @@ class SupabaseStoriesRepository implements StoriesRepository {
   Future<void> publish(StoryInput input) => _run(() async {
     final error = input.validate();
     if (error != null) throw AppFailure(error);
+    if (client.auth.currentSession == null) {
+      throw const AppFailure('Tu sesión expiró. Inicia sesión nuevamente.');
+    }
     await client.rpc(
       'publish_story',
       params: {
         'story_uuid': input.id,
         'story_body': input.text.trim(),
         'story_image': input.imagePath,
+        'story_category': input.category,
+        'story_target_type': input.targetType?.databaseValue,
       },
     );
   });

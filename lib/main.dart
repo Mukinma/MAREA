@@ -23,24 +23,37 @@ import 'package:marea/features/auth/presentation/configuration_screen.dart';
 import 'package:marea/features/profile/data/profile_repository.dart';
 import 'package:marea/features/chat/data/chat_repository.dart';
 import 'package:marea/features/legal/legal_repository.dart';
+import 'package:marea/features/auth/presentation/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
-  final config = AppConfig.fromEnvironment();
-  if (!config.isValid) {
-    runApp(ConfigurationScreen(message: config.validationMessage!));
-    return;
-  }
+  runApp(const _StartupApp());
+}
 
-  await Supabase.initialize(
-    url: config.supabaseUrl,
-    publishableKey: config.supabaseAnonKey,
-  );
-  final client = Supabase.instance.client;
-  runApp(
-    MareaApp(
+class _StartupApp extends StatefulWidget {
+  const _StartupApp();
+
+  @override
+  State<_StartupApp> createState() => _StartupAppState();
+}
+
+class _StartupAppState extends State<_StartupApp> {
+  late final Future<Widget> _app = _initializeApp();
+
+  Future<Widget> _initializeApp() async {
+    final config = AppConfig.fromEnvironment();
+    if (!config.isValid) {
+      return ConfigurationScreen(message: config.validationMessage!);
+    }
+
+    await Supabase.initialize(
+      url: config.supabaseUrl,
+      publishableKey: config.supabaseAnonKey,
+    );
+    final client = Supabase.instance.client;
+    return MareaApp(
       controller: AppSessionController(
         authRepository: SupabaseAuthRepository(client),
         push: PushController(
@@ -64,6 +77,27 @@ Future<void> main() async {
         chatRepository: SupabaseChatRepository(client),
         legalRepository: SupabaseLegalRepository(client),
       ),
-    ),
-  );
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _app,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return ConfigurationScreen(
+            message: 'No se pudo iniciar la conexión con el servidor.',
+          );
+        }
+        if (!snapshot.hasData) {
+          return const MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: SplashScreen(),
+          );
+        }
+        return snapshot.data!;
+      },
+    );
+  }
 }

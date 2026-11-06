@@ -119,10 +119,11 @@ class AppSessionController extends ChangeNotifier {
       if (user.recovery) _recovering = true;
       if (!_busy) unawaited(_loadAuthenticated());
     });
-    await reloadLegal();
     if (_auth.currentUser == null) {
       _unauthenticated();
+      unawaited(reloadLegal());
     } else {
+      await reloadLegal();
       await _loadAuthenticated();
     }
   }

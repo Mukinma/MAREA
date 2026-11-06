@@ -262,7 +262,8 @@ abstract final class AppRouter {
         ),
         GoRoute(
           path: '/stories/new',
-          builder: (_, _) => StoryComposer(controller: controller),
+          builder: (_, _) =>
+              StoryComposer(controller: controller, autoOpenCamera: true),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
