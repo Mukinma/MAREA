@@ -74,6 +74,8 @@ class CommunityProfile {
     this.avatarPath,
     this.coverPath,
     this.coverPreset = 'marea',
+    this.waveColors,
+    this.interests = const [],
     this.contactUrl,
     this.openToCollaboration = false,
     this.location,
@@ -90,6 +92,8 @@ class CommunityProfile {
   final String? website;
   final String? avatarPath, coverPath, contactUrl, location, locationPrecision;
   final String coverPreset;
+  final List<int>? waveColors;
+  final List<String> interests;
   final bool openToCollaboration;
   final double? locationLatitude, locationLongitude;
   final Map<String, String?> businessHours;
@@ -105,6 +109,8 @@ class CommunityProfile {
         avatarPath: json['avatar_path'] as String?,
         coverPath: json['cover_path'] as String?,
         coverPreset: json['cover_preset'] as String? ?? 'marea',
+        waveColors: readWaveColors(json['wave_colors']),
+        interests: List<String>.from(json['interests'] as List? ?? const []),
         contactUrl: json['contact_url'] as String?,
         openToCollaboration: json['open_to_collaboration'] as bool? ?? false,
         location: json['location'] as String?,

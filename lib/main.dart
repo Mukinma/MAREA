@@ -26,14 +26,26 @@ import 'package:marea/features/legal/legal_repository.dart';
 import 'package:marea/features/auth/presentation/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-Future<void> main() async {
+Future<void> main() => startMarea();
+
+Future<void> startMarea({bool productionPilot = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
-  runApp(const _StartupApp());
+
+  final config = AppConfig.fromEnvironment();
+  if (productionPilot && (!kDebugMode || config.isDevelopment)) {
+    throw StateError(
+      'El piloto autorizado requiere debug y la configuración actual.',
+    );
+  }
+
+  runApp(_StartupApp(productionPilot: productionPilot));
 }
 
 class _StartupApp extends StatefulWidget {
-  const _StartupApp();
+  const _StartupApp({required this.productionPilot});
+
+  final bool productionPilot;
 
   @override
   State<_StartupApp> createState() => _StartupAppState();
@@ -51,14 +63,39 @@ class _StartupAppState extends State<_StartupApp> {
     await Supabase.initialize(
       url: config.supabaseUrl,
       publishableKey: config.supabaseAnonKey,
+      authOptions: widget.productionPilot
+          ? FlutterAuthClientOptions(
+              localStorage: SharedPreferencesLocalStorage(
+                persistSessionKey:
+                    'marea-ra-pilot-${Uri.parse(config.supabaseUrl).host}-auth-token',
+              ),
+              detectSessionInUri: false,
+            )
+          : config.isDevelopment
+          ? FlutterAuthClientOptions(
+              localStorage: SharedPreferencesLocalStorage(
+                persistSessionKey: config.developmentSessionKey,
+              ),
+              detectSessionInUriPredicate:
+                  config.acceptsDevelopmentAuthCallback,
+            )
+          : const FlutterAuthClientOptions(),
     );
     final client = Supabase.instance.client;
     return MareaApp(
+      development: config.isDevelopment,
+      productionPilot: widget.productionPilot,
       controller: AppSessionController(
-        authRepository: SupabaseAuthRepository(client),
+        authRepository: SupabaseAuthRepository(
+          client,
+          allowGoogleOAuth: !widget.productionPilot,
+        ),
         push: PushController(
           SupabaseNotificationPreferencesRepository(client),
-          !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+          !widget.productionPilot &&
+                  !config.isDevelopment &&
+                  !kIsWeb &&
+                  defaultTargetPlatform == TargetPlatform.android
               ? AndroidPushGateway()
               : InboxOnlyGateway(),
         ),

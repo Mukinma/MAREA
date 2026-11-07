@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "MAREA: preparar desarrollo",
+      "type": "process",
+      "command": "node",
+      "args": ["tool/ar-pilot/prepare.mjs"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    }
+  ]
+}

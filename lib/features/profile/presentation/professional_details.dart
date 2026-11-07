@@ -9,10 +9,12 @@ class ProfessionalDetails extends StatelessWidget {
   const ProfessionalDetails({
     required this.profile,
     this.showContact = true,
+    this.showLocation = true,
     super.key,
   });
   final CommunityProfile profile;
   final bool showContact;
+  final bool showLocation;
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -53,7 +55,9 @@ class ProfessionalDetails extends StatelessWidget {
             label: const Text('Contactar'),
           ),
         ),
-      if (profile.userType == UserType.business && profile.location != null)
+      if (showLocation &&
+          profile.userType == UserType.business &&
+          profile.location != null)
         Padding(
           padding: const EdgeInsets.only(top: 12),
           child: profile.locationLatitude == null

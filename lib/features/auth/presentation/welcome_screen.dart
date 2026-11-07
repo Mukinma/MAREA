@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:marea/core/config/app_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -79,7 +80,7 @@ class WelcomeScreen extends StatelessWidget {
     if (controller == null) return;
     final redirectTo = kIsWeb
         ? Uri.base.origin
-        : 'com.marea.app://login-callback';
+        : AppConfig.fromEnvironment().mobileOAuthRedirect;
     await controller.signInWithGoogle(redirectTo: redirectTo);
     if (!context.mounted || controller.failure == null) return;
     ScaffoldMessenger.of(

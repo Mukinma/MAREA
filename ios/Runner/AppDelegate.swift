@@ -118,11 +118,16 @@ final class TourARView: NSObject, FlutterPlatformView, ARSCNViewDelegate {
  private var running: Bool { get { trackingState.running } set { trackingState.running=newValue } }
  private var permissionPending=false
  private var invalid=false
+ private var projectedCard=false
+ private var scanId: String?
+ private var lastProjection: TimeInterval=0
+ private var lastProjectionFrameTimestamp: TimeInterval=0
  init(frame: CGRect,args: Any?,events: TourEventStream) {
   scene=ARSCNView(frame:frame); self.events=events
   super.init(); scene.delegate=self; scene.automaticallyUpdatesLighting=true
   guard ARImageTrackingConfiguration.isSupported else { fail("AR no está disponible en este dispositivo."); return }
   guard let args=args as? [String:Any],let references=args["references"] as? [[String:Any]], !references.isEmpty else { fail("No hay imágenes de referencia."); return }
+  projectedCard=args["projectedCard"] as? Bool ?? false; scanId=args["sessionId"] as? String
   var images=Set<ARReferenceImage>()
   for ref in references {
    guard let id=ref["id"] as? String,let path=ref["path"] as? String,let width=(ref["widthMeters"] as? NSNumber)?.doubleValue,width.isFinite,width>0,
@@ -138,6 +143,7 @@ final class TourARView: NSObject, FlutterPlatformView, ARSCNViewDelegate {
   switch AVCaptureDevice.authorizationStatus(for:.video) {
   case .authorized:
    minimumFrameTimestamp=scene.session.currentFrame?.timestamp ?? 0
+   lastProjectionFrameTimestamp=minimumFrameTimestamp
    cameraNormal=false; running=true; updateSignalsLocked()
    scene.session.run(configuration,options:[.resetTracking,.removeExistingAnchors])
   case .notDetermined:
@@ -167,18 +173,47 @@ final class TourARView: NSObject, FlutterPlatformView, ARSCNViewDelegate {
   signals[image.identifier]=(id,node,image.isTracked)
   updateSignalsLocked()
  }
- private func fail(_ message: String) { invalid=true; pause(); events.emit(["id":"","state":"error","message":message]) }
- private func emit(_ id: String,_ tracking: Bool) { stateLock.lock(); let changed=states[id] != tracking; states[id]=tracking; stateLock.unlock(); if changed { events.emit(["id":id,"state":tracking ? "tracking" : "lost"]) } }
+ private func send(_ value: [String:Any]) { var value=value; if let id=scanId { value["sessionId"]=id }; events.emit(value) }
+ private func fail(_ message: String) { invalid=true; pause(); send(["id":"","state":"error","message":message]) }
+ private func emit(_ id: String,_ tracking: Bool) { stateLock.lock(); let changed=states[id] != tracking; states[id]=tracking; stateLock.unlock(); if changed { send(["id":id,"state":tracking ? "tracking" : "lost"]) } }
  func renderer(_ renderer: SCNSceneRenderer,nodeFor anchor: ARAnchor)->SCNNode? {
   guard let image=anchor as? ARImageAnchor else { return nil }
   let node=SCNNode(); let shape=SCNPlane(width:image.referenceImage.physicalSize.width*0.3,height:image.referenceImage.physicalSize.height*0.3)
   shape.firstMaterial?.diffuse.contents=UIColor.systemMint; shape.firstMaterial?.isDoubleSided=true
   let signal=SCNNode(geometry:shape); signal.eulerAngles.x = -.pi/2; signal.position.y=0.005; node.addChildNode(signal)
-  updateSignal(node,image); return node
+  if projectedCard { signal.geometry=nil }; updateSignal(node,image); return node
  }
  func renderer(_ renderer: SCNSceneRenderer,didUpdate node: SCNNode,for anchor: ARAnchor) {
   guard let image=anchor as? ARImageAnchor else { return }
   updateSignal(node,image)
+ }
+ // Project on every rendered frame; anchor updates alone miss camera motion.
+ func renderer(_ renderer: SCNSceneRenderer,updateAtTime time: TimeInterval) {
+  guard projectedCard,time-lastProjection>=0.05 else { return }; lastProjection=time
+  stateLock.lock(); defer { stateLock.unlock() }
+  let frame=scene.session.currentFrame
+  guard running,validCamera(frame),cameraNormal,let frame=frame else {
+   for signal in signals.values { emit(signal.id,false) }; return
+  }
+  let viewport=scene.bounds.size
+  guard viewport.width>0,viewport.height>0 else { return }
+  // SceneKit can render a cached ARFrame. Only fresh camera frames may refresh
+  // Flutter's tracking watchdog; normal loss callbacks remain effective below.
+  let freshProjectionFrame=frame.timestamp>lastProjectionFrameTimestamp
+  if freshProjectionFrame { lastProjectionFrameTimestamp=frame.timestamp }
+  for signal in signals.values {
+   guard signal.imageTracked,let anchor=frame.anchors.first(where: { ($0 as? ARImageAnchor)?.referenceImage.name==signal.id }) as? ARImageAnchor,anchor.isTracked else { emit(signal.id,false); continue }
+   guard freshProjectionFrame else { continue }
+   let w=Float(anchor.referenceImage.physicalSize.width)*0.4, h=w*120/280
+   var quad=[Double](); var visible=true
+   for (x,z) in [(-w,-h),(w,-h),(w,h),(-w,h)] {
+    let world=anchor.transform * SIMD4<Float>(x,0.005,z,1)
+    let point=scene.projectPoint(SCNVector3(world.x,world.y,world.z))
+    if !point.x.isFinite || !point.y.isFinite || !point.z.isFinite || point.z<0 || point.z>1 { visible=false; break }
+    quad.append(Double(point.x)/Double(viewport.width)); quad.append(Double(point.y)/Double(viewport.height))
+   }
+   if visible { states[signal.id]=true; send(["id":signal.id,"state":"tracking","quad":quad]) } else { emit(signal.id,false) }
+  }
  }
  func renderer(_ renderer: SCNSceneRenderer,didRemove node: SCNNode,for anchor: ARAnchor) {
   guard let image=anchor as? ARImageAnchor,let id=image.referenceImage.name else { return }

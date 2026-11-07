@@ -57,6 +57,7 @@ void main() {
     expect(find.byType(EditProfileScreen), findsOneWidget);
     router.go('/profile');
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byTooltip('Configuración'));
     await tester.tap(find.byTooltip('Configuración'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);

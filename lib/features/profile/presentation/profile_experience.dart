@@ -4,16 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/models/community_models.dart';
-import 'package:marea/features/community/presentation/community_widgets.dart';
-import 'package:marea/features/community/presentation/mission_widgets.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
+import 'package:marea/features/community/presentation/notifications_panel.dart';
 import 'package:marea/features/profile/presentation/profile_identity.dart';
 import 'package:marea/features/profile/presentation/profile_tools_sheet.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
-import 'package:marea/features/showcase/presentation/showcase_widgets.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
-import 'package:marea/shared/widgets/marea_tabs.dart';
+import 'package:marea/features/profile/presentation/profile_sections.dart';
+import 'package:marea/features/profile/presentation/profile_content_sections.dart';
 
 class ProfileExperience extends StatefulWidget {
   const ProfileExperience({
@@ -36,10 +35,10 @@ class ProfileExperience extends StatefulWidget {
 
 class _ProfileExperienceState extends State<ProfileExperience> {
   final _scroll = ScrollController();
-  final _offsets = <String, double>{};
-  late String _section = widget.profile.userType.showcaseKinds.isEmpty
-      ? 'posts'
-      : 'showcase';
+  final _postsKey = GlobalKey();
+  bool get _owner =>
+      widget.owner && widget.controller.profile?.id == widget.profile.id;
+  int _chatGeneration = 0;
   int _revision = 0;
   String? _conversationId;
   String? _conversationStatus;
@@ -52,12 +51,26 @@ class _ProfileExperienceState extends State<ProfileExperience> {
     _loadIncomingRequest();
   }
 
+  @override
+  void didUpdateWidget(ProfileExperience oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.profile.id != widget.profile.id ||
+        oldWidget.controller != widget.controller) {
+      _conversationId = null;
+      _conversationStatus = null;
+      _conversationIsIncoming = false;
+      _chatBusy = false;
+      _loadIncomingRequest();
+    }
+  }
+
   Future<void> _loadIncomingRequest() async {
+    final generation = ++_chatGeneration;
     final repository = widget.controller.chatRepository;
-    if (repository == null || widget.owner) return;
+    if (repository == null || _owner) return;
     try {
       final conversations = await repository.conversations();
-      if (mounted) {
+      if (mounted && generation == _chatGeneration) {
         final conversation = conversations
             .where(
               (conversation) =>
@@ -88,19 +101,6 @@ class _ProfileExperienceState extends State<ProfileExperience> {
     super.dispose();
   }
 
-  void _select(String value) {
-    if (value == _section) return;
-    if (_scroll.hasClients) _offsets[_section] = _scroll.offset;
-    setState(() => _section = value);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _scroll.hasClients) {
-        _scroll.jumpTo(
-          (_offsets[value] ?? 0).clamp(0, _scroll.position.maxScrollExtent),
-        );
-      }
-    });
-  }
-
   Future<void> _refresh() async {
     await widget.onRefresh();
     if (mounted) setState(() => _revision++);
@@ -117,24 +117,7 @@ class _ProfileExperienceState extends State<ProfileExperience> {
 
   Widget _shortcuts(bool wide) {
     final actions = <(IconData, String, VoidCallback)>[
-      (
-        Icons.dashboard_customize_outlined,
-        'Herramientas',
-        () async {
-          final route = await showProfileTools(
-            context,
-            profile: widget.profile,
-            controller: widget.controller,
-            admin: widget.admin,
-          );
-          if (!mounted || route == null) return;
-          if (route.startsWith('/missions?') || route.startsWith('/explore?')) {
-            context.go(route);
-          } else {
-            await _open(route);
-          }
-        },
-      ),
+      (Icons.dashboard_customize_outlined, 'Herramientas', _menu),
       (
         Icons.bookmark_border,
         'Guardados',
@@ -201,125 +184,111 @@ class _ProfileExperienceState extends State<ProfileExperience> {
     );
   }
 
+  Future<void> _menu() async {
+    final route = await showProfileTools(
+      context,
+      profile: widget.profile,
+      controller: widget.controller,
+      admin: _owner && widget.admin,
+    );
+    if (!mounted || route == null) return;
+    if (route == '#showcase') {
+      await _allShowcase();
+    } else if (route == '#missions') {
+      await _allMissions();
+    } else if (route == '#notifications' && _owner) {
+      await openNotifications(context, widget.controller);
+    } else if (route == '#posts') {
+      final target = _postsKey.currentContext;
+      if (target != null && target.mounted) {
+        await Scrollable.ensureVisible(
+          target,
+          duration: const Duration(milliseconds: 250),
+        );
+      }
+    } else if (_owner) {
+      if (route.startsWith('/missions?') ||
+          route.startsWith('/explore?') ||
+          route == '/map') {
+        context.go(route);
+      } else {
+        await _open(route);
+      }
+    }
+  }
+
+  Future<void> _allShowcase() async {
+    await showProfileShowcase(
+      context,
+      controller: widget.controller,
+      profile: widget.profile,
+      owner: _owner,
+      onOpen: _open,
+    );
+    if (mounted) setState(() => _revision++);
+  }
+
+  Future<void> _allMissions() async {
+    final repo = widget.controller.communityRepository;
+    if (repo == null) return;
+    await showProfileMissions(
+      context,
+      repository: repo,
+      ownerId: widget.profile.id,
+      owner: _owner,
+      onOpen: _open,
+    );
+    if (mounted) setState(() => _revision++);
+  }
+
   Widget _content() {
     final profile = widget.profile;
-    final kinds = profile.userType.showcaseKinds;
-    final options = <String, String>{
-      if (kinds.isNotEmpty) 'showcase': profile.userType.showcaseLabel,
-      'posts': 'Publicaciones',
-      if (!widget.owner) 'missions': 'Misiones',
-    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (profile.userType.showcaseKinds.isNotEmpty) ...[
+          ProfileShowcasePreview(
+            key: ValueKey((profile.id, _revision, 'showcase')),
+            controller: widget.controller,
+            profile: profile,
+            owner: _owner,
+            onOpen: _open,
+            onSeeAll: _allShowcase,
+          ),
+          const SizedBox(height: 14),
+        ],
+        ProfileMissionsPreview(
+          key: ValueKey((profile.id, _revision, 'missions')),
+          controller: widget.controller,
+          ownerId: profile.id,
+          onOpen: _open,
+          onSeeAll: _allMissions,
+        ),
+        const SizedBox(height: 20),
+        ProfileSectionHeading(key: _postsKey, title: 'Publicaciones'),
+        if (_owner)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: () => _open('/posts/new'),
+              icon: const Icon(Icons.add),
+              label: const Text('Agregar publicaci\u00f3n'),
+            ),
+          ),
+        if (widget.controller.communityRepository != null)
+          PostsFeed(
+            key: ValueKey((profile.id, _revision, 'posts')),
+            controller: widget.controller,
+            authorId: profile.id,
+            showHeading: false,
+          ),
         if (widget.controller.tourRepository != null)
           ProfileTourCard(
-            key: ValueKey('tours:${profile.id}:$_revision'),
+            key: ValueKey((profile.id, _revision, 'tours')),
             controller: widget.controller,
             profileId: profile.id,
           ),
-        if (options.length > 1)
-          MareaTabs(options: options, value: _section, onChanged: _select)
-        else
-          Text('Publicaciones', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 10),
-        if (kinds.isNotEmpty)
-          Visibility(
-            maintainState: true,
-            visible: _section == 'showcase',
-            child: TickerMode(
-              enabled: _section == 'showcase',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (widget.owner) ...[
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final kind in kinds)
-                          FilledButton.icon(
-                            onPressed: () =>
-                                _open('/showcase/new?kind=${kind.name}'),
-                            icon: const Icon(Icons.add, size: 18),
-                            label: Text(kind.action),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                  ShowcaseList(
-                    key: ValueKey('showcase:${profile.id}:$_revision'),
-                    controller: widget.controller,
-                    ownerId: profile.id,
-                    management: widget.owner,
-                    compact: true,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        Visibility(
-          maintainState: true,
-          visible: _section == 'posts',
-          child: TickerMode(
-            enabled: _section == 'posts',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (widget.owner) ...[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: OutlinedButton.icon(
-                      onPressed: () => _open('/posts/new'),
-                      icon: const Icon(Icons.add),
-                      label: const Text('Agregar publicación'),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                if (widget.controller.communityRepository != null)
-                  PostsFeed(
-                    key: ValueKey('posts:${profile.id}:$_revision'),
-                    controller: widget.controller,
-                    authorId: profile.id,
-                    showHeading: false,
-                  ),
-              ],
-            ),
-          ),
-        ),
-        if (!widget.owner && widget.controller.communityRepository != null)
-          Visibility(
-            maintainState: true,
-            visible: _section == 'missions',
-            child: CommunityLoad<List<Mission>>(
-              key: ValueKey('missions:${profile.id}:$_revision'),
-              load: () => widget.controller.communityRepository!.missions(
-                authorId: profile.id,
-              ),
-              builder: (missions, reload) => Column(
-                children: [
-                  if (missions.isEmpty)
-                    const CommunityNotice(
-                      message: 'Aún no ha publicado misiones.',
-                    ),
-                  for (final mission in missions)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: MissionSummary(
-                        mission: mission,
-                        repository: widget.controller.communityRepository!,
-                        onTap: () async {
-                          await context.push('/missions/${mission.id}');
-                          if (mounted) reload();
-                        },
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
+        if (_owner) ...[const SizedBox(height: 12), _shortcuts(false)],
       ],
     );
   }
@@ -327,163 +296,192 @@ class _ProfileExperienceState extends State<ProfileExperience> {
   @override
   Widget build(BuildContext context) => SafeArea(
     bottom: false,
-    child: MareaRefreshIndicator(
-      onRefresh: _refresh,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final wide = constraints.maxWidth >= 1024;
-          final identity = Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ProfileIdentity(
-                profile: widget.profile,
-                controller: widget.controller,
-                wide: wide,
-                onSettings: widget.owner ? () => _open('/settings') : null,
-                editAction: widget.owner
-                    ? TextButton.icon(
-                        icon: const Icon(Icons.edit_outlined, size: 16),
-                        onPressed: () => _open('/profile/edit'),
-                        label: const Text('Editar perfil'),
-                        style: TextButton.styleFrom(
-                          textStyle: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
+    child: ColoredBox(
+      color: const Color(0xFFF4FBFE),
+      child: MareaRefreshIndicator(
+        onRefresh: _refresh,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final wide = constraints.maxWidth >= 1024;
+            final identity = Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ProfileIdentity(
+                  profile: widget.profile,
+                  controller: widget.controller,
+                  wide: wide,
+                  onSettings: () => _open('/settings'),
+                  settingsTooltip: _owner
+                      ? 'Configuraci\u00f3n'
+                      : 'Configuraci\u00f3n de tu cuenta',
+                  onMenu: _menu,
+                  editAction: _owner
+                      ? TextButton.icon(
+                          icon: const Icon(Icons.edit_outlined, size: 16),
+                          onPressed: () => _open('/profile/edit'),
+                          label: const Text('Editar perfil'),
+                          style: TextButton.styleFrom(
+                            textStyle: const TextStyle(
+                              fontFamily: 'NunitoSans',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: const Size(48, 40),
+                            backgroundColor: Colors.white,
+                            foregroundColor: const Color(0xFF07345C),
+                            shape: const StadiumBorder(),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          minimumSize: const Size(48, 48),
-                        ),
-                      )
-                    : null,
-              ),
-              if (widget.owner) ...[
-                const SizedBox(height: 12),
-                _shortcuts(wide),
-              ],
-              if (!widget.owner &&
-                  widget.controller.homeFeedRepository != null &&
-                  widget.controller.profile?.id != widget.profile.id) ...[
-                const SizedBox(height: 12),
-                FollowButton(
-                  repository: widget.controller.homeFeedRepository!,
-                  authorId: widget.profile.id,
-                  onChanged: widget.controller.refreshHomeFeed,
+                        )
+                      : null,
                 ),
-                const SizedBox(height: 8),
-                FilledButton.icon(
-                  onPressed: _chatBusy
-                      ? null
-                      : () async {
-                          final chat = widget.controller.chatRepository;
-                          if (chat == null) return;
-                          setState(() => _chatBusy = true);
-                          try {
-                            final accepting =
-                                _conversationStatus == 'pending' &&
-                                _conversationIsIncoming;
-                            final viewing =
-                                _conversationStatus == 'accepted' &&
-                                _conversationId != null;
-                            if (viewing) {
-                              if (context.mounted) {
-                                context.push('/messages/$_conversationId');
-                              }
-                              return;
-                            }
-                            if (accepting) {
-                              await chat.accept(_conversationId!);
-                              if (mounted) {
-                                setState(
-                                  () => _conversationStatus = 'accepted',
-                                );
-                              }
-                            } else {
-                              final id = await chat.request(widget.profile.id);
-                              if (mounted) {
-                                setState(() {
-                                  _conversationId = id;
-                                  _conversationStatus = 'pending';
-                                  _conversationIsIncoming = false;
-                                });
-                              }
-                            }
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context)
-                                ..hideCurrentSnackBar()
-                                ..showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      accepting
-                                          ? 'Solicitud aceptada. Ya pueden conversar.'
-                                          : 'Solicitud enviada. Podrás escribir cuando la otra persona acepte.',
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                            }
-                          } catch (error) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(error.toString())),
-                              );
-                            }
-                          } finally {
-                            if (mounted) setState(() => _chatBusy = false);
-                          }
-                        },
-                  icon: const Icon(Icons.chat_bubble_outline),
-                  label: Text(
-                    _conversationStatus == 'accepted'
-                        ? 'Ver mensajes'
-                        : _conversationStatus == 'pending' &&
-                              _conversationIsIncoming
-                        ? 'Aceptar solicitud'
-                        : 'Solicitar chat',
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: ProfileStatisticsCard(),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ProfileAbout(profile: widget.profile, owner: _owner),
+                ),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ProfileInterests(
+                    profile: widget.profile,
+                    onEdit: _owner ? () => _open('/profile/edit') : null,
                   ),
                 ),
+                if (!_owner &&
+                    widget.controller.homeFeedRepository != null &&
+                    widget.controller.profile?.id != widget.profile.id) ...[
+                  const SizedBox(height: 12),
+                  FollowButton(
+                    repository: widget.controller.homeFeedRepository!,
+                    authorId: widget.profile.id,
+                    onChanged: widget.controller.refreshHomeFeed,
+                  ),
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    onPressed: _chatBusy
+                        ? null
+                        : () async {
+                            final chat = widget.controller.chatRepository;
+                            if (chat == null) return;
+                            setState(() => _chatBusy = true);
+                            try {
+                              final accepting =
+                                  _conversationStatus == 'pending' &&
+                                  _conversationIsIncoming;
+                              final viewing =
+                                  _conversationStatus == 'accepted' &&
+                                  _conversationId != null;
+                              if (viewing) {
+                                if (context.mounted) {
+                                  context.push('/messages/$_conversationId');
+                                }
+                                return;
+                              }
+                              if (accepting) {
+                                await chat.accept(_conversationId!);
+                                if (mounted) {
+                                  setState(
+                                    () => _conversationStatus = 'accepted',
+                                  );
+                                }
+                              } else {
+                                final id = await chat.request(
+                                  widget.profile.id,
+                                );
+                                if (mounted) {
+                                  setState(() {
+                                    _conversationId = id;
+                                    _conversationStatus = 'pending';
+                                    _conversationIsIncoming = false;
+                                  });
+                                }
+                              }
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        accepting
+                                            ? 'Solicitud aceptada. Ya pueden conversar.'
+                                            : 'Solicitud enviada. Podrás escribir cuando la otra persona acepte.',
+                                      ),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                              }
+                            } catch (error) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(error.toString())),
+                                );
+                              }
+                            } finally {
+                              if (mounted) setState(() => _chatBusy = false);
+                            }
+                          },
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    label: Text(
+                      _conversationStatus == 'accepted'
+                          ? 'Ver mensajes'
+                          : _conversationStatus == 'pending' &&
+                                _conversationIsIncoming
+                          ? 'Aceptar solicitud'
+                          : 'Solicitar chat',
+                    ),
+                  ),
+                ],
               ],
-            ],
-          );
-          return SingleChildScrollView(
-            key: const Key('profile-scroll'),
-            controller: _scroll,
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(
-              wide ? 24 : 16,
-              wide ? 24 : 12,
-              wide ? 24 : 16,
-              32 + MediaQuery.paddingOf(context).bottom,
-            ),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1200),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (widget.feedback != null) ...[
-                      widget.feedback!,
-                      const SizedBox(height: 12),
+            );
+            return SingleChildScrollView(
+              key: const Key('profile-scroll'),
+              controller: _scroll,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(
+                wide ? 24 : 0,
+                wide ? 24 : 0,
+                wide ? 24 : 0,
+                112 + MediaQuery.paddingOf(context).bottom,
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1200),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (widget.feedback != null) ...[
+                        widget.feedback!,
+                        const SizedBox(height: 12),
+                      ],
+                      if (wide)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(width: 300, child: identity),
+                            const SizedBox(width: 24),
+                            Expanded(child: _content()),
+                          ],
+                        )
+                      else ...[
+                        identity,
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: _content(),
+                        ),
+                      ],
                     ],
-                    if (wide)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(width: 300, child: identity),
-                          const SizedBox(width: 24),
-                          Expanded(child: _content()),
-                        ],
-                      )
-                    else ...[
-                      identity,
-                      const SizedBox(height: 12),
-                      _content(),
-                    ],
-                  ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     ),
   );

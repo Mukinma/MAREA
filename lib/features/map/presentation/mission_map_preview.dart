@@ -12,10 +12,12 @@ class MissionMapPreview extends StatelessWidget {
     required this.onOpen,
     required this.onClose,
     this.repository,
+    this.arAction,
     this.distanceMeters,
     super.key,
   });
   final Mission mission;
+  final Widget? arAction;
   final CommunityRepository? repository;
   final double? distanceMeters;
   final VoidCallback onOpen, onClose;
@@ -137,6 +139,7 @@ class MissionMapPreview extends StatelessWidget {
                 ),
               ],
             ),
+            ?arAction,
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,

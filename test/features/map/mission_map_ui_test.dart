@@ -13,6 +13,9 @@ import 'package:marea/features/map/data/mission_map_repository.dart';
 import 'package:marea/features/map/models/mission_map_models.dart';
 import 'package:marea/features/map/presentation/mission_map_screen.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
+import 'package:marea/features/tours/data/tour_repository.dart';
+import 'package:marea/features/tours/models/tour_models.dart';
+import '../../support/business_ar_fixture.dart';
 import '../../support/fakes.dart';
 import 'mission_map_test.dart' show mission;
 
@@ -61,6 +64,33 @@ class LocationFake implements DeviceLocationService {
   Future<bool> openSettings({bool locationDisabled = false}) async => false;
 }
 
+class MapToursFake implements TourRepository {
+  MapToursFake({this.tested = true});
+  final bool tested;
+  final owners = <String>[];
+
+  @override
+  Future<List<TourRecord>> list({
+    String? owner,
+    double? latitude,
+    double? longitude,
+  }) async => [];
+
+  @override
+  Future<List<TourRecord>> publicList(String owner) async {
+    owners.add(owner);
+    final tour = businessARLocalTourRecord();
+    tour.data['owner_id'] = owner;
+    if (!tested) {
+      tour.document.points.first.ar!['tested_version'] = null;
+    }
+    return [tour];
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 Future<void> withTiles(Future<void> Function() test) => http.runWithClient(
   test,
   () => MockClient(
@@ -77,11 +107,13 @@ void main() {
   Future<(MapFake, LocationFake)> open(
     WidgetTester tester, {
     double width = 390,
+    double height = 844,
     bool empty = false,
     int count = 1,
     double scale = 1,
+    TourRepository? tours,
   }) async {
-    tester.view.physicalSize = Size(width, 844);
+    tester.view.physicalSize = Size(width, height);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -93,6 +125,7 @@ void main() {
       authRepository: FakeAuthRepository(),
       profileRepository: FakeProfileRepository(),
       missionMapRepository: repo,
+      tourRepository: tours,
     );
     addTearDown(session.dispose);
     final router = GoRouter(
@@ -108,6 +141,22 @@ void main() {
                   MissionMapScreen(session: session, locationService: location),
             ),
           ],
+        ),
+        GoRoute(
+          path: '/tours/:id/business-ar',
+          builder: (context, state) => Scaffold(
+            body: Column(
+              children: [
+                Text('RA ${state.pathParameters['id']}'),
+                Text('Organizador ${state.uri.queryParameters['owner']}'),
+                Text('Referencia ${state.uri.queryParameters['point']}'),
+                TextButton(
+                  onPressed: () => context.pop(),
+                  child: const Text('Volver al mapa'),
+                ),
+              ],
+            ),
+          ),
         ),
         GoRoute(
           path: '/missions/:id',
@@ -143,6 +192,104 @@ void main() {
     await tester.pumpAndSettle();
     return (repo, location);
   }
+
+  for (final width in [390.0, 1366.0]) {
+    testWidgets('new map layout retains published AR entry at $width', (
+      tester,
+    ) async {
+      await withTiles(() async {
+        final tours = MapToursFake();
+        await open(tester, width: width, tours: tours);
+        await tester.tap(find.byTooltip('Arte local'));
+        await tester.pumpAndSettle();
+        expect(tours.owners, ['author']);
+        await tester.ensureVisible(find.text('Explorar en RA'));
+        await tester.pumpAndSettle();
+        expect(find.text('Explorar en RA').hitTestable(), findsOneWidget);
+        await tester.tap(find.text('Explorar en RA'));
+        await tester.pumpAndSettle();
+        expect(find.text('RA $businessARLocalTour'), findsOneWidget);
+        expect(find.text('Organizador author'), findsOneWidget);
+        expect(find.text('Referencia $businessARLocalPoint'), findsOneWidget);
+        await tester.tap(find.text('Volver al mapa'));
+        await tester.pumpAndSettle();
+        expect(find.text('Arte local'), findsWidgets);
+        expect(find.text('Explorar en RA'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    });
+  }
+
+  testWidgets('new map layout keeps untested AR reference unavailable', (
+    tester,
+  ) async {
+    await withTiles(() async {
+      final tours = MapToursFake(tested: false);
+      await open(tester, tours: tours);
+      await tester.tap(find.byTooltip('Arte local'));
+      await tester.pumpAndSettle();
+      expect(tours.owners, ['author']);
+      expect(find.text('Explorar en RA'), findsNothing);
+      expect(find.text('Ver misión'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  testWidgets(
+    'map controls stay above mobile dock with large text and safe area',
+    (tester) async {
+      tester.view.padding = const FakeViewPadding(bottom: 34);
+      addTearDown(tester.view.resetPadding);
+      await withTiles(() async {
+        await open(tester, scale: 2);
+        final dockTop = tester
+            .getTopLeft(find.byKey(const Key('mobile-dock')))
+            .dy;
+        expect(
+          tester.getBottomRight(find.byTooltip('Centrar en mi ubicación')).dy,
+          lessThan(dockTop),
+        );
+        final attribution = find.textContaining('OpenStreetMap');
+        expect(tester.getBottomRight(attribution).dy, lessThan(dockTop));
+        await tester.tap(find.byTooltip('Arte local'));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Ver misión'));
+        await tester.pumpAndSettle();
+        expect(find.text('Ver misión').hitTestable(), findsOneWidget);
+        expect(
+          tester.getBottomRight(find.text('Ver misión')).dy,
+          lessThan(dockTop),
+        );
+        expect(tester.takeException(), isNull);
+      });
+    },
+  );
+
+  testWidgets(
+    'selected mission controls remain reachable on a short mobile screen',
+    (tester) async {
+      tester.view.padding = const FakeViewPadding(bottom: 34);
+      addTearDown(tester.view.resetPadding);
+      await withTiles(() async {
+        await open(tester, scale: 2);
+        await tester.tap(find.byTooltip('Arte local'));
+        await tester.pumpAndSettle();
+        tester.view.physicalSize = const Size(320, 568);
+        await tester.pumpAndSettle();
+        final locate = find.byTooltip('Centrar en mi ubicación');
+        expect(tester.getTopLeft(locate).dy, greaterThanOrEqualTo(0));
+        expect(locate.hitTestable(), findsOneWidget);
+        await tester.ensureVisible(find.text('Ver misión'));
+        await tester.pumpAndSettle();
+        expect(find.text('Ver misión').hitTestable(), findsOneWidget);
+        expect(
+          tester.getBottomRight(find.text('Ver misión')).dy,
+          lessThan(tester.getTopLeft(find.byKey(const Key('mobile-dock'))).dy),
+        );
+        expect(tester.takeException(), isNull);
+      });
+    },
+  );
 
   testWidgets('select preview before navigation and retain camera on return', (
     tester,

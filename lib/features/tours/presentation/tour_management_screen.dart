@@ -20,6 +20,12 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
         owner: widget.controller.profile?.id,
       ) ??
       [];
+  void _reload() {
+    setState(() {
+      _items = _load();
+    });
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -45,7 +51,7 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
             FilledButton.icon(
               onPressed: () async {
                 await context.push('/tours/new');
-                if (mounted) setState(() => _items = _load());
+                if (mounted) _reload();
               },
               icon: const Icon(Icons.add),
               label: const Text('Crear recorrido'),
@@ -55,10 +61,7 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
             child: const Text('Solicitudes y revisión'),
           ),
           if (s.hasError)
-            TourNotice(
-              tourError(s.error!),
-              onRetry: () => setState(() => _items = _load()),
-            )
+            TourNotice(tourError(s.error!), onRetry: _reload)
           else if (!s.hasData)
             const LinearProgressIndicator()
           else if (s.data!.isEmpty)
@@ -89,7 +92,7 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
                           TextButton(
                             onPressed: () async {
                               await context.push('/tours/${t.id}/edit');
-                              if (mounted) setState(() => _items = _load());
+                              if (mounted) _reload();
                             },
                             child: const Text('Editar borrador'),
                           ),
@@ -106,7 +109,7 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
                                     t.id,
                                     t.state != 'paused',
                                   );
-                                  if (mounted) setState(() => _items = _load());
+                                  if (mounted) _reload();
                                 } catch (e) {
                                   if (c.mounted) {
                                     ScaffoldMessenger.of(c).showSnackBar(
@@ -143,6 +146,12 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
       .controller
       .tourRepository!
       .requests();
+  void _reload() {
+    setState(() {
+      _items = widget.controller.tourRepository!.requests();
+    });
+  }
+
   Future<void> _review(Map<String, dynamic> item, bool approve) async {
     final reason = approve
         ? 'Aprobado'
@@ -155,7 +164,7 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
         reason,
       );
       if (mounted) {
-        setState(() => _items = widget.controller.tourRepository!.requests());
+        _reload();
       }
     } catch (e) {
       if (mounted) {
@@ -181,12 +190,7 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
             'La autorización del espacio y la del contenido se revisan por separado.',
           ),
           if (s.hasError)
-            TourNotice(
-              tourError(s.error!),
-              onRetry: () => setState(
-                () => _items = widget.controller.tourRepository!.requests(),
-              ),
-            )
+            TourNotice(tourError(s.error!), onRetry: _reload)
           else if (!s.hasData)
             const LinearProgressIndicator()
           else if (s.data!.isEmpty)
@@ -265,12 +269,7 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
                               await widget.controller.tourRepository!
                                   .revokePermission(r['id'] as String);
                               if (mounted) {
-                                setState(
-                                  () => _items = widget
-                                      .controller
-                                      .tourRepository!
-                                      .requests(),
-                                );
+                                _reload();
                               }
                             } catch (e) {
                               if (context.mounted) {

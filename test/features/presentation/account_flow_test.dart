@@ -69,9 +69,7 @@ void main() {
     addTearDown(c.dispose);
     await tester.pumpWidget(testApp(EditProfileScreen(controller: c)));
     await tester.pumpAndSettle();
-    final bio = find.byWidgetPredicate(
-      (w) => w is TextField && w.decoration?.labelText == 'Bio',
-    );
+    final bio = find.byKey(const ValueKey('edit-field-Sobre mí'));
     await tester.ensureVisible(bio);
     await tester.enterText(bio, 'Una bio diferente');
     await tester.pump();
@@ -80,6 +78,11 @@ void main() {
     expect(find.text('¿Descartar tus cambios?'), findsOneWidget);
     await tester.tap(find.text('Seguir editando'));
     await tester.pumpAndSettle();
+    expect(find.text('¿Descartar tus cambios?'), findsNothing);
+    expect(
+      tester.widget<TextFormField>(bio).controller!.text,
+      'Una bio diferente',
+    );
     expect(c.profile!.bio, 'Creo experiencias que conectan la ciudad.');
   });
 

@@ -1,5 +1,6 @@
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/features/profile/presentation/profile_experience.dart';
+import 'package:marea/features/shell/presentation/app_shell.dart';
 import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:marea/shared/widgets/profile_image.dart';
 import 'package:marea/shared/widgets/social_avatar.dart';
@@ -268,8 +269,10 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
       final profiles = await repo.profiles(ids: [widget.profileId]);
       if (mounted && generation == _generation) {
         setState(() {
-          _profile = profiles.firstOrNull;
-          _error = profiles.isEmpty
+          _profile = profiles
+              .where((profile) => profile.id == widget.profileId)
+              .firstOrNull;
+          _error = _profile == null
               ? 'Este perfil ya no está disponible.'
               : null;
           _loading = false;
@@ -286,27 +289,31 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: const ProfileBackButton(fallback: '/explore'),
-      title: const Text('Perfil'),
+  Widget build(BuildContext context) => AppShell(
+    location: '/people/${widget.profileId}',
+    controller: widget.controller,
+    child: Scaffold(
+      appBar: AppBar(
+        leading: const ProfileBackButton(fallback: '/explore'),
+        title: const Text('Perfil'),
+      ),
+      body: _profile == null
+          ? _loading
+                ? const Center(child: MareaSkeleton(kind: SkeletonKind.list))
+                : CommunityNotice(
+                    message: _error ?? 'Este perfil ya no está disponible.',
+                    onRetry: _load,
+                  )
+          : ProfileExperience(
+              key: ValueKey(widget.profileId),
+              controller: widget.controller,
+              profile: _profile!,
+              owner: false,
+              onRefresh: _load,
+              feedback: _error == null
+                  ? null
+                  : CommunityNotice(message: _error!, onRetry: _load),
+            ),
     ),
-    body: _profile == null
-        ? _loading
-              ? const Center(child: MareaSkeleton(kind: SkeletonKind.list))
-              : CommunityNotice(
-                  message: _error ?? 'Este perfil ya no está disponible.',
-                  onRetry: _load,
-                )
-        : ProfileExperience(
-            key: ValueKey(widget.profileId),
-            controller: widget.controller,
-            profile: _profile!,
-            owner: false,
-            onRefresh: _load,
-            feedback: _error == null
-                ? null
-                : CommunityNotice(message: _error!, onRetry: _load),
-          ),
   );
 }

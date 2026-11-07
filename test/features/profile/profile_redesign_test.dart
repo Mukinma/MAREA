@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/profile/presentation/edit_profile_screen.dart';
+import 'package:marea/features/profile/presentation/profile_content_sections.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
@@ -59,7 +60,10 @@ void main() {
     final c = await authenticatedController();
     addTearDown(c.dispose);
     await tester.pumpWidget(testApp(EditProfileScreen(controller: c)));
-    final name = find.widgetWithText(TextField, 'Nombre completo');
+    final name = find.descendant(
+      of: find.byKey(const ValueKey('edit-field-Nombre completo')),
+      matching: find.byType(TextField),
+    );
     await tester.ensureVisible(name);
     await tester.showKeyboard(name);
     final editable = tester.widget<EditableText>(
@@ -198,7 +202,7 @@ void main() {
     await tester.pumpWidget(testApp(EditProfileScreen(controller: c)));
     await tester.ensureVisible(find.text('Nombre completo'));
     await tester.enterText(
-      find.widgetWithText(TextFormField, 'Nombre completo'),
+      find.byKey(const ValueKey('edit-field-Nombre completo')),
       '',
     );
     await tester.ensureVisible(find.text('Profesional'));
@@ -240,7 +244,7 @@ void main() {
     expect(tester.getBottomLeft(find.text('Entre mareas')).dy, lessThan(760));
   });
 
-  testWidgets('content tabs retain loaded work and scroll position', (
+  testWidgets('opening the menu retains the carousel and loaded work', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -260,19 +264,22 @@ void main() {
     }
     await flow.open(tester, repo, '/profile', type: UserType.creator);
     final before = repo.listings;
-    final scroll = find.byKey(const Key('profile-scroll'));
-    await tester.drag(scroll, const Offset(0, -240));
+    await tester.ensureVisible(find.byType(ProfileShowcasePreview));
+    final scroll = find.descendant(
+      of: find.byType(ProfileShowcasePreview),
+      matching: find.byType(Scrollable),
+    );
+    await tester.drag(scroll, const Offset(-200, 0));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Publicaciones'));
+    final state = tester.state<ScrollableState>(scroll);
+    final offset = state.position.pixels;
+    expect(offset, greaterThan(0));
+    await tester.ensureVisible(find.byTooltip('Menú del perfil'));
+    await tester.tap(find.byTooltip('Menú del perfil'));
     await tester.pumpAndSettle();
-    final y = tester.getTopLeft(find.text('Obra 0')).dy;
-    await tester.tap(find.text('Publicaciones'));
+    await tester.tap(find.byTooltip('Cerrar herramientas'));
     await tester.pumpAndSettle();
-    expect(find.text('Obra 0'), findsNothing);
-    await tester.tap(find.text('Portafolio'));
-    await tester.pumpAndSettle();
-    expect(find.text('Obra 0'), findsOneWidget);
-    expect(tester.getTopLeft(find.text('Obra 0')).dy, closeTo(y, 1));
+    expect(state.position.pixels, offset);
     expect(repo.listings, before);
   });
 
