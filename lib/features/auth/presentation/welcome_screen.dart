@@ -12,31 +12,13 @@ class WelcomeScreen extends StatelessWidget {
   final AppSessionController? controller;
 
   Widget _brand() => Semantics(
-    label: 'MAREA. Conecta. Crea. Explora.',
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset('assets/brand/MAREA.png', width: 58, height: 58),
-        const SizedBox(width: 12),
-        Flexible(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.asset(
-                'assets/brand/MAREA_LOGOTIPO.png',
-                width: 190,
-                height: 45,
-                fit: BoxFit.contain,
-              ),
-              const Text(
-                'Conecta. Crea. Explora.',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-              ),
-            ],
-          ),
-        ),
-      ],
+    label: 'MAREA',
+    image: true,
+    child: Image.asset(
+      'assets/brand/MAREA_LOGOTIPO.png',
+      width: 190,
+      height: 45,
+      fit: BoxFit.contain,
     ),
   );
 
@@ -52,27 +34,16 @@ class WelcomeScreen extends StatelessWidget {
           alignment: Alignment.topCenter,
           excludeFromSemantics: true,
         ),
-        Positioned(top: wide ? 44 : 58, left: 24, right: 24, child: _brand()),
+        Positioned(top: wide ? 44 : 85, left: 24, right: 24, child: _brand()),
       ],
     ),
   );
 
-  Widget _googleIcon() => Container(
-    width: 24,
-    height: 24,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(6),
-    ),
-    child: const Text(
-      'G',
-      style: TextStyle(
-        color: Color(0xFF4285F4),
-        fontSize: 18,
-        fontWeight: FontWeight.w800,
-      ),
-    ),
+  Widget _googleIcon() => Image.asset(
+    'assets/onboarding/google_g.png',
+    width: 20,
+    height: 20,
+    fit: BoxFit.contain,
   );
 
   Future<void> _signInWithGoogle(BuildContext context) async {
@@ -143,8 +114,6 @@ class WelcomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                 ),
               ),
-              SizedBox(width: 16),
-              Icon(Icons.arrow_forward, size: 24),
             ],
           ),
         ),
@@ -166,34 +135,77 @@ class WelcomeScreen extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         if (controller != null) ...[
-          AnimatedBuilder(
-            animation: controller!,
-            builder: (context, _) => OutlinedButton.icon(
+        AnimatedBuilder(
+          animation: controller!,
+          builder: (context, _) {
+            final isBusy = controller!.isBusy;
+
+            return OutlinedButton(
               key: const Key('welcome-google'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF172B4D),
-                side: const BorderSide(color: Color(0xFFD0D9E6)),
-                backgroundColor: Colors.white,
-                shape: const StadiumBorder(),
-                minimumSize: const Size(48, 52),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 14,
-                ),
-              ),
-              onPressed: controller!.isBusy
+              onPressed: isBusy
                   ? null
                   : () => _signInWithGoogle(context),
-              icon: _googleIcon(),
-              label: Text(
-                controller!.isBusy ? 'Conectando...' : 'Continuar con Google',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF172B4D),
+                backgroundColor: Colors.white,
+
+                disabledForegroundColor:
+                    const Color(0xFF718096),
+
+                side: const BorderSide(
+                  color: Color(0xFFDCE6EC),
+                  width: 1.2,
                 ),
+
+                shape: const StadiumBorder(),
+
+                minimumSize: const Size(
+                  double.infinity,
+                  54,
+                ),
+
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+
+                elevation: 0,
               ),
-            ),
-          ),
+
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isBusy)
+                    const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    )
+                  else
+                    _googleIcon(),
+
+                  const SizedBox(width: 12),
+
+                  Text(
+                    isBusy
+                        ? 'Conectando...'
+                        : 'Continuar con Google',
+
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
         ],
         const SizedBox(height: 12),
         const LegalLinks(compact: true),

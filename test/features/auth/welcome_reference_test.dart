@@ -41,7 +41,7 @@ void main() {
             ),
           );
           await tester.pumpAndSettle();
-          expect(find.text('Conecta. Crea. Explora.'), findsOneWidget);
+          expect(find.text('Conecta. Crea. Explora.'), findsNothing);
           expect(
             find.text('Tu ciudad\ntambién crea.', findRichText: true),
             findsOneWidget,
