@@ -23,6 +23,7 @@ import 'package:marea/features/auth/presentation/configuration_screen.dart';
 import 'package:marea/features/profile/data/profile_repository.dart';
 import 'package:marea/features/chat/data/chat_repository.dart';
 import 'package:marea/features/legal/legal_repository.dart';
+import 'package:marea/features/auth/presentation/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() => startMarea();
@@ -30,50 +31,68 @@ Future<void> main() => startMarea();
 Future<void> startMarea({bool productionPilot = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
+
   final config = AppConfig.fromEnvironment();
   if (productionPilot && (!kDebugMode || config.isDevelopment)) {
     throw StateError(
       'El piloto autorizado requiere debug y la configuración actual.',
     );
   }
-  if (!config.isValid) {
-    runApp(ConfigurationScreen(message: config.validationMessage!));
-    return;
-  }
 
-  await Supabase.initialize(
-    url: config.supabaseUrl,
-    publishableKey: config.supabaseAnonKey,
-    authOptions: productionPilot
-        ? FlutterAuthClientOptions(
-            localStorage: SharedPreferencesLocalStorage(
-              persistSessionKey:
-                  'marea-ra-pilot-${Uri.parse(config.supabaseUrl).host}-auth-token',
-            ),
-            detectSessionInUri: false,
-          )
-        : config.isDevelopment
-        ? FlutterAuthClientOptions(
-            localStorage: SharedPreferencesLocalStorage(
-              persistSessionKey: config.developmentSessionKey,
-            ),
-            detectSessionInUriPredicate: config.acceptsDevelopmentAuthCallback,
-          )
-        : const FlutterAuthClientOptions(),
-  );
-  final client = Supabase.instance.client;
-  runApp(
-    MareaApp(
+  runApp(_StartupApp(productionPilot: productionPilot));
+}
+
+class _StartupApp extends StatefulWidget {
+  const _StartupApp({required this.productionPilot});
+
+  final bool productionPilot;
+
+  @override
+  State<_StartupApp> createState() => _StartupAppState();
+}
+
+class _StartupAppState extends State<_StartupApp> {
+  late final Future<Widget> _app = _initializeApp();
+
+  Future<Widget> _initializeApp() async {
+    final config = AppConfig.fromEnvironment();
+    if (!config.isValid) {
+      return ConfigurationScreen(message: config.validationMessage!);
+    }
+
+    await Supabase.initialize(
+      url: config.supabaseUrl,
+      publishableKey: config.supabaseAnonKey,
+      authOptions: widget.productionPilot
+          ? FlutterAuthClientOptions(
+              localStorage: SharedPreferencesLocalStorage(
+                persistSessionKey:
+                    'marea-ra-pilot-${Uri.parse(config.supabaseUrl).host}-auth-token',
+              ),
+              detectSessionInUri: false,
+            )
+          : config.isDevelopment
+          ? FlutterAuthClientOptions(
+              localStorage: SharedPreferencesLocalStorage(
+                persistSessionKey: config.developmentSessionKey,
+              ),
+              detectSessionInUriPredicate:
+                  config.acceptsDevelopmentAuthCallback,
+            )
+          : const FlutterAuthClientOptions(),
+    );
+    final client = Supabase.instance.client;
+    return MareaApp(
       development: config.isDevelopment,
-      productionPilot: productionPilot,
+      productionPilot: widget.productionPilot,
       controller: AppSessionController(
         authRepository: SupabaseAuthRepository(
           client,
-          allowGoogleOAuth: !productionPilot,
+          allowGoogleOAuth: !widget.productionPilot,
         ),
         push: PushController(
           SupabaseNotificationPreferencesRepository(client),
-          !productionPilot &&
+          !widget.productionPilot &&
                   !config.isDevelopment &&
                   !kIsWeb &&
                   defaultTargetPlatform == TargetPlatform.android
@@ -95,6 +114,27 @@ Future<void> startMarea({bool productionPilot = false}) async {
         chatRepository: SupabaseChatRepository(client),
         legalRepository: SupabaseLegalRepository(client),
       ),
-    ),
-  );
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _app,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return ConfigurationScreen(
+            message: 'No se pudo iniciar la conexión con el servidor.',
+          );
+        }
+        if (!snapshot.hasData) {
+          return const MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: SplashScreen(),
+          );
+        }
+        return snapshot.data!;
+      },
+    );
+  }
 }

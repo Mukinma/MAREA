@@ -1,3 +1,5 @@
+import 'package:marea/features/profile/models/profile.dart';
+
 class Story {
   const Story({
     required this.id,
@@ -6,12 +8,16 @@ class Story {
     required this.createdAt,
     required this.expiresAt,
     this.imagePath,
+    this.category = 'otros',
+    this.targetType,
     this.seen = false,
     this.hidden = false,
     this.reportReasons = const [],
   });
   final String id, authorId, text;
   final String? imagePath;
+  final String category;
+  final UserType? targetType;
   final DateTime createdAt, expiresAt;
   final bool seen, hidden;
   final List<String> reportReasons;
@@ -21,6 +27,10 @@ class Story {
     authorId: json['author_id'] as String,
     text: json['body'] as String? ?? '',
     imagePath: json['image_path'] as String?,
+    category: json['category'] as String? ?? 'otros',
+    targetType: json['target_type'] == null
+        ? null
+        : UserType.fromDatabase(json['target_type'] as String),
     createdAt: DateTime.parse(json['created_at'] as String),
     expiresAt: DateTime.parse(json['expires_at'] as String),
     seen: json['seen'] == true,
@@ -32,9 +42,17 @@ class Story {
 }
 
 class StoryInput {
-  const StoryInput({required this.id, this.text = '', this.imagePath});
+  const StoryInput({
+    required this.id,
+    this.text = '',
+    this.imagePath,
+    this.category = 'otros',
+    this.targetType,
+  });
   final String id, text;
   final String? imagePath;
+  final String category;
+  final UserType? targetType;
   String? validate() {
     if (text.trim().isEmpty && imagePath == null) {
       return 'Escribe algo o añade una foto.';
