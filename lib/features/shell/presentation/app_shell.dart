@@ -1,5 +1,4 @@
 import 'package:marea/features/shell/presentation/marea_mobile_navigation.dart';
-import 'package:marea/features/profile/presentation/profile_bottom_navigation.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -210,35 +209,20 @@ class AppShell extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           onTap: () {},
           child: MareaPanelAwareDock(
-            child: profileLayout
-                ? ProfileBottomNavigation(
-                    onNavigate: (path) => context.go(path),
-                    onCreate: () async {
-                      if (controller == null) {
-                        context.go('/create');
-                        return;
-                      }
-                      await showCreateMenu(context, controller!);
-                    },
-                  )
-                : SafeArea(
-                    top: false,
-                    minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-                    child: MareaMobileNavigation(
-                      location: location,
-                      selectedDestination: MobileDestination.forLocation(
-                        location,
-                      ),
-                      navigationChanges: GoRouter.maybeOf(
-                        context,
-                      )?.routerDelegate,
-                      onSelected: (destination) {
-                        if (location != destination.path) {
-                          context.go(destination.path);
-                        }
-                      },
-                    ),
-                  ),
+            child: SafeArea(
+              top: false,
+              minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+              child: MareaMobileNavigation(
+                location: location,
+                selectedDestination: MobileDestination.forLocation(location),
+                navigationChanges: GoRouter.maybeOf(context)?.routerDelegate,
+                onSelected: (destination) {
+                  if (location != destination.path) {
+                    context.go(destination.path);
+                  }
+                },
+              ),
+            ),
           ),
         ),
       );
