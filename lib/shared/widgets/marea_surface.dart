@@ -11,6 +11,7 @@ class MareaSurface extends StatelessWidget {
     this.padding = EdgeInsets.zero,
     this.inset = false,
     this.floating = false,
+    this.shadows,
     this.clipBehavior = Clip.none,
     super.key,
   });
@@ -19,6 +20,7 @@ class MareaSurface extends StatelessWidget {
   final double radius;
   final EdgeInsetsGeometry padding;
   final bool inset, floating;
+  final List<BoxShadow>? shadows;
   final Clip clipBehavior;
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -27,9 +29,7 @@ class MareaSurface extends StatelessWidget {
       borderRadius: BorderRadius.circular(radius),
       boxShadow: inset
           ? null
-          : floating
-          ? AppDepth.floating
-          : AppDepth.raised,
+          : shadows ?? (floating ? AppDepth.floating : AppDepth.raised),
     ),
     child: Material(
       color: Colors.transparent,

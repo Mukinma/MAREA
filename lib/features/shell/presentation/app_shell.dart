@@ -1,10 +1,10 @@
 import 'package:marea/features/shell/presentation/marea_mobile_navigation.dart';
-import 'package:marea/features/profile/presentation/profile_bottom_navigation.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/presentation/notifications_panel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/app_depth.dart';
@@ -164,81 +164,79 @@ class AppShell extends StatelessWidget {
           ),
         );
       }
-      return Scaffold(
-        extendBody: true,
-        body: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              if (location != '/map' && !profileLayout)
-                ColoredBox(
-                  color: AppColors.surface,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: SizedBox(
-                      height: 56,
-                      child: location == '/home'
-                          ? Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                const Center(child: MareaLogo(compact: true)),
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: _notificationButton(context),
-                                ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: _messageButton(context),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              children: [
-                                const MareaLogo(compact: true),
-                                const Spacer(),
-                                ..._utilities(context),
-                              ],
-                            ),
-                    ),
-                  ),
-                ),
-              Expanded(child: content),
-            ],
-          ),
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
         ),
-        bottomNavigationBar: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {},
-          child: MareaPanelAwareDock(
-            child: profileLayout
-                ? ProfileBottomNavigation(
-                    onNavigate: (path) => context.go(path),
-                    onCreate: () async {
-                      if (controller == null) {
-                        context.go('/create');
-                        return;
-                      }
-                      await showCreateMenu(context, controller!);
-                    },
-                  )
-                : SafeArea(
-                    top: false,
-                    minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-                    child: MareaMobileNavigation(
-                      location: location,
-                      selectedDestination: MobileDestination.forLocation(
-                        location,
+        child: Scaffold(
+          extendBody: true,
+          body: SafeArea(
+            top: false,
+            bottom: false,
+            child: Column(
+              children: [
+                if (location != '/map' && !profileLayout)
+                  ColoredBox(
+                    color: AppColors.surface,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        MediaQuery.paddingOf(context).top,
+                        16,
+                        0,
                       ),
-                      navigationChanges: GoRouter.maybeOf(
-                        context,
-                      )?.routerDelegate,
-                      onSelected: (destination) {
-                        if (location != destination.path) {
-                          context.go(destination.path);
-                        }
-                      },
+                      child: SizedBox(
+                        height: 56,
+                        child: location == '/home'
+                            ? Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  const Center(child: MareaLogo(compact: true)),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: _notificationButton(context),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: _messageButton(context),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  const MareaLogo(compact: true),
+                                  const Spacer(),
+                                  ..._utilities(context),
+                                ],
+                              ),
+                      ),
                     ),
                   ),
+                Expanded(child: content),
+              ],
+            ),
+          ),
+          bottomNavigationBar: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {},
+            child: MareaPanelAwareDock(
+              child: SafeArea(
+                top: false,
+                minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                child: MareaMobileNavigation(
+                  location: location,
+                  selectedDestination: MobileDestination.forLocation(location),
+                  navigationChanges: GoRouter.maybeOf(context)?.routerDelegate,
+                  onSelected: (destination) {
+                    if (location != destination.path) {
+                      context.go(destination.path);
+                    }
+                  },
+                ),
+              ),
+            ),
           ),
         ),
       );

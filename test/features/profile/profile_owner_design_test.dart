@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/profile/models/profile.dart';
-import 'package:marea/features/profile/presentation/profile_bottom_navigation.dart';
 import 'package:marea/features/profile/presentation/profile_content_sections.dart';
 import 'package:marea/features/profile/presentation/profile_sections.dart';
 import 'package:marea/features/profile/presentation/profile_waves.dart';
@@ -157,7 +156,7 @@ void main() {
         expect(find.byIcon(Icons.verified), findsNothing);
         expect(find.byType(ProfileStatisticsCard), findsOneWidget);
         expect(find.text('Sin datos'), findsNWidgets(4));
-        expect(find.byType(ProfileBottomNavigation), findsOneWidget);
+        expect(find.byType(MareaMobileNavigation), findsOneWidget);
         await tester.ensureVisible(find.byType(ProfileShowcasePreview));
         expect(find.text(type.showcaseLabel), findsOneWidget);
         expect(find.text('Contenido del propietario'), findsOneWidget);
@@ -201,44 +200,31 @@ void main() {
     );
   }
 
-  testWidgets(
-    'profile-only navigation reuses existing routes and the create menu',
-    (tester) async {
-      tester.view.physicalSize = const Size(412, 915);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final router = await flow.open(
-        tester,
-        ShowcaseRepositoryFake(),
-        '/profile',
-      );
-      expect(find.byType(ProfileBottomNavigation), findsOneWidget);
-      expect(find.byType(MareaMobileNavigation), findsNothing);
-      await tester.tap(find.byTooltip('Crear'));
-      await tester.pumpAndSettle();
-      expect(find.text('Crear misión'), findsOneWidget);
-      Navigator.of(tester.element(find.text('Crear misión'))).pop();
-      await tester.pumpAndSettle();
-      final nav = find.byType(ProfileBottomNavigation);
-      await tester.tap(
-        find.descendant(of: nav, matching: find.text('Explorar')),
-      );
-      await tester.pumpAndSettle();
-      expect(router.routeInformationProvider.value.uri.path, '/explore');
-      expect(find.byType(ProfileBottomNavigation), findsNothing);
-      expect(find.byType(MareaMobileNavigation), findsOneWidget);
-      router.go('/profile');
-      await tester.pumpAndSettle();
-      await tester.tap(
-        find.descendant(
-          of: find.byType(ProfileBottomNavigation),
-          matching: find.text('Mensajes'),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(router.routeInformationProvider.value.uri.path, '/messages');
-      expect(tester.takeException(), isNull);
-    },
-  );
+  testWidgets('profile uses the shared mobile navigation', (tester) async {
+    tester.view.physicalSize = const Size(412, 915);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final router = await flow.open(
+      tester,
+      ShowcaseRepositoryFake(),
+      '/profile',
+    );
+    expect(find.byType(MareaMobileNavigation), findsOneWidget);
+    expect(find.byTooltip('Crear'), findsNothing);
+    await tester.tap(find.byTooltip('Descubrir'));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/discover');
+    router.go('/profile');
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(MareaMobileNavigation),
+        matching: find.text('Inicio'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/home');
+    expect(tester.takeException(), isNull);
+  });
 }

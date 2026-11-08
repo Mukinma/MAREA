@@ -8,8 +8,7 @@ abstract final class AppDepth {
     BoxShadow(color: Colors.white, offset: Offset(-5, -5), blurRadius: 14),
   ];
   static const floating = [
-    BoxShadow(color: Color(0xFFD7DFE8), offset: Offset(6, 8), blurRadius: 24),
-    BoxShadow(color: Colors.white, offset: Offset(-4, -4), blurRadius: 12),
+    BoxShadow(color: Color(0x220B255E), offset: Offset(0, 4), blurRadius: 14),
   ];
   static const action = [
     BoxShadow(color: Color(0x260D4397), offset: Offset(0, 5), blurRadius: 12),
