@@ -294,10 +294,11 @@ class _ProfileExperienceState extends State<ProfileExperience> {
   }
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-    bottom: false,
-    child: ColoredBox(
-      color: const Color(0xFFF4FBFE),
+  Widget build(BuildContext context) => ColoredBox(
+    color: const Color(0xFFF4FBFE),
+    child: SafeArea(
+      top: false,
+      bottom: false,
       child: MareaRefreshIndicator(
         onRefresh: _refresh,
         child: LayoutBuilder(

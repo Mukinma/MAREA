@@ -34,7 +34,7 @@ class ProfileIdentity extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          height: wide ? 220 : 232,
+          height: wide ? 220 : 232 + MediaQuery.paddingOf(context).top,
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -70,7 +70,7 @@ class ProfileIdentity extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: 12,
+                top: wide ? 12 : MediaQuery.paddingOf(context).top + 12,
                 right: 8,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
