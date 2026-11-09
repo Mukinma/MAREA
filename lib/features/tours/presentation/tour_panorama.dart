@@ -26,9 +26,15 @@ class TourPanorama extends StatefulWidget {
 class _TourPanoramaState extends State<TourPanorama> {
   late Future<String>? _url = _load();
   bool _sensors = false;
-  Future<String>? _load() => widget.scene.previewPath == null
-      ? null
-      : widget.repository.assetUrl(widget.scene.previewPath!);
+  Future<String>? _load() {
+    final path = widget.scene.previewPath;
+    if (path == null) return null;
+    final url = widget.repository.assetUrl(path);
+    // Retries may fail before FutureBuilder subscribes in the next frame.
+    url.ignore();
+    return url;
+  }
+
   @override
   void didUpdateWidget(TourPanorama old) {
     super.didUpdateWidget(old);
@@ -48,11 +54,16 @@ class _TourPanoramaState extends State<TourPanorama> {
     return FutureBuilder<String>(
       future: _url,
       builder: (c, s) {
+        if (s.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
         if (s.hasError) {
           return Center(
             child: TourNotice(
               tourError(s.error!),
-              onRetry: () => setState(() => _url = _load()),
+              onRetry: () => setState(() {
+                _url = _load();
+              }),
             ),
           );
         }

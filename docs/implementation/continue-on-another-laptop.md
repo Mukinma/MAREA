@@ -1,8 +1,10 @@
 # Continuar MAREA en otra laptop
 
-Guía preparada el 2 de noviembre de 2026. Repositorio: `https://github.com/Mukinma/MAREA.git`; rama de este trabajo: **santiago**. Los comandos de clonación deben usarse después de confirmar que se subió el trabajo pendiente a esa rama.
+Guía actualizada el **9 de noviembre de 2026**. Repositorio: `https://github.com/Mukinma/MAREA.git`; rama de este trabajo: **santiago**. Antes de descargar en la otra laptop, comprobar en GitHub que esa rama contiene la revisión que se quiere trasladar.
 
 La integración de la navegación reciente de `main` con RA y los pasos para que cada colaborador continúe en su rama están en [Integración con main](ar-main-integration.md). Usar siempre una copia actualizada de la rama al retomar.
+
+La última revisión incluye captura automática con confirmación háptica, un máximo de **40 tomas** y controles simplificados de captura, edición y RA. El plan calibrado del OPPO requiere **36 tomas**; ya conserva **35 de 36**, y sólo falta el techo. La foto guía al retomar ahora se superpone a la cámara en vivo. Sus cambios y verificaciones están en [Simplificación de captura y RA](ar-simplification.md).
 
 ## Instalar las herramientas
 
@@ -35,7 +37,15 @@ flutter pub get
 code .
 ```
 
-Si MAREA ya está clonado en la otra laptop, revisar primero sus cambios locales con `git status`. Con una copia limpia, seleccionar `santiago` y actualizar con `git pull --ff-only origin santiago`. Si hay cambios propios o Git indica divergencia, conservarlos y resolver esa situación antes de actualizar; no usar reset, clean ni push forzado para continuar esta guía.
+Si MAREA ya está clonado en la otra laptop, revisar primero sus cambios locales con `git status`. Con una copia limpia:
+
+```powershell
+git switch santiago
+git pull --ff-only origin santiago
+flutter pub get
+```
+
+Si hay cambios propios o Git indica divergencia, conservarlos y resolver esa situación antes de actualizar; no usar reset, clean ni push forzado para continuar esta guía. La integración con `main` debe conservar los cambios de ambas ramas; no reemplazar archivos completos para eliminar conflictos.
 
 ## Transferir los archivos privados por separado
 
@@ -46,13 +56,14 @@ Estos archivos **no se suben a GitHub**. Copiarlos directamente entre tus equipo
 | `config/supabase.production.json` | Configuración del backend actual para **MAREA Prueba RA**. Usar sólo las cuentas y borradores del piloto autorizado. |
 | `.dart_tool/ar-live-pilot/accounts.json` | Credenciales y sesiones de las dos cuentas ya creadas; es información privada. Necesario sólo para recuperar esos accesos o usar los helpers del mismo lote. |
 | `.dart_tool/ar-live-pilot/resources.json` | Registro de los recursos nuevos ya creados. |
+| `.dart_tool/ar-live-pilot/capture-backups/` | Respaldos privados de las capturas del teléfono. Incluir el respaldo **`20261107T232004764143Z/`**, que contiene el JSON y las **35 fotos seleccionadas**, con sus bytes verificados. Conservarlo completo y separado de Git. |
 | `outputs/ar-live-pilot/` | Plan y verificaciones locales del lote. No editar los IDs propuestos del plan ni volver a crear el lote. |
 
 No copiar todo `.dart_tool`, `build`, `.venv-tours` o el SDK: las dependencias y compilaciones se recrean en el nuevo equipo. `config/supabase.development.json` todavía contiene una plantilla incompleta; el proyecto de desarrollo independiente sigue pendiente. La configuración de ejemplo no conecta al backend actual.
 
 ### Conservar la app y sus fotos en el OPPO
 
-Antes de compilar una actualización para el mismo teléfono, transferir también **la clave de depuración de esta computadora**:
+Antes de compilar una actualización para el mismo teléfono, es **crítico transferir la clave de depuración de esta computadora** por separado:
 
 ```text
 Origen Windows:  %USERPROFILE%\.android\debug.keystore
@@ -62,9 +73,9 @@ Destino macOS/Linux: ~/.android/debug.keystore
 
 La ruta usa el usuario propio de cada equipo. Si la otra laptop ya tiene una clave, conservar una copia de ella antes de sustituirla. Mantener este archivo fuera del repositorio. Android exige una firma compatible para actualizar una aplicación instalada; la ubicación predeterminada de la clave debug está documentada en [firma de aplicaciones Android](https://developer.android.com/studio/publish/app-signing).
 
-Conservar **MAREA Prueba RA** instalada en el teléfono. Sus fotos de captura permanecen en el almacenamiento privado del teléfono, no en GitHub. Si aparece `INSTALL_FAILED_UPDATE_INCOMPATIBLE`, resolver la firma antes de instalar; desinstalar o borrar los datos de la app eliminaría las tomas locales y su sesión.
+Conservar **MAREA Prueba RA** instalada en el teléfono. Sus fotos de captura permanecen en el almacenamiento privado del teléfono; los respaldos anteriores son una copia privada adicional y **no viajan con el clon de GitHub**. Si aparece `INSTALL_FAILED_UPDATE_INCOMPATIBLE`, resolver la firma antes de instalar; desinstalar o borrar los datos de la app eliminaría las tomas locales y su sesión. Tener un respaldo no significa que su restauración en la app ya esté implementada o probada.
 
-La depuración inalámbrica debe vincularse con la nueva laptop usando el flujo de Android. Usar su dirección y puerto actuales; no reutilizar códigos de vinculación anteriores. Las pruebas ya confirmadas de la referencia están en el backend, pero las fotografías aún no subidas siguen sólo en el teléfono.
+La depuración inalámbrica debe vincularse con la nueva laptop usando el flujo de Android. Usar su dirección y puerto actuales; no reutilizar códigos de vinculación anteriores. Las pruebas ya confirmadas de la referencia están en el backend; las fotografías de esta captura aún no se han subido. Antes de retomar, comprobar en el teléfono que mantiene el contador **35 de 36** y su foto guía, sin empezar una captura nueva.
 
 ## Recuperar la lámina y ejecutar
 
@@ -97,11 +108,15 @@ No ejecutar otra vez `accounts.mjs --create-new-accounts` ni `drafts.mjs --creat
 
 Abrir esta guía y `docs/implementation/ar-development-pilot.md` en VS Code. Se puede iniciar el nuevo chat con:
 
-> Continúa MAREA desde docs/implementation/continue-on-another-laptop.md y ar-development-pilot.md. Conserva mis cambios locales. No hagas commits, push, despliegues ni cambios de esquema sin que te lo pida. El piloto de producción sólo permite operar sobre las cuentas y recursos nuevos del lote ra-20261102-8e2d4e; conserva los datos existentes. La referencia LAB RA 01 ya tiene reconocimiento observado y prueba persistida en el OPPO. Falta comprobar la primera toma del panorama con la guía actualizada y preparar su procesamiento legítimo, sin iniciar colas o limpieza globales. Revisa primero Git, Flutter, configuración y firma debug para conservar la sesión y las fotos del teléfono. No imprimas credenciales ni vuelvas a crear las cuentas o los borradores del lote.
+> Continúa MAREA desde docs/implementation/continue-on-another-laptop.md, ar-simplification.md y ar-development-pilot.md. Conserva mis cambios locales y los de los demás colaboradores. No hagas nuevos commits, push, despliegues ni cambios de esquema sin que te lo pida. El piloto de producción sólo permite operar sobre las cuentas y recursos nuevos del lote ra-20261102-8e2d4e; conserva los datos existentes. La referencia LAB RA 01 ya tiene reconocimiento observado y prueba persistida en el OPPO. La captura calibrada conserva 35 de 36 fotos y sólo falta el techo. La nueva guía superpone la primera foto a la cámara en vivo y ya está instalada; falta que el usuario confirme físicamente esta alineación y complete la última foto. El parpadeo anterior sí quedó corregido y confirmado en el teléfono. No reinicies la captura ni des por terminados el panorama, su importación real, su procesamiento o el flujo público. Revisa primero Git, Flutter, la configuración privada, la firma debug y el respaldo .dart_tool/ar-live-pilot/capture-backups/20261107T232004764143Z/ para conservar sesión y fotos. No inicies workers, colas o limpieza globales. No imprimas credenciales ni vuelvas a crear las cuentas o los borradores del lote.
 
-Estado de la captura: el OPPO generó un plan de 67 tomas. Se corrigieron la guía de dirección, visibilidad del botón y continuidad de sensores; la última lectura mostraba `0 de 67`, con inclinación −86° ante un objetivo 0°/0°. Se pidió sostener el teléfono vertical, apuntar al frente y confirmar la primera toma. No darla por guardada sin comprobar el contador.
+Estado físico verificado: **35 de 36 tomas guardadas** en el OPPO; falta el techo. Las selecciones coinciden con el respaldo privado `20261107T232004764143Z/`. La captura automática ya funcionó en el teléfono. Tras guardar una foto, la app solicita una vibración del sistema; su percepción depende del dispositivo. La corrección del parpadeo al retomar fue confirmada por el usuario: la foto guía permanece fija entre actualizaciones de sensores.
 
-El último cambio pasó `flutter analyze --no-pub`, 64 pruebas de recorridos y compilación/instalación Android. El laboratorio tuvo una prueba manual de RA reportada satisfactoria; la referencia propia del piloto tuvo reconocimiento observado y reporte comprobado en el backend. Aún faltan captura completa, procesamiento de panorama, revisión y publicación del recorrido/Misión para probar todo el flujo público real.
+La APK con la **foto guía superpuesta a la cámara en vivo** compiló y se instaló como actualización en el OPPO. Se comprobó la superposición, el contador **35 de 36** y el botón visible **Continuar con este encuadre**. Para retomar, volver al mismo punto y comparar los elementos de la foto con la cámara; no hace falta una coincidencia perfecta de cada píxel. Ese botón confirma el encuadre para reanudar la guía; no guarda por sí mismo la foto del techo. **Sigue pendiente que el usuario confirme la nueva alineación y capture el techo real.**
+
+La última revisión pasó `flutter analyze --no-pub`, **126 pruebas de recorridos** y compilación/instalación Android; las nueve pruebas de la foto guía incluyen superposición, lectura estable y controles alcanzables con texto ampliado. El laboratorio tuvo una prueba manual de RA reportada satisfactoria; la referencia propia del piloto tuvo reconocimiento observado y reporte comprobado en el backend. Las pruebas de widgets no sustituyen la siguiente comprobación física de alineación.
+
+Aún faltan completar la captura, comprobar la unión óptica y el procesamiento legítimo del panorama, y revisar/publicar el recorrido y la Misión para probar todo el flujo público real. La importación desde galería también necesita una prueba con un panorama auténtico: la lámina de RA o una imagen plana 2:1 no acreditan una esfera 360°. **No se ha ejecutado un worker ni se han subido estas 35 fotos para procesarlas.** No pulsar **Subir y procesar panorama** hasta comprobar el procesador legítimo y el alcance autorizado del lote.
 
 Para repetir las comprobaciones:
 

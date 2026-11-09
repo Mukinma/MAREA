@@ -1,5 +1,7 @@
 # RA del organizador desde el mapa
 
+La actualización de captura de hasta 40 fotos, acciones agrupadas y búsqueda cercana del 7 de noviembre está en [Simplificación de captura y RA](ar-simplification.md).
+
 Implementación inicial sobre `santiago` a9b6712d7acbc0374034b2d7e2b912d720bd1ecd.
 
 ## Comportamiento

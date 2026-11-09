@@ -26,11 +26,13 @@ class MissionMapScreen extends StatefulWidget {
     required this.session,
     this.locationService = const GeolocatorDeviceLocationService(),
     this.tiles = const MapTileConfiguration(),
+    this.showTours = false,
     super.key,
   });
   final AppSessionController session;
   final DeviceLocationService locationService;
   final MapTileConfiguration tiles;
+  final bool showTours;
   @override
   State<MissionMapScreen> createState() => _MissionMapScreenState();
 }
@@ -45,7 +47,7 @@ class _MissionMapScreenState extends State<MissionMapScreen>
     duration: const Duration(milliseconds: 260),
   );
   List<TourRecord> _tours = [];
-  bool _showTours = false;
+  late bool _showTours = widget.showTours;
   int _tourGeneration = 0;
   int _tileRevision = 0;
   int _cameraGestureGeneration = 0;

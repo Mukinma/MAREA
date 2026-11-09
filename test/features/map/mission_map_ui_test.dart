@@ -68,13 +68,17 @@ class MapToursFake implements TourRepository {
   MapToursFake({this.tested = true});
   final bool tested;
   final owners = <String>[];
+  int mapLoads = 0;
 
   @override
   Future<List<TourRecord>> list({
     String? owner,
     double? latitude,
     double? longitude,
-  }) async => [];
+  }) async {
+    mapLoads++;
+    return [businessARLocalTourRecord()];
+  }
 
   @override
   Future<List<TourRecord>> publicList(String owner) async {
@@ -112,6 +116,7 @@ void main() {
     int count = 1,
     double scale = 1,
     TourRepository? tours,
+    bool showTours = false,
   }) async {
     tester.view.physicalSize = Size(width, height);
     tester.view.devicePixelRatio = 1;
@@ -137,8 +142,11 @@ void main() {
           routes: [
             GoRoute(
               path: '/map',
-              builder: (_, _) =>
-                  MissionMapScreen(session: session, locationService: location),
+              builder: (_, _) => MissionMapScreen(
+                session: session,
+                locationService: location,
+                showTours: showTours,
+              ),
             ),
           ],
         ),
@@ -192,6 +200,25 @@ void main() {
     await tester.pumpAndSettle();
     return (repo, location);
   }
+
+  testWidgets('nearby map entry immediately shows public experience markers', (
+    tester,
+  ) async {
+    await withTiles(() async {
+      final tours = MapToursFake();
+      final (_, location) = await open(tester, tours: tours, showTours: true);
+      expect(tours.mapLoads, greaterThan(0));
+      expect(find.byTooltip('Explorar Laboratorio local'), findsOneWidget);
+      expect(
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Locales 360°'))
+            .selected,
+        isTrue,
+      );
+      expect(location.prompts, [false]);
+      expect(tester.takeException(), isNull);
+    });
+  });
 
   for (final width in [390.0, 1366.0]) {
     testWidgets('new map layout retains published AR entry at $width', (

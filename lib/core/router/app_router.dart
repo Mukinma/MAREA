@@ -247,9 +247,12 @@ abstract final class AppRouter {
             ),
             GoRoute(
               path: '/map',
-              builder: (_, _) => MissionMapScreen(
-                key: ValueKey(controller.profile?.id),
+              builder: (_, state) => MissionMapScreen(
+                key: ValueKey(
+                  '${controller.profile?.id}:${state.uri.queryParameters['experiences']}',
+                ),
                 session: controller,
+                showTours: state.uri.queryParameters['experiences'] == '1',
               ),
             ),
             GoRoute(

@@ -137,6 +137,9 @@ Future<void> prepareRecognitionReport(
     const StandardMethodCodec().encodeSuccessEnvelope({
       'id': 'one',
       'state': 'tracking',
+      'sessionId':
+          (tester.widget<AndroidView>(find.byType(AndroidView)).creationParams
+              as Map)['sessionId'],
     }),
     (_) {},
   );
@@ -233,6 +236,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Escanear esta imagen'));
     await tester.pump();
+    await tester.ensureVisible(find.text('Lista de paradas'));
+    await tester.tap(find.text('Lista de paradas'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Parada two'));
     await tester.tap(find.text('Parada two'));
     await tester.pump();
@@ -307,6 +313,59 @@ void main() {
       expect(find.byType(AndroidView), findsNothing);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets(
+      'camera has one main action and menu requires fresh recognition',
+      (tester) async {
+        final repo = ReportARRepo();
+        await prepareRecognitionReport(tester, repo);
+        final previous =
+            (tester.widget<AndroidView>(find.byType(AndroidView)).creationParams
+                as Map)['sessionId'];
+        expect(find.byType(FilledButton), findsOneWidget);
+        expect(find.text('Volver a la lista'), findsNothing);
+        expect(find.text('Saltar parada'), findsNothing);
+
+        await tester.tap(find.byTooltip('Más opciones'));
+        await tester.pumpAndSettle();
+        expect(find.byType(AndroidView), findsNothing);
+        await tester.tap(find.text('Volver a la lista'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Escanear esta imagen'));
+        await tester.pumpAndSettle();
+        final current =
+            (tester.widget<AndroidView>(find.byType(AndroidView)).creationParams
+                as Map)['sessionId'];
+        expect(current, isNot(previous));
+        tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+          'marea/tour_ar/events',
+          const StandardMethodCodec().encodeSuccessEnvelope({
+            'id': 'one',
+            'state': 'tracking',
+            'sessionId': previous,
+          }),
+          (_) {},
+        );
+        await tester.pump();
+        await tester.pump();
+        expect(find.text('Imagen reconocida'), findsNothing);
+        expect(
+          tester
+              .widget<FilledButton>(
+                find.widgetWithText(
+                  FilledButton,
+                  'Guardar prueba de reconocimiento',
+                ),
+              )
+              .onPressed,
+          isNull,
+        );
+        expect(repo.reports, 0);
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump();
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('rejects missing confirmation or a different reference result', (
       tester,

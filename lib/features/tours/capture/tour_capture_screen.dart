@@ -13,6 +13,13 @@ import '../presentation/tour_panorama.dart';
 import 'capture_plan.dart';
 import 'capture_motion_gate.dart';
 import 'capture_guidance_panel.dart';
+import 'capture_auto_shutter.dart';
+import 'capture_resume_photo.dart';
+import 'panorama_import.dart';
+
+enum _CaptureAction { import, repeat, restart, manual, angles, close }
+
+enum _PanoramaSource { capture, gallery }
 
 Map<String, dynamic> _preparePhoto(Uint8List source) {
   final image = img.decodeImage(source);
@@ -38,11 +45,13 @@ class TourCaptureScreen extends StatefulWidget {
     required this.tourId,
     required this.sceneId,
     this.importOnly = false,
+    this.localStore,
     super.key,
   });
   final AppSessionController controller;
   final String tourId, sceneId;
   final bool importOnly;
+  final TourLocalStore? localStore;
   @override
   State<TourCaptureScreen> createState() => _TourCaptureScreenState();
 }
@@ -51,7 +60,8 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
     with WidgetsBindingObserver {
   static const _motion = MethodChannel('marea/tour_motion');
   static const _events = EventChannel('marea/tour_motion/events');
-  final _store = TourLocalStore();
+  late final _store = widget.localStore ?? TourLocalStore();
+  Future<Uint8List>? _importPreview;
   CameraController? _camera;
   StreamSubscription<dynamic>? _orientation;
   Map<String, dynamic> _session = {};
@@ -69,6 +79,12 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   Timer? _poll, _motionReadiness;
   int _cameraGeneration = 0;
   bool _reviewed = false;
+  bool _restoring = true, _showAngles = false;
+  final _shutter = CaptureAutoShutter();
+  bool get _automatic => _shutter.enabled;
+  set _automatic(bool value) => _shutter.enabled = value;
+  bool get _autoPaused => _shutter.paused;
+  set _autoPaused(bool value) => _shutter.paused = value;
   bool get _current => mounted && widget.controller.profile?.id == _account;
   List<dynamic> get _frames => (_session['frames'] as List?) ?? [];
   CaptureTarget? get _target => _plan?.targets
@@ -104,6 +120,19 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
         _session = stored;
         if (stored['plan'] != null) {
           _plan = CapturePlan.fromJson(jsonMap(stored['plan']));
+          if (_frames.isEmpty &&
+              stored['capture_id'] == null &&
+              stored['job_id'] == null &&
+              stored['mode'] != 'import') {
+            final previous = _plan!;
+            _plan = null;
+            _plan = CapturePlan.create(
+              hfov: previous.hfov,
+              vfov: previous.vfov,
+            );
+            _session['plan'] = _plan!.toJson();
+            await _persist();
+          }
         }
         if (stored['job_id'] != null) {
           _job = await widget.controller.tourRepository!.job(
@@ -123,14 +152,17 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       setState(() {});
     } catch (e) {
       if (_current) setState(() => _error = tourError(e));
+    } finally {
+      if (_current) setState(() => _restoring = false);
     }
   }
 
   Future<void> _openCamera() async {
-    if (_busy) return;
+    if (_busy || _restoring) return;
     setState(() {
       _busy = true;
       _error = null;
+      _autoPaused = false;
     });
     final generation = ++_cameraGeneration;
     _resetMotion();
@@ -226,7 +258,10 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       _session['plan'] = _plan!.toJson();
       _session['frames'] ??= <dynamic>[];
       await _persist();
-      if (!_current) {
+      if (!_current || generation != _cameraGeneration || _camera != c) {
+        return;
+      }
+      if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
         await _release();
         return;
       }
@@ -335,11 +370,31 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
         _motionSteady = steady;
       });
     }
+    unawaited(
+      _shutter.tick(
+        active:
+            !_busy &&
+            _current &&
+            _camera != null &&
+            WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed,
+        ready: _aligned && steady && _target != null,
+        capture: _take,
+      ),
+    );
   }
 
   Future<void> _take() async {
     final target = _target;
-    if (_busy || !_aligned || !_aimed || !_steady || target == null) return;
+    if (_busy ||
+        !_current ||
+        _camera == null ||
+        WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed ||
+        !_aligned ||
+        !_aimed ||
+        !_steady ||
+        target == null) {
+      return;
+    }
     setState(() => _busy = true);
     final pose = {'yaw': _yaw, 'pitch': _pitch, 'roll': _roll};
     try {
@@ -352,7 +407,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
         id,
         prepared['bytes'] as Uint8List,
       );
-      _frames.add({
+      final frame = {
         'id': id,
         'local_path': local,
         'width': prepared['width'],
@@ -361,45 +416,135 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
         'hfov': _plan!.hfov,
         'vfov': _plan!.vfov,
         'target_id': target.id,
-      });
-      await _persist();
+      };
+      _frames.add(frame);
+      try {
+        await _persist();
+      } catch (_) {
+        _frames.remove(frame);
+        rethrow;
+      }
       _resetMotion();
+      if (_current &&
+          WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
+        unawaited(_signalPhotoSaved());
+      }
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) {
+        setState(() {
+          _error = tourError(e);
+          _autoPaused = true;
+        });
+      }
     } finally {
       if (_current) setState(() => _busy = false);
     }
   }
 
-  Future<void> _import() async {
-    if (_busy) return;
-    setState(() => _busy = true);
+  Future<void> _signalPhotoSaved() async {
     try {
+      await HapticFeedback.mediumImpact();
+    } catch (_) {
+      // Haptics are optional; a saved photo must stay accepted if unavailable.
+    }
+  }
+
+  Future<void> _chooseSource() async {
+    if (_busy || _restoring || !_current) return;
+    if (kIsWeb || widget.importOnly) return _import();
+    final source = await showModalBottomSheet<_PanoramaSource>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Capturar con guía'),
+              subtitle: const Text(
+                'Hasta 40 fotos automáticas, incluido techo y piso.',
+              ),
+              onTap: () => Navigator.pop(context, _PanoramaSource.capture),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Importar desde galería'),
+              subtitle: const Text(
+                'Elige una foto 360°. Comprobaremos si es compatible.',
+              ),
+              onTap: () => Navigator.pop(context, _PanoramaSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!_current) return;
+    switch (source) {
+      case _PanoramaSource.capture:
+        await _openCamera();
+      case _PanoramaSource.gallery:
+        await _import();
+      case null:
+        break;
+    }
+  }
+
+  Future<void> _import() async {
+    if (_busy || _restoring || !_current) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await _release();
+      if (!_current) return;
       final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (picked == null) return;
-      final bytes = await picked.readAsBytes();
-      final decoded = await compute(img.decodeImage, bytes);
-      if (decoded == null || decoded.width != decoded.height * 2) {
-        throw StateError(
-          'Elige una esfera equirectangular completa de proporción 2:1, con metadatos GPano.',
-        );
-      }
-      if (bytes.length > 32 * 1024 * 1024) {
+      if (picked == null || !_current) return;
+      if (await picked.length() > panoramaImportMaxBytes) {
         throw StateError(
           'El panorama supera 32 MB. Exporta un JPEG de menor tamaño.',
         );
       }
+      final bytes = await picked.readAsBytes();
+      final info = await compute(validatePanoramaImport, bytes);
       if (!mounted || !_current) return;
+      if (_frames.isNotEmpty && !_missingWebFile) {
+        final replace = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Usar este panorama'),
+            content: Text(
+              _session['mode'] == 'import'
+                  ? 'El panorama elegido sustituirá al archivo local anterior.'
+                  : 'El panorama elegido sustituirá las ${_frames.length} tomas de esta captura local.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Conservar captura'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Usar panorama'),
+              ),
+            ],
+          ),
+        );
+        if (replace != true || !_current) return;
+      }
       final id = tourId();
       final path = await _store.saveBytes(_account, id, bytes);
+      if (!_current) return;
+      final previous = _session;
       _session = {
         'mode': 'import',
         'frames': [
           {
             'id': id,
             'local_path': path,
-            'width': decoded.width,
-            'height': decoded.height,
+            'width': info.width,
+            'height': info.height,
             'yaw': 0,
             'pitch': 0,
             'roll': 0,
@@ -409,7 +554,15 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
           },
         ],
       };
-      await _persist();
+      try {
+        await _persist();
+      } catch (_) {
+        _session = previous;
+        rethrow;
+      }
+      _plan = null;
+      _missingWebFile = false;
+      _importPreview = Future.value(bytes);
     } catch (e) {
       if (_current) setState(() => _error = tourError(e));
     } finally {
@@ -506,15 +659,79 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
     _motionReadiness?.cancel();
     _motionReadiness = null;
     _resetMotion();
+    _autoPaused = true;
+    _aligned = false;
     final c = _camera;
     _camera = null;
-    await _orientation?.cancel();
+    final orientation = _orientation;
     _orientation = null;
+    await orientation?.cancel();
     try {
       await _motion.invokeMethod('stop');
     } catch (_) {}
     await c?.dispose();
-    _aligned = false;
+  }
+
+  Future<void> _captureAction(_CaptureAction action) async {
+    if (_busy || _restoring || !_current) return;
+    try {
+      switch (action) {
+        case _CaptureAction.import:
+          await _import();
+        case _CaptureAction.repeat:
+          _autoPaused = true;
+          _frames.removeLast();
+          _resetMotion();
+          await _persist();
+          if (_current) setState(() {});
+        case _CaptureAction.restart:
+          final restart = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Empezar otra captura'),
+              content: const Text(
+                'Se reemplazarán las tomas locales de esta posición. La nueva captura tendrá hasta 40 fotos.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Conservar tomas'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text('Empezar otra'),
+                ),
+              ],
+            ),
+          );
+          if (restart != true || !_current) return;
+          await _release();
+          if (!_current) return;
+          _session = {};
+          _plan = null;
+          _missingWebFile = false;
+          await _persist();
+          if (_current) setState(() {});
+        case _CaptureAction.manual:
+          setState(() {
+            _automatic = !_automatic;
+            _autoPaused = false;
+            _resetMotion();
+          });
+        case _CaptureAction.angles:
+          setState(() => _showAngles = !_showAngles);
+        case _CaptureAction.close:
+          await _release();
+          if (_current) setState(() {});
+      }
+    } catch (error) {
+      if (_current) {
+        setState(() {
+          _error = tourError(error);
+          _autoPaused = true;
+        });
+      }
+    }
   }
 
   @override
@@ -537,10 +754,74 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   @override
   Widget build(BuildContext context) {
     final c = _camera;
+    final resuming =
+        c != null &&
+        c.value.isInitialized &&
+        !_aligned &&
+        _frames.isNotEmpty &&
+        _session['mode'] != 'import' &&
+        _target != null;
+    var referenceAspect = .75;
+    if (resuming) {
+      final width = (_frames.first['width'] as num?)?.toDouble();
+      final height = (_frames.first['height'] as num?)?.toDouble();
+      if (width != null && height != null && width > 0 && height > 0) {
+        referenceAspect = width / height;
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         leading: TourBackButton(fallback: '/tours/${widget.tourId}/edit'),
         title: const Text('Capturar posición 360°'),
+        actions: [
+          if (_job == null)
+            PopupMenuButton<_CaptureAction>(
+              tooltip: 'Más opciones de captura',
+              enabled: !_busy && !_restoring,
+              onOpened: () => setState(() => _autoPaused = true),
+              onSelected: _captureAction,
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: _CaptureAction.import,
+                  child: Text(
+                    _session['mode'] == 'import'
+                        ? 'Cambiar panorama'
+                        : 'Importar desde galería',
+                  ),
+                ),
+                if (_frames.isNotEmpty && _session['mode'] != 'import')
+                  const PopupMenuItem(
+                    value: _CaptureAction.repeat,
+                    child: Text('Repetir última toma'),
+                  ),
+                if (_frames.isNotEmpty)
+                  const PopupMenuItem(
+                    value: _CaptureAction.restart,
+                    child: Text('Empezar otra captura'),
+                  ),
+                if (c != null) ...[
+                  PopupMenuItem(
+                    value: _CaptureAction.manual,
+                    child: Text(
+                      _automatic
+                          ? 'Usar captura manual'
+                          : 'Usar captura automática',
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: _CaptureAction.angles,
+                    child: Text(
+                      _showAngles ? 'Ocultar orientación' : 'Ver orientación',
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: _CaptureAction.close,
+                    child: Text('Cerrar cámara'),
+                  ),
+                ],
+              ],
+            ),
+        ],
       ),
       bottomNavigationBar:
           c != null && c.value.isInitialized && _aligned && _target != null
@@ -553,245 +834,250 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
               steady: _steady,
               busy: _busy,
               onTake: _take,
+              automatic: _automatic,
+              paused: _autoPaused,
+              showAngles: _showAngles,
+              onTogglePause: () => setState(() {
+                _autoPaused = !_autoPaused;
+                _resetMotion();
+              }),
             )
           : null,
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Quédate en la misma posición. Gira alrededor de la lente, sin caminar, e incluye techo y piso. Evita personas identificables y objetos demasiado cerca.',
-          ),
-          const SizedBox(height: 12),
-          if (_error != null) TourNotice(_error!),
-          if (_job != null) ...[
-            Text(
-              _job!.message,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-            ),
-            if (!_job!.terminal) const LinearProgressIndicator(),
-            if (_job!.state == 'ready') ...[
-              SizedBox(
-                height: 320,
-                child: TourPanorama(
-                  repository: widget.controller.tourRepository!,
-                  scene: TourScene({
-                    'id': widget.sceneId,
-                    'name': 'Panorama procesado',
-                    ...jsonMap(_job!.data['result']),
-                    'points': [],
-                    'connections': [],
-                  }),
+      body: resuming
+          ? Column(
+              children: [
+                if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TourNotice(_error!),
+                  ),
+                Expanded(
+                  child: CaptureResumePhoto(
+                    store: _store,
+                    path: _frames.first['local_path'] as String,
+                    livePreview: CameraPreview(c),
+                    aspectRatio: referenceAspect,
+                    counterLabel:
+                        '${_frames.length} de ${_plan!.targets.length} tomas guardadas',
+                    busy: _busy,
+                    onAlign: _align,
+                  ),
                 ),
-              ),
-              CheckboxListTile(
-                value: _reviewed,
-                onChanged: (v) => setState(() => _reviewed = v ?? false),
-                title: const Text(
-                  'Revisé la costura, el techo y el piso sin huecos ni errores visibles.',
+              ],
+            )
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(
+                  _session['mode'] == 'import'
+                      ? 'Revisa el panorama elegido antes de subirlo. Después del procesamiento podrás comprobar la costura, el techo y el piso.'
+                      : 'Añade una foto 360° desde tu galería o captúrala aquí. Con la guía, quédate en un punto: las fotos se toman solas cuando mantienes el teléfono quieto.',
                 ),
-              ),
-              FilledButton(
-                onPressed: _busy || !_reviewed
-                    ? null
-                    : () async {
-                        setState(() => _busy = true);
-                        try {
-                          await widget.controller.tourRepository!.attach(
-                            widget.tourId,
-                            widget.sceneId,
-                            _job!.id,
+                const SizedBox(height: 12),
+                if (_error != null) TourNotice(_error!),
+                if (_job != null) ...[
+                  Text(
+                    _job!.message,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (!_job!.terminal) const LinearProgressIndicator(),
+                  if (_job!.state == 'ready') ...[
+                    SizedBox(
+                      height: 320,
+                      child: TourPanorama(
+                        repository: widget.controller.tourRepository!,
+                        scene: TourScene({
+                          'id': widget.sceneId,
+                          'name': 'Panorama procesado',
+                          ...jsonMap(_job!.data['result']),
+                          'points': [],
+                          'connections': [],
+                        }),
+                      ),
+                    ),
+                    CheckboxListTile(
+                      value: _reviewed,
+                      onChanged: (v) => setState(() => _reviewed = v ?? false),
+                      title: const Text(
+                        'Revisé la costura, el techo y el piso sin huecos ni errores visibles.',
+                      ),
+                    ),
+                    FilledButton(
+                      onPressed: _busy || !_reviewed
+                          ? null
+                          : () async {
+                              setState(() => _busy = true);
+                              try {
+                                await widget.controller.tourRepository!.attach(
+                                  widget.tourId,
+                                  widget.sceneId,
+                                  _job!.id,
+                                );
+                                if (context.mounted && _current) {
+                                  Navigator.pop(context, true);
+                                }
+                              } catch (e) {
+                                if (_current) {
+                                  setState(() => _error = tourError(e));
+                                }
+                              } finally {
+                                if (_current) setState(() => _busy = false);
+                              }
+                            },
+                      child: const Text('Usar panorama revisado'),
+                    ),
+                  ],
+                  if (!_job!.terminal)
+                    OutlinedButton(
+                      onPressed: () async {
+                        await widget.controller.tourRepository!.cancelJob(
+                          _job!.id,
+                        );
+                        if (mounted && _current) {
+                          setState(
+                            () => _job = TourJob({
+                              ..._job!.data,
+                              'state': 'cancelled',
+                            }),
                           );
-                          if (context.mounted && _current) {
-                            Navigator.pop(context, true);
-                          }
-                        } catch (e) {
-                          if (_current) setState(() => _error = tourError(e));
-                        } finally {
-                          if (_current) setState(() => _busy = false);
                         }
                       },
-                child: const Text('Usar panorama revisado'),
-              ),
-            ],
-            if (!_job!.terminal)
-              OutlinedButton(
-                onPressed: () async {
-                  await widget.controller.tourRepository!.cancelJob(_job!.id);
-                  if (mounted && _current) {
-                    setState(
-                      () =>
-                          _job = TourJob({..._job!.data, 'state': 'cancelled'}),
-                    );
-                  }
-                },
-                child: const Text('Cancelar procesamiento'),
-              ),
-            if (_job!.terminal && _job!.state != 'ready')
-              OutlinedButton(
-                onPressed: () {
-                  setState(() {
-                    _job = null;
-                    _reviewed = false;
-                    _session = {};
-                    _plan = null;
-                    _poll?.cancel();
-                  });
-                  _persist();
-                },
-                child: const Text('Preparar nueva captura'),
-              ),
-          ] else ...[
-            if (_missingWebFile) ...[
-              const TourNotice(
-                'El navegador no conserva este archivo al cerrar la pantalla. Elige el panorama de nuevo para iniciar otra subida.',
-              ),
-              OutlinedButton(
-                onPressed: _busy
-                    ? null
-                    : () async {
-                        _session = {};
-                        _plan = null;
-                        _missingWebFile = false;
-                        await _persist();
-                        if (_current) setState(() {});
-                        if (_current) await _import();
-                      },
-                child: const Text('Volver a elegir panorama'),
-              ),
-            ],
-            if (c != null && c.value.isInitialized)
-              AspectRatio(
-                aspectRatio: .75,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CameraPreview(c),
-                    const Icon(
-                      Icons.add_circle_outline,
-                      color: Colors.white,
-                      size: 48,
+                      child: const Text('Cancelar procesamiento'),
                     ),
-                    Positioned(
-                      top: 12,
-                      left: 12,
-                      right: 12,
-                      child: Container(
-                        color: Colors.black87,
-                        padding: const EdgeInsets.all(12),
-                        child: Text(
-                          _target == null
-                              ? 'Captura completa'
-                              : !_motionFresh
-                              ? 'Esperando orientación del teléfono'
-                              : _aimed
-                              ? 'Mantén el teléfono estable'
-                              : 'Apunta a ${_target!.yaw.toStringAsFixed(0)}° · inclinación ${_target!.pitch.toStringAsFixed(0)}°',
-                          style: const TextStyle(color: Colors.white),
+                  if (_job!.terminal && _job!.state != 'ready')
+                    OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          _job = null;
+                          _reviewed = false;
+                          _session = {};
+                          _plan = null;
+                          _poll?.cancel();
+                        });
+                        _persist();
+                      },
+                      child: const Text('Preparar nueva captura'),
+                    ),
+                ] else ...[
+                  if (_missingWebFile) ...[
+                    const TourNotice(
+                      'El navegador no conserva este archivo al cerrar la pantalla. Elige el panorama de nuevo para iniciar otra subida.',
+                    ),
+                    OutlinedButton(
+                      onPressed: _busy ? null : _import,
+                      child: const Text('Volver a elegir panorama'),
+                    ),
+                  ],
+                  if (c != null && c.value.isInitialized)
+                    AspectRatio(
+                      aspectRatio: .75,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CameraPreview(c),
+                          const Icon(
+                            Icons.add_circle_outline,
+                            color: Colors.white,
+                            size: 48,
+                          ),
+                          Positioned(
+                            top: 12,
+                            left: 12,
+                            right: 12,
+                            child: Container(
+                              color: Colors.black87,
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                _target == null
+                                    ? 'Captura completa'
+                                    : !_motionFresh
+                                    ? 'Esperando orientación del teléfono'
+                                    : _aimed
+                                    ? 'Mantén el teléfono estable'
+                                    : _showAngles
+                                    ? 'Apunta a ${_target!.yaw.toStringAsFixed(0)}° · inclinación ${_target!.pitch.toStringAsFixed(0)}°'
+                                    : 'Sigue la guía para la siguiente foto',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (_plan != null &&
+                      _frames.isNotEmpty &&
+                      _plan!.targets.length > 40)
+                    const TourNotice(
+                      'Conservamos las fotos de tu captura anterior. En Más opciones puedes empezar una nueva de hasta 40 tomas.',
+                    ),
+                  if (_plan != null)
+                    Text(
+                      '${_frames.length} de ${_plan!.targets.length} tomas aceptadas',
+                    ),
+                  if (c == null && _frames.isEmpty && !_missingWebFile)
+                    FilledButton(
+                      onPressed: _busy || _restoring ? null : _chooseSource,
+                      child: Text(
+                        _restoring ? 'Preparando captura…' : 'Añadir panorama',
+                      ),
+                    ),
+                  if (c == null &&
+                      _frames.isNotEmpty &&
+                      !kIsWeb &&
+                      !widget.importOnly &&
+                      _session['mode'] != 'import' &&
+                      _target != null)
+                    FilledButton(
+                      onPressed: _busy || _restoring ? null : _openCamera,
+                      child: const Text('Retomar captura'),
+                    ),
+                  if (_session['mode'] == 'import' &&
+                      _frames.isNotEmpty &&
+                      !_missingWebFile) ...[
+                    Text(
+                      'Panorama 360° elegido · ${_frames.first['width']} × ${_frames.first['height']}',
+                    ),
+                    SizedBox(
+                      height: 240,
+                      child: FutureBuilder<Uint8List>(
+                        future: _importPreview ??= _store.readBytes(
+                          _frames.first['local_path'] as String,
                         ),
+                        builder: (context, snapshot) => snapshot.hasData
+                            ? Image.memory(
+                                snapshot.data!,
+                                cacheWidth: 1200,
+                                fit: BoxFit.contain,
+                              )
+                            : snapshot.hasError
+                            ? const TourNotice(
+                                'No pudimos abrir el archivo local. Elígelo de nuevo en Más opciones.',
+                              )
+                            : const Center(child: CircularProgressIndicator()),
                       ),
                     ),
                   ],
-                ),
-              ),
-            if (_plan != null)
-              Text(
-                '${_frames.length} de ${_plan!.targets.length} tomas aceptadas',
-              ),
-            if (c != null && !_aligned && _frames.isNotEmpty) ...[
-              const TourNotice(
-                'Vuelve al mismo lugar. Alinea la cámara con esta primera fotografía para recuperar la dirección.',
-              ),
-              FutureBuilder<Uint8List>(
-                future: _store.readBytes(_frames.first['local_path'] as String),
-                builder: (c, s) => s.hasData
-                    ? SizedBox(height: 160, child: Image.memory(s.data!))
-                    : const SizedBox(),
-              ),
-              FilledButton(
-                onPressed: _busy ? null : _align,
-                child: const Text('Ya alineé la primera toma'),
-              ),
-            ],
-            if (_frames.isNotEmpty && _session['mode'] != 'import')
-              OutlinedButton(
-                onPressed: _busy
-                    ? null
-                    : () async {
-                        _frames.removeLast();
-                        _resetMotion();
-                        await _persist();
-                        if (_current) setState(() {});
-                      },
-                child: const Text('Repetir última toma'),
-              ),
-            if (_frames.isNotEmpty)
-              TextButton(
-                onPressed: _busy
-                    ? null
-                    : () async {
-                        final restart = await showDialog<bool>(
-                          context: context,
-                          builder: (c) => AlertDialog(
-                            title: const Text('Empezar otra captura'),
-                            content: const Text(
-                              'Las tomas actuales dejarán de formar parte de esta posición. La versión publicada se conserva.',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(c, false),
-                                child: const Text('Conservar tomas'),
-                              ),
-                              FilledButton(
-                                onPressed: () => Navigator.pop(c, true),
-                                child: const Text('Empezar otra'),
-                              ),
-                            ],
-                          ),
-                        );
-                        if (restart != true || !_current) return;
-                        await _release();
-                        if (!_current) return;
-                        _session = {};
-                        _plan = null;
-                        _missingWebFile = false;
-                        await _persist();
-                        if (_current) setState(() {});
-                      },
-                child: const Text('Empezar otra captura'),
-              ),
-            if (c == null &&
-                !kIsWeb &&
-                !widget.importOnly &&
-                _session['mode'] != 'import')
-              FilledButton(
-                onPressed: _busy ? null : _openCamera,
-                child: Text(
-                  _frames.isEmpty ? 'Abrir cámara guiada' : 'Retomar captura',
-                ),
-              ),
-            if (_frames.isEmpty)
-              OutlinedButton(
-                onPressed: _busy ? null : _import,
-                child: const Text('Importar panorama esférico'),
-              ),
-            if (_frames.isNotEmpty &&
-                (_session['mode'] == 'import' || _target == null))
-              FilledButton(
-                onPressed: _busy || _missingWebFile ? null : _send,
-                child: Text(
-                  _busy
-                      ? 'Subiendo ${(_upload * 100).toStringAsFixed(0)} %'
-                      : 'Subir y procesar panorama',
-                ),
-              ),
-            TourNotice(
-              kIsWeb
-                  ? 'Mantén esta pantalla abierta durante la subida. Si la cierras, tendrás que elegir el archivo de nuevo. El procesamiento empieza tras confirmar la subida completa.'
-                  : 'Las tomas aceptadas se guardan en este dispositivo. El procesamiento empieza después de confirmar la subida completa.',
+                  if (_frames.isNotEmpty &&
+                      (_session['mode'] == 'import' || _target == null))
+                    FilledButton(
+                      onPressed: _busy || _missingWebFile ? null : _send,
+                      child: Text(
+                        _busy
+                            ? 'Subiendo ${(_upload * 100).toStringAsFixed(0)} %'
+                            : 'Subir y procesar panorama',
+                      ),
+                    ),
+                  TourNotice(
+                    kIsWeb
+                        ? 'Mantén esta pantalla abierta durante la subida. Si la cierras, tendrás que elegir el archivo de nuevo. El procesamiento empieza tras confirmar la subida completa.'
+                        : 'Las tomas aceptadas se guardan en este dispositivo. El procesamiento empieza después de confirmar la subida completa.',
+                  ),
+                ],
+              ],
             ),
-          ],
-        ],
-      ),
     );
   }
 }

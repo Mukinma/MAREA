@@ -189,6 +189,52 @@ void main() {
     }
   });
 
+  test('ceiling and floor accept a nearby stable optical axis at any yaw', () {
+    for (final sign in [-1.0, 1.0]) {
+      final target = CaptureTarget('pole', 0, sign * 90);
+      for (final yaw in [-173.0, -91.0, 37.0, 178.0]) {
+        final gate = CaptureMotionGate();
+        for (final time in [0, 200, 400]) {
+          sample(gate, time, yaw: yaw, pitch: sign * 86, target: target);
+        }
+        expect(gate.aimed, isTrue);
+        expect(gate.isSteady(at(499)), isFalse);
+        sample(gate, 500, yaw: yaw, pitch: sign * 86, target: target);
+        expect(gate.isSteady(at(500)), isTrue);
+
+        // Seven degrees from the pole remains outside the original <6° gate,
+        // even when the phone is still and its sensors continue updating.
+        for (final time in [600, 800, 1000, 1100]) {
+          sample(gate, time, yaw: yaw, pitch: sign * 83, target: target);
+        }
+        expect(gate.aimed, isFalse);
+        expect(gate.isFresh(at(1100)), isTrue);
+        expect(gate.isSteady(at(1100)), isFalse);
+      }
+    }
+  });
+
+  test(
+    'near-pole azimuth jitter does not masquerade as optical-axis movement',
+    () {
+      for (final sign in [-1.0, 1.0]) {
+        final gate = CaptureMotionGate();
+        final target = CaptureTarget('pole', 0, sign * 90);
+        for (final (time, yaw) in [
+          (0, 170.0),
+          (150, -170.0),
+          (300, 95.0),
+          (450, -95.0),
+          (500, 0.0),
+        ]) {
+          sample(gate, time, yaw: yaw, pitch: sign * 89.9, target: target);
+        }
+        expect(gate.aimed, isTrue);
+        expect(gate.isSteady(at(500)), isTrue);
+      }
+    },
+  );
+
   test(
     'no selected target prevents acceptance and clears the stable window',
     () {

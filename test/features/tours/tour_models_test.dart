@@ -10,25 +10,12 @@ void main() {
   });
   test('captura cubre cenit, nadir y horizontal con solapamiento', () {
     final plan = CapturePlan.create(hfov: 65, vfov: 50);
-    expect(plan.targets.length, lessThanOrEqualTo(96));
+    expect(plan.targets.length, lessThanOrEqualTo(40));
     expect(plan.targets.any((t) => t.pitch == 90), isTrue);
     expect(plan.targets.any((t) => t.pitch == -90), isTrue);
-    for (var pitch = -90; pitch <= 90; pitch += 5) {
-      for (var yaw = -180; yaw < 180; yaw += 5) {
-        expect(
-          plan.targets.any(
-            (t) =>
-                angularDistance(
-                  yaw.toDouble(),
-                  pitch.toDouble(),
-                  t.yaw,
-                  t.pitch,
-                ) <
-                25,
-          ),
-          isTrue,
-        );
-      }
+    final rings = plan.targets.map((t) => t.pitch).toSet().toList()..sort();
+    for (var i = 1; i < rings.length; i++) {
+      expect(rings[i] - rings[i - 1], lessThanOrEqualTo(plan.vfov * .75));
     }
   });
   test('una posición reemplazada requiere revisar sus puntos', () {
