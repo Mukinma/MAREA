@@ -51,6 +51,8 @@ Si hay cambios propios o Git indica divergencia, conservarlos y resolver esa sit
 
 Estos archivos **no se suben a GitHub**. Copiarlos directamente entre tus equipos por un medio privado, conservando sus rutas relativas dentro del proyecto:
 
+Para este traslado se preparó también un paquete local en `.dart_tool/git-transfer-20261109-012622/private-transfer.zip`, fuera de Git. Contiene los archivos de la tabla, los respaldos de captura y la firma debug. Al descomprimirlo, copiar el contenido de `project/` dentro del clon y trasladar `user-profile/.android/debug.keystore` a la carpeta `.android` del usuario de la otra laptop, conservando primero su firma existente si la tiene. El paquete incluye `LEEME-TRASLADO.txt` y un manifiesto de integridad. Las copias de fotos no se restauran automáticamente en la app: conservarla instalada en el OPPO.
+
 | Archivo o carpeta | Para qué se necesita |
 | --- | --- |
 | `config/supabase.production.json` | Configuración del backend actual para **MAREA Prueba RA**. Usar sólo las cuentas y borradores del piloto autorizado. |
@@ -127,3 +129,5 @@ node --test test/tool/ar_live_pilot_*_test.mjs test/tool/ar_pilot_*_test.mjs
 ```
 
 Estos comandos de pruebas no aprovisionan las cuentas del piloto ni procesan una cola remota.
+
+La integración del 9 de noviembre con `main` (`c9b56d7`) conserva el diseño reciente del equipo. El análisis quedó limpio y pasaron las 199 pruebas de recorridos/mapa/rutas/barra y 79 de Node. La suite completa aprobó 699 y omitió dos; los 17 fallos restantes se reprodujeron exactamente en el `main` de referencia. El detalle está en [Integración con main](ar-main-integration.md). Esta integración de Git no añade una prueba física de la última foto del techo.

@@ -68,7 +68,7 @@ class MapToursFake implements TourRepository {
   MapToursFake({this.tested = true});
   final bool tested;
   final owners = <String>[];
-  int mapLoads = 0;
+  final mapQueries = <({String? owner, double? latitude, double? longitude})>[];
 
   @override
   Future<List<TourRecord>> list({
@@ -76,7 +76,7 @@ class MapToursFake implements TourRepository {
     double? latitude,
     double? longitude,
   }) async {
-    mapLoads++;
+    mapQueries.add((owner: owner, latitude: latitude, longitude: longitude));
     return [businessARLocalTourRecord()];
   }
 
@@ -151,6 +151,11 @@ void main() {
           ],
         ),
         GoRoute(
+          path: '/tours/:id',
+          builder: (_, state) =>
+              Scaffold(body: Text('Recorrido ${state.pathParameters['id']}')),
+        ),
+        GoRoute(
           path: '/tours/:id/business-ar',
           builder: (context, state) => Scaffold(
             body: Column(
@@ -207,15 +212,30 @@ void main() {
     await withTiles(() async {
       final tours = MapToursFake();
       final (_, location) = await open(tester, tours: tours, showTours: true);
-      expect(tours.mapLoads, greaterThan(0));
-      expect(find.byTooltip('Explorar Laboratorio local'), findsOneWidget);
-      expect(
-        tester
-            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Locales 360°'))
-            .selected,
-        isTrue,
-      );
+      expect(tours.mapQueries, [
+        (owner: null, latitude: 19.4326, longitude: -99.1332),
+      ]);
+      expect(tours.owners, isEmpty);
+      final marker = find.byTooltip('Explorar Laboratorio local');
+      expect(marker.hitTestable(), findsOneWidget);
       expect(location.prompts, [false]);
+      await tester.tap(marker);
+      await tester.pumpAndSettle();
+      expect(find.text('Recorrido $businessARLocalTour'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  testWidgets('ordinary map does not load or show public experience markers', (
+    tester,
+  ) async {
+    await withTiles(() async {
+      final tours = MapToursFake();
+      await open(tester, tours: tours);
+      expect(tours.mapQueries, isEmpty);
+      expect(tours.owners, isEmpty);
+      expect(find.byTooltip('Explorar Laboratorio local'), findsNothing);
+      expect(find.byTooltip('Arte local').hitTestable(), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });

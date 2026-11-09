@@ -19,6 +19,7 @@ import 'package:marea/features/map/presentation/map_search_bar.dart';
 import 'package:marea/features/map/presentation/mission_map_canvas.dart';
 import 'package:marea/features/map/presentation/mission_map_preview.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
+import 'package:marea/shared/widgets/marea_logo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MissionMapScreen extends StatefulWidget {
@@ -47,7 +48,7 @@ class _MissionMapScreenState extends State<MissionMapScreen>
     duration: const Duration(milliseconds: 260),
   );
   List<TourRecord> _tours = [];
-  late bool _showTours = widget.showTours;
+  late final bool _showTours = widget.showTours;
   int _tourGeneration = 0;
   int _tileRevision = 0;
   int _cameraGestureGeneration = 0;
@@ -281,6 +282,7 @@ class _MissionMapScreenState extends State<MissionMapScreen>
       builder: (context, _) {
         final selected = _state.selected;
         // Scaffold.extendBody publishes the actual dock + safe area height.
+        final topInset = MediaQuery.paddingOf(context).top;
         final bottomInset = MediaQuery.paddingOf(context).bottom;
         final previewHeight = math.min(size.maxHeight * .48, 300.0);
         double? distance;
@@ -320,9 +322,33 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                 onTileError: _onTileError,
               ),
             ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: size.maxHeight < 700 ? 248 : 292,
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: [0, .34, .72, 1],
+                      colors: [
+                        Color(0xF5FAF9F6),
+                        Color(0xDFFAF9F6),
+                        Color(0x66FAF9F6),
+                        Color(0x00FAF9F6),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Positioned.fill(
               child: CustomMultiChildLayout(
                 delegate: _MapControlsLayout(
+                  topInset: topInset,
                   bottomInset: bottomInset,
                   desiredPreviewHeight: previewHeight,
                   selected: selected != null,
@@ -334,32 +360,25 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (size.maxWidth < 600)
+                            SizedBox(
+                              height: 52,
+                              child: Center(
+                                child: Transform.scale(
+                                  scale: .82,
+                                  child: Transform.translate(
+                                    offset: const Offset(0, -6),
+                                    child: MareaLogo(compact: true),
+                                  ),
+                                ),
+                              ),
+                            ),
                           MapSearchBar(
                             controller: _search,
                             filtersActive: _state.filters.isActive,
                             onSubmitted: _submit,
                             onFilters: _filters,
                           ),
-                          if (widget.session.tourRepository != null)
-                            Wrap(
-                              spacing: 8,
-                              children: [
-                                FilterChip(
-                                  label: const Text('Locales 360°'),
-                                  selected: _showTours,
-                                  onSelected: (show) {
-                                    setState(() => _showTours = show);
-                                    _tourGeneration++;
-                                    if (show) _loadTours();
-                                  },
-                                ),
-                                TextButton(
-                                  onPressed: () =>
-                                      context.push('/tours/nearby'),
-                                  child: const Text('Descubrir cerca'),
-                                ),
-                              ],
-                            ),
                           const SizedBox(height: 8),
                           MapQuickFilters(
                             filters: _state.filters,
@@ -375,19 +394,32 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                             ),
                           if (_state.needsAreaSearch)
                             Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: FilledButton.icon(
-                                onPressed: _state.loading
-                                    ? null
-                                    : () {
-                                        _captureViewport();
-                                        _state.search(force: true);
-                                      },
-                                icon: const Icon(
-                                  Icons.refresh_rounded,
-                                  size: 18,
+                              padding: const EdgeInsets.only(top: 6),
+                              child: SizedBox(
+                                height: 42,
+                                child: FilledButton.icon(
+                                  onPressed: _state.loading
+                                      ? null
+                                      : () {
+                                          _captureViewport();
+                                          _state.search(force: true);
+                                        },
+                                  icon: const Icon(
+                                    Icons.refresh_rounded,
+                                    size: 18,
+                                  ),
+                                  label: const Text('Buscar en esta zona'),
+                                  style: FilledButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    minimumSize: const Size(0, 42),
+                                    textStyle: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
                                 ),
-                                label: const Text('Buscar en esta zona'),
                               ),
                             ),
                           if (_tileError)
@@ -436,7 +468,14 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                     id: _MapControl.location,
                     child: MareaSurface(
                       color: AppColors.surface,
-                      radius: 24,
+                      radius: 32,
+                      shadows: const [
+                        BoxShadow(
+                          color: Color(0x1A0B255E),
+                          offset: Offset(0, 4),
+                          blurRadius: 12,
+                        ),
+                      ],
                       child: IconButton(
                         tooltip: _locating
                             ? 'Buscando ubicación…'
@@ -447,6 +486,7 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                         icon: const Icon(
                           Icons.my_location_rounded,
                           color: AppColors.actionBlue,
+                          size: 28,
                         ),
                       ),
                     ),
@@ -559,24 +599,36 @@ class _MissionMapScreenState extends State<MissionMapScreen>
         : page.isTruncated
         ? 'Mostrando ${page.missions.length} de ${page.total} · Acerca el mapa'
         : '${page.total} ${page.total == 1 ? 'misión' : 'misiones'} en esta zona';
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.brandNavy,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-          ),
+    return MareaSurface(
+      color: AppColors.mist,
+      radius: 32,
+      shadows: const [
+        BoxShadow(
+          color: Color(0x1A0B255E),
+          offset: Offset(0, 3),
+          blurRadius: 10,
         ),
+      ],
+      padding: const EdgeInsets.fromLTRB(14, 11, 18, 11),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.location_on_outlined, color: AppColors.brandNavy),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: AppColors.brandNavy,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -588,16 +640,18 @@ enum _MapControl { header, location, preview, footer }
 /// Scrollable header/preview/footer retain access when text or insets grow.
 class _MapControlsLayout extends MultiChildLayoutDelegate {
   _MapControlsLayout({
+    required this.topInset,
     required this.bottomInset,
     required this.desiredPreviewHeight,
     required this.selected,
   });
-  final double bottomInset, desiredPreviewHeight;
+  final double topInset, bottomInset, desiredPreviewHeight;
   final bool selected;
 
   @override
   void performLayout(Size size) {
-    const side = 16.0, gap = 12.0, top = 16.0;
+    const side = 16.0, gap = 12.0;
+    final top = topInset + 8;
     final width = math.max(0.0, size.width - side * 2);
     final bottom = math.max(top, size.height - bottomInset - 12);
     final location = layoutChild(
@@ -676,6 +730,7 @@ class _MapControlsLayout extends MultiChildLayoutDelegate {
 
   @override
   bool shouldRelayout(_MapControlsLayout oldDelegate) =>
+      topInset != oldDelegate.topInset ||
       bottomInset != oldDelegate.bottomInset ||
       desiredPreviewHeight != oldDelegate.desiredPreviewHeight ||
       selected != oldDelegate.selected;

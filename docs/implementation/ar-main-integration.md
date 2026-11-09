@@ -1,5 +1,24 @@
 # Integración de RA con la navegación reciente
 
+## Actualización del 9 de noviembre de 2026
+
+La rama `santiago` incorpora por merge el `main` reciente (`c9b56d7`, PR #10) y la revisión de RA guardada en `87fa6f3`. Se conservan el nuevo diseño de bienvenida, perfil, barra y mapa del equipo, junto con captura automática de hasta 40 fotos, importación validada, guía superpuesta para retomar y controles de RA simplificados.
+
+El merge no tuvo conflictos de texto. La prueba de entrada a experiencias se adaptó al mapa nuevo, que retiró los chips anteriores: ahora comprueba la consulta por ubicación, el marcador público y la navegación al recorrido. El modo normal no consulta ni muestra recorridos. Se conserva `/map?experiences=1` para abrir directamente ese modo. El indicador interno pasa a `final` al desaparecer el control que lo cambiaba; no se reintrodujeron los botones retirados por el equipo.
+
+El archivo de dependencias conserva las versiones comprobadas con Flutter 3.47.9 / Dart 3.13.7, incluida `vector_math 2.4.3`; `xml 7.0.1` sigue como dependencia directa. Los respaldos, sesiones, firma Android, fotos y configuraciones privadas permanecen fuera de Git. La guía actualizada para el otro equipo está en [Continuar en otra laptop](continue-on-another-laptop.md).
+
+Verificación de la integración:
+
+- Análisis Flutter sin incidencias y compilación APK debug del piloto correctos.
+- **199 pruebas aprobadas** de recorridos (126), mapa (31), rutas (20) y barra (22), contabilizadas en la suite completa.
+- **79 pruebas Node del piloto aprobadas**, sin aprovisionar cuentas ni operar colas.
+- Suite completa: **699 aprobadas, dos omitidas y 17 fallidas**. Los 17 fallos están en bienvenida, historias y fichas de perfil. Se ejecutaron los mismos tres módulos en un worktree de `c9b56d7`, con fuentes intactas y lock adaptado al mismo SDK: fallan exactamente los mismos nombres y rutas, sin fallos nuevos. La comparación está en `build/ar-live-pilot/sync-20261109-baseline-summary.json` y sus logs locales, ignorados por Git.
+
+Esta comprobación no instala otra APK en el teléfono ni repite la validación óptica. La última captura física sigue documentada con 35/36 fotos y el techo pendiente.
+
+## Integración anterior del 2 de noviembre
+
 Integración del PR [#5](https://github.com/Mukinma/MAREA/pull/5), preparada el 2 de noviembre de 2026. Se incorporó `main` (`3ebc0ad`) en `santiago` mediante merge, conservando el historial de ambas ramas.
 
 ## Resolución
