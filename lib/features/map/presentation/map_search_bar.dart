@@ -22,46 +22,66 @@ class MapSearchBar extends StatelessWidget {
   Widget build(BuildContext context) => MareaSurface(
     color: AppColors.surface,
     radius: 32,
+    shadows: const [
+      BoxShadow(color: Color(0x1A0B255E), offset: Offset(0, 4), blurRadius: 12),
+    ],
     padding: const EdgeInsets.only(left: 8, right: 6),
-    child: Row(
-      children: [
-        IconButton(
-          tooltip: AppLocalizations.tr('Buscar en el mapa'),
-          onPressed: () => onSubmitted(controller.text),
-          icon: const Icon(Icons.search_rounded, color: AppColors.brandNavy),
-        ),
-        Expanded(
-          child: TextField(
-            controller: controller,
-            textInputAction: TextInputAction.search,
-            onSubmitted: onSubmitted,
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-            decoration: InputDecoration(
-              hintText: AppLocalizations.tr('Buscar misiones o lugares'),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              filled: false,
-              isDense: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 18),
+    child: SizedBox(
+      height: 56,
+      child: Row(
+        children: [
+          IconButton(
+            tooltip: AppLocalizations.tr('Buscar en el mapa'),
+            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
+            padding: EdgeInsets.zero,
+            onPressed: () => onSubmitted(controller.text),
+            icon: const Icon(
+              Icons.search_rounded,
+              color: AppColors.brandNavy,
+              size: 27,
             ),
           ),
-        ),
-        IconButton(
-          tooltip: AppLocalizations.tr('Filtros del mapa'),
-          onPressed: onFilters,
-          style: IconButton.styleFrom(backgroundColor: AppColors.mint),
-          icon: Badge(
-            isLabelVisible: filtersActive,
-            backgroundColor: AppColors.aqua,
-            child: const Icon(
-              Icons.tune_rounded,
-              color: AppColors.aquaDark,
-              size: 21,
+          Expanded(
+            child: TextField(
+              controller: controller,
+              textInputAction: TextInputAction.search,
+              onSubmitted: onSubmitted,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 15,
+              ),
+              decoration: InputDecoration(
+                hintText: AppLocalizations.tr('Buscar misiones o lugares'),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                filled: false,
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 16),
+              ),
             ),
           ),
-        ),
-      ],
+          IconButton(
+            tooltip: AppLocalizations.tr('Filtros del mapa'),
+            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
+            padding: EdgeInsets.zero,
+            onPressed: onFilters,
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.mint,
+              shape: const CircleBorder(),
+            ),
+            icon: Badge(
+              isLabelVisible: filtersActive,
+              backgroundColor: AppColors.aqua,
+              child: const Icon(
+                Icons.tune_rounded,
+                color: AppColors.aquaDark,
+                size: 21,
+              ),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -121,13 +141,16 @@ class MapQuickFilters extends StatelessWidget {
       selected: selected,
       onSelected: (_) => action(),
       showCheckmark: false,
-      selectedColor: AppColors.brandNavy,
-      backgroundColor: color?.withValues(alpha: .94) ?? AppColors.surface,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      selectedColor: color ?? AppColors.brandNavy,
+      backgroundColor: AppColors.surface,
       labelStyle: TextStyle(
         color: selected ? Colors.white : AppColors.brandNavy,
         fontWeight: FontWeight.w700,
       ),
-      side: BorderSide(color: selected ? AppColors.brandNavy : Colors.white),
+      side: BorderSide(
+        color: selected ? (color ?? AppColors.brandNavy) : AppColors.border,
+      ),
       shape: const StadiumBorder(),
     ),
   );

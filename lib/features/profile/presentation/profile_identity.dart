@@ -28,251 +28,248 @@ class ProfileIdentity extends StatelessWidget {
   final Widget? editAction;
 
   @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: const Color(0xFFF4FBFE),
-      borderRadius: BorderRadius.circular(wide ? 20 : 0),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            height: wide ? 220 : 232,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                ProfileImage(
-                  path: profile.coverPath,
-                  repository: controller.mediaRepository,
-                  fallback: ProfileCover(preset: profile.coverPreset),
-                ),
-                const Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 90,
-                  child: IgnorePointer(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Color(0x6607345C), Color(0x0007345C)],
-                        ),
+  Widget build(BuildContext context) => Material(
+    color: const Color(0xFFF4FBFE),
+    borderRadius: BorderRadius.circular(wide ? 20 : 0),
+    clipBehavior: Clip.antiAlias,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          height: wide ? 220 : 232 + MediaQuery.paddingOf(context).top,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ProfileImage(
+                path: profile.coverPath,
+                repository: controller.mediaRepository,
+                fallback: ProfileCover(preset: profile.coverPreset),
+              ),
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 90,
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0x6607345C), Color(0x0007345C)],
                       ),
                     ),
                   ),
                 ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: 144,
-                  child: ProfileWaves(
-                    colors: profile.waveColors ?? ProfileWaves.defaultColors,
-                  ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: 144,
+                child: ProfileWaves(
+                  colors: profile.waveColors ?? ProfileWaves.defaultColors,
                 ),
-                Positioned(
-                  top: 12,
-                  right: 8,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (onSettings != null)
-                        IconButton(
-                          tooltip:
-                              settingsTooltip ??
-                              AppLocalizations.tr('Configuración'),
-                          onPressed: onSettings,
-                          style: IconButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(48, 48),
-                          ),
-                          icon: const Icon(Icons.settings_outlined, size: 21),
+              ),
+              Positioned(
+                top: wide ? 12 : MediaQuery.paddingOf(context).top + 12,
+                right: 8,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (onSettings != null)
+                      IconButton(
+                        tooltip:
+                            settingsTooltip ??
+                            AppLocalizations.tr('Configuración'),
+                        onPressed: onSettings,
+                        style: IconButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(48, 48),
                         ),
-                      if (onMenu != null)
-                        IconButton(
-                          tooltip: AppLocalizations.tr('Menú del perfil'),
-                          onPressed: onMenu,
-                          style: IconButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(48, 48),
-                          ),
-                          icon: const Icon(Icons.menu_rounded, size: 23),
+                        icon: const Icon(Icons.settings_outlined, size: 21),
+                      ),
+                    if (onMenu != null)
+                      IconButton(
+                        tooltip: AppLocalizations.tr('Menú del perfil'),
+                        onPressed: onMenu,
+                        style: IconButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(48, 48),
                         ),
-                    ],
-                  ),
+                        icon: const Icon(Icons.menu_rounded, size: 23),
+                      ),
+                  ],
                 ),
-                Positioned(
-                  left: 20,
-                  bottom: 8,
-                  width: 112,
-                  height: 112,
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0x1A07345C),
-                                blurRadius: 8,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: ClipOval(
-                            child: ProfileImage(
-                              path: profile.avatarPath,
-                              repository: controller.mediaRepository,
-                              fallback: SocialAvatar(
-                                initials: profile.initials,
-                                size: 104,
-                              ),
+              ),
+              Positioned(
+                left: 20,
+                bottom: 8,
+                width: 112,
+                height: 112,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x1A07345C),
+                              blurRadius: 8,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: ProfileImage(
+                            path: profile.avatarPath,
+                            repository: controller.mediaRepository,
+                            fallback: SocialAvatar(
+                              initials: profile.initials,
+                              size: 104,
                             ),
                           ),
                         ),
                       ),
-                      if (profile.openToCollaboration)
-                        Positioned(
-                          right: 6,
-                          bottom: 10,
-                          child: Tooltip(
-                            message: AppLocalizations.tr(
+                    ),
+                    if (profile.openToCollaboration)
+                      Positioned(
+                        right: 6,
+                        bottom: 10,
+                        child: Tooltip(
+                          message: AppLocalizations.tr(
+                            'Disponible para colaborar',
+                          ),
+                          child: Semantics(
+                            label: AppLocalizations.tr(
                               'Disponible para colaborar',
                             ),
-                            child: Semantics(
-                              label: AppLocalizations.tr(
-                                'Disponible para colaborar',
-                              ),
-                              child: Container(
-                                width: 19,
-                                height: 19,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF00AD8A),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
+                            child: Container(
+                              width: 19,
+                              height: 19,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF00AD8A),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
                                 ),
                               ),
                             ),
                           ),
                         ),
-                    ],
-                  ),
-                ),
-                if (editAction != null)
-                  Positioned(
-                    left: 148,
-                    right: 16,
-                    bottom: 14,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: editAction!,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  profile.fullName,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF07345C),
-                    height: 1.15,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 2,
-                  children: [
-                    Text(
-                      localizedProfileUserTypeLabel(context, profile.userType),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF07345C),
                       ),
-                    ),
-                    Text(
-                      '@${profile.username}',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF607C98),
-                      ),
-                    ),
                   ],
                 ),
-                if (profile.bio?.trim().isNotEmpty == true) ...[
-                  const SizedBox(height: 3),
+              ),
+              if (editAction != null)
+                Positioned(
+                  left: 148,
+                  right: 16,
+                  bottom: 14,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: editAction!,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                profile.fullName,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF07345C),
+                  height: 1.15,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Wrap(
+                spacing: 6,
+                runSpacing: 2,
+                children: [
                   Text(
-                    profile.bio!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    localizedProfileUserTypeLabel(context, profile.userType),
                     style: const TextStyle(
                       fontSize: 12,
+                      color: Color(0xFF07345C),
+                    ),
+                  ),
+                  Text(
+                    '@${profile.username}',
+                    style: const TextStyle(
+                      fontSize: 11,
                       color: Color(0xFF607C98),
                     ),
                   ),
                 ],
-                const SizedBox(height: 4),
-                InkWell(
-                  onTap:
-                      profile.location == null ||
-                          profile.locationLatitude == null
-                      ? null
-                      : () => showPostLocationViewer(
-                          context,
-                          label: profile.location!,
-                          coordinates: PostCoordinates(
-                            latitude: profile.locationLatitude!,
-                            longitude: profile.locationLongitude!,
-                            precision: PostLocationPrecision.values.byName(
-                              profile.locationPrecision ?? 'exact',
-                            ),
-                          ),
-                        ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.location_on_outlined,
-                          size: 14,
-                          color: Color(0xFF607C98),
-                        ),
-                        const SizedBox(width: 3),
-                        Expanded(
-                          child: Text(
-                            profile.location ??
-                                AppLocalizations.tr('Ubicación no indicada'),
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFF607C98),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+              ),
+              if (profile.bio?.trim().isNotEmpty == true) ...[
+                const SizedBox(height: 3),
+                Text(
+                  profile.bio!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF607C98),
                   ),
                 ),
               ],
-            ),
+              const SizedBox(height: 4),
+              InkWell(
+                onTap:
+                    profile.location == null || profile.locationLatitude == null
+                    ? null
+                    : () => showPostLocationViewer(
+                        context,
+                        label: profile.location!,
+                        coordinates: PostCoordinates(
+                          latitude: profile.locationLatitude!,
+                          longitude: profile.locationLongitude!,
+                          precision: PostLocationPrecision.values.byName(
+                            profile.locationPrecision ?? 'exact',
+                          ),
+                        ),
+                      ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: Color(0xFF607C98),
+                      ),
+                      const SizedBox(width: 3),
+                      Expanded(
+                        child: Text(
+                          profile.location ??
+                              AppLocalizations.tr('Ubicación no indicada'),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFF607C98),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }

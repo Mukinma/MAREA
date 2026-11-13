@@ -21,7 +21,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return ColoredBox(
+      color: const Color(0xFFF4FBFE),
       child: AnimatedBuilder(
         animation: widget.controller,
         builder: (context, _) {
