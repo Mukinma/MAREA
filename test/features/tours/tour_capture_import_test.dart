@@ -32,13 +32,14 @@ class ImportGallery extends ImagePickerPlatform {
 class ImportMemoryStore extends TourLocalStore {
   Map<String, dynamic>? saved;
   final files = <String, Uint8List>{};
+  final history = <String, Map<String, dynamic>>{};
   int writes = 0, byteWrites = 0;
   bool failWrites = false;
 
   @override
   Future<Map<String, dynamic>?> read(String account, String key) async {
     expect(account, sampleProfile.id);
-    expect(key, 'capture-scene');
+    if (key != 'capture-scene') return history[key];
     return saved == null ? null : copySession(saved!);
   }
 
@@ -49,7 +50,10 @@ class ImportMemoryStore extends TourLocalStore {
     Map<String, dynamic> data,
   ) async {
     expect(account, sampleProfile.id);
-    expect(key, 'capture-scene');
+    if (key != 'capture-scene') {
+      history[key] = copySession(data);
+      return;
+    }
     writes++;
     if (failWrites) throw StateError('No pudimos guardar el archivo local.');
     saved = copySession(data);
@@ -74,6 +78,8 @@ class ImportMemoryStore extends TourLocalStore {
 
 class ImportRepository implements TourRepository {
   int begins = 0, submissions = 0;
+  @override
+  Future<bool> supportsHorizontalPanoramas() async => false;
 
   @override
   Future<String> beginCapture(String tour, String scene, String mode) async {
@@ -199,13 +205,13 @@ void main() {
   });
 
   testWidgets(
-    'Add panorama offers guided capture and gallery without starting either',
+    'Add panorama offers taking photos and gallery without starting either',
     (tester) async {
       final store = ImportMemoryStore();
       final repo = await mountCapture(tester, store);
       await tester.tap(find.text('Añadir panorama'));
       await tester.pumpAndSettle();
-      expect(find.text('Capturar con guía'), findsOneWidget);
+      expect(find.text('Tomar fotos'), findsOneWidget);
       expect(find.text('Importar desde galería'), findsOneWidget);
       expect(gallery.sources, isEmpty);
       expect(store.writes, 0);
@@ -237,7 +243,7 @@ void main() {
       expect(store.saved, original);
       expect(store.writes, 0);
       expect(store.byteWrites, 0);
-      expect(find.text('1 de 35 tomas aceptadas'), findsOneWidget);
+      expect(find.text('1 fotos guardadas'), findsOneWidget);
       expect(repo.begins, 0);
       expect(repo.submissions, 0);
       expect(tester.takeException(), isNull);
@@ -245,7 +251,7 @@ void main() {
   );
 
   testWidgets(
-    'a JPEG without panorama metadata explains rejection and preserves photos',
+    'horizontal JPEG is accepted with a notice and original photos archived',
     (tester) async {
       final store = ImportMemoryStore();
       preserveExistingPhoto(store);
@@ -259,13 +265,38 @@ void main() {
       await importFromMenu(tester);
       await waitForImport(
         tester,
-        () => find.textContaining('(GPano)').evaluate().isNotEmpty,
+        () => find.text('Usar este panorama').evaluate().isNotEmpty,
       );
-      expect(find.byType(AlertDialog), findsNothing);
       expect(store.saved, original);
       expect(store.writes, 0);
       expect(store.byteWrites, 0);
-      expect(find.text('1 de 35 tomas aceptadas'), findsOneWidget);
+      await tester.tap(find.text('Usar panorama'));
+      await waitForImport(
+        tester,
+        () => find
+            .textContaining('Panorámica horizontal elegida')
+            .evaluate()
+            .isNotEmpty,
+      );
+      expect(store.saved!['panorama_kind'], 'horizontal');
+      expect(
+        (store.saved!['frames'] as List).single.containsKey('hfov'),
+        isFalse,
+      );
+      expect(
+        store.history.values
+            .where((entry) => entry['session'] != null)
+            .single['session'],
+        original,
+      );
+      expect(store.files.containsKey('/memory/accepted-photo.jpg'), isTrue);
+      expect(
+        find.textContaining('Esta imagen no incluye techo y piso.'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Subir panorámica'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('aún no está disponible'), findsOneWidget);
       expect(repo.begins, 0);
       expect(repo.submissions, 0);
       expect(tester.takeException(), isNull);
@@ -289,7 +320,10 @@ void main() {
         tester,
         () => find.text('Usar este panorama').evaluate().isNotEmpty,
       );
-      expect(find.textContaining('sustituirá las 1 tomas'), findsOneWidget);
+      expect(
+        find.textContaining('1 tomas de esta captura quedarán'),
+        findsOneWidget,
+      );
       expect(store.writes, 0);
       expect(store.byteWrites, 0);
       await tester.tap(find.text('Conservar captura'));
@@ -297,7 +331,7 @@ void main() {
       expect(store.saved, original);
       expect(store.writes, 0);
       expect(store.byteWrites, 0);
-      expect(find.text('1 de 35 tomas aceptadas'), findsOneWidget);
+      expect(find.text('1 fotos guardadas'), findsOneWidget);
       expect(repo.begins, 0);
       expect(repo.submissions, 0);
       expect(tester.takeException(), isNull);
@@ -334,7 +368,7 @@ void main() {
       expect(store.byteWrites, 1);
       expect(store.saved, original);
       expect(store.files.containsKey('/memory/accepted-photo.jpg'), isTrue);
-      expect(find.text('1 de 35 tomas aceptadas'), findsOneWidget);
+      expect(find.text('1 fotos guardadas'), findsOneWidget);
       expect(find.textContaining('Panorama 360° elegido'), findsNothing);
       expect(find.text('Retomar captura'), findsOneWidget);
       expect(repo.begins, 0);
@@ -365,7 +399,7 @@ void main() {
       );
       expect(find.text('Panorama 360° elegido · 256 × 128'), findsOneWidget);
       expect(find.byType(Image), findsOneWidget);
-      expect(find.text('Subir y procesar panorama'), findsOneWidget);
+      expect(find.text('Subir panorámica'), findsOneWidget);
       expect(find.text('Añadir panorama'), findsNothing);
       expect(store.writes, 1);
       expect(store.byteWrites, 1);

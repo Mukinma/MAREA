@@ -1,5 +1,7 @@
 # Simplificación de captura y RA — 7 de noviembre de 2026
 
+**Actualización local del 12 de noviembre:** la captura manual libre sustituye el modo automático inicial y la comparación obligatoria al retomar. Ver [Captura libre](ar-free-capture.md). Lo que sigue conserva las decisiones y pruebas de la revisión anterior.
+
 Cambios locales sobre `main` actualizado (`a1e2d81`), conservando los cambios del equipo en historias, perfil y navegación.
 
 ## Captura 360°
@@ -25,9 +27,9 @@ La pantalla de RA del organizador conserva la imagen que hay que buscar y **Abri
 
 En una posición vacía, **Añadir panorama** ofrece **Capturar con guía** o **Importar desde galería**. En web o importación exclusiva abre directamente la galería. Si hay tomas guardadas, la importación está en Más opciones; sólo se pide reemplazarlas después de elegir y validar un archivo. Cancelar el selector, rechazar el reemplazo o fallar la validación conserva la captura. Si falla guardar la nueva sesión, se restaura la selección anterior.
 
-Antes de guardar/subir se comprueban tamaño (32 MiB), contenedor JPEG, dimensiones acotadas, orientación EXIF y metadatos XMP GPano con namespace real, esfera completa y dimensiones coincidentes. Se lee la cabecera sin decodificar todos los píxeles y se conservan los bytes originales. El worker mantiene la decodificación y validación final. `xml` pasa de dependencia transitiva a directa, conservando la versión 7.0.1 ya fijada.
+Antes de guardar/subir se comprueban tamaño (32 MiB), contenedor JPEG, dimensiones acotadas y orientación EXIF. Una esfera completa se reconoce por sus metadatos XMP GPano con namespace real y dimensiones coincidentes. Un JPEG horizontal sin esa evidencia se importa como panorámica horizontal, con un aviso y desplazamiento lateral. Se conservan los bytes originales. El worker mantiene la decodificación y validación final; las salidas horizontales conservan su proporción y no reciben metadatos esféricos.
 
-Una panorámica horizontal del modo Panorama no se convierte en una esfera 360° ni se inventan techo y piso. Una imagen 2:1 sin los metadatos originales tampoco basta: la pantalla explica el problema antes de subirla. La vista previa local no equivale a aprobación ni permite omitir procesamiento, revisión o publicación. No se ha probado todavía la selección de un panorama 360° real desde la galería del OPPO.
+Una panorámica horizontal del modo Panorama se puede usar para mirar de izquierda a derecha; el aviso indica que no incluye techo y piso. Una imagen 2:1 sin los metadatos originales tampoco se declara esférica. La vista previa local no equivale a aprobación ni permite omitir procesamiento, revisión o publicación. Véase [importación horizontal](ar-horizontal-import.md): el servidor necesita el worker actualizado y la migración 042, preparados localmente y todavía sin aplicar.
 
 ## Experiencias cercanas
 

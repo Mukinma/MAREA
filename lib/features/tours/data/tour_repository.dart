@@ -30,6 +30,7 @@ abstract class TourRepository {
     TourProgress? save,
   });
   Future<String> beginCapture(String tour, String scene, String mode);
+  Future<bool> supportsHorizontalPanoramas();
   Future<TourJob> submitCapture(String capture, Map<String, dynamic> manifest);
   Future<TourJob> job(String id);
   Future<void> cancelJob(String id);
@@ -141,6 +142,17 @@ class SupabaseTourRepository implements TourRepository {
         })
         as Map<String, dynamic>?,
   );
+  @override
+  Future<bool> supportsHorizontalPanoramas() async {
+    try {
+      final capabilities = await _rpc('tours_media_capabilities', {});
+      return capabilities is Map && capabilities['horizontal_panorama'] == true;
+    } on PostgrestException catch (error) {
+      if (error.code == 'PGRST202' || error.code == '42883') return false;
+      rethrow;
+    }
+  }
+
   @override
   Future<String> beginCapture(String tour, String scene, String mode) async =>
       (await _rpc('tours_capture_begin', {

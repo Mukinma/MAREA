@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:marea/core/location/device_location_service.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/tours/data/tour_repository.dart';
@@ -52,6 +55,7 @@ class DiscoveryTours implements TourRepository {
 class DiscoveryLocation implements DeviceLocationService {
   final prompts = <bool>[];
   DeviceLocationFailure? failure;
+  Completer<DevicePosition>? pending;
 
   @override
   Future<DevicePosition> current({
@@ -60,6 +64,7 @@ class DiscoveryLocation implements DeviceLocationService {
   }) async {
     prompts.add(requestPermission);
     if (failure != null) throw failure!;
+    if (pending != null) return pending!.future;
     return const DevicePosition(latitude: 19.4326, longitude: -99.1332);
   }
 
@@ -67,7 +72,7 @@ class DiscoveryLocation implements DeviceLocationService {
   Future<bool> openSettings({bool locationDisabled = false}) async => false;
 }
 
-Future<void> mountDiscovery(
+Future<GoRouter> mountDiscovery(
   WidgetTester tester,
   DiscoveryTours tours,
   DiscoveryLocation location,
@@ -78,18 +83,78 @@ Future<void> mountDiscovery(
     tourRepository: tours,
   );
   addTearDown(controller.dispose);
-  await tester.pumpWidget(
-    MaterialApp(
-      home: TourDiscoveryScreen(
-        controller: controller,
-        locationService: location,
+  final router = GoRouter(
+    initialLocation: '/tours/nearby',
+    routes: [
+      GoRoute(
+        path: '/tours/nearby',
+        builder: (_, _) => TourDiscoveryScreen(
+          controller: controller,
+          locationService: location,
+        ),
       ),
-    ),
+      GoRoute(
+        path: '/map',
+        builder: (_, state) => Scaffold(
+          body: Text(
+            'Mapa con experiencias ${state.uri.queryParameters['experiences']}',
+          ),
+        ),
+      ),
+    ],
   );
+  addTearDown(router.dispose);
+  await tester.pumpWidget(MaterialApp.router(routerConfig: router));
   await tester.pumpAndSettle();
+  return router;
 }
 
 void main() {
+  testWidgets('visible map action opens experiences without requesting GPS', (
+    tester,
+  ) async {
+    final tours = DiscoveryTours(), location = DiscoveryLocation();
+    final router = await mountDiscovery(tester, tours, location);
+    expect(find.byTooltip('Ver mapa').hitTestable(), findsOneWidget);
+    expect(find.byTooltip('Más opciones'), findsNothing);
+    expect(find.text('Descubrir cerca de mí').hitTestable(), findsOneWidget);
+    expect(location.prompts, isEmpty);
+
+    await tester.tap(find.byTooltip('Ver mapa'));
+    await tester.pumpAndSettle();
+    expect(find.text('Mapa con experiencias 1'), findsOneWidget);
+    expect(location.prompts, isEmpty);
+    expect(tours.lookups, [(null, null)]);
+    router.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('Local cercano'), findsOneWidget);
+    expect(find.byTooltip('Ver mapa').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('opening map ignores a pending nearby location result', (
+    tester,
+  ) async {
+    final tours = DiscoveryTours();
+    final location = DiscoveryLocation()..pending = Completer<DevicePosition>();
+    final router = await mountDiscovery(tester, tours, location);
+    await tester.tap(find.text('Descubrir cerca de mí'));
+    await tester.pump();
+    expect(location.prompts, [true]);
+    await tester.tap(find.byTooltip('Ver mapa'));
+    await tester.pumpAndSettle();
+    location.pending!.complete(
+      const DevicePosition(latitude: 19.4326, longitude: -99.1332),
+    );
+    await tester.pumpAndSettle();
+    expect(tours.lookups, [(null, null)]);
+    router.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('Descubrir cerca de mí'), findsOneWidget);
+    expect(find.textContaining('Cerca de ti'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('nearby lookup is explicit and shows approximate nearest first', (
     tester,
   ) async {
@@ -108,6 +173,8 @@ void main() {
     expect(find.text('Actualizar cerca de mí'), findsOneWidget);
     await tester.tap(find.byTooltip('Más opciones'));
     await tester.pumpAndSettle();
+    expect(find.text('Ver mapa'), findsNothing);
+    expect(find.text('Ver todos los locales'), findsOneWidget);
     await tester.tap(find.text('Ver todos los locales'));
     await tester.pumpAndSettle();
     expect(tours.lookups.last, (null, null));

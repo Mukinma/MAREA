@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 from PIL import Image
 import numpy as np
-from worker import TourError, validate_manifest, validate_gpano, connected_control_points, validate_alpha_coverage, process_job
+from worker import TourError, validate_manifest, validate_gpano, connected_control_points, validate_alpha_coverage, validate_camera_geometry, process_job
 
 OWNER='11111111-1111-4111-8111-111111111111'
 CAP='22222222-2222-4222-8222-222222222222'
@@ -11,6 +11,15 @@ FRAME='33333333-3333-4333-8333-333333333333'
 def manifest():
     return {'mode':'import','frames':[{'id':FRAME,'path':f'{OWNER}/{CAP}/{FRAME}.jpg','width':4096,'height':2048,'yaw':0,'pitch':0,'roll':0,'hfov':360,'vfov':180}]}
 class WorkerTests(unittest.TestCase):
+    def test_alignment_cannot_fake_coverage_by_changing_the_lens(self):
+        frames=[{'hfov':39.27914669},{'hfov':39.27914669}]
+        validate_camera_geometry('i v39.27914669 y0\ni v=0 y30\n',frames)
+        for project in ['i v180 y0\ni v=0 y30\n',
+                        'i v8.95 y0\ni v39.27914669 y30\n',
+                        'i v=1 y0\ni v=0 y30\n',
+                        'i v39.27914669 y0\n']:
+            with self.subTest(project=project):
+                with self.assertRaises(TourError):validate_camera_geometry(project,frames)
     def test_arbitrary_input_path_is_rejected(self):
         m=manifest();m['frames'][0]['path']='../../secret.jpg'
         with self.assertRaises(TourError):validate_manifest(m,OWNER,CAP)
@@ -88,6 +97,28 @@ class ImportPipelineTests(unittest.TestCase):
                 output=Path(d)/f'{name}.jpg';output.write_bytes(backend.assets[f'{OWNER}/jobs/{FRAME}/{name}.jpg'])
                 self.assertEqual(validate_gpano(output),size)
             self.assertFalse(backend.guard)
+    def test_horizontal_import_keeps_aspect_ratio_without_gpano_or_invented_angles(self):
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/'horizontal.jpg';Image.new('RGB',(768,128),(100,60,20)).save(path)
+            m=manifest();m['panorama_kind']='horizontal'
+            f=m['frames'][0];f.update(width=768,height=128)
+            for key in ('yaw','pitch','roll','hfov','vfov'):f.pop(key)
+            job={'id':FRAME,'lease_id':CAP,'owner_id':OWNER,'capture_id':CAP,'manifest':m}
+            backend=self.backend(path);self.assertTrue(process_job(job,backend))
+            self.assertEqual(backend.result['panorama_kind'],'horizontal')
+            self.assertEqual((backend.result['panorama_width'],backend.result['panorama_height']),(768,128))
+            for name,data in backend.assets.items():
+                out=Path(d)/Path(name).name;out.write_bytes(data)
+                with Image.open(out) as im:
+                    self.assertAlmostEqual(im.width/im.height,6,delta=.05)
+                    self.assertFalse(im.info.get('xmp'))
+                with self.assertRaises(TourError):validate_gpano(out)
+
+    def test_horizontal_mode_cannot_downgrade_a_photo_sphere_capture(self):
+        m=manifest();m['mode']='photos';m['panorama_kind']='horizontal'
+        with self.assertRaises(TourError):validate_manifest(m,OWNER,CAP)
+        m=manifest();m['panorama_kind']='horizontal'
+        with self.assertRaises(TourError):validate_manifest(m,OWNER,CAP)
     def test_lost_committed_finish_response_retains_ready_media(self):
         with tempfile.TemporaryDirectory() as d:
             path,job=self.fixture(d);backend=self.backend(path)

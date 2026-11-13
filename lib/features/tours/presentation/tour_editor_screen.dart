@@ -417,6 +417,17 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   }
 
   Future<void> _mark(TourScene scene, TourPoint point) async {
+    if (scene.isHorizontalPanorama) {
+      setState(
+        () => point.data.addAll({
+          'yaw': null,
+          'pitch': null,
+          'needs_review': false,
+        }),
+      );
+      await _local();
+      return;
+    }
     final position = await pickPanoramaPosition(
       context,
       widget.controller.tourRepository!,
@@ -631,11 +642,12 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
             value: _PointAction.edit,
             child: Text('Editar texto'),
           ),
-          PopupMenuItem(
-            value: _PointAction.mark,
-            enabled: scene.panoramaPath != null,
-            child: const Text('Ubicar en 360°'),
-          ),
+          if (!scene.isHorizontalPanorama)
+            PopupMenuItem(
+              value: _PointAction.mark,
+              enabled: scene.panoramaPath != null,
+              child: const Text('Ubicar en 360°'),
+            ),
           const PopupMenuItem(
             value: _PointAction.list,
             child: Text('Mostrar sólo en lista'),
@@ -750,20 +762,26 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       help: 'Por ejemplo: Camina hacia el mural junto a la barra.',
     );
     if (!mounted || !_current || instruction == null) return;
-    final position = await pickPanoramaPosition(
-      context,
-      widget.controller.tourRepository!,
-      scene,
-    );
-    if (!mounted || !_current || position == null) return;
+    final position = scene.isHorizontalPanorama
+        ? null
+        : await pickPanoramaPosition(
+            context,
+            widget.controller.tourRepository!,
+            scene,
+          );
+    if (!mounted ||
+        !_current ||
+        (!scene.isHorizontalPanorama && position == null)) {
+      return;
+    }
     setState(
       () => jsonList(scene.data['connections']).add({
         'id': tourId(),
         'target_scene_id': target.id,
         'label': target.name,
         'instruction': instruction,
-        'yaw': position.$1,
-        'pitch': position.$2,
+        'yaw': position?.$1,
+        'pitch': position?.$2,
         'needs_review': false,
       }),
     );

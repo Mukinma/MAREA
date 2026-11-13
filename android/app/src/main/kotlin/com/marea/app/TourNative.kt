@@ -12,6 +12,7 @@ import kotlin.math.*
 
 object TourOrientation {
  fun relative(yaw: Double, origin: Double) = ((yaw-origin+540)%360)-180
+ fun headingOrigin(previous: Double?, yaw: Double, pitch: Double): Double? = previous ?: if(abs(pitch)<89.5) yaw else null
  fun pitch(cameraZ: Double) = Math.toDegrees(asin((-cameraZ).coerceIn(-1.0,1.0)))
  fun pose(r: FloatArray): DoubleArray = doubleArrayOf(Math.toDegrees(atan2(-r[2].toDouble(),-r[5].toDouble())),pitch(r[8].toDouble()),Math.toDegrees(atan2(r[6].toDouble(),r[7].toDouble())))
 }
@@ -70,8 +71,8 @@ class TourNative(private val activity: Activity, messenger: BinaryMessenger) : S
   val r=FloatArray(9); SensorManager.getRotationMatrixFromVector(r,event.values)
   val pose=TourOrientation.pose(r)
   // At the poles azimuth is undefined: keep the previous yaw origin rather than resetting pitch.
-  if(origin==null && abs(pose[1])<89.5) origin=pose[0]
-  sink?.success(mapOf("yaw" to TourOrientation.relative(pose[0],origin ?: pose[0]),"pitch" to pose[1],"roll" to pose[2],"timestamp" to System.currentTimeMillis()))
+  origin=TourOrientation.headingOrigin(origin,pose[0],pose[1])
+  sink?.success(mapOf("yaw" to TourOrientation.relative(pose[0],origin ?: pose[0]),"pitch" to pose[1],"roll" to pose[2],"headingReady" to (origin!=null),"timestamp" to System.currentTimeMillis()))
  }
  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
  fun stop() { started=false; sensors.unregisterListener(this) }

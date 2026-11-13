@@ -3,6 +3,8 @@ import 'package:marea/features/community/data/mission_social_repository.dart';
 import 'package:marea/features/home_feed/data/home_feed_repository.dart';
 import 'package:marea/features/home_feed/data/stories_repository.dart';
 import 'package:marea/features/tours/data/tour_repository.dart';
+import 'package:marea/features/ar_markers/data/local_marker_repository.dart';
+import 'package:marea/features/ar_markers/data/supabase_marker_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:marea/features/notifications/data/inbox_only_gateway.dart';
 import 'package:marea/features/notifications/data/android_push_gateway.dart';
@@ -82,38 +84,47 @@ class _StartupAppState extends State<_StartupApp> {
           : const FlutterAuthClientOptions(),
     );
     final client = Supabase.instance.client;
+    late final AppSessionController controller;
+    controller = AppSessionController(
+      allowCaptureUploads: !widget.productionPilot,
+      authRepository: SupabaseAuthRepository(
+        client,
+        allowGoogleOAuth: !widget.productionPilot,
+      ),
+      push: PushController(
+        SupabaseNotificationPreferencesRepository(client),
+        !widget.productionPilot &&
+                !config.isDevelopment &&
+                !kIsWeb &&
+                defaultTargetPlatform == TargetPlatform.android
+            ? AndroidPushGateway()
+            : InboxOnlyGateway(),
+      ),
+      communityRepository: SupabaseCommunityRepository(client),
+      homeFeedRepository: SupabaseHomeFeedRepository(client),
+      storiesRepository: SupabaseStoriesRepository(client),
+      missionMapRepository: SupabaseMissionMapRepository(client),
+      tourRepository: SupabaseTourRepository(client, config.supabaseUrl),
+      markerRepository: const bool.fromEnvironment('AR_MARKERS_REMOTE')
+          ? SupabaseMarkerRepository(
+              client,
+              currentOwner: () => controller.profile?.id,
+            )
+          : LocalMarkerRepository(currentOwner: () => controller.profile?.id),
+      socialRepository: SupabaseSocialRepository(client),
+      missionSocialRepository: SupabaseMissionSocialRepository(client),
+      locationRepository: SupabaseLocationRepository(client),
+      publicUrl: config.publicUrl,
+      showcaseRepository: SupabaseShowcaseRepository(client),
+      mediaRepository: SupabaseProfileMediaRepository(),
+      profileRepository: SupabaseProfileRepository(client),
+      chatRepository: SupabaseChatRepository(client),
+      legalRepository: SupabaseLegalRepository(client),
+    );
     return MareaApp(
       development: config.isDevelopment,
       productionPilot: widget.productionPilot,
-      controller: AppSessionController(
-        authRepository: SupabaseAuthRepository(
-          client,
-          allowGoogleOAuth: !widget.productionPilot,
-        ),
-        push: PushController(
-          SupabaseNotificationPreferencesRepository(client),
-          !widget.productionPilot &&
-                  !config.isDevelopment &&
-                  !kIsWeb &&
-                  defaultTargetPlatform == TargetPlatform.android
-              ? AndroidPushGateway()
-              : InboxOnlyGateway(),
-        ),
-        communityRepository: SupabaseCommunityRepository(client),
-        homeFeedRepository: SupabaseHomeFeedRepository(client),
-        storiesRepository: SupabaseStoriesRepository(client),
-        missionMapRepository: SupabaseMissionMapRepository(client),
-        tourRepository: SupabaseTourRepository(client, config.supabaseUrl),
-        socialRepository: SupabaseSocialRepository(client),
-        missionSocialRepository: SupabaseMissionSocialRepository(client),
-        locationRepository: SupabaseLocationRepository(client),
-        publicUrl: config.publicUrl,
-        showcaseRepository: SupabaseShowcaseRepository(client),
-        mediaRepository: SupabaseProfileMediaRepository(),
-        profileRepository: SupabaseProfileRepository(client),
-        chatRepository: SupabaseChatRepository(client),
-        legalRepository: SupabaseLegalRepository(client),
-      ),
+      controller: controller,
     );
   }
 

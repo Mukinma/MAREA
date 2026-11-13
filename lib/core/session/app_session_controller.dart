@@ -4,6 +4,7 @@ import 'package:marea/features/home_feed/data/home_feed_repository.dart';
 import 'package:marea/features/home_feed/data/stories_repository.dart';
 import 'package:marea/features/tours/data/tour_local_store.dart';
 import 'package:marea/features/tours/data/tour_repository.dart';
+import 'package:marea/features/ar_markers/data/marker_repository.dart';
 import 'package:marea/features/notifications/data/push_controller.dart';
 import 'package:marea/core/config/app_config.dart';
 import 'package:marea/features/community/data/social_repository.dart';
@@ -35,6 +36,8 @@ class AppSessionController extends ChangeNotifier {
     this.storiesRepository,
     this.missionMapRepository,
     this.tourRepository,
+    this.markerRepository,
+    this.allowCaptureUploads = true,
     this.showcaseRepository,
     this.socialRepository,
     this.missionSocialRepository,
@@ -50,6 +53,15 @@ class AppSessionController extends ChangeNotifier {
   final StoriesRepository? storiesRepository;
   final MissionMapRepository? missionMapRepository;
   final TourRepository? tourRepository;
+  final MarkerRepository? markerRepository;
+  final bool allowCaptureUploads;
+  int _markerRevision = 0;
+  int get markerRevision => _markerRevision;
+  void markersChanged() {
+    _markerRevision++;
+    notifyListeners();
+  }
+
   final SocialRepository? socialRepository;
   final MissionSocialRepository? missionSocialRepository;
   final LocationRepository? locationRepository;

@@ -1,3 +1,7 @@
+import 'package:marea/features/ar_markers/presentation/marker_management_screen.dart';
+import 'package:marea/features/ar_markers/presentation/marker_editor_screen.dart';
+import 'package:marea/features/ar_markers/presentation/marker_scan_screen.dart';
+import 'package:marea/features/proximity/presentation/proximity_settings_screen.dart';
 import 'package:marea/features/tours/presentation/business_ar_screen.dart';
 import 'package:marea/features/discover/presentation/discover_screen.dart';
 import 'package:marea/features/home_feed/presentation/story_composer.dart';
@@ -436,6 +440,78 @@ abstract final class AppRouter {
           ),
         ),
         GoRoute(
+          path: '/ar-markers',
+          parentNavigatorKey: rootKey,
+          builder: (_, _) => controller.markerRepository == null
+              ? const Scaffold(
+                  body: Center(
+                    child: Text(
+                      'Los marcadores no están disponibles en esta sesión.',
+                    ),
+                  ),
+                )
+              : MarkerManagementScreen(
+                  key: ValueKey(controller.profile?.id),
+                  controller: controller,
+                  repository: controller.markerRepository!,
+                ),
+        ),
+        GoRoute(
+          path: '/ar-markers/new',
+          parentNavigatorKey: rootKey,
+          builder: (_, _) => controller.markerRepository == null
+              ? const Scaffold(
+                  body: Center(
+                    child: Text('Abre tus marcadores desde Perfil.'),
+                  ),
+                )
+              : MarkerEditorScreen(
+                  key: ValueKey('new-marker:${controller.profile?.id}'),
+                  controller: controller,
+                  repository: controller.markerRepository!,
+                ),
+        ),
+        GoRoute(
+          path: '/ar-markers/:id/edit',
+          parentNavigatorKey: rootKey,
+          builder: (_, s) => controller.markerRepository == null
+              ? const Scaffold(
+                  body: Center(
+                    child: Text('Abre tus marcadores desde Perfil.'),
+                  ),
+                )
+              : MarkerEditorScreen(
+                  key: ValueKey('${controller.profile?.id}:${s.uri}'),
+                  controller: controller,
+                  repository: controller.markerRepository!,
+                  markerId: s.pathParameters['id'],
+                ),
+        ),
+        GoRoute(
+          path: '/ar-markers/:id/scan',
+          parentNavigatorKey: rootKey,
+          builder: (_, s) => controller.markerRepository == null
+              ? const Scaffold(
+                  body: Center(
+                    child: Text('Abre tus marcadores desde Perfil.'),
+                  ),
+                )
+              : MarkerScanScreen(
+                  key: ValueKey('${controller.profile?.id}:${s.uri}'),
+                  controller: controller,
+                  repository: controller.markerRepository!,
+                  markerId: s.pathParameters['id']!,
+                ),
+        ),
+        GoRoute(
+          path: '/nearby-alerts',
+          parentNavigatorKey: rootKey,
+          builder: (_, _) => ProximitySettingsScreen(
+            key: ValueKey(controller.profile?.id),
+            controller: controller,
+          ),
+        ),
+        GoRoute(
           path: '/tours/new',
           parentNavigatorKey: rootKey,
           builder: (_, _) => TourEditorScreen(
@@ -551,7 +627,7 @@ class AppRouteGuard {
         uri.hasScheme ||
         uri.hasAuthority ||
         !RegExp(
-          r'^/(tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
+          r'^/(tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|ar-markers(?:/new|/[A-Za-z0-9_-]+/(?:edit|scan))?|nearby-alerts|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
         ).hasMatch(uri.path)) {
       return null;
     }

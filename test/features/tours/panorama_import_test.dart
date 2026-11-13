@@ -17,6 +17,45 @@ Matcher rejects(String message) => throwsA(
 
 void main() {
   test(
+    'gallery inspection accepts horizontal JPEG without claiming a sphere',
+    () {
+      final bytes = panoramaJpegFixture(
+        width: 384,
+        height: 128,
+        includeXmp: false,
+      );
+      final original = [...bytes];
+      final info = inspectPanoramaImport(bytes);
+      expect(info.horizontal, isTrue);
+      expect((info.width, info.height), (384, 128));
+      expect(bytes, original);
+      expect(inspectPanoramaImport(panoramaJpegFixture()).horizontal, isFalse);
+      expect(
+        inspectPanoramaImport(
+          panoramaJpegFixture(includeXmp: false),
+        ).horizontal,
+        isTrue,
+      );
+    },
+  );
+
+  test('horizontal inspection retains corrupt-file and orientation guards', () {
+    expect(
+      () => inspectPanoramaImport(Uint8List.fromList([0xff, 0xd8])),
+      throwsStateError,
+    );
+    expect(
+      () => inspectPanoramaImport(panoramaJpegFixture(orientation: 6)),
+      rejects('orientación EXIF'),
+    );
+    expect(
+      () => inspectPanoramaImport(
+        panoramaJpegFixture(width: 128, height: 256, includeXmp: false),
+      ),
+      rejects('horizontal'),
+    );
+  });
+  test(
     'accepts original full-sphere JPEG with real XMP namespace unchanged',
     () {
       final bytes = panoramaJpegFixture();

@@ -1,10 +1,39 @@
 # Continuar MAREA en otra laptop
 
-Guía actualizada el **9 de noviembre de 2026**. Repositorio: `https://github.com/Mukinma/MAREA.git`; rama de este trabajo: **santiago**. Antes de descargar en la otra laptop, comprobar en GitHub que esa rama contiene la revisión que se quiere trasladar.
+## Estado actual: 13 de noviembre de 2026
+
+Repositorio: `https://github.com/Mukinma/MAREA.git`; rama de este trabajo: **santiago**. El usuario autorizó subir los cambios de esta sesión. La consulta al remoto no encontró divergencia con esa rama antes de preparar la subida; no se integra otro mapa ni se modifica `main` para este traslado.
+
+- **Captura:** disparador manual libre, guía animada desde el centro y plan de 36 sugerencias en el OPPO. No exige acertar ángulos ni alinear la foto inicial para tomar una imagen. Las sesiones anteriores se conservan y pueden retomarse. Véanse [captura libre](ar-free-capture.md) y [guía del cubo](ar-cube-guide.md).
+- **Fotos actuales:** 36 fotos en la captura activa y una sesión anterior de 91 fotos conservada en el historial. Los respaldos privados del 13 de noviembre verifican 196 archivos originales sin cambios ni pérdidas. No usar el antiguo ZIP del 9 de noviembre como único respaldo: no contiene estas tomas nuevas.
+- **Unión del recorrido: SIN RESOLVER.** El mosaico provisional tenía cortes y duplicaciones y fue rechazado por el usuario. Se retiraron su pantalla y su acceso; no hay un panorama completo listo ni publicado. Se añadió una validación que impide ampliar artificialmente el campo de visión de la cámara al ajustar la unión. Diagnósticos y límites: [procesamiento local](ar-local-panorama.md).
+- **Marcadores:** CRUD privado local y reconocimiento nativo real probados en el OPPO. El usuario confirmó que la tarjeta sigue la imagen, desaparece al perderla y abre información liberando la cámara. El adaptador remoto sigue desactivado por defecto.
+- **Avisos Android:** ubicación real, aviso inicial del marcador y apertura tras bloqueo comprobados. Falta validar una nueva entrada desde fuera del radio con la app en segundo plano y probar una Misión pública realmente cercana. [Estado y procedimiento](ar-three-modules.md).
+- **Panorámicas de galería:** admiten esfera GPano o imagen horizontal con aviso y visor lateral. Pruebas automáticas aprobadas; la prueba física de importación se dejó para después por decisión del usuario. [Contrato](ar-horizontal-import.md).
+- **Servidor:** migraciones 041 y 042 preparadas, sin aplicar. La APK piloto mantiene desactivadas las subidas. No activar el adaptador remoto, colas, workers o cambios de esquema sobre producción para continuar estas pruebas. iOS requiere compilación y validación en macOS.
+
+Comprobaciones de esta revisión: `flutter analyze --no-pub` sin incidencias; 217 pruebas de recorridos, marcadores y proximidad, 80 de mapa/rutas/perfil/navegación, 26 de Python y 14 pruebas nativas Android aprobadas. La APK debug compiló y se instaló en el OPPO. Estos resultados no certifican la unión visual del panorama, que sigue pendiente.
+
+Para retomar en otra laptop con un clon **sin cambios pendientes**:
+
+```powershell
+git fetch origin
+git switch santiago
+git pull --ff-only origin santiago
+flutter pub get
+```
+
+Si hay trabajo local, conservarlo antes de actualizar; no usar reset, clean ni push forzado. Las fotos, sesiones, configuración privada y firma debug deben transferirse por separado. Además de los archivos indicados abajo, conservar los respaldos actuales de `.dart_tool/ar-live-pilot/capture-backups/` y, para investigar la unión, `.dart_tool/ar-live-pilot/processing/`. Permanecen fuera de Git. El teléfono conserva sus fotos: actualizar con la misma firma y `install -r`, sin desinstalar.
+
+Prompt actual para continuar:
+
+> Continúa desde el estado del 13 de noviembre de docs/implementation/continue-on-another-laptop.md. Conserva los cambios de todos los colaboradores, la captura activa de 36 fotos y la sesión anterior de 91. El recorrido todavía no tiene una unión válida; se retiró el mosaico de prueba por sus cortes y duplicaciones. Trabaja con las copias originales y valida visualmente el resultado antes de mostrar otro recorrido. No inventes cobertura ni poses y conserva las reglas de publicación y reconocimiento real. La captura manual es libre y la guía parte del centro. Los marcadores locales y el aviso inicial se probaron en Android; revisa los pendientes documentados. No escribas en producción ni actives migraciones/colas/workers. Comprueba Git, Flutter, configuración privada, firma debug y respaldos antes de instalar. No hagas nuevos commits o push sin autorización en la nueva sesión.
+
+## Instalación y antecedentes del 9 de noviembre
 
 La integración de la navegación reciente de `main` con RA y los pasos para que cada colaborador continúe en su rama están en [Integración con main](ar-main-integration.md). Usar siempre una copia actualizada de la rama al retomar.
 
-La última revisión incluye captura automática con confirmación háptica, un máximo de **40 tomas** y controles simplificados de captura, edición y RA. El plan calibrado del OPPO requiere **36 tomas**; ya conserva **35 de 36**, y sólo falta el techo. La foto guía al retomar ahora se superpone a la cámara en vivo. Sus cambios y verificaciones están en [Simplificación de captura y RA](ar-simplification.md).
+Las instrucciones de herramientas y firma que siguen continúan siendo útiles. Los registros de **35 de 36** tomas al final son antecedentes del 9 de noviembre, no el estado actual. Consultar el apartado anterior y [Simplificación de captura y RA](ar-simplification.md) para la revisión nueva.
 
 ## Instalar las herramientas
 
@@ -106,7 +135,7 @@ La salida es `build/app/outputs/flutter-apk/app-debug.apk`. Para ejecutarlo en u
 
 No ejecutar otra vez `accounts.mjs --create-new-accounts` ni `drafts.mjs --create-new-drafts`: el lote ya existe. Las condiciones de publicación, permisos y reconocimiento siguen aplicándose.
 
-## Punto exacto para retomar con Codex
+## Registro histórico del 9 de noviembre (no usar como estado actual)
 
 Abrir esta guía y `docs/implementation/ar-development-pilot.md` en VS Code. Se puede iniciar el nuevo chat con:
 

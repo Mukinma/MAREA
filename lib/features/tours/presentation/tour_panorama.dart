@@ -4,6 +4,7 @@ import 'package:panorama_viewer/panorama_viewer.dart';
 import '../data/tour_repository.dart';
 import '../models/tour_models.dart';
 import 'tour_widgets.dart';
+import 'horizontal_panorama.dart';
 
 class TourPanorama extends StatefulWidget {
   const TourPanorama({
@@ -68,6 +69,12 @@ class _TourPanoramaState extends State<TourPanorama> {
           );
         }
         if (!s.hasData) return const Center(child: CircularProgressIndicator());
+        if (widget.scene.isHorizontalPanorama) {
+          return HorizontalPanorama(
+            image: NetworkImage(s.data!),
+            aspectRatio: widget.scene.panoramaAspectRatio,
+          );
+        }
         return ClipRect(
           child: Stack(
             children: [

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/tour_models.dart';
 import 'capture_plan.dart';
+import 'capture_cube.dart';
+import 'capture_cube_guide.dart';
 
 /// Guidance and shutter stay visible while the camera content scrolls.
 class CaptureGuidancePanel extends StatelessWidget {
   const CaptureGuidancePanel({
-    required this.target,
+    this.target,
     required this.yaw,
     required this.pitch,
     required this.fresh,
@@ -17,29 +19,42 @@ class CaptureGuidancePanel extends StatelessWidget {
     this.paused = false,
     this.showAngles = false,
     this.onTogglePause,
+    this.cubeGuide,
+    this.guideIndex = 0,
     super.key,
   });
 
-  final CaptureTarget target;
+  final CaptureTarget? target;
   final double yaw, pitch;
   final bool fresh, aimed, steady, busy;
   final VoidCallback onTake;
   final bool automatic, paused, showAngles;
   final VoidCallback? onTogglePause;
+  final CaptureCubeGuide? cubeGuide;
+  final int guideIndex;
+  CaptureCubeStep? get _cubeStep =>
+      cubeGuide != null && guideIndex < cubeGuide!.steps.length
+      ? cubeGuide!.steps[guideIndex]
+      : null;
 
   String get instruction {
     if (busy) return 'Guardando la toma…';
-    if (automatic && paused) {
+    if (!automatic && cubeGuide != null) {
+      return _cubeStep?.instruction(first: guideIndex == 0) ??
+          'Puedes tomar más fotos.';
+    }
+    if (!automatic) return 'Gira despacio y toma fotos alrededor de ti.';
+    if (paused) {
       return 'Captura en pausa. Continúa cuando estés listo.';
     }
+    final target = this.target;
+    if (target == null) return 'Mueve la cámara despacio alrededor de ti.';
     if (!fresh || !yaw.isFinite || !pitch.isFinite) {
       return 'Esperando orientación del teléfono. Muévelo suavemente.';
     }
     if (aimed) {
       return steady
-          ? automatic
-                ? 'Encuadre listo. Tomando foto…'
-                : 'Posición lista. Pulsa Aceptar toma.'
+          ? 'Encuadre listo. Tomando foto…'
           : 'Mantén el teléfono estable un momento.';
     }
     if (target.pitch.abs() >= 85) {
@@ -47,7 +62,7 @@ class CaptureGuidancePanel extends StatelessWidget {
           ? 'al techo, con la pantalla hacia abajo'
           : 'al piso, con la pantalla hacia arriba';
       return 'Apunta la cámara trasera $position. '
-          '${automatic ? 'Quédate quieto: la foto se toma sola.' : 'Mantén el teléfono quieto hasta que se active Aceptar toma.'}';
+          'Quédate quieto: la foto se toma sola.';
     }
     if (pitch.abs() > 75) {
       return 'Primero apunta la cámara al frente. Después seguiremos con el giro.';
@@ -82,7 +97,10 @@ class CaptureGuidancePanel extends StatelessWidget {
 
   IconData get _directionIcon {
     if (busy) return Icons.hourglass_top_rounded;
-    if (automatic && paused) return Icons.pause_circle_outline;
+    if (!automatic) return Icons.rotate_right_rounded;
+    if (paused) return Icons.pause_circle_outline;
+    final target = this.target;
+    if (target == null) return Icons.rotate_right_rounded;
     if (!fresh || !yaw.isFinite || !pitch.isFinite) {
       return Icons.explore_outlined;
     }
@@ -102,6 +120,16 @@ class CaptureGuidancePanel extends StatelessWidget {
         : Icons.arrow_downward_rounded;
   }
 
+  String get _angleDetails {
+    final target = this.target;
+    final actual =
+        'Actual: giro ${yaw.round()}° · inclinación ${pitch.round()}°';
+    return target == null
+        ? actual
+        : '$actual\n'
+              'Objetivo: giro ${target.yaw.round()}° · inclinación ${target.pitch.round()}°';
+  }
+
   @override
   Widget build(BuildContext context) => Material(
     elevation: 8,
@@ -117,28 +145,57 @@ class CaptureGuidancePanel extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ExcludeSemantics(
-                child: Icon(
-                  _directionIcon,
-                  size: 32,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                child: !automatic && cubeGuide != null
+                    ? SizedBox(
+                        width: MediaQuery.textScalerOf(context).scale(1) > 1.5
+                            ? 64
+                            : 92,
+                        height: MediaQuery.textScalerOf(context).scale(1) > 1.5
+                            ? 64
+                            : 92,
+                        child: CaptureCube(
+                          step: _cubeStep,
+                          completed: _cubeStep == null,
+                        ),
+                      )
+                    : Icon(
+                        _directionIcon,
+                        size: 32,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  instruction,
-                  style: Theme.of(context).textTheme.titleSmall,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!automatic && cubeGuide != null) ...[
+                      Text(
+                        _cubeStep == null
+                            ? 'Guía recorrida'
+                            : '${_cubeStep!.faceLabel} · ${_cubeStep!.zoneLabel}',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      Text(
+                        _cubeStep == null
+                            ? 'Referencia: el centro'
+                            : 'Paso ${guideIndex + 1} de ${cubeGuide!.steps.length} · desde el centro',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+                    Text(
+                      instruction,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
           if (showAngles && fresh && yaw.isFinite && pitch.isFinite) ...[
             const SizedBox(height: 4),
-            Text(
-              'Actual: giro ${yaw.round()}° · inclinación ${pitch.round()}°\n'
-              'Objetivo: giro ${target.yaw.round()}° · inclinación ${target.pitch.round()}°',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(_angleDetails, style: Theme.of(context).textTheme.bodySmall),
           ],
           const SizedBox(height: 8),
           FilledButton.icon(
@@ -146,9 +203,7 @@ class CaptureGuidancePanel extends StatelessWidget {
                 ? null
                 : automatic
                 ? onTogglePause
-                : fresh && aimed && steady
-                ? onTake
-                : null,
+                : onTake,
             icon: Icon(
               automatic
                   ? paused
@@ -161,7 +216,7 @@ class CaptureGuidancePanel extends StatelessWidget {
                   ? paused
                         ? 'Continuar captura'
                         : 'Pausar captura'
-                  : 'Aceptar toma',
+                  : 'Tomar foto',
             ),
           ),
         ],

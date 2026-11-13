@@ -9,15 +9,28 @@ const _xmpIdentifier = 'http://ns.adobe.com/xap/1.0/\u0000';
 const _exifIdentifier = 'Exif\u0000\u0000';
 
 class PanoramaImportInfo {
-  const PanoramaImportInfo({required this.width, required this.height});
+  const PanoramaImportInfo({
+    required this.width,
+    required this.height,
+    this.horizontal = false,
+  });
 
   final int width, height;
+  final bool horizontal;
 }
+
+/// A landscape JPEG without validated full-sphere metadata stays a flat image.
+/// Its aspect ratio is never used as proof of spherical projection.
+PanoramaImportInfo inspectPanoramaImport(Uint8List bytes) =>
+    validatePanoramaImport(bytes, allowHorizontal: true);
 
 /// Checks the original JPEG container and declared full-sphere XMP metadata.
 /// Does not rewrite bytes or claim optical coverage. The worker still decodes
 /// and validates the complete image before producing a usable panorama.
-PanoramaImportInfo validatePanoramaImport(Uint8List bytes) {
+PanoramaImportInfo validatePanoramaImport(
+  Uint8List bytes, {
+  bool allowHorizontal = false,
+}) {
   if (bytes.length > panoramaImportMaxBytes) {
     throw StateError(
       'La foto supera 32 MB. Exporta el panorama 360° como JPEG de menor tamaño.',
@@ -112,6 +125,18 @@ PanoramaImportInfo validatePanoramaImport(Uint8List bytes) {
   }
   if (!scanFound || !endFound || width == null || height == null) {
     _invalidJpeg();
+  }
+  if (allowHorizontal) {
+    try {
+      return validatePanoramaImport(bytes);
+    } on StateError {
+      if (width <= height) {
+        throw StateError(
+          'Elige una panorámica horizontal o una foto 360° completa.',
+        );
+      }
+      return PanoramaImportInfo(width: width, height: height, horizontal: true);
+    }
   }
   if (width != height * 2) {
     throw StateError(

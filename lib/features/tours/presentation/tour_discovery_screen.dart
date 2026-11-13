@@ -120,31 +120,32 @@ class _TourDiscoveryScreenState extends State<TourDiscoveryScreen> {
       leading: const TourBackButton(fallback: '/map'),
       title: const Text('Explorar locales'),
       actions: [
-        PopupMenuButton<String>(
-          tooltip: 'Más opciones',
-          onSelected: (value) {
+        IconButton(
+          tooltip: 'Ver mapa',
+          icon: const Icon(Icons.map_outlined),
+          onPressed: () {
             _locationGeneration++;
-            setState(() {
-              _locating = false;
-              if (value == 'all') {
+            setState(() => _locating = false);
+            context.push('/map?experiences=1');
+          },
+        ),
+        if (_position != null)
+          PopupMenuButton<String>(
+            tooltip: 'Más opciones',
+            onSelected: (value) {
+              if (value != 'all') return;
+              _locationGeneration++;
+              setState(() {
+                _locating = false;
                 _position = null;
                 _error = null;
                 _items = _fetch();
-              }
-            });
-            if (value == 'map') {
-              context.push('/map?experiences=1');
-            }
-          },
-          itemBuilder: (_) => [
-            const PopupMenuItem(value: 'map', child: Text('Ver mapa')),
-            if (_position != null)
-              const PopupMenuItem(
-                value: 'all',
-                child: Text('Ver todos los locales'),
-              ),
-          ],
-        ),
+              });
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem(value: 'all', child: Text('Ver todos los locales')),
+            ],
+          ),
       ],
     ),
     body: ListView(

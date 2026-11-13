@@ -6,6 +6,9 @@ enum TourOrientation {
   let value=(yaw-origin+180).truncatingRemainder(dividingBy:360)
   return (value<0 ? value+360 : value)-180
  }
+ static func headingOrigin(_ previous: Double?,yaw: Double,pitch: Double)->Double? {
+  previous ?? (abs(pitch)<89.5 ? yaw : nil)
+ }
  static func pitch(_ cameraZ: Double)->Double { asin(max(-1,min(1,-cameraZ)))*180 / .pi }
  static func pose(x: Double,y: Double,z: Double,w: Double)->(yaw: Double,pitch: Double,roll: Double) {
   let r02=2*(x*z+y*w),r12=2*(y*z-x*w),r22=1-2*(x*x+y*y)

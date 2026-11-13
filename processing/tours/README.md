@@ -8,10 +8,35 @@ Una publicación conserva puntos independientes con texto y omite vínculos pend
 
 ## Pipeline
 
+### Prueba local con fotos del teléfono, sin backend
+
+`process_local_capture.py` procesa una **copia** de una sesión de captura y sus JPEG. No lee claves, consume colas, sube imágenes ni publica resultados. Requiere las dependencias de `requirements.txt` y los seis ejecutables Hugin/Enblend de [la distribución del proyecto](https://hugin.sourceforge.io/download/).
+
+```powershell
+.venv-tours\Scripts\python.exe processing/tours/process_local_capture.py `
+  'C:\copias\capture-ID_DE_LA_POSICION.json' `
+  --output 'C:\resultados\intento-nuevo' `
+  --tools 'C:\herramientas\Hugin\bin'
+```
+
+Por defecto selecciona las fotos de la guía del cubo. `--selection all` incluye también las fotos adicionales tomadas después de terminar la guía; exige datos medidos de orientación para cada entrada. `--selection latest-session` utiliza la última sesión de sensores y `--selection ready` sólo las fotos con referencia ya recuperada. Los JPEG deben estar junto al JSON o en `--photos CARPETA`. El destino debe ser nuevo y estar separado de los originales.
+
+Al retomar la cámara, las sesiones de orientación pueden tener orígenes distintos. Esta prueba usa `sensor_yaw` realmente medido para inicializar esas fotos, conserva su procedencia y ejecuta **cpfind --allpairs --fullscale / autooptimiser -p / autooptimiser -n** para recuperar una geometría común mediante coincidencias reales y una lente fija. Se conserva todo el detalle de las fotos pequeñas del teléfono al buscar características; [cpfind reduce sus dimensiones a la mitad por defecto](https://hugin.sourceforge.io/docs/manual/Cpfind.html). Nunca asigna como pose los ángulos sugeridos por el cubo. El worker habitual conserva su modo `--multirow / -n`, sin `--fullscale`; el modo visual requiere la opción explícita `feature_alignment=True`.
+
+El ajuste libre de lente `-a` produjo campos de visión entre 8,95° y 180° con las fotos del OPPO y fue retirado del modo local. Antes del remapeo, `validate_camera_geometry` exige conservar el campo de visión calibrado de cada imagen, incluidas referencias de lente enlazadas; rechaza cambios, ciclos y cantidades de imágenes incoherentes con `inconsistent_camera_geometry`. Esto impide declarar cobertura aumentando artificialmente el campo de visión. No convierte coincidencias incorrectas en una unión válida: siguen siendo necesarias la conexión real, la cobertura y la revisión visual.
+
+`result.json` distingue `ready` de errores como `disconnected_control_points` o `incomplete_sphere_coverage`. Un resultado listo debe pasar las mismas validaciones de coincidencias conectadas, alpha completo y GPano antes de exportarse. Los proyectos PTO y diagnósticos permanecen locales para investigar fallos; las fotos originales no se modifican. Sólo un resultado `ready` admite revisión como esfera completa.
+
+En la prueba del OPPO del 13 de noviembre, el usuario confirmó que las 91 fotos acumuladas se habían usado para probar la interfaz. Se procesaron sus 36 tomas con guía: hubo 10 grupos desconectados y seis fotos sin emparejamientos, incluidos techo/piso. Se rechazó correctamente la esfera. No acredita un problema de servidor ni constituye una captura completa válida. Hace falta una serie tomada para cubrir realmente el lugar.
+
+Las copias y los resultados de esa prueba están bajo `.dart_tool/ar-live-pilot/processing/`, ignorados por Git. La APK piloto mantiene desactivada la subida a producción. **Capturas anteriores**, en el menú de captura, conserva la sesión seleccionada antes de empezar otra y permite retomarla sin eliminar sus JPEG.
+
+### Procesamiento con backend
+
 1. El dispatcher se autentica con secreto servidor, firma JWT RSA para OAuth Google y llama la API v2 de Cloud Run con `job/lease` y prueba HMAC. El worker carga manifest/autor desde `tours_job_context`; nunca usa URLs, comandos ni PTO enviados por cliente.
 2. Descarga JPEGs privados `tour-inputs/owner/capture/frame.jpg`, hasta96 frames de32MiB. Comprueba IDs, ruta exacta, dimensiones reales, orientación normalizada, valores finitos y FOV rectilíneo para fotos.
 3. Fotos: PTO generado con orientación/FOV numéricos, `cpfind`, `cpclean`, grafo conectado de puntos de control, `autooptimiser`, `pano_modify` a esfera360×180, `nona` con canvas completo, unión de alpha real de remapeos **sin huecos**, `enblend --no-optimize --wrap=horizontal`. Una imagen incompleta no se rellena para fingir cobertura. El techo/suelo y la unión longitudinal deben estar cubiertos.
-4. Importación: requiere XMP GPano real del JPEG con proyección equirectangular y dimensiones/área completa sin crop. Un JPEG 2:1 normal o texto GPano agregado fuera del XMP se rechaza.
+4. Importación 360°: requiere XMP GPano real del JPEG con proyección equirectangular y dimensiones/área completa sin crop. Un JPEG 2:1 normal o texto GPano agregado fuera del XMP no se acepta como esfera. La importación explícita `panorama_kind: horizontal` admite un JPEG apaisado, sin ángulos de esfera en el frame; decodifica y exporta conservando la proporción, sin añadir XMP GPano. Sus resultados incluyen tipo y dimensiones para el visor lateral. Requiere el worker actualizado y la migración 042, todavía sin aplicar; [contrato y prueba](../../docs/implementation/ar-horizontal-import.md).
 5. Salidas JPEG GPano4096×2048, preview2048×1024, thumbnail512×256 bajo `tour-assets/owner/jobs/job/`. FOV usado: el reportado por la app; orientación es una inicialización, no la prueba de cobertura.
 6. CAS de lease antes de escribir y concluir. Guardas de escritura de60s se renuevan antes de cada subida (red limitada a25s), bloquean recovery/GC y eliminación de cuenta. Cancelación elimina parciales; el dispatcher reserva guardas para GC de residuos tras procesos interrumpidos. Ante timeout ambiguo al lanzar Cloud Run se conserva lease hasta expiración, evitando ejecución doble inmediata.
 

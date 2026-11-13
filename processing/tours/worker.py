@@ -43,6 +43,10 @@ def validate_manifest(manifest, owner, capture, files=None):
     if not isinstance(manifest, dict) or manifest.get('mode') not in ('import', 'photos'):
         raise TourError('invalid_manifest')
     frames = manifest.get('frames')
+    kind = manifest.get('panorama_kind', 'sphere')
+    horizontal = kind == 'horizontal'
+    if kind not in ('sphere', 'horizontal') or (horizontal and manifest['mode'] != 'import'):
+        raise TourError('invalid_manifest')
     if not isinstance(frames, list) or not 1 <= len(frames) <= 96:
         raise TourError('invalid_manifest')
     if (manifest['mode'] == 'import' and len(frames) != 1) or (manifest['mode'] == 'photos' and len(frames) < 6):
@@ -54,10 +58,13 @@ def validate_manifest(manifest, owner, capture, files=None):
         if ident in seen or f.get('path') != f'{owner}/{capture}/{ident}.jpg':
             raise TourError('invalid_input_path')
         seen.add(ident)
-        for field, low, high in [('width', 64, 24000), ('height', 64, 24000), ('yaw', -180, 179.999999), ('pitch', -90, 90), ('roll', -180, 180), ('hfov', 1, 360), ('vfov', 1, 180)]:
+        geometry = [] if horizontal else [('yaw', -180, 179.999999), ('pitch', -90, 90), ('roll', -180, 180), ('hfov', 1, 360), ('vfov', 1, 180)]
+        for field, low, high in [('width', 64, 24000), ('height', 64, 24000), *geometry]:
             finite_number(f.get(field), low, high)
         if not isinstance(f['width'], int) or not isinstance(f['height'], int) or f['width'] * f['height'] > 120_000_000:
             raise TourError('invalid_dimensions')
+        if horizontal and (f['width'] <= f['height'] or any(key in f for key in ('yaw', 'pitch', 'roll', 'hfov', 'vfov'))):
+            raise TourError('invalid_horizontal_panorama')
         if manifest['mode'] == 'photos' and (f['hfov'] >= 179 or f['vfov'] >= 179):
             raise TourError('invalid_lens_fov')
         if files is not None:
@@ -122,6 +129,24 @@ def connected_control_points(pto, count):
     if len(seen) != count:
         raise TourError('disconnected_control_points')
 
+def validate_camera_geometry(pto, frames):
+    """A fitting algorithm cannot enlarge photos' calibrated optical coverage."""
+    images = [line for line in pto.splitlines() if line.startswith('i ')]
+    if len(images) != len(frames):
+        raise TourError('inconsistent_camera_geometry')
+    values = [re.search(r'\bv(=?-?[\d.]+)(?:\s|$)', line) for line in images]
+    def fov(index, visited):
+        if index < 0 or index >= len(images) or index in visited or values[index] is None:
+            raise TourError('inconsistent_camera_geometry')
+        value = values[index][1]
+        if value.startswith('='):
+            try: return fov(int(value[1:]), visited | {index})
+            except ValueError: raise TourError('inconsistent_camera_geometry')
+        return float(value)
+    for index, frame in enumerate(frames):
+        if not math.isclose(fov(index, set()),frame['hfov'],abs_tol=.00001):
+            raise TourError('inconsistent_camera_geometry')
+
 def validate_alpha_coverage(alphas):
     union = None
     for alpha in alphas:
@@ -173,7 +198,7 @@ def command(args, cwd, deadline, check_current):
                 except subprocess.TimeoutExpired:
                     proc.kill(); proc.wait()
 
-def stitch_photos(frames, files, directory, deadline, check_current):
+def stitch_photos(frames, files, directory, deadline, check_current, *, feature_alignment=False):
     # Fixed names and numeric values only. Each lens FOV is independent: phones
     # may change focal length, but accepted inputs must be rectilinear JPEGs.
     pto = directory / 'project.pto'
@@ -187,10 +212,21 @@ def stitch_photos(frames, files, directory, deadline, check_current):
     lines.append('v ' + ' '.join(f'y{i} p{i} r{i}' for i in range(1,len(frames))))
     lines.append('v')
     pto.write_text('\n'.join(lines)+'\n')
-    command(['cpfind','--multirow','-o','control.pto','project.pto'],directory,deadline,check_current)
+    # Phone copies can be only 720 px wide. The offline visual alignment needs
+    # their full detail; cpfind otherwise halves both dimensions for features.
+    # Keep the backend's existing matching settings unless explicitly opted in.
+    matching = ['cpfind', '--allpairs', '--fullscale'] if feature_alignment else ['cpfind', '--multirow']
+    command([*matching,'--ncores=4','-o','control.pto','project.pto'],directory,deadline,check_current)
     command(['cpclean','-o','clean.pto','control.pto'],directory,deadline,check_current)
     connected_control_points((directory/'clean.pto').read_text(),len(frames))
-    command(['autooptimiser','-n','-m','-o','optimized.pto','clean.pto'],directory,deadline,check_current)
+    # Pairwise initialization recovers resumed sessions using real matches,
+    # without -a's automatic lens refitting (which collapsed this phone set).
+    aligned_input = 'clean.pto'
+    if feature_alignment:
+        command(['autooptimiser','-p','-o','pairwise.pto',aligned_input],directory,deadline,check_current)
+        aligned_input = 'pairwise.pto'
+    command(['autooptimiser','-n','-m','-o','optimized.pto',aligned_input],directory,deadline,check_current)
+    validate_camera_geometry((directory/'optimized.pto').read_text(),frames)
     command(['pano_modify','--projection=2','--fov=360x180','--canvas=4096x2048','--crop=0,4096,0,2048','-o','sphere.pto','optimized.pto'],directory,deadline,check_current)
     # Disable cropped TIFFs explicitly. Alpha masks must inhabit the complete
     # sphere canvas, not the bounding boxes of the remapped photographs.
@@ -226,6 +262,22 @@ def export_results(image_path, directory):
         for name, size in [('panorama',(4096,2048)),('preview',(2048,1024)),('thumbnail',(512,256))]:
             image.resize(size,Image.Resampling.LANCZOS).save(directory/f'{name}.jpg',quality=90,xmp=gpano_xmp(*size))
     return [directory/f'{name}.jpg' for name in ('panorama','preview','thumbnail')]
+
+def export_horizontal(image_path, directory):
+    """Resize a flat JPEG without stretching, filling or adding GPano metadata."""
+    paths = []
+    with Image.open(image_path) as source:
+        if source.format != 'JPEG' or source.width <= source.height:
+            raise TourError('invalid_horizontal_panorama')
+        source.load()
+        for name, maximum in [('panorama',4096), ('preview',2048), ('thumbnail',512)]:
+            image = source.convert('RGB')
+            image.info.clear()
+            image.thumbnail((maximum,maximum), Image.Resampling.LANCZOS)
+            path = directory/f'{name}.jpg'
+            image.save(path, quality=90)
+            paths.append(path)
+    return paths
 
 class Backend:
     def __init__(self, url, key):
@@ -290,9 +342,13 @@ def process_job(job, backend):
             for index,frame in enumerate(frames):
                 check();local=directory/f'input{index:03d}.jpg';backend.download(frame['path'],local);files.append(local)
             validate_manifest(job['manifest'],owner,capture,files)
-            if job['manifest']['mode']=='import':validate_gpano(files[0]);source=files[0]
-            else:source=stitch_photos(frames,files,directory,deadline,check)
-            exports=export_results(source,directory)
+            horizontal = job['manifest'].get('panorama_kind') == 'horizontal'
+            if horizontal:
+                exports=export_horizontal(files[0],directory)
+            else:
+                if job['manifest']['mode']=='import':validate_gpano(files[0]);source=files[0]
+                else:source=stitch_photos(frames,files,directory,deadline,check)
+                exports=export_results(source,directory)
             check()
             if not backend.begin_write(ident,lease):return False
             writing=True
@@ -308,6 +364,10 @@ def process_job(job, backend):
                 # accepted bytes and must still trigger cleanup.
                 uploaded.append(path);backend.upload(path,file);check()
             result=dict(zip(('panorama_path','preview_path','thumbnail_path'),expected))
+            with Image.open(exports[0]) as final_image:
+                output_width, output_height = final_image.size
+            if horizontal:
+                result.update(panorama_kind='horizontal',panorama_width=output_width,panorama_height=output_height)
             try:
                 accepted=backend.finish(ident,lease,'succeeded',result)
             except TourError:
@@ -323,7 +383,7 @@ def process_job(job, backend):
             if not accepted:
                 backend.remove(uploaded);return False
             uploaded=[]
-            log('ready',frames=len(frames),output_width=4096,output_height=2048)
+            log('ready',frames=len(frames),output_width=output_width,output_height=output_height)
             return True
     except TourError as error:
         log('cancelled' if error.code=='cancelled' else 'failed',error_code=error.code)

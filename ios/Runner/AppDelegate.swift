@@ -57,8 +57,8 @@ final class TourNative: NSObject {
      // CoreMotion DCM maps reference vectors into device coordinates; invert
      // its quaternion to transform the rear-camera optical axis into the world.
      let pose=TourOrientation.pose(x:-q.x,y:-q.y,z:-q.z,w:q.w)
-     if self.origin==nil && abs(pose.pitch)<89.5 { self.origin=pose.yaw }
-     self.motionEvents.emit(["yaw":TourOrientation.relative(pose.yaw,self.origin ?? pose.yaw),"pitch":pose.pitch,"roll":pose.roll,"timestamp":Date().timeIntervalSince1970*1000])
+     self.origin=TourOrientation.headingOrigin(self.origin,yaw:pose.yaw,pitch:pose.pitch)
+     self.motionEvents.emit(["yaw":TourOrientation.relative(pose.yaw,self.origin ?? pose.yaw),"pitch":pose.pitch,"roll":pose.roll,"headingReady":self.origin != nil,"timestamp":Date().timeIntervalSince1970*1000])
     }; result(nil)
    case "stop": self.motion.stopDeviceMotionUpdates(); result(nil)
    case "cameraInfo": self.cameraInfo(call.arguments,result)
