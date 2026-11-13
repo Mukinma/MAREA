@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -61,7 +62,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Elige tu perfil',
+            AppLocalizations.tr('Elige tu perfil'),
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 24),
@@ -71,14 +72,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             onChanged: (v) => setState(() => _type = v),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'El tipo de perfil queda fijo.',
+          Text(
+            AppLocalizations.tr('El tipo de perfil queda fijo.'),
             style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
           SessionFeedback(controller: widget.controller),
           const SizedBox(height: 24),
           PrimaryButton(
-            label: 'Confirmar y entrar',
+            label: AppLocalizations.tr('Confirmar y entrar'),
             isLoading: widget.controller.isBusy,
             onPressed: _type == null
                 ? null
@@ -98,7 +99,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             onPressed: widget.controller.isBusy
                 ? null
                 : widget.controller.signOut,
-            child: const Text('Cerrar sesión'),
+            child: Text(AppLocalizations.tr('Cerrar sesión')),
           ),
         ],
       ),

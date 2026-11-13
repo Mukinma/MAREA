@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/category_visuals.dart';
 import 'package:marea/features/community/models/community_models.dart';
@@ -30,7 +31,7 @@ class MapSearchBar extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            tooltip: 'Buscar en el mapa',
+            tooltip: AppLocalizations.tr('Buscar en el mapa'),
             constraints: const BoxConstraints.tightFor(width: 44, height: 44),
             padding: EdgeInsets.zero,
             onPressed: () => onSubmitted(controller.text),
@@ -49,8 +50,8 @@ class MapSearchBar extends StatelessWidget {
                 color: AppColors.textPrimary,
                 fontSize: 15,
               ),
-              decoration: const InputDecoration(
-                hintText: 'Buscar misiones o lugares',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.tr('Buscar misiones o lugares'),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
@@ -61,7 +62,7 @@ class MapSearchBar extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Filtros del mapa',
+            tooltip: AppLocalizations.tr('Filtros del mapa'),
             constraints: const BoxConstraints.tightFor(width: 44, height: 44),
             padding: EdgeInsets.zero,
             onPressed: onFilters,
@@ -99,12 +100,12 @@ class MapQuickFilters extends StatelessWidget {
     child: Row(
       children: [
         _chip(
-          'Todo',
+          AppLocalizations.tr('Todo'),
           filters.category == null,
           () => onChanged(filters.withCategory(null)),
         ),
         _chip(
-          'Hoy',
+          AppLocalizations.tr('Hoy'),
           filters.date == MissionMapDate.today,
           () => onChanged(
             filters.withDate(
@@ -116,7 +117,7 @@ class MapQuickFilters extends StatelessWidget {
         ),
         for (final entry in communityCategories.entries)
           _chip(
-            entry.value,
+            AppLocalizations.tr(entry.value),
             filters.category == entry.key,
             () => onChanged(
               filters.withCategory(

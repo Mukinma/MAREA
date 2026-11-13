@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:marea/core/errors/app_failure.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/map/data/mission_map_repository.dart';
 import 'package:marea/features/map/models/mission_map_models.dart';
@@ -112,7 +113,9 @@ class MissionMapController extends ChangeNotifier {
       if (_disposed || generation != _generation) return;
       error = failure is AppFailure
           ? failure.message
-          : 'No pudimos actualizar las misiones. Los últimos resultados siguen visibles.';
+          : AppLocalizations.tr(
+              'No pudimos actualizar las misiones. Los últimos resultados siguen visibles.',
+            );
     } finally {
       if (!_disposed && generation == _generation) {
         loading = false;

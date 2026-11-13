@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/shell/presentation/marea_mobile_navigation.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:marea/features/showcase/presentation/create_screen.dart';
@@ -74,7 +75,8 @@ class AppShell extends StatelessWidget {
       const brandWidth = 44.0;
       final navigationWidth = _destinations.fold(
         12.0,
-        (width, destination) => width + 59 + measure(destination.label),
+        (width, destination) =>
+            width + 59 + measure(AppLocalizations.tr(destination.label)),
       );
       final toolbarPadding = bounds.maxWidth >= 1024 ? 80 : 64;
       final compact =
@@ -86,7 +88,7 @@ class AppShell extends StatelessWidget {
                   108 +
                   navigationWidth +
                   72 +
-                  measure('Crear') +
+                  measure(AppLocalizations.tr('Crear')) +
                   toolbarPadding +
                   32;
       // Bound the nested Navigator's BlockSemantics to the content region.
@@ -251,7 +253,7 @@ class AppShell extends StatelessWidget {
     return ListenableBuilder(
       listenable: notifications,
       builder: (context, _) => IconButton(
-        tooltip: 'Notificaciones',
+        tooltip: AppLocalizations.tr('Notificaciones'),
         onPressed: () => openNotifications(context, controller!),
         icon: Badge(
           isLabelVisible: notifications.unread > 0,
@@ -271,7 +273,7 @@ class AppShell extends StatelessWidget {
       return const SizedBox(width: 48);
     }
     return IconButton(
-      tooltip: 'Mensajes',
+      tooltip: AppLocalizations.tr('Mensajes'),
       onPressed: () => context.push('/messages'),
       icon: const Icon(
         Icons.chat_bubble_outline_rounded,
@@ -282,21 +284,21 @@ class AppShell extends StatelessWidget {
 
   List<Widget> _utilities(BuildContext context) => [
     IconButton(
-      tooltip: 'Guardados',
+      tooltip: AppLocalizations.tr('Guardados'),
       onPressed: () => context.go('/explore?section=saved'),
-      icon: const Icon(
+      icon: Icon(
         Icons.bookmark_border_rounded,
-        semanticLabel: 'Guardados',
+        semanticLabel: AppLocalizations.tr('Guardados'),
         color: AppColors.textSecondary,
       ),
     ),
     if (controller?.chatRepository != null)
       IconButton(
-        tooltip: 'Mensajes',
+        tooltip: AppLocalizations.tr('Mensajes'),
         onPressed: () => context.go('/messages'),
-        icon: const Icon(
+        icon: Icon(
           Icons.chat_bubble_outline_rounded,
-          semanticLabel: 'Mensajes',
+          semanticLabel: AppLocalizations.tr('Mensajes'),
           color: AppColors.textSecondary,
         ),
       ),
@@ -305,18 +307,20 @@ class AppShell extends StatelessWidget {
         listenable: controller!.notifications!,
         builder: (context, _) => Semantics(
           value: controller!.notifications!.unread > 0
-              ? '${controller!.notifications!.unread} sin leer'
-              : 'Sin pendientes',
+              ? AppLocalizations.trTemplate('{count} sin leer', {
+                  'count': '${controller!.notifications!.unread}',
+                })
+              : AppLocalizations.tr('Sin pendientes'),
           child: IconButton(
-            tooltip: 'Notificaciones',
+            tooltip: AppLocalizations.tr('Notificaciones'),
             onPressed: () => openNotifications(context, controller!),
             icon: Badge(
               isLabelVisible: controller!.notifications!.unread > 0,
               backgroundColor: AppColors.aqua,
               smallSize: 7,
-              child: const Icon(
+              child: Icon(
                 Icons.notifications_none_rounded,
-                semanticLabel: 'Notificaciones',
+                semanticLabel: AppLocalizations.tr('Notificaciones'),
                 color: AppColors.textSecondary,
               ),
             ),
@@ -337,64 +341,67 @@ class _NavigationItem extends StatelessWidget {
   final bool selected, showLabel;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    selected: selected,
-    label: destination.label,
-    excludeSemantics: true,
-    onTap: onTap,
-    child: Tooltip(
-      message: destination.label,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.mint : Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
+  Widget build(BuildContext context) {
+    final label = AppLocalizations.tr(destination.label);
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      excludeSemantics: true,
+      onTap: onTap,
+      child: Tooltip(
+        message: label,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.mint : Colors.transparent,
             borderRadius: BorderRadius.circular(24),
-            onTap: onTap,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: showLabel ? 14 : 12,
-                vertical: 13,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    selected ? destination.selectedIcon : destination.icon,
-                    size: 23,
-                    color: selected
-                        ? AppColors.brandNavy
-                        : AppColors.textSecondary,
-                  ),
-                  if (showLabel) ...[
-                    const SizedBox(width: 8),
-                    Text(
-                      destination.label,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: selected
-                            ? FontWeight.w800
-                            : FontWeight.w600,
-                        color: selected
-                            ? AppColors.brandNavy
-                            : AppColors.textSecondary,
-                      ),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(24),
+              onTap: onTap,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: showLabel ? 14 : 12,
+                  vertical: 13,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      selected ? destination.selectedIcon : destination.icon,
+                      size: 23,
+                      color: selected
+                          ? AppColors.brandNavy
+                          : AppColors.textSecondary,
                     ),
+                    if (showLabel) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: selected
+                              ? FontWeight.w800
+                              : FontWeight.w600,
+                          color: selected
+                              ? AppColors.brandNavy
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _CreateAction extends StatefulWidget {
@@ -423,13 +430,13 @@ class _CreateActionState extends State<_CreateAction> {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Crear',
+    label: AppLocalizations.tr('Crear'),
     button: true,
     selected: widget.selected,
     excludeSemantics: true,
     onTap: _tap,
     child: Tooltip(
-      message: 'Crear',
+      message: AppLocalizations.tr('Crear'),
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
@@ -463,8 +470,8 @@ class _CreateActionState extends State<_CreateAction> {
                   ),
                   if (widget.expanded) ...[
                     const SizedBox(width: 8),
-                    const Text(
-                      'Crear',
+                    Text(
+                      AppLocalizations.tr('Crear'),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,

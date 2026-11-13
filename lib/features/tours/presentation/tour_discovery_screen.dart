@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:marea/core/location/device_location_service.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import '../models/tour_models.dart';
 import 'tour_widgets.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class TourDiscoveryScreen extends StatefulWidget {
   const TourDiscoveryScreen({required this.controller, super.key});
   final AppSessionController controller;
@@ -37,7 +40,8 @@ class _TourDiscoveryScreenState extends State<TourDiscoveryScreen> {
       if (mounted) {
         setState(
           () => _error =
-              'No pudimos obtener tu ubicación. Puedes explorar la lista de locales.',
+              (AppLocalizations.of(context) ?? AppLocalizationsEs())
+                  .errorUbicacion,
         );
       }
     } finally {
@@ -46,34 +50,32 @@ class _TourDiscoveryScreenState extends State<TourDiscoveryScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return Scaffold(
     appBar: AppBar(
       leading: const TourBackButton(fallback: '/map'),
-      title: const Text('Explorar locales'),
+      title: Text(core_l10n.AppLocalizations.tr(l10n.explorarLocales)),
     ),
     body: ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const Text(
-          'Conoce espacios en 360° y descubre sus paradas con cámara cuando estés ahí.',
-        ),
+        Text(core_l10n.AppLocalizations.tr(l10n.conoceEspacios360)),
         FilledButton.icon(
           onPressed: _locating ? null : _nearby,
           icon: const Icon(Icons.near_me_outlined),
           label: Text(
-            _locating ? 'Buscando tu ubicación…' : 'Descubrir cerca de mí',
+            _locating ? core_l10n.AppLocalizations.tr(l10n.buscandoUbicacion) : core_l10n.AppLocalizations.tr(l10n.descubrirCerca),
           ),
         ),
         if (_error != null) TourNotice(_error!),
-        const TourNotice(
-          'La ubicación y dirección del local son aproximadas. Dentro, usa las fotografías e indicaciones de cada parada.',
-        ),
+        TourNotice(core_l10n.AppLocalizations.tr(l10n.ubicacionAproximada)),
         FutureBuilder<List<TourRecord>>(
           future: _items,
           builder: (c, s) {
             if (s.hasError) {
               return TourNotice(
-                tourError(s.error!),
+                tourError(s.error!, l10n: l10n),
                 onRetry: () => setState(
                   () => _items = widget.controller.tourRepository!.list(),
                 ),
@@ -81,9 +83,7 @@ class _TourDiscoveryScreenState extends State<TourDiscoveryScreen> {
             }
             if (!s.hasData) return const LinearProgressIndicator();
             if (s.data!.isEmpty) {
-              return const TourNotice(
-                'Todavía no hay recorridos disponibles aquí.',
-              );
+              return TourNotice(core_l10n.AppLocalizations.tr(l10n.sinRecorridosDisponibles));
             }
             return Column(
               children: [
@@ -106,4 +106,5 @@ class _TourDiscoveryScreenState extends State<TourDiscoveryScreen> {
       ],
     ),
   );
+  }
 }

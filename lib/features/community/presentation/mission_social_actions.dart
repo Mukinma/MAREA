@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/config/app_config.dart';
 import 'package:marea/features/community/data/community_repository.dart';
@@ -176,7 +177,7 @@ class _MissionSocialActionsState extends State<MissionSocialActions> {
             ),
           ),
           IconButton(
-            tooltip: 'Compartir misión',
+            tooltip: AppLocalizations.tr('Compartir misión'),
             onPressed: () =>
                 sharePost(context, widget.config.missionUrl(widget.mission.id)),
             icon: const Icon(Icons.shortcut_rounded, size: 22),

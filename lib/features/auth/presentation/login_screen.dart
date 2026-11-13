@@ -1,3 +1,5 @@
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/config/app_config.dart';
@@ -11,6 +13,7 @@ import 'package:marea/shared/widgets/auth_layout.dart';
 import 'package:marea/shared/widgets/marea_text_field.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class LoginScreen extends StatefulWidget {
   const LoginScreen({required this.controller, this.email, super.key});
 
@@ -67,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     return AnimatedBuilder(
       animation: widget.controller,
       builder: (context, _) => AuthLayout(
@@ -83,11 +87,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? null
                         : () => context.go('/welcome'),
                     icon: const Icon(Icons.arrow_back_rounded),
-                    label: const Text('Inicio'),
+                    label: Text(core_l10n.AppLocalizations.tr(l10n.inicio)),
                   ),
                 ),
                 Text(
-                  'Iniciar sesión',
+                  core_l10n.AppLocalizations.tr(l10n.iniciarSesion),
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: AppSpacing.xxl),
@@ -95,8 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   key: const Key('login-email'),
                   enabled: !widget.controller.isBusy,
                   controller: _emailController,
-                  label: 'Correo',
-                  hint: 'tu@correo.com',
+                  label: core_l10n.AppLocalizations.tr(l10n.correo),
+                  hint: core_l10n.AppLocalizations.tr('tu@correo.com'),
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.email],
@@ -111,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   key: const Key('login-password'),
                   enabled: !widget.controller.isBusy,
                   controller: _passwordController,
-                  label: 'Contraseña',
+                  label: core_l10n.AppLocalizations.tr(l10n.contrasena),
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.password],
@@ -119,8 +123,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   onFieldSubmitted: (_) => _submit(),
                   suffixIcon: IconButton(
                     tooltip: _obscurePassword
-                        ? 'Mostrar contraseña'
-                        : 'Ocultar contraseña',
+                        ? core_l10n.AppLocalizations.tr(l10n.mostrarContrasena)
+                        : core_l10n.AppLocalizations.tr(l10n.ocultarContrasena),
                     onPressed: () =>
                         setState(() => _obscurePassword = !_obscurePassword),
                     icon: Icon(
@@ -140,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             widget.controller.clearFeedback();
                             context.go('/recover-password');
                           },
-                    child: const Text('Olvidé mi contraseña'),
+                    child: Text(core_l10n.AppLocalizations.tr(l10n.olvideContrasena)),
                   ),
                 ),
                 AnimatedBuilder(
@@ -151,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         if (widget.controller.failure case final failure?) ...[
                           Text(
-                            failure.message,
+                            core_l10n.AppLocalizations.tr(failure.message),
                             style: const TextStyle(
                               color: AppColors.error,
                               fontWeight: FontWeight.w600,
@@ -160,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: AppSpacing.sm),
                         ],
                         PrimaryButton(
-                          label: 'Entrar',
+                          label: core_l10n.AppLocalizations.tr(l10n.entrar),
                           isLoading: widget.controller.isBusy,
                           onPressed: _submit,
                         ),
@@ -178,7 +182,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                          label: const Text('Continuar con Google'),
+                          label: Text(
+                            core_l10n.AppLocalizations.tr(l10n.continuarConGoogle),
+                          ),
                         ),
                         if (_confirmationEmail != null &&
                             widget.controller.failure?.kind ==
@@ -191,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     widget.controller.clearFeedback();
                                     context.go('/check-email', extra: email);
                                   },
-                            child: const Text('Confirmar mi correo'),
+                            child: Text(core_l10n.AppLocalizations.tr(l10n.confirmarMiCorreo)),
                           ),
                       ],
                     );
@@ -202,12 +208,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: WrapAlignment.center,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Text('¿No tienes cuenta?'),
+                    Text(core_l10n.AppLocalizations.tr(l10n.noTienesCuenta)),
                     TextButton(
                       onPressed: widget.controller.isBusy
                           ? null
                           : () => context.go('/register'),
-                      child: const Text('Crear cuenta'),
+                      child: Text(core_l10n.AppLocalizations.tr(l10n.crearCuenta)),
                     ),
                   ],
                 ),

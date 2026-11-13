@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/features/profile/presentation/profile_waves.dart';
 
@@ -82,8 +83,8 @@ class _VisualColorDialogState extends State<_VisualColorDialog> {
 
       return Semantics(
         label: lightness
-            ? 'Elegir un color más claro o más oscuro'
-            : 'Elegir cualquier color',
+            ? AppLocalizations.tr('Elegir un color más claro o más oscuro')
+            : AppLocalizations.tr('Elegir cualquier color'),
         child: GestureDetector(
           key: ValueKey(
             lightness ? 'wave-color-lightness' : 'wave-color-field',
@@ -111,7 +112,7 @@ class _VisualColorDialogState extends State<_VisualColorDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Más colores'),
+    title: Text(AppLocalizations.tr('Más colores')),
     content: SizedBox(
       width: 320,
       child: SingleChildScrollView(
@@ -127,11 +128,11 @@ class _VisualColorDialogState extends State<_VisualColorDialog> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text('Toca o desliza para elegir'),
+            Text(AppLocalizations.tr('Toca o desliza para elegir')),
             const SizedBox(height: 8),
             _field(lightness: false),
             const SizedBox(height: 16),
-            const Text('Más oscuro o más claro'),
+            Text(AppLocalizations.tr('Más oscuro o más claro')),
             const SizedBox(height: 8),
             _field(lightness: true),
           ],
@@ -141,11 +142,11 @@ class _VisualColorDialogState extends State<_VisualColorDialog> {
     actions: [
       TextButton(
         onPressed: () => Navigator.pop(context, false),
-        child: const Text('Cancelar'),
+        child: Text(AppLocalizations.tr('Cancelar')),
       ),
       FilledButton(
         onPressed: () => Navigator.pop(context, true),
-        child: const Text('Usar color'),
+        child: Text(AppLocalizations.tr('Usar color')),
       ),
     ],
   );
@@ -230,6 +231,7 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
     'Color de la ola superior',
     'Color de la ola inferior',
   ];
+  String _waveLabel(int index) => AppLocalizations.tr(_waveNames[index]);
   static final _palette = <int>[
     ...ProfileWaves.defaultColors,
     for (final hue in [
@@ -298,7 +300,7 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
               selected: _layer == i,
               leading: _ColorCircle(color: _colors[i], selected: false),
               title: Text(
-                _waveNames[i],
+                _waveLabel(i),
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -313,8 +315,8 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
         ),
       ],
       const SizedBox(height: 4),
-      const Text(
-        'Toca un color',
+      Text(
+        AppLocalizations.tr('Toca un color'),
         style: TextStyle(fontWeight: FontWeight.w700),
       ),
       const SizedBox(height: 8),
@@ -324,7 +326,9 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
         children: [
           for (final color in {..._palette, _colors[_layer]})
             Semantics(
-              label: 'Elegir ${_waveNames[_layer].toLowerCase()}',
+              label: AppLocalizations.trTemplate('Elegir {color}', {
+                'color': _waveLabel(_layer).toLowerCase(),
+              }),
               button: true,
               selected: _colors[_layer] == color,
               child: InkResponse(
@@ -351,7 +355,7 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
         child: TextButton.icon(
           onPressed: _moreColors,
           icon: const Icon(Icons.palette_outlined),
-          label: const Text('Más colores'),
+          label: Text(AppLocalizations.tr('Más colores')),
         ),
       ),
       const SizedBox(height: 16),
@@ -368,14 +372,14 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
             padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
             child: Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Personalizar olitas',
+                    AppLocalizations.tr('Personalizar olitas'),
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Cancelar',
+                  tooltip: AppLocalizations.tr('Cancelar'),
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close),
                 ),
@@ -412,8 +416,8 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _manualColors(),
-                  const Text(
-                    'Combinaciones',
+                  Text(
+                    AppLocalizations.tr('Combinaciones'),
                     style: TextStyle(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 8),
@@ -457,7 +461,7 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
                                       child: ProfileWaves(colors: entry.value),
                                     ),
                                     Text(
-                                      entry.key,
+                                      AppLocalizations.tr(entry.key),
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(fontSize: 11),
                                     ),
@@ -471,7 +475,11 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
                   ),
                   TextButton(
                     onPressed: () => _select(ProfileWaves.defaultColors),
-                    child: const Text('Restablecer colores predeterminados'),
+                    child: Text(
+                      AppLocalizations.tr(
+                        'Restablecer colores predeterminados',
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -483,12 +491,12 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
               builder: (context, constraints) {
                 final cancel = TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'),
+                  child: Text(AppLocalizations.tr('Cancelar')),
                 );
                 final apply = FilledButton(
                   onPressed: () =>
                       Navigator.pop(context, List<int>.of(_colors)),
-                  child: const Text('Aplicar colores'),
+                  child: Text(AppLocalizations.tr('Aplicar colores')),
                 );
                 if (constraints.maxWidth < 348 ||
                     MediaQuery.textScalerOf(context).scale(14) > 21) {

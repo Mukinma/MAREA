@@ -1,3 +1,6 @@
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
+import 'package:marea/core/localization/app_localizations.dart' as core;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/config/app_config.dart';
@@ -61,7 +64,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     FocusScope.of(context).unfocus();
     if (_step == 0) {
       if (_type == null) {
-        setState(() => _error = 'Elige un perfil.');
+        final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+        setState(() => _error = core.AppLocalizations.tr(l10n.eligePerfil));
         return;
       }
       setState(() {
@@ -81,14 +85,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       if (!mounted) return;
       if (!available) {
-        setState(() => _usernameError = 'Este usuario ya está ocupado.');
+        final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+        setState(() => _usernameError = core.AppLocalizations.tr(l10n.usuarioOcupado));
         _identityForm.currentState!.validate();
       } else {
         setState(() => _step = 2);
       }
     } catch (error) {
       if (mounted) {
-        setState(() => _error = AppFailureMapper.from(error).message);
+        setState(
+          () => _error = core.AppLocalizations.tr(
+            AppFailureMapper.from(error).message,
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _checking = false);
@@ -126,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           failure?.message.contains('usuario') == true) {
         setState(() {
           _step = 1;
-          _usernameError = failure!.message;
+          _usernameError = core.AppLocalizations.tr(failure!.message);
         });
         widget.controller.clearFeedback();
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -136,9 +145,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           failure?.kind == AppFailureKind.weakPassword) {
         setState(() {
           if (failure!.kind == AppFailureKind.emailAlreadyUsed) {
-            _emailError = failure.message;
+            _emailError = core.AppLocalizations.tr(failure.message);
           } else {
-            _passwordError = failure.message;
+            _passwordError = core.AppLocalizations.tr(failure.message);
           }
         });
         widget.controller.clearFeedback();
@@ -148,7 +157,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => AnimatedBuilder(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return AnimatedBuilder(
     animation: widget.controller,
     builder: (context, _) => PopScope(
       canPop: _step == 0 && !_busy,
@@ -163,13 +174,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Row(
               children: [
                 IconButton(
-                  tooltip: 'Atrás',
+                  tooltip: core.AppLocalizations.tr(l10n.atras),
                   onPressed: _busy ? null : _back,
                   icon: const Icon(Icons.arrow_back_rounded),
                 ),
                 const Spacer(),
                 Text(
-                  '${_step + 1} de 3',
+                  core.AppLocalizations.tr(l10n.pasoRegistro(_step + 1)),
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w700,
@@ -180,9 +191,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 12),
             Text(
               [
-                '¿Qué perfil quieres crear?',
-                'Tu perfil',
-                'Crea tu acceso',
+                core.AppLocalizations.tr(l10n.quePerfilQuieresCrear),
+                core.AppLocalizations.tr(l10n.tuPerfil),
+                core.AppLocalizations.tr(l10n.creaTuAcceso),
               ][_step],
               style: Theme.of(context).textTheme.headlineMedium,
             ),
@@ -230,7 +241,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       MareaTextField(
                         key: const Key('register-name'),
                         controller: _name,
-                        label: _type!.nameLabel,
+                        label: core.AppLocalizations.tr(_type!.nameLabel),
                         enabled: !_busy,
                         autofillHints: const [AutofillHints.name],
                         textInputAction: TextInputAction.next,
@@ -240,7 +251,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       MareaTextField(
                         key: const Key('register-username'),
                         controller: _username,
-                        label: 'Usuario',
+                        label: core.AppLocalizations.tr(l10n.usuario),
                         prefixText: '@',
                         enabled: !_busy,
                         textInputAction: TextInputAction.done,
@@ -269,7 +280,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               onPressed: _busy
                                   ? null
                                   : () => setState(() => _step = 0),
-                              child: const Text('Cambiar'),
+                              child: Text(core.AppLocalizations.tr(l10n.cambiar)),
                             );
                             final compact =
                                 bounds.maxWidth < 320 ||
@@ -306,8 +317,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'El tipo de perfil queda fijo.',
+                      Text(
+                        core.AppLocalizations.tr(l10n.tipoPerfilFijo),
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
@@ -317,7 +328,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       MareaTextField(
                         key: const Key('register-email'),
                         controller: _email,
-                        label: 'Correo',
+                        label: core.AppLocalizations.tr(l10n.correo),
                         enabled: !_busy,
                         keyboardType: TextInputType.emailAddress,
                         autofillHints: const [AutofillHints.email],
@@ -334,8 +345,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       MareaTextField(
                         key: const Key('register-password'),
                         controller: _password,
-                        label: 'Contraseña',
-                        hint: 'Mínimo 8 caracteres',
+                        label: core.AppLocalizations.tr(l10n.contrasena),
+                        hint: core.AppLocalizations.tr(l10n.minimoCaracteres),
                         enabled: !_busy,
                         obscureText: _obscure,
                         autofillHints: const [AutofillHints.newPassword],
@@ -346,8 +357,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onFieldSubmitted: (_) => _submit(),
                         suffixIcon: IconButton(
                           tooltip: _obscure
-                              ? 'Mostrar contraseña'
-                              : 'Ocultar contraseña',
+                              ? core.AppLocalizations.tr(l10n.mostrarContrasena)
+                              : core.AppLocalizations.tr(l10n.ocultarContrasena),
                           onPressed: _busy
                               ? null
                               : () => setState(() => _obscure = !_obscure),
@@ -362,13 +373,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       if (!widget.controller.legalPolicy.canRegister) ...[
                         Text(
                           widget.controller.legalError ??
-                              'El registro no está disponible. Intenta de nuevo.',
+                              core.AppLocalizations.tr(l10n.registroNoDisponible),
                         ),
                         TextButton(
                           onPressed: _busy
                               ? null
                               : widget.controller.reloadLegal,
-                          child: const Text('Reintentar'),
+                          child: Text(core.AppLocalizations.tr(l10n.reintentar)),
                         ),
                       ],
                       ConsentFields(
@@ -390,7 +401,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Semantics(
                   liveRegion: true,
                   child: Text(
-                    error,
+                        core.AppLocalizations.tr(error),
                     style: const TextStyle(color: AppColors.error),
                   ),
                 ),
@@ -398,7 +409,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 28),
             PrimaryButton(
               key: const Key('register-continue'),
-              label: _step == 2 ? 'Crear cuenta' : 'Continuar',
+              label: _step == 2 ? core.AppLocalizations.tr(l10n.crearCuentaAccion) : core.AppLocalizations.tr(l10n.continuar),
               isLoading: _busy,
               onPressed:
                   _busy ||
@@ -430,7 +441,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                label: const Text('Continuar con Google'),
+                label: Text(core.AppLocalizations.tr(l10n.continuarConGoogle)),
               ),
             ],
             const SizedBox(height: 12),
@@ -441,7 +452,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       widget.controller.clearFeedback();
                       context.go('/login', extra: _email.text.trim());
                     },
-              child: const Text('Iniciar sesión'),
+              child: Text(core.AppLocalizations.tr(l10n.iniciarSesion)),
             ),
             if (_step == 2 && _emailError != null)
               TextButton(
@@ -454,11 +465,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           extra: _email.text.trim(),
                         );
                       },
-                child: const Text('Recuperar contraseña'),
+                child: Text(core.AppLocalizations.tr(l10n.recuperarContrasena)),
               ),
           ],
         ),
       ),
     ),
-  );
+    );
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -58,7 +59,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       for (final day in ProfilePreferences.weekdays.keys)
         day: TextEditingController(
           text: profile.businessHours.containsKey(day)
-              ? profile.businessHours[day] ?? 'cerrado'
+              ? profile.businessHours[day] ?? AppLocalizations.tr('cerrado')
               : '',
         ),
     };
@@ -85,19 +86,23 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   bool get _preferences =>
       widget.preferencesOnly || (_type == UserType.general && _step == 1);
   bool get _last => _step == _type.setupSteps - 1;
+  bool _isClosedHours(String value) =>
+      const {'cerrado', 'closed'}.contains(value.trim().toLowerCase());
+  String? _translatedError(String? error) =>
+      error == null ? null : AppLocalizations.tr(error);
   String get _title => _preferences
-      ? 'Tus intereses'
+      ? AppLocalizations.tr('Tus intereses')
       : _step == 0
       ? (_type == UserType.general || _type == UserType.creator
-            ? 'Tu imagen'
-            : 'Tu marca')
+            ? AppLocalizations.tr('Tu imagen')
+            : AppLocalizations.tr('Tu marca'))
       : _type == UserType.business && _step == 2
-      ? 'Dónde y cuándo'
+      ? AppLocalizations.tr('Dónde y cuándo')
       : _last
-      ? 'Tu primera ficha'
+      ? AppLocalizations.tr('Tu primera ficha')
       : _type == UserType.creator
-      ? 'Tu trabajo'
-      : 'Tu contacto';
+      ? AppLocalizations.tr('Tu trabajo')
+      : AppLocalizations.tr('Tu contacto');
   ProfileMediaRepository get _media =>
       widget.controller.mediaRepository ?? SupabaseProfileMediaRepository();
   @override
@@ -123,7 +128,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       }
     } catch (error) {
       if (mounted) {
-        setState(() => _error = AppFailureMapper.from(error).message);
+        setState(
+          () => _error = AppLocalizations.tr(
+            AppFailureMapper.from(error).message,
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -171,7 +180,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           businessHours: {
             for (final day in _hours.keys)
               if (_hours[day]!.text.trim().isNotEmpty)
-                day: _hours[day]!.text.trim().toLowerCase() == 'cerrado'
+                day: _isClosedHours(_hours[day]!.text)
                     ? null
                     : _hours[day]!.text.trim(),
           },
@@ -210,7 +219,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       }
     } catch (error) {
       if (mounted) {
-        setState(() => _error = AppFailureMapper.from(error).message);
+        setState(
+          () => _error = AppLocalizations.tr(
+            AppFailureMapper.from(error).message,
+          ),
+        );
       }
     } finally {
       if (!saved && staged != null) {
@@ -252,12 +265,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             TextButton.icon(
               onPressed: _busy ? null : _pick,
               icon: const Icon(Icons.add_a_photo_outlined),
-              label: const Text('Elegir foto'),
+              label: Text(AppLocalizations.tr('Elegir foto')),
             ),
             if (_photo != null)
               TextButton(
                 onPressed: _busy ? null : () => setState(() => _photo = null),
-                child: const Text('Descartar foto'),
+                child: Text(AppLocalizations.tr('Descartar foto')),
               ),
           ],
         ),
@@ -265,19 +278,19 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       const SizedBox(height: 20),
       MareaTextField(
         controller: _name,
-        label: _type.nameLabel,
+        label: AppLocalizations.tr(_type.nameLabel),
         enabled: !_busy,
-        validator: FormValidators.fullName,
+        validator: (value) => _translatedError(FormValidators.fullName(value)),
         textInputAction: TextInputAction.next,
       ),
       const SizedBox(height: 16),
       MareaTextField(
         controller: _bio,
-        label: 'Bio',
+        label: AppLocalizations.tr('Bio'),
         enabled: !_busy,
         maxLines: 3,
         maxLength: 160,
-        validator: FormValidators.bio,
+        validator: (value) => _translatedError(FormValidators.bio(value)),
       ),
     ],
   );
@@ -286,27 +299,28 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       if (_type == UserType.creator) ...[
         MareaTextField(
           controller: _bio,
-          label: 'Bio',
+          label: AppLocalizations.tr('Bio'),
           maxLines: 3,
           maxLength: 160,
           enabled: !_busy,
-          validator: FormValidators.bio,
+          validator: (value) => _translatedError(FormValidators.bio(value)),
         ),
         const SizedBox(height: 16),
       ],
       MareaTextField(
         controller: _contact,
-        label: 'Contacto',
+        label: AppLocalizations.tr('Contacto'),
         hint: 'https://...',
         enabled: !_busy,
         keyboardType: TextInputType.url,
-        validator: ProfilePreferences.websiteError,
+        validator: (value) =>
+            _translatedError(ProfilePreferences.websiteError(value)),
       ),
       if (_type == UserType.creator)
         CheckboxListTile(
           contentPadding: EdgeInsets.zero,
           controlAffinity: ListTileControlAffinity.leading,
-          title: const Text('Disponible para colaborar'),
+          title: Text(AppLocalizations.tr('Disponible para colaborar')),
           value: _collaboration,
           onChanged: _busy
               ? null
@@ -322,12 +336,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         radius: 16,
         child: ListTile(
           leading: const Icon(Icons.location_on_outlined),
-          title: const Text('Ubicación'),
-          subtitle: Text(_location ?? 'Opcional'),
+          title: Text(AppLocalizations.tr('Ubicación')),
+          subtitle: Text(_location ?? AppLocalizations.tr('Opcional')),
           trailing: _location == null
               ? const Icon(Icons.chevron_right)
               : IconButton(
-                  tooltip: 'Quitar ubicación',
+                  tooltip: AppLocalizations.tr('Quitar ubicación'),
                   onPressed: _busy
                       ? null
                       : () => setState(() {
@@ -361,10 +375,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         ),
       ),
       const SizedBox(height: 20),
-      const Text('Horarios', style: TextStyle(fontWeight: FontWeight.w800)),
+      Text(
+        AppLocalizations.tr('Horarios'),
+        style: const TextStyle(fontWeight: FontWeight.w800),
+      ),
       const SizedBox(height: 4),
-      const Text(
-        'Hora local · vacío para omitir',
+      Text(
+        AppLocalizations.tr('Hora local · vacío para omitir'),
         style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
       ),
       const SizedBox(height: 16),
@@ -373,15 +390,17 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           padding: const EdgeInsets.only(bottom: 12),
           child: MareaTextField(
             controller: _hours[day.key]!,
-            label: day.value,
-            hint: '09:00-18:00 o cerrado',
+            label: AppLocalizations.tr(day.value),
+            hint: AppLocalizations.tr('09:00-18:00 o cerrado'),
             enabled: !_busy,
             validator: (v) =>
                 v == null ||
                     v.trim().isEmpty ||
-                    v.trim().toLowerCase() == 'cerrado'
+                    _isClosedHours(v)
                 ? null
-                : ProfilePreferences.hoursError({day.key: v.trim()}),
+                : _translatedError(
+                    ProfilePreferences.hoursError({day.key: v.trim()}),
+                  ),
           ),
         ),
     ],
@@ -400,7 +419,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         }),
       ),
       const SizedBox(height: 24),
-      const Text('¿Qué buscas?', style: TextStyle(fontWeight: FontWeight.w800)),
+      Text(
+        AppLocalizations.tr('¿Qué buscas?'),
+        style: TextStyle(fontWeight: FontWeight.w800),
+      ),
       const SizedBox(height: 12),
       PreferenceChips(
         catalog: ProfilePreferences.goals,
@@ -421,10 +443,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         ? 'product'
         : 'service';
     final title = _type == UserType.creator
-        ? 'Crear mi primera obra'
+        ? AppLocalizations.tr('Crear mi primera obra')
         : _type == UserType.entrepreneur
-        ? 'Crear mi primera ficha'
-        : 'Crear mi primer servicio';
+        ? AppLocalizations.tr('Crear mi primera ficha')
+        : AppLocalizations.tr('Crear mi primer servicio');
     return Column(
       children: [
         ProfileTypeIcon(type: _type),
@@ -459,7 +481,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               Row(
                 children: [
                   IconButton(
-                    tooltip: 'Atrás',
+                    tooltip: AppLocalizations.tr('Atrás'),
                     onPressed: _busy
                         ? null
                         : () {
@@ -474,7 +496,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   const Spacer(),
                   if (!widget.preferencesOnly)
                     Text(
-                      '${_step + 1} de ${_type.setupSteps}',
+                      AppLocalizations.trTemplate('{step} de {total}', {
+                        'step': '${_step + 1}',
+                        'total': '${_type.setupSteps}',
+                      }),
                       style: const TextStyle(color: AppColors.textSecondary),
                     ),
                 ],
@@ -484,7 +509,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 12),
               if (!widget.preferencesOnly) ...[
                 Text(
-                  _type.label,
+                  AppLocalizations.tr(_type.label),
                   style: const TextStyle(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 12),
@@ -523,17 +548,21 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               PrimaryButton(
                 key: const Key('setup-save'),
                 label: widget.preferencesOnly
-                    ? 'Guardar'
+                    ? AppLocalizations.tr('Guardar')
                     : _last
-                    ? 'Terminar'
-                    : 'Guardar y continuar',
+                    ? AppLocalizations.tr('Terminar')
+                    : AppLocalizations.tr('Guardar y continuar'),
                 isLoading: _busy,
                 onPressed: _busy ? null : _save,
               ),
               TextButton(
                 key: const Key('setup-skip'),
                 onPressed: _busy ? null : () => context.go('/profile'),
-                child: Text(widget.preferencesOnly ? 'Cancelar' : 'Ahora no'),
+                child: Text(
+                  AppLocalizations.tr(
+                    widget.preferencesOnly ? 'Cancelar' : 'Ahora no',
+                  ),
+                ),
               ),
             ],
           ),

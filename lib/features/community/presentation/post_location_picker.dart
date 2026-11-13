@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/location/data/location_repository.dart';
 import 'package:marea/features/location/models/location_models.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
@@ -105,7 +106,9 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
       setState(() {
         _results = [];
         _searching = false;
-        _message = 'Escribe al menos 3 caracteres para buscar.';
+        _message = AppLocalizations.tr(
+          'Escribe al menos 3 caracteres para buscar.',
+        );
       });
       return;
     }
@@ -124,14 +127,15 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
             .where((result) => result.coordinates.isValid)
             .toList();
         _message = _results.isEmpty
-            ? 'No encontramos lugares con ese nombre.'
+            ? AppLocalizations.tr('No encontramos lugares con ese nombre.')
             : null;
       });
     } catch (_) {
       if (mounted && generation == _searchGeneration) {
         setState(
-          () => _message =
-              'No pudimos buscar ese lugar. Puedes elegir un punto en el mapa o escribir la dirección al cerrar.',
+          () => _message = AppLocalizations.tr(
+            'No pudimos buscar ese lugar. Puedes elegir un punto en el mapa o escribir la dirección al cerrar.',
+          ),
         );
       }
     } finally {
@@ -152,9 +156,13 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
       point.longitude >= -180 &&
       point.longitude <= 180;
 
-  String _pointLabel(LatLng point) =>
-      'Ubicación seleccionada (${point.latitude.toStringAsFixed(6)}, '
-      '${point.longitude.toStringAsFixed(6)})';
+  String _pointLabel(LatLng point) => AppLocalizations.trTemplate(
+    'Ubicación seleccionada ({latitude}, {longitude})',
+    {
+      'latitude': point.latitude.toStringAsFixed(6),
+      'longitude': point.longitude.toStringAsFixed(6),
+    },
+  );
 
   String _boundedLabel(String label) {
     final trimmed = label.trim();
@@ -230,31 +238,42 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
       if (_selectionIsCurrent(generation)) {
         setState(() {
           _cityLookupFailed = true;
-          _message =
-              'No pudimos consultar la dirección. Puedes usar el punto o reintentar.';
+          _message = AppLocalizations.tr(
+            'No pudimos consultar la dirección. Puedes usar el punto o reintentar.',
+          );
         });
       }
     }
   }
 
   String _locationErrorMessage(Object error) {
-    if (error is DeviceLocationFailure) return error.message;
+    if (error is DeviceLocationFailure) {
+      return AppLocalizations.tr(error.message);
+    }
     final code = error is StateError ? error.message.toString() : '';
     final details = error.toString().toLowerCase();
     if (code == 'location_disabled') {
-      return 'Activa el servicio de ubicación de tu dispositivo e inténtalo de nuevo.';
+      return AppLocalizations.tr(
+        'Activa el servicio de ubicación de tu dispositivo e inténtalo de nuevo.',
+      );
     }
     if (code == 'location_denied' ||
         details.contains('permission') ||
         details.contains('denied')) {
-      return 'Permite el acceso a tu ubicación en el navegador o en Ajustes del dispositivo.';
+      return AppLocalizations.tr(
+        'Permite el acceso a tu ubicación en el navegador o en Ajustes del dispositivo.',
+      );
     }
     if (details.contains('secure') ||
         details.contains('https') ||
         details.contains('insecure')) {
-      return 'En Web, la ubicación requiere HTTPS o abrir la app desde localhost.';
+      return AppLocalizations.tr(
+        'En Web, la ubicación requiere HTTPS o abrir la app desde localhost.',
+      );
     }
-    return 'No pudimos obtener tu ubicación. Revisa el permiso y el GPS, o elige el punto manualmente.';
+    return AppLocalizations.tr(
+      'No pudimos obtener tu ubicación. Revisa el permiso y el GPS, o elige el punto manualmente.',
+    );
   }
 
   PostCoordinates _coordinates() {
@@ -306,14 +325,14 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
             padding: const EdgeInsets.fromLTRB(20, 12, 12, 8),
             child: Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Elegir ubicación',
+                    AppLocalizations.tr('Elegir ubicación'),
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Cerrar',
+                  tooltip: AppLocalizations.tr('Cerrar'),
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close),
                 ),
@@ -337,15 +356,19 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                         _message = null;
                       });
                     },
-                    decoration: const InputDecoration(
-                      labelText: 'Buscar lugar o dirección',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.tr(
+                        'Buscar lugar o dirección',
+                      ),
                       prefixIcon: Icon(Icons.search),
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 IconButton.filledTonal(
-                  tooltip: _searching ? 'Buscando…' : 'Buscar',
+                  tooltip: AppLocalizations.tr(
+                    _searching ? 'Buscando…' : 'Buscar',
+                  ),
                   onPressed: _searching ? null : _findPlaces,
                   icon: const Icon(Icons.arrow_forward),
                 ),
@@ -429,14 +452,16 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                         ),
                       ],
                     ),
-                    const Positioned(
+                    Positioned(
                       left: 8,
                       bottom: 8,
                       child: DecoratedBox(
                         decoration: BoxDecoration(color: Colors.white70),
                         child: Padding(
                           padding: EdgeInsets.all(4),
-                          child: Text('© OpenStreetMap contributors'),
+                          child: Text(
+                            AppLocalizations.tr('© OpenStreetMap contributors'),
+                          ),
                         ),
                       ),
                     ),
@@ -446,7 +471,9 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                       child: FloatingActionButton.small(
                         heroTag: 'post-location-current',
                         onPressed: _locating ? null : _useCurrentLocation,
-                        tooltip: 'Usar mi ubicación actual',
+                        tooltip: AppLocalizations.tr(
+                          'Usar mi ubicación actual',
+                        ),
                         child: _locating
                             ? const MareaSkeleton(kind: SkeletonKind.list)
                             : const Icon(Icons.my_location),
@@ -463,7 +490,9 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  _label.isEmpty ? 'Toca el mapa para elegir un punto' : _label,
+                  _label.isEmpty
+                      ? AppLocalizations.tr('Toca el mapa para elegir un punto')
+                      : _label,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontWeight: FontWeight.w700),
@@ -475,19 +504,19 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                       ++_selectionGeneration,
                     ),
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar ubicación'),
+                    label: Text(AppLocalizations.tr('Reintentar ubicación')),
                   ),
                 const SizedBox(height: 4),
                 SegmentedButton<PostLocationPrecision>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: PostLocationPrecision.exact,
-                      label: Text('Exacta'),
+                      label: Text(AppLocalizations.tr('Exacta')),
                       icon: Icon(Icons.gps_fixed),
                     ),
                     ButtonSegment(
                       value: PostLocationPrecision.approximate,
-                      label: Text('Aproximada'),
+                      label: Text(AppLocalizations.tr('Aproximada')),
                       icon: Icon(Icons.location_searching),
                     ),
                   ],
@@ -514,14 +543,14 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                           PostLocationSelection(
                             label:
                                 _precision == PostLocationPrecision.approximate
-                                ? 'Zona aproximada'
+                                ? AppLocalizations.tr('Zona aproximada')
                                 : _label,
                             coordinates: _coordinates(),
                             city: _city,
                           ),
                         ),
                   icon: const Icon(Icons.check),
-                  label: const Text('Usar esta ubicación'),
+                  label: Text(AppLocalizations.tr('Usar esta ubicación')),
                 ),
               ],
             ),
@@ -542,7 +571,11 @@ class _PostLocationViewer extends StatelessWidget {
   Widget build(BuildContext context) {
     final point = LatLng(coordinates.latitude, coordinates.longitude);
     return AlertDialog(
-      title: Text(coordinates.isApproximate ? 'Zona aproximada' : 'Ubicación'),
+      title: Text(
+        coordinates.isApproximate
+            ? AppLocalizations.tr('Zona aproximada')
+            : AppLocalizations.tr('Ubicación'),
+      ),
       content: SizedBox(
         width: 560,
         height: 420,
@@ -580,9 +613,9 @@ class _PostLocationViewer extends StatelessWidget {
                 ),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 6),
-              child: Text('© OpenStreetMap contributors'),
+              child: Text(AppLocalizations.tr('© OpenStreetMap contributors')),
             ),
           ],
         ),
@@ -590,7 +623,7 @@ class _PostLocationViewer extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cerrar'),
+          child: Text(AppLocalizations.tr('Cerrar')),
         ),
       ],
     );

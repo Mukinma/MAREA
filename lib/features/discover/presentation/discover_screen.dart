@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/theme/app_colors.dart';
 
 class DiscoverScreen extends StatelessWidget {
@@ -36,21 +37,23 @@ class DiscoverScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Algo nuevo está por llegar',
+                    AppLocalizations.tr('Algo nuevo está por llegar'),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Estamos preparando una nueva forma de descubrir talento, experiencias y oportunidades en MAREA.',
+                    AppLocalizations.tr(
+                      'Estamos preparando una nueva forma de descubrir talento, experiencias y oportunidades en MAREA.',
+                    ),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'En desarrollo',
+                  Text(
+                    AppLocalizations.tr('En desarrollo'),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,

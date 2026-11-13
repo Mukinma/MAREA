@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -71,12 +72,12 @@ class _SuccessBanner extends StatelessWidget {
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
-              message,
+              AppLocalizations.tr(message),
               style: const TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
           IconButton(
-            tooltip: 'Cerrar',
+            tooltip: AppLocalizations.tr('Cerrar'),
             onPressed: onDismiss,
             icon: const Icon(Icons.close_rounded),
           ),
@@ -108,9 +109,12 @@ class _ProfileState extends StatelessWidget {
               color: AppColors.textSecondary,
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text('No pudimos cargar tu perfil.'),
+            Text(AppLocalizations.tr('No pudimos cargar tu perfil.')),
             const SizedBox(height: AppSpacing.md),
-            OutlinedButton(onPressed: onRetry, child: const Text('Reintentar')),
+            OutlinedButton(
+              onPressed: onRetry,
+              child: Text(AppLocalizations.tr('Reintentar')),
+            ),
           ],
         ),
       ),

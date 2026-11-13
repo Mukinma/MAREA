@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'marea_skeleton.dart';
 import 'dart:typed_data';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -78,7 +79,7 @@ class _ProfileImageState extends State<ProfileImage> {
               widget.fallback,
               Center(
                 child: IconButton.filledTonal(
-                  tooltip: 'Volver a cargar imagen',
+                  tooltip: AppLocalizations.tr('Volver a cargar imagen'),
                   onPressed: () => setState(_load),
                   icon: const Icon(Icons.refresh_rounded),
                 ),

@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/tours/presentation/business_ar_screen.dart';
 import 'package:marea/features/discover/presentation/discover_screen.dart';
 import 'package:marea/features/home_feed/presentation/story_composer.dart';
@@ -115,8 +116,11 @@ abstract final class AppRouter {
         onboarding: controller.needsOnboarding,
         legal: controller.needsLegalAcceptance,
       ),
-      errorBuilder: (_, _) =>
-          const Scaffold(body: Center(child: Text('Esta página no existe.'))),
+      errorBuilder: (_, _) => Scaffold(
+        body: Center(
+          child: Text(AppLocalizations.tr('Esta página no existe.')),
+        ),
+      ),
       routes: [
         GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
         GoRoute(
@@ -275,7 +279,9 @@ abstract final class AppRouter {
           parentNavigatorKey: rootKey,
           path: '/posts/new',
           builder: (_, _) => Scaffold(
-            appBar: AppBar(title: const Text('Crear publicación')),
+            appBar: AppBar(
+              title: Text(AppLocalizations.tr('Crear publicación')),
+            ),
             body: PostComposerScreen(controller: controller),
           ),
         ),
@@ -402,7 +408,7 @@ abstract final class AppRouter {
           parentNavigatorKey: rootKey,
           path: '/posts/:id/edit',
           builder: (_, state) => Scaffold(
-            appBar: AppBar(title: const Text('Tu publicación')),
+            appBar: AppBar(title: Text(AppLocalizations.tr('Tu publicación'))),
             body: PostComposerScreen(
               key: ValueKey(
                 '${controller.profile?.id}:${state.pathParameters['id']}',

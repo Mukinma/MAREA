@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/category_visuals.dart';
@@ -54,7 +55,7 @@ class MissionMapPreview extends StatelessWidget {
                 ),
                 const Spacer(),
                 IconButton(
-                  tooltip: 'Cerrar misión',
+                  tooltip: AppLocalizations.tr('Cerrar misión'),
                   onPressed: onClose,
                   icon: const Icon(Icons.close_rounded, size: 19),
                 ),
@@ -89,7 +90,10 @@ class MissionMapPreview extends StatelessWidget {
                             vertical: 3,
                           ),
                           child: Text(
-                            communityCategories[mission.category] ?? 'Otros',
+                            AppLocalizations.tr(
+                              communityCategories[mission.category] ??
+                                  'Otros',
+                            ),
                             style: const TextStyle(
                               color: AppColors.brandNavy,
                               fontWeight: FontWeight.w800,
@@ -108,7 +112,12 @@ class MissionMapPreview extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Por ${mission.organizerName ?? mission.organizerUsername ?? 'la comunidad MAREA'}',
+                        AppLocalizations.trTemplate('Por {organizer}', {
+                          'organizer':
+                              mission.organizerName ??
+                              mission.organizerUsername ??
+                              AppLocalizations.tr('la comunidad MAREA'),
+                        }),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -149,7 +158,7 @@ class MissionMapPreview extends StatelessWidget {
                   backgroundColor: AppColors.aquaDark,
                   minimumSize: const Size(48, 44),
                 ),
-                child: const Text('Ver misión'),
+                child: Text(AppLocalizations.tr('Ver misión')),
               ),
             ),
           ],

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
@@ -281,7 +282,7 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
         child: Padding(
           padding: const EdgeInsets.all(32),
           child: Text(
-            _error ?? 'No pudimos abrir la cámara.',
+            AppLocalizations.tr(_error ?? 'No pudimos abrir la cámara.'),
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white),
           ),
@@ -303,8 +304,8 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _roundButton(Icons.close, () => Navigator.of(context).pop()),
-                  const Text(
-                    'HISTORIA',
+                  Text(
+                    AppLocalizations.tr('HISTORIA'),
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
@@ -314,12 +315,12 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
                   _roundButton(
                     _flash == FlashMode.off ? Icons.flash_off : Icons.flash_on,
                     _cycleFlash,
-                    tooltip: 'Cambiar flash',
+                    tooltip: AppLocalizations.tr('Cambiar flash'),
                   ),
                   _roundButton(
                     Icons.flip_camera_ios,
                     _switchCamera,
-                    tooltip: 'Cambiar cámara',
+                    tooltip: AppLocalizations.tr('Cambiar cámara'),
                   ),
                 ],
               ),
@@ -374,7 +375,7 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
               left: 28,
               child: Semantics(
                 button: true,
-                label: 'Abrir galería',
+                label: AppLocalizations.tr('Abrir galería'),
                 child: GestureDetector(
                   onTap: _pickFromGallery,
                   child: Container(

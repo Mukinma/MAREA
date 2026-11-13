@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/app_depth.dart';
@@ -46,7 +47,7 @@ class CreativeArtwork extends StatelessWidget {
                   right: 6 * unit,
                   top: 8 * unit,
                   child: _WorldTile(
-                    label: 'Música',
+                    label: AppLocalizations.tr('Música'),
                     color: AppColors.peach,
                     icon: Icons.graphic_eq_rounded,
                     rotation: .12,

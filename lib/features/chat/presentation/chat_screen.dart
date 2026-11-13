@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/chat/data/chat_repository.dart';
 import 'package:marea/features/chat/models/chat_models.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class ChatInboxScreen extends StatefulWidget {
   const ChatInboxScreen({
     required this.controller,
@@ -24,6 +27,8 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
   bool _loading = true;
   bool _initialRequestShown = false;
   ChatRepository get _repo => widget.controller.chatRepository!;
+  AppLocalizations get _l10n =>
+      AppLocalizations.of(context) ?? AppLocalizationsEs();
   @override
   void initState() {
     super.initState();
@@ -73,48 +78,52 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Mensajes')),
-    body: _loading
-        ? const Center(child: CircularProgressIndicator())
-        : _error != null
-        ? Center(child: Text(_error!))
-        : LayoutBuilder(
-            builder: (context, constraints) {
-              final wide = constraints.maxWidth >= 800;
-              final list = _list(wide);
-              if (!wide) return RefreshIndicator(onRefresh: _load, child: list);
-              final selected = _items
-                  .where((c) => c.id == _selectedId)
-                  .firstOrNull;
-              return Row(
-                children: [
-                  SizedBox(width: 340, child: list),
-                  const VerticalDivider(width: 1),
-                  Expanded(
-                    child: selected == null
-                        ? const Center(
-                            child: Text('Selecciona una conversación'),
-                          )
-                        : ChatConversationScreen(
-                            controller: widget.controller,
-                            conversationId: selected.id,
-                            embedded: true,
-                          ),
-                  ),
-                ],
-              );
-            },
-          ),
-  );
+  Widget build(BuildContext context) {
+    final l10n = _l10n;
+    return Scaffold(
+      appBar: AppBar(title: Text(core_l10n.AppLocalizations.tr(l10n.mensajes))),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+          ? Center(child: Text(core_l10n.AppLocalizations.tr(_error!)))
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final wide = constraints.maxWidth >= 800;
+                final list = _list(wide);
+                if (!wide) {
+                  return RefreshIndicator(onRefresh: _load, child: list);
+                }
+                final selected = _items
+                    .where((c) => c.id == _selectedId)
+                    .firstOrNull;
+                return Row(
+                  children: [
+                    SizedBox(width: 340, child: list),
+                    const VerticalDivider(width: 1),
+                    Expanded(
+                      child: selected == null
+                          ? Center(child: Text(core_l10n.AppLocalizations.tr(l10n.seleccionaConversacion)))
+                          : ChatConversationScreen(
+                              controller: widget.controller,
+                              conversationId: selected.id,
+                              embedded: true,
+                            ),
+                    ),
+                  ],
+                );
+              },
+            ),
+    );
+  }
 
   Widget _list(bool wide) {
+    final l10n = _l10n;
     if (_items.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        children: const [
+        children: [
           SizedBox(height: 180),
-          Center(child: Text('Aún no tienes conversaciones.')),
+          Center(child: Text(core_l10n.AppLocalizations.tr(l10n.sinConversaciones))),
         ],
       );
     }
@@ -126,8 +135,8 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
             chat.lastMessageBody ??
             (chat.pending
                 ? (chat.requesterId == widget.controller.profile?.id
-                      ? 'Solicitud enviada'
-                      : 'Solicitud de mensaje')
+                      ? core_l10n.AppLocalizations.tr(l10n.solicitudEnviada)
+                      : core_l10n.AppLocalizations.tr(l10n.solicitudMensaje))
                 : '@${chat.otherUsername}');
         return ListTile(
           selected: chat.id == _selectedId,
@@ -159,26 +168,28 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
   }
 
   Future<void> _reviewPendingRequest(ChatConversation chat) async {
+    final l10n = _l10n;
     final action = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Solicitud de mensaje'),
+        title: Text(core_l10n.AppLocalizations.tr(l10n.solicitudMensaje)),
         content: Text(
-          '${chat.otherName} quiere iniciar una conversación contigo. '
-          '¿Deseas aceptar la solicitud?',
+          core_l10n.AppLocalizations.tr(
+            l10n.solicitudChatQuiereIniciar(chat.otherName),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, 'profile'),
-            child: const Text('Ver perfil'),
+            child: Text(core_l10n.AppLocalizations.tr(l10n.verPerfil)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, 'reject'),
-            child: const Text('Rechazar'),
+            child: Text(core_l10n.AppLocalizations.tr(l10n.rechazar)),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, 'accept'),
-            child: const Text('Aceptar'),
+            child: Text(core_l10n.AppLocalizations.tr(l10n.aceptar)),
           ),
         ],
       ),
@@ -199,7 +210,9 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(error.toString())));
+        ).showSnackBar(
+          SnackBar(content: Text(core_l10n.AppLocalizations.tr(error.toString()))),
+        );
       }
     }
   }
@@ -227,6 +240,8 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
   StreamSubscription<void>? _subscription;
   bool _busy = false;
   ChatRepository get _repo => widget.controller.chatRepository!;
+  AppLocalizations get _l10n =>
+      AppLocalizations.of(context) ?? AppLocalizationsEs();
   @override
   void initState() {
     super.initState();
@@ -252,7 +267,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(error.toString())));
+        ).showSnackBar(
+          SnackBar(content: Text(core_l10n.AppLocalizations.tr(error.toString()))),
+        );
       }
     }
   }
@@ -270,7 +287,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(error.toString())));
+        ).showSnackBar(
+          SnackBar(content: Text(core_l10n.AppLocalizations.tr(error.toString()))),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -278,22 +297,27 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
   }
 
   Future<void> _reviewRequest() async {
+    final l10n = _l10n;
     final action = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Solicitud de mensaje'),
+        title: Text(core_l10n.AppLocalizations.tr(l10n.solicitudMensaje)),
         content: Text(
-          '${_conversation?.otherName ?? 'Esta persona'} quiere iniciar '
-          'una conversación contigo. ¿Deseas aceptar la solicitud?',
+          core_l10n.AppLocalizations.tr(
+            l10n.solicitudChatQuiereIniciar(
+              _conversation?.otherName ??
+                  core_l10n.AppLocalizations.tr(l10n.estaPersona),
+            ),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, 'reject'),
-            child: const Text('Rechazar'),
+            child: Text(core_l10n.AppLocalizations.tr(l10n.rechazar)),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, 'accept'),
-            child: const Text('Aceptar'),
+            child: Text(core_l10n.AppLocalizations.tr(l10n.aceptar)),
           ),
         ],
       ),
@@ -310,7 +334,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(error.toString())));
+        ).showSnackBar(
+          SnackBar(content: Text(core_l10n.AppLocalizations.tr(error.toString()))),
+        );
       }
     }
   }
@@ -325,14 +351,16 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n;
     final chat = _conversation;
     final isRequester = chat?.requesterId == widget.controller.profile?.id;
     final appBar = AppBar(
-      title: Text(chat?.otherName ?? 'Chat'),
+      title: Text(chat?.otherName ?? core_l10n.AppLocalizations.tr(l10n.chat)),
       actions: [
         if (chat != null)
           PopupMenuButton<String>(
             onSelected: (value) async {
+              final l10n = _l10n;
               if (value == 'block') {
                 await _repo.block(
                   chat.requesterId == widget.controller.profile?.id
@@ -345,15 +373,15 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                 await _repo.report(chat.id, null, 'Contenido inapropiado');
               }
               if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Acción registrada.')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(core_l10n.AppLocalizations.tr(l10n.accionRegistrada))));
             },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'block', child: Text('Bloquear usuario')),
+            itemBuilder: (_) => [
+              PopupMenuItem(value: 'block', child: Text(core_l10n.AppLocalizations.tr(l10n.bloquearUsuario))),
               PopupMenuItem(
                 value: 'report',
-                child: Text('Reportar conversación'),
+                child: Text(core_l10n.AppLocalizations.tr(l10n.reportarConversacion)),
               ),
             ],
           ),
@@ -369,35 +397,31 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   child: isRequester
-                      ? const Text(
-                          'Solicitud enviada. Podrás escribir cuando la otra persona acepte.',
-                        )
+                      ? Text(core_l10n.AppLocalizations.tr(l10n.solicitudEnviadaPodrasEscribir))
                       : Row(
                           children: [
-                            const Expanded(
-                              child: Text(
-                                'Esta persona quiere iniciar una conversación contigo.',
-                              ),
+                            Expanded(
+                              child: Text(core_l10n.AppLocalizations.tr(l10n.estaPersonaQuiereConversar)),
                             ),
                             TextButton(
                               onPressed: _reviewRequest,
-                              child: const Text('Revisar solicitud'),
+                              child: Text(core_l10n.AppLocalizations.tr(l10n.revisarSolicitud)),
                             ),
                           ],
                         ),
                 ),
               if (chat.status == 'rejected')
-                const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('Esta solicitud de chat fue rechazada.'),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(core_l10n.AppLocalizations.tr(l10n.solicitudChatRechazada)),
                 ),
               Expanded(
                 child: _messages.isEmpty
                     ? Center(
                         child: Text(
                           chat.pending
-                              ? 'Aún no hay mensajes.'
-                              : 'Inicia la conversación.',
+                              ? core_l10n.AppLocalizations.tr(l10n.aunNoHayMensajes)
+                              : core_l10n.AppLocalizations.tr(l10n.iniciaLaConversacion),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       )
@@ -442,8 +466,8 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                             controller: _text,
                             maxLines: 4,
                             minLines: 1,
-                            decoration: const InputDecoration(
-                              hintText: 'Escribe un mensaje',
+                            decoration: InputDecoration(
+                              hintText: core_l10n.AppLocalizations.tr(l10n.escribeUnMensaje),
                             ),
                           ),
                         ),
@@ -456,9 +480,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                   ),
                 )
               else if (chat.status == 'blocked')
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(16),
-                  child: Text('Este chat está bloqueado temporalmente.'),
+                  child: Text(core_l10n.AppLocalizations.tr(l10n.chatBloqueadoTemporalmente)),
                 ),
             ],
           );

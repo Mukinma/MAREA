@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marea/features/auth/presentation/intro_decorations.dart';
@@ -103,7 +104,7 @@ class _MobileIntroScreenState extends State<MobileIntroScreen>
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        child: const Text('Saltar'),
+                        child: Text(AppLocalizations.tr('Saltar')),
                       ),
                     ],
                   ),
@@ -142,7 +143,10 @@ class _MobileIntroScreenState extends State<MobileIntroScreen>
                             key: Key('intro-dot-$index'),
                             button: true,
                             selected: _page == index,
-                            label: 'Pantalla ${index + 1} de 4',
+                            label: AppLocalizations.trTemplate(
+                              'Pantalla {number} de 4',
+                              {'number': '${index + 1}'},
+                            ),
                             child: InkResponse(
                               onTap: () => _goTo(index),
                               radius: 24,

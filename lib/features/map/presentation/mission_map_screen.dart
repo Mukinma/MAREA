@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/tours/presentation/business_ar_screen.dart';
 import 'package:marea/features/tours/models/tour_models.dart';
 
@@ -150,8 +151,12 @@ class _MissionMapScreenState extends State<MissionMapScreen>
     } catch (e) {
       if (mounted && generation == _tourGeneration) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No pudimos cargar los recorridos de esta zona.'),
+          SnackBar(
+            content: Text(
+              AppLocalizations.tr(
+                'No pudimos cargar los recorridos de esta zona.',
+              ),
+            ),
           ),
         );
       }
@@ -170,7 +175,9 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                 (t.space['longitude'] as num).toDouble(),
               ),
               child: IconButton.filled(
-                tooltip: 'Explorar ${t.space['name']}',
+                tooltip: AppLocalizations.trTemplate('Explorar {name}', {
+                  'name': t.space['name']?.toString() ?? '',
+                }),
                 icon: const Icon(Icons.panorama_photosphere_outlined),
                 onPressed: () => context.push('/tours/${t.id}'),
               ),
@@ -264,9 +271,11 @@ class _MissionMapScreenState extends State<MissionMapScreen>
     if (!mounted) return;
     if (!opened) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Puedes cambiar el permiso en los ajustes del navegador o del dispositivo.',
+            AppLocalizations.tr(
+              'Puedes cambiar el permiso en los ajustes del navegador o del dispositivo.',
+            ),
           ),
         ),
       );
@@ -377,6 +386,30 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                             onSubmitted: _submit,
                             onFilters: _filters,
                           ),
+                          if (widget.session.tourRepository != null)
+                            Wrap(
+                              spacing: 8,
+                              children: [
+                                FilterChip(
+                                  label: Text(
+                                    AppLocalizations.tr('Locales 360°'),
+                                  ),
+                                  selected: _showTours,
+                                  onSelected: (show) {
+                                    setState(() => _showTours = show);
+                                    _tourGeneration++;
+                                    if (show) _loadTours();
+                                  },
+                                ),
+                                TextButton(
+                                  onPressed: () =>
+                                      context.push('/tours/nearby'),
+                                  child: Text(
+                                    AppLocalizations.tr('Descubrir cerca'),
+                                  ),
+                                ),
+                              ],
+                            ),
                           const SizedBox(height: 8),
                           MapQuickFilters(
                             filters: _state.filters,
@@ -386,7 +419,7 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                             },
                           ),
                           if (_state.loading)
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.only(top: 6),
                               child: LinearProgressIndicator(minHeight: 2),
                             ),
@@ -406,7 +439,9 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                                     Icons.refresh_rounded,
                                     size: 18,
                                   ),
-                                  label: const Text('Buscar en esta zona'),
+                                  label: Text(
+                                    AppLocalizations.tr('Buscar en esta zona'),
+                                  ),
                                   style: FilledButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 16,
@@ -422,8 +457,10 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                             ),
                           if (_tileError)
                             _notice(
-                              'No pudimos cargar el mapa base. Puedes seguir usando los filtros.',
-                              action: 'Reintentar',
+                              AppLocalizations.tr(
+                                'No pudimos cargar el mapa base. Puedes seguir usando los filtros.',
+                              ),
+                              action: AppLocalizations.tr('Reintentar'),
                               onAction: () => setState(() {
                                 _tileError = false;
                                 ++_tileRevision;
@@ -432,7 +469,7 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                           if (_state.error != null)
                             _notice(
                               _state.error!,
-                              action: 'Reintentar',
+                              action: AppLocalizations.tr('Reintentar'),
                               onAction: () => _state.search(force: true),
                             ),
                           if (_locationFailure != null)
@@ -444,8 +481,8 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                                               .deniedForever ||
                                       _locationFailure!.kind ==
                                           DeviceLocationFailureKind.disabled
-                                  ? 'Ajustes'
-                                  : 'Cerrar',
+                                  ? AppLocalizations.tr('Ajustes')
+                                  : AppLocalizations.tr('Cerrar'),
                               onAction: () {
                                 if (_locationFailure!.kind ==
                                         DeviceLocationFailureKind
@@ -476,8 +513,8 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                       ],
                       child: IconButton(
                         tooltip: _locating
-                            ? 'Buscando ubicación…'
-                            : 'Centrar en mi ubicación',
+                            ? AppLocalizations.tr('Buscando ubicación…')
+                            : AppLocalizations.tr('Centrar en mi ubicación'),
                         onPressed: _locating
                             ? null
                             : () => _locate(explicit: true),
@@ -582,7 +619,12 @@ class _MissionMapScreenState extends State<MissionMapScreen>
       padding: const EdgeInsets.only(left: 12, right: 4),
       child: Row(
         children: [
-          Expanded(child: Text(message, style: const TextStyle(fontSize: 12))),
+          Expanded(
+            child: Text(
+              AppLocalizations.tr(message),
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
           TextButton(onPressed: onAction, child: Text(action)),
         ],
       ),
@@ -591,12 +633,21 @@ class _MissionMapScreenState extends State<MissionMapScreen>
   Widget _resultCount() {
     final page = _state.page;
     final text = _state.needsAreaSearch
-        ? 'Resultados de la zona anterior'
+        ? AppLocalizations.tr('Resultados de la zona anterior')
         : page.total == 0
-        ? 'No encontramos misiones por aquí todavía.'
+        ? AppLocalizations.tr('No encontramos misiones por aquí todavía.')
         : page.isTruncated
-        ? 'Mostrando ${page.missions.length} de ${page.total} · Acerca el mapa'
-        : '${page.total} ${page.total == 1 ? 'misión' : 'misiones'} en esta zona';
+        ? AppLocalizations.trTemplate(
+            'Mostrando {shown} de {total} · Acerca el mapa',
+            {'shown': '${page.missions.length}', 'total': '${page.total}'},
+          )
+        : page.total == 1
+        ? AppLocalizations.trTemplate('{count} misión en esta zona', {
+            'count': '${page.total}',
+          })
+        : AppLocalizations.trTemplate('{count} misiones en esta zona', {
+            'count': '${page.total}',
+          });
     return MareaSurface(
       color: AppColors.mist,
       radius: 32,

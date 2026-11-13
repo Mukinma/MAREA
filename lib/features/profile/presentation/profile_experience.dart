@@ -1,5 +1,6 @@
 import 'package:marea/features/home_feed/presentation/follow_button.dart';
 import 'package:marea/features/tours/presentation/tour_management_screen.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -117,24 +118,32 @@ class _ProfileExperienceState extends State<ProfileExperience> {
 
   Widget _shortcuts(bool wide) {
     final actions = <(IconData, String, VoidCallback)>[
-      (Icons.dashboard_customize_outlined, 'Herramientas', _menu),
+      (
+        Icons.dashboard_customize_outlined,
+        AppLocalizations.tr('Herramientas'),
+        _menu,
+      ),
       (
         Icons.bookmark_border,
-        'Guardados',
+        AppLocalizations.tr('Guardados'),
         () => context.go('/explore?section=saved'),
       ),
       (
         Icons.flag_outlined,
-        'Mis misiones',
+        AppLocalizations.tr('Mis misiones'),
         () => context.go('/missions?section=own'),
       ),
       (
         Icons.assignment_outlined,
-        'Mis postulaciones',
+        AppLocalizations.tr('Mis postulaciones'),
         () => context.go('/missions?section=applications'),
       ),
       if (widget.admin)
-        (Icons.shield_outlined, 'Moderación', () => _open('/moderation')),
+        (
+          Icons.shield_outlined,
+          AppLocalizations.tr('Moderación'),
+          () => _open('/moderation'),
+        ),
     ];
     return MareaSurface(
       radius: 20,
@@ -265,14 +274,17 @@ class _ProfileExperienceState extends State<ProfileExperience> {
           onSeeAll: _allMissions,
         ),
         const SizedBox(height: 20),
-        ProfileSectionHeading(key: _postsKey, title: 'Publicaciones'),
+        ProfileSectionHeading(
+          key: _postsKey,
+          title: AppLocalizations.tr('Publicaciones'),
+        ),
         if (_owner)
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
               onPressed: () => _open('/posts/new'),
               icon: const Icon(Icons.add),
-              label: const Text('Agregar publicaci\u00f3n'),
+              label: Text(AppLocalizations.tr('Agregar publicación')),
             ),
           ),
         if (widget.controller.communityRepository != null)
@@ -313,14 +325,14 @@ class _ProfileExperienceState extends State<ProfileExperience> {
                   wide: wide,
                   onSettings: () => _open('/settings'),
                   settingsTooltip: _owner
-                      ? 'Configuraci\u00f3n'
-                      : 'Configuraci\u00f3n de tu cuenta',
+                      ? AppLocalizations.tr('Configuración')
+                      : AppLocalizations.tr('Configuración de tu cuenta'),
                   onMenu: _menu,
                   editAction: _owner
                       ? TextButton.icon(
                           icon: const Icon(Icons.edit_outlined, size: 16),
                           onPressed: () => _open('/profile/edit'),
-                          label: const Text('Editar perfil'),
+                          label: Text(AppLocalizations.tr('Editar perfil')),
                           style: TextButton.styleFrom(
                             textStyle: const TextStyle(
                               fontFamily: 'NunitoSans',
@@ -409,8 +421,12 @@ class _ProfileExperienceState extends State<ProfileExperience> {
                                     SnackBar(
                                       content: Text(
                                         accepting
-                                            ? 'Solicitud aceptada. Ya pueden conversar.'
-                                            : 'Solicitud enviada. Podrás escribir cuando la otra persona acepte.',
+                                            ? AppLocalizations.tr(
+                                                'Solicitud aceptada. Ya pueden conversar.',
+                                              )
+                                            : AppLocalizations.tr(
+                                                'Solicitud enviada. Podrás escribir cuando la otra persona acepte.',
+                                              ),
                                       ),
                                       duration: Duration(seconds: 2),
                                     ),
@@ -419,7 +435,11 @@ class _ProfileExperienceState extends State<ProfileExperience> {
                             } catch (error) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(error.toString())),
+                                  SnackBar(
+                                    content: Text(
+                                      AppLocalizations.tr(error.toString()),
+                                    ),
+                                  ),
                                 );
                               }
                             } finally {
@@ -429,11 +449,11 @@ class _ProfileExperienceState extends State<ProfileExperience> {
                     icon: const Icon(Icons.chat_bubble_outline),
                     label: Text(
                       _conversationStatus == 'accepted'
-                          ? 'Ver mensajes'
+                          ? AppLocalizations.tr('Ver mensajes')
                           : _conversationStatus == 'pending' &&
                                 _conversationIsIncoming
-                          ? 'Aceptar solicitud'
-                          : 'Solicitar chat',
+                          ? AppLocalizations.tr('Aceptar solicitud')
+                          : AppLocalizations.tr('Solicitar chat'),
                     ),
                   ),
                 ],

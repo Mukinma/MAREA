@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,7 @@ class SocialPanelFrame extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Cerrar',
+                tooltip: AppLocalizations.tr('Cerrar'),
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.close_rounded),
               ),
@@ -201,7 +202,10 @@ class _CommentsPanelState extends State<CommentsPanel> {
     final body = widget.draft.text.trim();
     if (_sending) return;
     if (body.isEmpty || body.length > 1000) {
-      setState(() => _error = 'Escribe entre 1 y 1.000 caracteres.');
+      setState(
+        () =>
+            _error = AppLocalizations.tr('Escribe entre 1 y 1.000 caracteres.'),
+      );
       return;
     }
     if (widget.draft.submitted != body) {
@@ -237,7 +241,7 @@ class _CommentsPanelState extends State<CommentsPanel> {
     await runCommunityAction(
       context,
       () => widget.repository.deleteComment(c.id),
-      success: 'Comentario retirado.',
+      success: AppLocalizations.tr('Comentario retirado.'),
     );
     if (mounted) {
       // Reconcile a lost deletion response with the server before offering retry.
@@ -252,7 +256,7 @@ class _CommentsPanelState extends State<CommentsPanel> {
 
   @override
   Widget build(BuildContext context) => SocialPanelFrame(
-    title: 'Comentarios',
+    title: AppLocalizations.tr('Comentarios'),
     footer: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -262,7 +266,9 @@ class _CommentsPanelState extends State<CommentsPanel> {
           maxLength: 1000,
           minLines: 1,
           maxLines: 4,
-          decoration: const InputDecoration(labelText: 'Tu comentario'),
+          decoration: InputDecoration(
+            labelText: AppLocalizations.tr('Tu comentario'),
+          ),
           textCapitalization: TextCapitalization.sentences,
         ),
         const SizedBox(height: 8),
@@ -271,7 +277,7 @@ class _CommentsPanelState extends State<CommentsPanel> {
           child: FilledButton.icon(
             onPressed: _sending ? null : _send,
             icon: const Icon(Icons.send_outlined),
-            label: Text(_sending ? 'Enviando…' : 'Enviar'),
+            label: Text(_sending ? AppLocalizations.tr('Enviando…') : 'Enviar'),
           ),
         ),
       ],
@@ -282,7 +288,9 @@ class _CommentsPanelState extends State<CommentsPanel> {
         if (widget.commentId != null &&
             !_loading &&
             !_comments.any((c) => c.id == widget.commentId))
-          const CommunityNotice(message: 'Este comentario fue retirado.'),
+          CommunityNotice(
+            message: AppLocalizations.tr('Este comentario fue retirado.'),
+          ),
         for (final c in _comments)
           Container(
             key: ValueKey(c.id),
@@ -302,7 +310,7 @@ class _CommentsPanelState extends State<CommentsPanel> {
                     Expanded(
                       child: Text(
                         _authors[c.authorId]?.fullName ??
-                            'Cuenta no disponible',
+                            AppLocalizations.tr('Cuenta no disponible'),
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -310,7 +318,7 @@ class _CommentsPanelState extends State<CommentsPanel> {
                         widget.post.authorId == widget.viewerId ||
                         widget.moderator)
                       IconButton(
-                        tooltip: 'Retirar comentario',
+                        tooltip: AppLocalizations.tr('Retirar comentario'),
                         onPressed: () => _delete(c),
                         icon: const Icon(Icons.delete_outline_rounded),
                       ),
@@ -342,13 +350,15 @@ class _CommentsPanelState extends State<CommentsPanel> {
             child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
           ),
         if (!_loading && _comments.isEmpty && _error == null)
-          const CommunityNotice(
-            message: 'Abre la conversación con el primer comentario.',
+          CommunityNotice(
+            message: AppLocalizations.tr(
+              'Abre la conversación con el primer comentario.',
+            ),
           ),
         if (!_loading && _more && _comments.isNotEmpty)
           TextButton(
             onPressed: _load,
-            child: const Text('Cargar más comentarios'),
+            child: Text(AppLocalizations.tr('Cargar más comentarios')),
           ),
       ],
     ),
@@ -382,7 +392,10 @@ class _CollaborationPanelState extends State<CollaborationPanel> {
   Future<void> _send() async {
     final text = _message.text.trim();
     if (text.isEmpty || text.length > 1000) {
-      setState(() => _error = 'Escribe entre 1 y 1.000 caracteres.');
+      setState(
+        () =>
+            _error = AppLocalizations.tr('Escribe entre 1 y 1.000 caracteres.'),
+      );
       return;
     }
     setState(() {
@@ -402,7 +415,7 @@ class _CollaborationPanelState extends State<CollaborationPanel> {
 
   @override
   Widget build(BuildContext context) => SocialPanelFrame(
-    title: 'Me interesa colaborar',
+    title: AppLocalizations.tr('Me interesa colaborar'),
     child: ListView(
       padding: const EdgeInsets.all(20),
       children: [
@@ -413,20 +426,24 @@ class _CollaborationPanelState extends State<CollaborationPanel> {
             size: 48,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Interés enviado',
+          Text(
+            AppLocalizations.tr('Interés enviado'),
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
           ),
-          const Text(
-            'El autor recibió tu mensaje. Solo ustedes dos pueden consultarlo.',
+          Text(
+            AppLocalizations.tr(
+              'El autor recibió tu mensaje. Solo ustedes dos pueden consultarlo.',
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Listo'),
+            child: Text(AppLocalizations.tr('Listo')),
           ),
         ] else ...[
-          const Text(
-            'Cuéntale al autor cómo te gustaría participar. Este mensaje es privado y no inicia un chat.',
+          Text(
+            AppLocalizations.tr(
+              'Cuéntale al autor cómo te gustaría participar. Este mensaje es privado y no inicia un chat.',
+            ),
           ),
           const SizedBox(height: 16),
           TextField(
@@ -435,14 +452,20 @@ class _CollaborationPanelState extends State<CollaborationPanel> {
             maxLength: 1000,
             minLines: 3,
             maxLines: 6,
-            decoration: const InputDecoration(labelText: 'Tu mensaje'),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.tr('Tu mensaje'),
+            ),
           ),
           if (_error != null)
             Text(_error!, style: const TextStyle(color: AppColors.error)),
           const SizedBox(height: 12),
           FilledButton(
             onPressed: _busy ? null : _send,
-            child: Text(_busy ? 'Enviando…' : 'Enviar interés'),
+            child: Text(
+              _busy
+                  ? AppLocalizations.tr('Enviando…')
+                  : AppLocalizations.tr('Enviar interés'),
+            ),
           ),
         ],
       ],
@@ -467,12 +490,12 @@ Future<void> sharePost(
       children: [
         ListTile(
           leading: const Icon(Icons.share_outlined),
-          title: const Text('Compartir enlace'),
+          title: Text(AppLocalizations.tr('Compartir enlace')),
           onTap: () => Navigator.pop(ctx, 'share'),
         ),
         ListTile(
           leading: const Icon(Icons.link_rounded),
-          title: const Text('Copiar enlace'),
+          title: Text(AppLocalizations.tr('Copiar enlace')),
           onTap: () => Navigator.pop(ctx, 'copy'),
         ),
       ],
@@ -483,7 +506,7 @@ Future<void> sharePost(
     await runCommunityAction(
       context,
       () => Clipboard.setData(ClipboardData(text: url.toString())),
-      success: 'Enlace copiado.',
+      success: AppLocalizations.tr('Enlace copiado.'),
     );
   }
 
@@ -510,18 +533,20 @@ Future<void> _offerCopy(
   final yes = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Text('Compartir enlace'),
-      content: const Text(
-        'Puedes copiar el enlace y enviarlo desde otra aplicación.',
+      title: Text(AppLocalizations.tr('Compartir enlace')),
+      content: Text(
+        AppLocalizations.tr(
+          'Puedes copiar el enlace y enviarlo desde otra aplicación.',
+        ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx),
-          child: const Text('Cancelar'),
+          child: Text(AppLocalizations.tr('Cancelar')),
         ),
         TextButton(
           onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Copiar enlace'),
+          child: Text(AppLocalizations.tr('Copiar enlace')),
         ),
       ],
     ),

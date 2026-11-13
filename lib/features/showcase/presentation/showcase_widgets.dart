@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 import 'dart:async';
@@ -6,8 +7,69 @@ import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
+import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/showcase/data/showcase_repository.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
+
+String localizedShowcaseKindLabel(BuildContext context, ShowcaseKind kind) {
+  return AppLocalizations.tr(
+    switch (kind) {
+      ShowcaseKind.project => 'Obra / proyecto',
+      ShowcaseKind.product => 'Producto',
+      ShowcaseKind.service => 'Servicio',
+    },
+  );
+}
+
+String localizedShowcaseKindAction(BuildContext context, ShowcaseKind kind) {
+  return AppLocalizations.tr(
+    switch (kind) {
+      ShowcaseKind.project => 'Agregar obra',
+      ShowcaseKind.product => 'Agregar producto',
+      ShowcaseKind.service => 'Agregar servicio',
+    },
+  );
+}
+
+String localizedShowcaseStatusLabel(
+  BuildContext context,
+  ShowcaseStatus status,
+) {
+  return AppLocalizations.tr(
+    switch (status) {
+      ShowcaseStatus.draft => 'Borrador',
+      ShowcaseStatus.published => 'Publicado',
+      ShowcaseStatus.archived => 'Archivado',
+    },
+  );
+}
+
+String localizedShowcaseCategoryLabel(BuildContext context, String category) {
+  final label = switch (category) {
+    'arte' => 'Arte',
+    'musica' => 'Música',
+    'digital' => 'Digital',
+    'gastronomia' => 'Gastronomía',
+    'moda' => 'Moda',
+    'escritura' => 'Escritura',
+    'fotografia' => 'Fotografía',
+    'diseno' => 'Diseño',
+    'otros' => 'Otros',
+    _ => category,
+  };
+  return AppLocalizations.tr(label);
+}
+
+String localizedProfileShowcaseLabel(BuildContext context, UserType userType) {
+  return AppLocalizations.tr(
+    switch (userType) {
+      UserType.general => 'Publicaciones',
+      UserType.creator => 'Portafolio',
+      UserType.entrepreneur => 'Catálogo',
+      UserType.business => 'Servicios',
+    },
+  );
+}
 
 class ShowcasePhoto extends StatefulWidget {
   const ShowcasePhoto({
@@ -56,7 +118,7 @@ class _ShowcasePhotoState extends State<ShowcasePhoto> {
     height: widget.height,
     child: Center(
       child: IconButton(
-        tooltip: 'Volver a cargar fotografía',
+        tooltip: AppLocalizations.tr('Volver a cargar fotografía'),
         onPressed: () => setState(_load),
         icon: const Icon(Icons.refresh),
       ),
@@ -83,7 +145,7 @@ class _ShowcasePhotoState extends State<ShowcasePhoto> {
         ? _fallback()
         : SizedBox(
             height: widget.height,
-            child: const Center(child: MareaSkeleton(kind: SkeletonKind.image)),
+            child: Center(child: MareaSkeleton(kind: SkeletonKind.image)),
           ),
   );
 }
@@ -237,7 +299,13 @@ class _ShowcaseListState extends State<ShowcaseList> {
                                   ).textTheme.titleMedium,
                                 ),
                                 const SizedBox(height: 8),
-                                if (!widget.compact) Text(item.kind.label),
+                                if (!widget.compact)
+                                  Text(
+                                    localizedShowcaseKindLabel(
+                                      context,
+                                      item.kind,
+                                    ),
+                                  ),
                                 if (item.kind != ShowcaseKind.project)
                                   Text(
                                     item.price == null
@@ -249,14 +317,29 @@ class _ShowcaseListState extends State<ShowcaseList> {
                                   Wrap(
                                     spacing: 6,
                                     children: [
-                                      Chip(label: Text(item.status.label)),
+                                      Chip(
+                                        label: Text(
+                                          localizedShowcaseStatusLabel(
+                                            context,
+                                            item.status,
+                                          ),
+                                        ),
+                                      ),
                                       if (!item.available)
-                                        const Chip(
-                                          label: Text('No disponible'),
+                                        Chip(
+                                          label: Text(
+                                            AppLocalizations.tr(
+                                              'No disponible',
+                                            ),
+                                          ),
                                         ),
                                       if (item.hidden)
-                                        const Chip(
-                                          label: Text('Oculto por moderación'),
+                                        Chip(
+                                          label: Text(
+                                            AppLocalizations.tr(
+                                              'Oculto por moderación',
+                                            ),
+                                          ),
                                         ),
                                     ],
                                   ),
@@ -274,7 +357,7 @@ class _ShowcaseListState extends State<ShowcaseList> {
         },
       ),
       if (_loading && _items.isEmpty)
-        const Padding(
+        Padding(
           padding: EdgeInsets.all(24),
           child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
         ),
@@ -284,7 +367,10 @@ class _ShowcaseListState extends State<ShowcaseList> {
           onRetry: () => _load(reset: _items.isEmpty),
         ),
       if (_more && !_loading && _error == null && _items.isNotEmpty)
-        TextButton(onPressed: _load, child: const Text('Cargar más fichas')),
+        TextButton(
+          onPressed: _load,
+          child: Text(AppLocalizations.tr('Cargar más fichas')),
+        ),
     ],
   );
 }

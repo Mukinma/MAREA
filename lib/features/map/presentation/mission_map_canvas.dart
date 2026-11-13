@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
@@ -141,7 +142,7 @@ class _MissionMapCanvasState extends State<MissionMapCanvas> {
                 width: 28,
                 height: 28,
                 child: Semantics(
-                  label: 'Tu ubicación',
+                  label: AppLocalizations.tr('Tu ubicación'),
                   child: Container(
                     margin: const EdgeInsets.all(3),
                     decoration: BoxDecoration(

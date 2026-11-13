@@ -4,6 +4,8 @@ import 'package:marea/shared/widgets/marea_surface.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/models/community_models.dart';
@@ -12,6 +14,7 @@ import 'package:marea/features/profile/data/profile_media_repository.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
 import 'package:marea/features/showcase/presentation/showcase_widgets.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class ShowcaseComposerScreen extends StatefulWidget {
   const ShowcaseComposerScreen({
     required this.controller,
@@ -47,6 +50,26 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
       _dirty = false,
       _allowPop = false;
   String? _error;
+  AppLocalizations get _l10n =>
+      AppLocalizations.of(context) ?? AppLocalizationsEs();
+  String _validationError(String error) => switch (error) {
+    'Este apartado no está disponible para tu tipo de perfil.' =>
+      core_l10n.AppLocalizations.tr(_l10n.errorFichaTipoPerfil),
+    'Escribe un título de 3 a 100 caracteres.' => core_l10n.AppLocalizations.tr(_l10n.errorTituloFicha),
+    'Agrega una descripción de hasta 3000 caracteres.' =>
+      core_l10n.AppLocalizations.tr(_l10n.errorDescripcionFicha),
+    'Elige una categoría válida.' => core_l10n.AppLocalizations.tr(_l10n.errorCategoriaFicha),
+    'Elige hasta seis fotografías distintas.' => core_l10n.AppLocalizations.tr(_l10n.errorFotosFicha),
+    'Agrega al menos una fotografía para publicar.' =>
+      core_l10n.AppLocalizations.tr(_l10n.errorFotoRequeridaFicha),
+    'Usa un precio válido en MXN para productos o servicios.' =>
+      core_l10n.AppLocalizations.tr(_l10n.errorPrecioFicha),
+    'El enlace de proyecto solo está disponible para obras.' =>
+      core_l10n.AppLocalizations.tr(_l10n.errorEnlaceSoloObras),
+    'Usa un enlace completo y seguro, por ejemplo https://tusitio.com.' =>
+      core_l10n.AppLocalizations.tr(_l10n.errorEnlaceSeguro),
+    _ => error,
+  };
   @override
   void initState() {
     super.initState();
@@ -89,7 +112,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'No pudimos cargar esta ficha. Puedes reintentar.';
+          _error = core_l10n.AppLocalizations.tr(_l10n.errorCargarFicha);
           _loading = false;
         });
       }
@@ -108,19 +131,20 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
   Future<void> _leave() async {
     if (_busy) return;
     if (_dirty) {
+      final l10n = _l10n;
       final discard = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('¿Descartar tus cambios?'),
-          content: const Text('Los cambios todavía no se han guardado.'),
+          title: Text(core_l10n.AppLocalizations.tr(l10n.descartarCambios)),
+          content: Text(core_l10n.AppLocalizations.tr(l10n.cambiosNoGuardados)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Seguir editando'),
+              child: Text(core_l10n.AppLocalizations.tr(l10n.seguirEditando)),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Descartar'),
+              child: Text(core_l10n.AppLocalizations.tr(l10n.descartar)),
             ),
           ],
         ),
@@ -162,7 +186,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
         ? null
         : double.tryParse(priceText.replaceAll(',', '.'));
     if (kind != ShowcaseKind.project && priceText.isNotEmpty && price == null) {
-      setState(() => _error = 'Escribe un precio válido en MXN.');
+      setState(() => _error = core_l10n.AppLocalizations.tr(_l10n.errorPrecioInvalidoMxn));
       return;
     }
     final title = _title.text,
@@ -186,7 +210,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
       List.generate(_photos.length, (i) => _photos[i].path ?? 'pending-$i'),
     ).validate(userType: widget.itemId == null ? profile.userType : null);
     if (error != null) {
-      setState(() => _error = error);
+      setState(() => _error = _validationError(error));
       return;
     }
     final staged = <String>[];
@@ -207,9 +231,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
         }
       }
       if (widget.controller.profile?.id != profile.id) {
-        throw const AppFailure(
-          'Tu sesión cambió. Vuelve a entrar antes de guardar.',
-        );
+        throw AppFailure(core_l10n.AppLocalizations.tr(_l10n.sesionCambioGuardarFicha));
       }
       await repo.save(input(paths), id: widget.itemId);
       saved = true;
@@ -220,7 +242,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
         });
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Ficha guardada.')));
+        ).showSnackBar(SnackBar(content: Text(core_l10n.AppLocalizations.tr(_l10n.fichaGuardada))));
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             context.canPop() ? context.pop() : context.go('/profile');
@@ -230,8 +252,9 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
     } catch (e) {
       if (mounted) {
         setState(
-          () => _error =
-              '${communityError(e)} Tus cambios siguen aquí para reintentar.',
+          () => _error = core_l10n.AppLocalizations.tr(
+            _l10n.errorGuardarFicha(communityError(e)),
+          ),
         );
       }
     } finally {
@@ -249,8 +272,9 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
   }
 
   Widget _composerBody(ShowcaseKind kind, List<ShowcaseKind> kinds) {
+    final l10n = _l10n;
     final fields = ProfileFormSection(
-      title: 'Información',
+      title: core_l10n.AppLocalizations.tr(l10n.informacion),
       icon: Icons.notes_outlined,
       children: [
         Column(
@@ -262,7 +286,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
                 children: [
                   for (final option in kinds)
                     ChoiceChip(
-                      label: Text(option.label),
+                      label: Text(localizedShowcaseKindLabel(context, option)),
                       selected: kind == option,
                       onSelected: (_) => setState(() {
                         _kind = option;
@@ -274,7 +298,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
             _ShowcaseTextField(
               controller: _title,
               maxLength: 100,
-              decoration: const InputDecoration(labelText: 'Título'),
+              decoration: InputDecoration(labelText: core_l10n.AppLocalizations.tr(l10n.titulo)),
             ),
             const SizedBox(height: 16),
             _ShowcaseTextField(
@@ -282,17 +306,22 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
               minLines: 3,
               maxLines: 8,
               maxLength: 3000,
-              decoration: const InputDecoration(labelText: 'Descripción'),
+              decoration: InputDecoration(labelText: core_l10n.AppLocalizations.tr(l10n.descripcion)),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               isExpanded: true,
               itemHeight: null,
               initialValue: _category,
-              decoration: const InputDecoration(labelText: 'Categoría'),
+              decoration: InputDecoration(labelText: core_l10n.AppLocalizations.tr(l10n.categoria)),
               items: [
                 for (final entry in communityCategories.entries)
-                  DropdownMenuItem(value: entry.key, child: Text(entry.value)),
+                  DropdownMenuItem(
+                    value: entry.key,
+                    child: Text(
+                      localizedShowcaseCategoryLabel(context, entry.key),
+                    ),
+                  ),
               ],
               onChanged: (v) => setState(() {
                 _category = v!;
@@ -306,17 +335,15 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
-                  labelText: 'Precio en MXN (opcional)',
-                  helperText: 'Sin precio se mostrará “Consultar precio”.',
+                decoration: InputDecoration(
+                  labelText: core_l10n.AppLocalizations.tr(l10n.precioMxnOpcional),
+                  helperText: core_l10n.AppLocalizations.tr(l10n.sinPrecioConsultar),
                 ),
               ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Disponible'),
-                subtitle: const Text(
-                  'Las fichas no disponibles solo aparecen en tu administración.',
-                ),
+                title: Text(core_l10n.AppLocalizations.tr(l10n.disponible)),
+                subtitle: Text(core_l10n.AppLocalizations.tr(l10n.fichasNoDisponiblesAdministracion)),
                 value: _available,
                 onChanged: (v) => setState(() {
                   _available = v;
@@ -327,8 +354,8 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
               _ShowcaseTextField(
                 controller: _link,
                 keyboardType: TextInputType.url,
-                decoration: const InputDecoration(
-                  labelText: 'Enlace del proyecto (opcional)',
+                decoration: InputDecoration(
+                  labelText: core_l10n.AppLocalizations.tr(l10n.enlaceProyectoOpcional),
                   hintText: 'https://...',
                 ),
               ),
@@ -337,14 +364,17 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
               isExpanded: true,
               itemHeight: null,
               initialValue: _status,
-              decoration: const InputDecoration(
-                labelText: 'Estado de la ficha',
-              ),
+              decoration: InputDecoration(labelText: core_l10n.AppLocalizations.tr(l10n.estadoFicha)),
               items: [
                 for (final status in ShowcaseStatus.values)
                   if (status != ShowcaseStatus.archived ||
                       widget.itemId != null)
-                    DropdownMenuItem(value: status, child: Text(status.label)),
+                    DropdownMenuItem(
+                      value: status,
+                      child: Text(
+                        localizedShowcaseStatusLabel(context, status),
+                      ),
+                    ),
               ],
               onChanged: (v) => setState(() {
                 _status = v!;
@@ -352,9 +382,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
               }),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Los borradores y las fichas archivadas solo son visibles para ti.',
-            ),
+            Text(core_l10n.AppLocalizations.tr(l10n.borradoresArchivadosSoloVisibles)),
             if (_error != null) CommunityNotice(message: _error!),
             const SizedBox(height: 24),
           ],
@@ -367,7 +395,9 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Fotografías · ${_photos.length} de 6',
+              core_l10n.AppLocalizations.tr(
+                l10n.fotografiasCount(_photos.length),
+              ),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -394,7 +424,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
                       alignment: WrapAlignment.center,
                       children: [
                         IconButton(
-                          tooltip: 'Mover fotografía antes',
+                          tooltip: core_l10n.AppLocalizations.tr(l10n.moverFotografiaAntes),
                           onPressed: i == 0
                               ? null
                               : () => setState(() {
@@ -405,7 +435,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
                           icon: const Icon(Icons.arrow_upward),
                         ),
                         IconButton(
-                          tooltip: 'Mover fotografía después',
+                          tooltip: core_l10n.AppLocalizations.tr(l10n.moverFotografiaDespues),
                           onPressed: i == _photos.length - 1
                               ? null
                               : () => setState(() {
@@ -421,7 +451,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
                             _dirty = true;
                           }),
                           icon: const Icon(Icons.delete_outline),
-                          label: const Text('Quitar fotografía'),
+                          label: Text(core_l10n.AppLocalizations.tr(l10n.quitarFotografia)),
                         ),
                       ],
                     ),
@@ -431,7 +461,7 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
             OutlinedButton.icon(
               onPressed: _photos.length >= 6 ? null : _pick,
               icon: const Icon(Icons.add_photo_alternate_outlined),
-              label: const Text('Agregar fotografía'),
+              label: Text(core_l10n.AppLocalizations.tr(l10n.agregarFotografia)),
             ),
             const SizedBox(height: 24),
           ],
@@ -473,14 +503,13 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n;
     final profile = widget.controller.profile;
     final kinds = profile?.userType.showcaseKinds ?? [];
     if (profile == null || (kinds.isEmpty && widget.itemId == null)) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Tu apartado')),
-        body: const CommunityNotice(
-          message: 'Este tipo de perfil no tiene un apartado profesional.',
-        ),
+        appBar: AppBar(title: Text(core_l10n.AppLocalizations.tr(l10n.tuApartado))),
+        body: CommunityNotice(message: core_l10n.AppLocalizations.tr(l10n.perfilSinApartadoProfesional)),
       );
     }
     final kind = _kind ?? (kinds.isEmpty ? ShowcaseKind.project : kinds.first);
@@ -491,7 +520,11 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.itemId == null ? kind.action : 'Editar ficha'),
+          title: Text(
+            widget.itemId == null
+                ? localizedShowcaseKindAction(context, kind)
+                : core_l10n.AppLocalizations.tr(l10n.editarFicha),
+          ),
           leading: BackButton(onPressed: _leave),
         ),
         bottomNavigationBar: ProfileActionBar(
@@ -501,14 +534,14 @@ class _ShowcaseComposerScreenState extends State<ShowcaseComposerScreen> {
                 ? null
                 : _save,
             icon: const Icon(Icons.check),
-            label: Text(_busy ? 'Guardando…' : 'Guardar ficha'),
+            label: Text(_busy ? core_l10n.AppLocalizations.tr(l10n.guardando) : core_l10n.AppLocalizations.tr(l10n.guardarFicha)),
           ),
         ),
         body: _loading
             ? const Center(child: MareaSkeleton(kind: SkeletonKind.form))
             : widget.itemId != null && _kind == null
             ? CommunityNotice(
-                message: _error ?? 'Ficha no disponible.',
+                message: _error ?? core_l10n.AppLocalizations.tr(l10n.fichaNoDisponible),
                 onRetry: _load,
               )
             : AbsorbPointer(
