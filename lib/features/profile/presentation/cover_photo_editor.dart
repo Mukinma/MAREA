@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
@@ -63,7 +64,9 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
       if (mounted) {
         setState(
           () => _error =
-              'No pudimos abrir esta imagen. Prueba con otra fotografía.',
+              AppLocalizations.tr(
+                'No pudimos abrir esta imagen. Prueba con otra fotografía.',
+              ),
         );
       }
     }
@@ -91,7 +94,8 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
     ui.Image? cropped;
     try {
       final rect = _rect;
-      final width = (math.min(1600, rect.width.floor()).clamp(2, 1600) ~/ 2) * 2;
+      final width =
+          (math.min(1600, rect.width.floor()).clamp(2, 1600) ~/ 2) * 2;
       final height = width ~/ 2;
       final recorder = ui.PictureRecorder();
       Canvas(recorder).drawImageRect(
@@ -116,8 +120,10 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
       if (mounted) {
         setState(
           () => _error = error is AppFailure
-              ? error.message
-              : 'No pudimos preparar tu portada. Prueba otra fotografía.',
+              ? AppLocalizations.tr(error.message)
+              : AppLocalizations.tr(
+                  'No pudimos preparar tu portada. Prueba otra fotografía.',
+                ),
         );
       }
     } finally {
@@ -135,13 +141,15 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Ajustar foto de portada',
+          Text(
+            AppLocalizations.tr('Ajustar foto de portada'),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Arrastra la foto para encuadrarla. Pellizca o usa los botones para acercarla.',
+          Text(
+            AppLocalizations.tr(
+              'Arrastra la foto para encuadrarla. Pellizca o usa los botones para acercarla.',
+            ),
           ),
           const SizedBox(height: 16),
           if (_image == null && _error == null)
@@ -213,7 +221,7 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               IconButton(
-                tooltip: 'Alejar foto',
+                tooltip: AppLocalizations.tr('Alejar foto'),
                 onPressed: _image == null || _exporting || _zoom <= 1
                     ? null
                     : () =>
@@ -227,10 +235,10 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
                         _zoom = 1;
                         _position = const Offset(.5, .5);
                       }),
-                child: const Text('Restablecer encuadre'),
+                child: Text(AppLocalizations.tr('Restablecer encuadre')),
               ),
               IconButton(
-                tooltip: 'Acercar foto',
+                tooltip: AppLocalizations.tr('Acercar foto'),
                 onPressed: _image == null || _exporting || _zoom >= 4
                     ? null
                     : () =>
@@ -247,11 +255,15 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
           const SizedBox(height: 12),
           FilledButton(
             onPressed: _image == null || _exporting ? null : _usePhoto,
-            child: Text(_exporting ? 'Preparando foto…' : 'Usar foto'),
+            child: Text(
+              _exporting
+                  ? AppLocalizations.tr('Preparando foto…')
+                  : AppLocalizations.tr('Usar foto'),
+            ),
           ),
           TextButton(
             onPressed: _exporting ? null : () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.tr('Cancelar')),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/category_visuals.dart';
 import 'package:marea/features/community/models/community_models.dart';
@@ -19,8 +20,12 @@ class MissionMapMarker extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label:
-          '${communityCategories[mission.category] ?? 'Otros'}: ${mission.title}',
+      label: AppLocalizations.trTemplate('{category}: {title}', {
+        'category': AppLocalizations.tr(
+          communityCategories[mission.category] ?? 'Otros',
+        ),
+        'title': mission.title,
+      }),
       onTap: onTap,
       excludeSemantics: true,
       child: Tooltip(
@@ -66,7 +71,9 @@ class MissionMapCluster extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
-    label: '$count misiones agrupadas',
+    label: AppLocalizations.trTemplate('{count} misiones agrupadas', {
+      'count': '$count',
+    }),
     child: Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(

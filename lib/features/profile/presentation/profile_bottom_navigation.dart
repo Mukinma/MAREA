@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Profile-only presentation of the existing application destinations.
@@ -29,7 +30,7 @@ class ProfileBottomNavigation extends StatelessWidget {
               child: Center(
                 heightFactor: 1,
                 child: IconButton.filled(
-                  tooltip: 'Crear',
+                  tooltip: AppLocalizations.tr('Crear'),
                   onPressed: onCreate,
                   style: IconButton.styleFrom(
                     backgroundColor: const Color(0xFF08BFC1),
@@ -59,14 +60,16 @@ class ProfileBottomNavigation extends StatelessWidget {
     IconData icon,
     String path, {
     bool selected = false,
-  }) => Expanded(
+  }) {
+    final localizedLabel = AppLocalizations.tr(label);
+    return Expanded(
     child: Tooltip(
-      message: label,
+      message: localizedLabel,
       excludeFromSemantics: true,
       child: Semantics(
         button: true,
         selected: selected,
-        label: label,
+        label: localizedLabel,
         onTap: () => onNavigate(path),
         excludeSemantics: true,
         child: InkWell(
@@ -80,7 +83,7 @@ class ProfileBottomNavigation extends StatelessWidget {
                 Icon(icon, size: 22, color: const Color(0xFF07345C)),
                 const SizedBox(height: 3),
                 Text(
-                  label,
+                  localizedLabel,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -107,4 +110,5 @@ class ProfileBottomNavigation extends StatelessWidget {
       ),
     ),
   );
+  }
 }

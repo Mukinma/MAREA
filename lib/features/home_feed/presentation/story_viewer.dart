@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -157,18 +158,20 @@ class _StoryViewerState extends State<StoryViewer>
         final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('¿Eliminar historia?'),
-            content: const Text(
-              'Dejará de estar disponible para la comunidad.',
+            title: Text(AppLocalizations.tr('¿Eliminar historia?')),
+            content: Text(
+              AppLocalizations.tr(
+                'Dejará de estar disponible para la comunidad.',
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar'),
+                child: Text(AppLocalizations.tr('Cancelar')),
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Eliminar'),
+                child: Text(AppLocalizations.tr('Eliminar')),
               ),
             ],
           ),
@@ -182,19 +185,19 @@ class _StoryViewerState extends State<StoryViewer>
         final result = await showDialog<String>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Reportar historia'),
+            title: Text(AppLocalizations.tr('Reportar historia')),
             content: TextField(
               controller: reason,
               maxLength: 500,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Motivo (mínimo 5 caracteres)',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.tr('Motivo (mínimo 5 caracteres)'),
               ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
+                child: Text(AppLocalizations.tr('Cancelar')),
               ),
               FilledButton(
                 onPressed: () {
@@ -202,7 +205,7 @@ class _StoryViewerState extends State<StoryViewer>
                     Navigator.pop(context, reason.text.trim());
                   }
                 },
-                child: const Text('Enviar reporte'),
+                child: Text(AppLocalizations.tr('Enviar reporte')),
               ),
             ],
           ),
@@ -213,7 +216,11 @@ class _StoryViewerState extends State<StoryViewer>
           if (mounted) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(const SnackBar(content: Text('Reporte enviado')));
+            ).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.tr('Reporte enviado')),
+              ),
+            );
           }
         }
       }
@@ -446,13 +453,13 @@ class _StoryViewerState extends State<StoryViewer>
     padding: const EdgeInsets.all(24),
     child: Column(
       children: [
-        const Text(
-          'No pudimos cargar esta foto.',
+        Text(
+          AppLocalizations.tr('No pudimos cargar esta foto.'),
           style: TextStyle(color: Colors.white),
         ),
         TextButton(
           onPressed: () => setState(_prepare),
-          child: const Text('Reintentar'),
+          child: Text(AppLocalizations.tr('Reintentar')),
         ),
       ],
     ),

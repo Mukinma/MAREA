@@ -1,5 +1,6 @@
 import 'package:marea/features/home_feed/presentation/follow_button.dart';
 import 'package:marea/features/tours/presentation/tour_management_screen.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -117,24 +118,32 @@ class _ProfileExperienceState extends State<ProfileExperience> {
 
   Widget _shortcuts(bool wide) {
     final actions = <(IconData, String, VoidCallback)>[
-      (Icons.dashboard_customize_outlined, 'Herramientas', _menu),
+      (
+        Icons.dashboard_customize_outlined,
+        AppLocalizations.tr('Herramientas'),
+        _menu,
+      ),
       (
         Icons.bookmark_border,
-        'Guardados',
+        AppLocalizations.tr('Guardados'),
         () => context.go('/explore?section=saved'),
       ),
       (
         Icons.flag_outlined,
-        'Mis misiones',
+        AppLocalizations.tr('Mis misiones'),
         () => context.go('/missions?section=own'),
       ),
       (
         Icons.assignment_outlined,
-        'Mis postulaciones',
+        AppLocalizations.tr('Mis postulaciones'),
         () => context.go('/missions?section=applications'),
       ),
       if (widget.admin)
-        (Icons.shield_outlined, 'Moderación', () => _open('/moderation')),
+        (
+          Icons.shield_outlined,
+          AppLocalizations.tr('Moderación'),
+          () => _open('/moderation'),
+        ),
     ];
     return MareaSurface(
       radius: 20,
@@ -241,7 +250,7 @@ class _ProfileExperienceState extends State<ProfileExperience> {
     if (mounted) setState(() => _revision++);
   }
 
-  Widget _content() {
+  Widget _content(BuildContext context) {
     final profile = widget.profile;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -265,14 +274,17 @@ class _ProfileExperienceState extends State<ProfileExperience> {
           onSeeAll: _allMissions,
         ),
         const SizedBox(height: 20),
-        ProfileSectionHeading(key: _postsKey, title: 'Publicaciones'),
+        ProfileSectionHeading(
+          key: _postsKey,
+          title: AppLocalizations.tr('Publicaciones'),
+        ),
         if (_owner)
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
               onPressed: () => _open('/posts/new'),
               icon: const Icon(Icons.add),
-              label: const Text('Agregar publicaci\u00f3n'),
+              label: Text(AppLocalizations.tr('Agregar publicación')),
             ),
           ),
         if (widget.controller.communityRepository != null)
@@ -294,195 +306,209 @@ class _ProfileExperienceState extends State<ProfileExperience> {
   }
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-    bottom: false,
-    child: ColoredBox(
-      color: const Color(0xFFF4FBFE),
-      child: MareaRefreshIndicator(
-        onRefresh: _refresh,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final wide = constraints.maxWidth >= 1024;
-            final identity = Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ProfileIdentity(
-                  profile: widget.profile,
-                  controller: widget.controller,
-                  wide: wide,
-                  onSettings: () => _open('/settings'),
-                  settingsTooltip: _owner
-                      ? 'Configuraci\u00f3n'
-                      : 'Configuraci\u00f3n de tu cuenta',
-                  onMenu: _menu,
-                  editAction: _owner
-                      ? TextButton.icon(
-                          icon: const Icon(Icons.edit_outlined, size: 16),
-                          onPressed: () => _open('/profile/edit'),
-                          label: const Text('Editar perfil'),
-                          style: TextButton.styleFrom(
-                            textStyle: const TextStyle(
-                              fontFamily: 'NunitoSans',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            minimumSize: const Size(48, 40),
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF07345C),
-                            shape: const StadiumBorder(),
-                          ),
-                        )
-                      : null,
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: ProfileStatisticsCard(),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: ProfileAbout(profile: widget.profile, owner: _owner),
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: ProfileInterests(
+  Widget build(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: ColoredBox(
+        color: const Color(0xFFF4FBFE),
+        child: MareaRefreshIndicator(
+          onRefresh: _refresh,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= 1024;
+              final identity = Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ProfileIdentity(
                     profile: widget.profile,
-                    onEdit: _owner ? () => _open('/profile/edit') : null,
+                    controller: widget.controller,
+                    wide: wide,
+                    onSettings: () => _open('/settings'),
+                    settingsTooltip: _owner
+                        ? AppLocalizations.tr('Configuración')
+                        : AppLocalizations.tr('Configuración de tu cuenta'),
+                    onMenu: _menu,
+                    editAction: _owner
+                        ? TextButton.icon(
+                            icon: const Icon(Icons.edit_outlined, size: 16),
+                            onPressed: () => _open('/profile/edit'),
+                            label: Text(
+                              AppLocalizations.tr('Editar perfil'),
+                            ),
+                            style: TextButton.styleFrom(
+                              textStyle: const TextStyle(
+                                fontFamily: 'NunitoSans',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              minimumSize: const Size(48, 40),
+                              backgroundColor: Colors.white,
+                              foregroundColor: const Color(0xFF07345C),
+                              shape: const StadiumBorder(),
+                            ),
+                          )
+                        : null,
                   ),
-                ),
-                if (!_owner &&
-                    widget.controller.homeFeedRepository != null &&
-                    widget.controller.profile?.id != widget.profile.id) ...[
-                  const SizedBox(height: 12),
-                  FollowButton(
-                    repository: widget.controller.homeFeedRepository!,
-                    authorId: widget.profile.id,
-                    onChanged: widget.controller.refreshHomeFeed,
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: ProfileStatisticsCard(),
                   ),
-                  const SizedBox(height: 8),
-                  FilledButton.icon(
-                    onPressed: _chatBusy
-                        ? null
-                        : () async {
-                            final chat = widget.controller.chatRepository;
-                            if (chat == null) return;
-                            setState(() => _chatBusy = true);
-                            try {
-                              final accepting =
-                                  _conversationStatus == 'pending' &&
-                                  _conversationIsIncoming;
-                              final viewing =
-                                  _conversationStatus == 'accepted' &&
-                                  _conversationId != null;
-                              if (viewing) {
-                                if (context.mounted) {
-                                  context.push('/messages/$_conversationId');
-                                }
-                                return;
-                              }
-                              if (accepting) {
-                                await chat.accept(_conversationId!);
-                                if (mounted) {
-                                  setState(
-                                    () => _conversationStatus = 'accepted',
-                                  );
-                                }
-                              } else {
-                                final id = await chat.request(
-                                  widget.profile.id,
-                                );
-                                if (mounted) {
-                                  setState(() {
-                                    _conversationId = id;
-                                    _conversationStatus = 'pending';
-                                    _conversationIsIncoming = false;
-                                  });
-                                }
-                              }
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context)
-                                  ..hideCurrentSnackBar()
-                                  ..showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        accepting
-                                            ? 'Solicitud aceptada. Ya pueden conversar.'
-                                            : 'Solicitud enviada. Podrás escribir cuando la otra persona acepte.',
-                                      ),
-                                      duration: Duration(seconds: 2),
-                                    ),
-                                  );
-                              }
-                            } catch (error) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(error.toString())),
-                                );
-                              }
-                            } finally {
-                              if (mounted) setState(() => _chatBusy = false);
-                            }
-                          },
-                    icon: const Icon(Icons.chat_bubble_outline),
-                    label: Text(
-                      _conversationStatus == 'accepted'
-                          ? 'Ver mensajes'
-                          : _conversationStatus == 'pending' &&
-                                _conversationIsIncoming
-                          ? 'Aceptar solicitud'
-                          : 'Solicitar chat',
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ProfileAbout(profile: widget.profile, owner: _owner),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ProfileInterests(
+                      profile: widget.profile,
+                      onEdit: _owner ? () => _open('/profile/edit') : null,
                     ),
                   ),
+                  if (!_owner &&
+                      widget.controller.homeFeedRepository != null &&
+                      widget.controller.profile?.id != widget.profile.id) ...[
+                    const SizedBox(height: 12),
+                    FollowButton(
+                      repository: widget.controller.homeFeedRepository!,
+                      authorId: widget.profile.id,
+                      onChanged: widget.controller.refreshHomeFeed,
+                    ),
+                    const SizedBox(height: 8),
+                    FilledButton.icon(
+                      onPressed: _chatBusy
+                          ? null
+                          : () async {
+                              final chat = widget.controller.chatRepository;
+                              if (chat == null) return;
+                              setState(() => _chatBusy = true);
+                              try {
+                                final accepting =
+                                    _conversationStatus == 'pending' &&
+                                    _conversationIsIncoming;
+                                final viewing =
+                                    _conversationStatus == 'accepted' &&
+                                    _conversationId != null;
+                                if (viewing) {
+                                  if (context.mounted) {
+                                    context.push('/messages/$_conversationId');
+                                  }
+                                  return;
+                                }
+                                if (accepting) {
+                                  await chat.accept(_conversationId!);
+                                  if (mounted) {
+                                    setState(
+                                      () => _conversationStatus = 'accepted',
+                                    );
+                                  }
+                                } else {
+                                  final id = await chat.request(
+                                    widget.profile.id,
+                                  );
+                                  if (mounted) {
+                                    setState(() {
+                                      _conversationId = id;
+                                      _conversationStatus = 'pending';
+                                      _conversationIsIncoming = false;
+                                    });
+                                  }
+                                }
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context)
+                                    ..hideCurrentSnackBar()
+                                    ..showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          accepting
+                                              ? AppLocalizations.tr(
+                                                  'Solicitud aceptada. Ya pueden conversar.',
+                                                )
+                                              : AppLocalizations.tr(
+                                                  'Solicitud enviada. Podrás escribir cuando la otra persona acepte.',
+                                                ),
+                                        ),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                }
+                              } catch (error) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        AppLocalizations.tr(error.toString()),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } finally {
+                                if (mounted) setState(() => _chatBusy = false);
+                              }
+                            },
+                      icon: const Icon(Icons.chat_bubble_outline),
+                      label: Text(
+                        _conversationStatus == 'accepted'
+                            ? AppLocalizations.tr('Ver mensajes')
+                            : _conversationStatus == 'pending' &&
+                                  _conversationIsIncoming
+                            ? AppLocalizations.tr('Aceptar solicitud')
+                            : AppLocalizations.tr('Solicitar chat'),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
-            );
-            return SingleChildScrollView(
-              key: const Key('profile-scroll'),
-              controller: _scroll,
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(
-                wide ? 24 : 0,
-                wide ? 24 : 0,
-                wide ? 24 : 0,
-                112 + MediaQuery.paddingOf(context).bottom,
-              ),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1200),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (widget.feedback != null) ...[
-                        widget.feedback!,
-                        const SizedBox(height: 12),
+              );
+              return SingleChildScrollView(
+                key: const Key('profile-scroll'),
+                controller: _scroll,
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(
+                  wide ? 24 : 0,
+                  wide ? 24 : 0,
+                  wide ? 24 : 0,
+                  112 + MediaQuery.paddingOf(context).bottom,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1200),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (widget.feedback != null) ...[
+                          widget.feedback!,
+                          const SizedBox(height: 12),
+                        ],
+                        if (wide)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(width: 300, child: identity),
+                              const SizedBox(width: 24),
+                              Expanded(child: _content(context)),
+                            ],
+                          )
+                        else ...[
+                          identity,
+                          const SizedBox(height: 12),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: _content(context),
+                          ),
+                        ],
                       ],
-                      if (wide)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(width: 300, child: identity),
-                            const SizedBox(width: 24),
-                            Expanded(child: _content()),
-                          ],
-                        )
-                      else ...[
-                        identity,
-                        const SizedBox(height: 12),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: _content(),
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

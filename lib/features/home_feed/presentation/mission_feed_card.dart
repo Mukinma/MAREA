@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/config/app_config.dart';
@@ -91,10 +92,12 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              value ? 'Misión guardada' : 'Misión retirada de guardados',
+              AppLocalizations.tr(
+                value ? 'Misión guardada' : 'Misión retirada de guardados',
+              ),
             ),
             action: SnackBarAction(
-              label: 'Deshacer',
+              label: AppLocalizations.tr('Deshacer'),
               onPressed: () => _save(!value, undo: true),
             ),
           ),
@@ -202,8 +205,10 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
 
   Widget _calendar() {
     final date = widget.mission.startsAt.toLocal();
-    const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-    const months = [
+    final isEnglish = Localizations.localeOf(context).languageCode == 'en';
+    const daysEs = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const daysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const monthsEs = [
       'ene',
       'feb',
       'mar',
@@ -217,9 +222,27 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
       'nov',
       'dic',
     ];
+    const monthsEn = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final days = isEnglish ? daysEn : daysEs;
+    final months = isEnglish ? monthsEn : monthsEs;
     String two(int n) => n.toString().padLeft(2, '0');
     return Semantics(
-      label: 'Fecha de misión: ${missionDate(widget.mission.startsAt)}',
+      label: AppLocalizations.trTemplate('Fecha de misión: {date}', {
+        'date': missionDate(widget.mission.startsAt),
+      }),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
@@ -480,7 +503,10 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
                                     ),
                                   ),
                                   Text(
-                                    '${missionDate(mission.createdAt)} · Misión',
+                                    AppLocalizations.trTemplate(
+                                      '{date} · Misión',
+                                      {'date': missionDate(mission.createdAt)},
+                                    ),
                                     style: const TextStyle(
                                       color: AppColors.textSecondary,
                                       fontSize: 10,
@@ -495,7 +521,7 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
                     ),
                   ),
                   PopupMenuButton<String>(
-                    tooltip: 'Opciones de misión',
+                    tooltip: AppLocalizations.tr('Opciones de misión'),
                     icon: const Icon(Icons.more_horiz),
                     onSelected: (value) => value == 'save'
                         ? _save(!_saved)
@@ -503,14 +529,14 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
                         ? _collaborate()
                         : _open(),
                     itemBuilder: (_) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'open',
-                        child: Text('Ver detalles'),
+                        child: Text(AppLocalizations.tr('Ver detalles')),
                       ),
                       if (own)
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'manage',
-                          child: Text('Gestionar misión'),
+                          child: Text(AppLocalizations.tr('Gestionar misión')),
                         ),
                       PopupMenuItem(
                         value: 'save',

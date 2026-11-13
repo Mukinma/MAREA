@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marea/core/localization/app_locale_controller.dart';
 import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
@@ -40,13 +41,18 @@ Future<GoRouter> open(
   );
   await controller.initialize();
   final router = AppRouter.create(controller)..go(path);
+  final localeController = AppLocaleController();
   await tester.pumpWidget(
-    MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+    AppLocaleScope(
+      controller: localeController,
+      child: MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+    ),
   );
   await tester.pumpAndSettle();
   addTearDown(() {
     router.dispose();
     controller.dispose();
+    localeController.dispose();
   });
   return router;
 }
@@ -193,8 +199,8 @@ void main() {
     router.go('/explore?section=saved');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Fichas').last);
-      await tester.pumpAndSettle();
-      expect(find.text('Fichas guardadas'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Fichas guardadas'), findsOneWidget);
     expect(find.text('Servicio guardable'), findsOneWidget);
     await tap(tester, find.text('Fichas').first);
     await tester.enterText(

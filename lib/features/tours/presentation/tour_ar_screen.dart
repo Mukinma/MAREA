@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +13,7 @@ import '../data/tour_progress_store.dart';
 import 'tour_widgets.dart';
 import 'tour_visit_screen.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class TourARScreen extends StatefulWidget {
   const TourARScreen({
     required this.controller,
@@ -55,6 +58,21 @@ class _TourARScreenState extends State<TourARScreen>
   String? _error;
   late final String _account = widget.controller.profile?.id ?? '';
   bool get _current => mounted && widget.controller.profile?.id == _account;
+  AppLocalizations get _l10n =>
+      AppLocalizations.of(context) ?? AppLocalizationsEs();
+  String _arError(Object error) {
+    if (error is StateError &&
+        error.message == 'No pudimos abrir la referencia de esta parada.') {
+      return core_l10n.AppLocalizations.tr(_l10n.errorAbrirReferenciaParada);
+    }
+    if (error is StateError &&
+        error.message ==
+            'No pudimos confirmar que la prueba se guardó para esta referencia. '
+                'Mantén la imagen encuadrada y vuelve a intentarlo.') {
+      return core_l10n.AppLocalizations.tr(_l10n.pruebaReferenciaNoConfirmada);
+    }
+    return tourError(error, l10n: _l10n);
+  }
   int get _seconds => _recognizedAt == null
       ? 0
       : DateTime.now().difference(_recognizedAt!).inSeconds;
@@ -97,7 +115,12 @@ class _TourARScreenState extends State<TourARScreen>
         widget.tourId,
         edit: widget.preview,
       );
-      if (tour == null) throw StateError('Este recorrido no está disponible.');
+      if (tour == null) {
+        if (mounted && _current) {
+          setState(() => _error = core_l10n.AppLocalizations.tr(_l10n.recorridoNoDisponible));
+        }
+        return;
+      }
       final progress = widget.preview
           ? TourProgress(revisionId: tour.revisionId)
           : await (_progressStore = TourProgressStore(
@@ -136,7 +159,7 @@ class _TourARScreenState extends State<TourARScreen>
             _points.firstOrNull;
       });
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _arError(e));
     } finally {
       if (_current) setState(() => _loading = false);
     }
@@ -205,7 +228,7 @@ class _TourARScreenState extends State<TourARScreen>
           if (!mounted || !_current) return;
           if (event['state'] == 'error') {
             setState(() {
-              _error = event['message'] as String? ?? 'No pudimos iniciar AR.';
+              _error = event['message'] as String? ?? core_l10n.AppLocalizations.tr(_l10n.errorIniciarCamara);
               _scanning = false;
             });
             return;
@@ -228,8 +251,7 @@ class _TourARScreenState extends State<TourARScreen>
           if (mounted && _current) {
             setState(() {
               _scanning = false;
-              _error =
-                  'No pudimos iniciar la cámara AR. Puedes consultar la lista.';
+              _error = core_l10n.AppLocalizations.tr(_l10n.errorIniciarCamaraAr);
             });
           }
         },
@@ -240,7 +262,7 @@ class _TourARScreenState extends State<TourARScreen>
       });
       setState(() => _scanning = true);
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _arError(e));
     } finally {
       if (_current) setState(() => _busy = false);
     }
@@ -254,8 +276,8 @@ class _TourARScreenState extends State<TourARScreen>
       if (mounted && _current) {
         setState(
           () => _error = e is TourProgressPersistenceException
-              ? 'No pudimos guardar el progreso en este dispositivo. Mantén la pantalla abierta e inténtalo de nuevo.'
-              : 'Progreso guardado en este dispositivo. Se sincronizará al volver a abrir el recorrido.',
+              ? core_l10n.AppLocalizations.tr(_l10n.errorGuardarProgreso)
+              : core_l10n.AppLocalizations.tr(_l10n.progresoGuardado),
         );
       }
     }
@@ -308,14 +330,19 @@ class _TourARScreenState extends State<TourARScreen>
           _point = savedPoint;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Prueba guardada para esta referencia.'),
+          SnackBar(
+            content: Text(
+              (AppLocalizations.of(context) ?? AppLocalizationsEs())
+                  .pruebaGuardadaReferencia,
+            ),
           ),
         );
         _stop();
       }
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) {
+        setState(() => _error = _arError(e));
+      }
     } finally {
       if (_current) setState(() => _busy = false);
     }
@@ -352,7 +379,9 @@ class _TourARScreenState extends State<TourARScreen>
     _approach = connection?['instruction']?.toString();
     _approach ??= destination == null
         ? null
-        : 'Busca la parada en ${destination.name}.';
+        : core_l10n.AppLocalizations.tr(
+            _l10n.buscaParadaEn(destination.name),
+          );
     _stop();
     setState(() {
       _point = point;
@@ -391,12 +420,13 @@ class _TourARScreenState extends State<TourARScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     final point = _point;
     return Scaffold(
       appBar: AppBar(
         leading: TourBackButton(fallback: '/tours/${widget.tourId}'),
         title: Text(
-          widget.preview ? 'Probar AR en el local' : 'Recorrer con cámara',
+          widget.preview ? core_l10n.AppLocalizations.tr(l10n.probarArEnLocal) : core_l10n.AppLocalizations.tr(l10n.recorrerConCamara),
         ),
       ),
       body: _loading
@@ -406,16 +436,18 @@ class _TourARScreenState extends State<TourARScreen>
               children: [
                 if (_error != null) TourNotice(_error!),
                 if (_versionChanged)
-                  const TourNotice(
-                    'El recorrido cambió. Estas paradas pertenecen a la versión actual.',
-                  ),
+                  TourNotice(core_l10n.AppLocalizations.tr(l10n.recorridoCambioParadas)),
                 if (!_supported)
-                  const TourNotice(
-                    'AR no está disponible en este dispositivo. Puedes consultar las paradas y explorar el panorama.',
-                  ),
+                  TourNotice(core_l10n.AppLocalizations.tr(l10n.arNoDisponible)),
                 if (_progress != null && !widget.preview)
                   Text(
-                    '${_progress!.visited.length} de ${_points.length} paradas visitadas · ${_progress!.skipped.length} saltadas',
+                    core_l10n.AppLocalizations.tr(
+                      l10n.paradasVisitadas(
+                        _progress!.visited.length,
+                        _points.length,
+                        _progress!.skipped.length,
+                      ),
+                    ),
                   ),
                 if (point != null) ...[
                   Text(
@@ -449,10 +481,10 @@ class _TourARScreenState extends State<TourARScreen>
                                   ),
                           ),
                           if (_recognized)
-                            const Positioned(
+                            Positioned(
                               top: 12,
                               left: 12,
-                              child: Chip(label: Text('Imagen reconocida')),
+                              child: Chip(label: Text(core_l10n.AppLocalizations.tr(l10n.imagenReconocida))),
                             ),
                         ],
                       ),
@@ -460,10 +492,10 @@ class _TourARScreenState extends State<TourARScreen>
                   if (_scanning)
                     Text(
                       _recognized
-                          ? 'Imagen reconocida'
+                          ? core_l10n.AppLocalizations.tr(l10n.imagenReconocida)
                           : !_everRecognized
-                          ? 'Encuadra la imagen de esta parada'
-                          : 'Ya no podemos confirmar la posición. Vuelve a encuadrar la referencia.',
+                          ? core_l10n.AppLocalizations.tr(l10n.encuadraImagenParada)
+                          : core_l10n.AppLocalizations.tr(l10n.referenciaNoConfirmada),
                     ),
                   if (_approach != null) TourNotice(_approach!),
                   Text(point.description),
@@ -475,8 +507,9 @@ class _TourARScreenState extends State<TourARScreen>
                               height: 120,
                               child: Image.network(
                                 s.data!,
-                                errorBuilder: (_, e, st) =>
-                                    const Text('Referencia no disponible'),
+                                errorBuilder: (_, e, st) => Text(
+                                  core_l10n.AppLocalizations.tr(l10n.referenciaNoDisponible),
+                                ),
                               ),
                             )
                           : const SizedBox(),
@@ -484,19 +517,21 @@ class _TourARScreenState extends State<TourARScreen>
                   if (_supported && !_scanning)
                     FilledButton(
                       onPressed: _busy ? null : _scan,
-                      child: const Text('Escanear esta imagen'),
+                      child: Text(core_l10n.AppLocalizations.tr(l10n.escanearImagen)),
                     ),
                   if (_scanning)
                     OutlinedButton(
                       onPressed: _stop,
-                      child: const Text('Volver a la lista'),
+                      child: Text(core_l10n.AppLocalizations.tr(l10n.volverLista)),
                     ),
                   if (widget.preview && _scanning)
                     FilledButton(
                       onPressed: _recognized && _seconds >= 3 && !_busy
                           ? _report
                           : null,
-                      child: const Text('Guardar prueba de reconocimiento'),
+                      child: Text(
+                        core_l10n.AppLocalizations.tr(l10n.guardarPruebaReconocimiento),
+                      ),
                     ),
                   TextButton(
                     onPressed: () async {
@@ -512,12 +547,12 @@ class _TourARScreenState extends State<TourARScreen>
                         if (_current) _next();
                       }
                     },
-                    child: const Text('Leer detalle de la parada'),
+                    child: Text(core_l10n.AppLocalizations.tr(l10n.leerDetalleParada)),
                   ),
                   if (!widget.preview && _progress!.visited.contains(point.id))
                     FilledButton(
                       onPressed: _next,
-                      child: const Text('Siguiente parada'),
+                      child: Text(core_l10n.AppLocalizations.tr(l10n.siguienteParada)),
                     ),
                   if (!widget.preview)
                     OutlinedButton(
@@ -537,7 +572,7 @@ class _TourARScreenState extends State<TourARScreen>
                           _stop();
                         }
                       },
-                      child: const Text('Saltar parada'),
+                      child: Text(core_l10n.AppLocalizations.tr(l10n.saltarParada)),
                     ),
                 ],
                 if (!widget.preview &&
@@ -547,27 +582,27 @@ class _TourARScreenState extends State<TourARScreen>
                           _progress!.visited.contains(p.id) ||
                           _progress!.skipped.contains(p.id),
                     )) ...[
-                  const TourNotice(
-                    'Terminaste el recorrido. Puedes volver al perfil o explorar el local en 360°.',
-                  ),
+                  TourNotice(core_l10n.AppLocalizations.tr(l10n.terminasteRecorrido)),
                   FilledButton(
                     onPressed: () {
                       _stop();
                       context.push('/people/${_tour!.ownerId}');
                     },
-                    child: const Text('Volver al perfil'),
+                    child: Text(core_l10n.AppLocalizations.tr(l10n.volverPerfil)),
                   ),
                   OutlinedButton(
                     onPressed: () {
                       _stop();
                       context.push('/tours/${_tour!.id}');
                     },
-                    child: const Text('Explorar el local en 360°'),
+                    child: Text(
+                      core_l10n.AppLocalizations.tr(l10n.explorarLocal),
+                    ),
                   ),
                 ],
                 const SizedBox(height: 16),
-                const Text(
-                  'Lista de paradas',
+                Text(
+                  core_l10n.AppLocalizations.tr(l10n.listaParadas),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                 ),
                 for (final p in _points)
@@ -575,17 +610,15 @@ class _TourARScreenState extends State<TourARScreen>
                     title: Text(p.name),
                     subtitle: Text(
                       _progress?.visited.contains(p.id) == true
-                          ? 'Visitada'
+                          ? core_l10n.AppLocalizations.tr(l10n.visitada)
                           : _progress?.skipped.contains(p.id) == true
-                          ? 'Saltada'
-                          : 'Pendiente',
+                          ? core_l10n.AppLocalizations.tr(l10n.saltada)
+                          : core_l10n.AppLocalizations.tr(l10n.pendiente),
                     ),
                     selected: p.id == point?.id,
                     onTap: () => _choose(p),
                   ),
-                const TourNotice(
-                  'Busca cada imagen con la fotografía de referencia y la indicación del local. La lista permite leer sin cámara.',
-                ),
+                TourNotice(core_l10n.AppLocalizations.tr(l10n.instruccionBuscarImagen)),
               ],
             ),
     );

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import '../models/tour_models.dart';
 import 'capture_plan.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 /// Guidance and shutter stay visible while the camera content scrolls.
 class CaptureGuidancePanel extends StatelessWidget {
   const CaptureGuidancePanel({
@@ -21,63 +24,87 @@ class CaptureGuidancePanel extends StatelessWidget {
   final bool fresh, aimed, steady, busy;
   final VoidCallback onTake;
 
-  String get instruction {
-    if (busy) return 'Guardando la toma…';
+  String instruction(AppLocalizations l10n) {
+    if (busy) return core_l10n.AppLocalizations.tr(l10n.guardandoToma);
     if (!fresh || !yaw.isFinite || !pitch.isFinite) {
-      return 'Esperando orientación del teléfono. Muévelo suavemente.';
+      return core_l10n.AppLocalizations.tr(l10n.esperandoOrientacionMover);
     }
     if (aimed) {
       return steady
-          ? 'Posición lista. Pulsa Aceptar toma.'
-          : 'Mantén el teléfono estable un momento.';
+          ? core_l10n.AppLocalizations.tr(l10n.posicionListaAceptar)
+          : core_l10n.AppLocalizations.tr(l10n.mantenerTelefonoEstableMomento);
     }
     final turn = normalizeYaw(target.yaw - yaw);
     final tilt = target.pitch - pitch;
     final directions = <String>[];
     if (tilt.abs() >= 3) {
       directions.add(
-        'Inclina ${tilt > 0 ? 'hacia arriba' : 'hacia abajo'} ${tilt.abs().round()}°',
+        tilt > 0
+            ? core_l10n.AppLocalizations.tr(
+                l10n.inclinaArribaGrados(tilt.abs().round()),
+              )
+            : core_l10n.AppLocalizations.tr(
+                l10n.inclinaAbajoGrados(tilt.abs().round()),
+              ),
       );
     }
     // Azimuth is immaterial when aiming at the ceiling or floor.
     if (target.pitch.abs() < 85 && turn.abs() >= 3) {
       directions.add(
-        'Gira ${turn.abs().round()}° a la ${turn > 0 ? 'derecha' : 'izquierda'}',
+        turn > 0
+            ? core_l10n.AppLocalizations.tr(
+                l10n.giraDerechaGrados(turn.abs().round()),
+              )
+            : core_l10n.AppLocalizations.tr(
+                l10n.giraIzquierdaGrados(turn.abs().round()),
+              ),
       );
     }
     return directions.isEmpty
-        ? 'Ajusta ligeramente el encuadre hasta alinear la cámara.'
+        ? core_l10n.AppLocalizations.tr(l10n.ajustaEncuadreAlinear)
         : directions.join('. ');
   }
 
   @override
-  Widget build(BuildContext context) => Material(
-    elevation: 8,
-    color: Theme.of(context).colorScheme.surface,
-    child: SafeArea(
-      top: false,
-      minimum: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(instruction, style: Theme.of(context).textTheme.titleSmall),
-          if (fresh && yaw.isFinite && pitch.isFinite) ...[
-            const SizedBox(height: 4),
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return Material(
+      elevation: 8,
+      color: Theme.of(context).colorScheme.surface,
+      child: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
             Text(
-              'Actual: giro ${yaw.round()}° · inclinación ${pitch.round()}°\n'
-              'Objetivo: giro ${target.yaw.round()}° · inclinación ${target.pitch.round()}°',
-              style: Theme.of(context).textTheme.bodySmall,
+              instruction(l10n),
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            if (fresh && yaw.isFinite && pitch.isFinite) ...[
+              const SizedBox(height: 4),
+              Text(
+                core_l10n.AppLocalizations.tr(
+                  l10n.lecturaOrientacion(
+                    yaw.round(),
+                    pitch.round(),
+                    target.yaw.round(),
+                    target.pitch.round(),
+                  ),
+                ),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+            const SizedBox(height: 8),
+            FilledButton.icon(
+              onPressed: !busy && fresh && aimed && steady ? onTake : null,
+              icon: const Icon(Icons.camera_alt_outlined),
+              label: Text(core_l10n.AppLocalizations.tr(l10n.aceptarToma)),
             ),
           ],
-          const SizedBox(height: 8),
-          FilledButton.icon(
-            onPressed: !busy && fresh && aimed && steady ? onTake : null,
-            icon: const Icon(Icons.camera_alt_outlined),
-            label: const Text('Aceptar toma'),
-          ),
-        ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/location/models/location_models.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'dart:typed_data';
@@ -53,7 +54,9 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
       if (!mounted) return;
       if (post == null || post.authorId != widget.controller.profile?.id) {
         setState(() {
-          _error = 'Esta publicación no está disponible para editar.';
+          _error = AppLocalizations.tr(
+            'Esta publicación no está disponible para editar.',
+          );
           _loading = false;
         });
         return;
@@ -139,8 +142,9 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
     final profile = widget.controller.profile;
     if (repo == null || profile == null) {
       setState(
-        () => _error =
-            'No pudimos conectar con las publicaciones. Vuelve a intentarlo.',
+        () => _error = AppLocalizations.tr(
+          'No pudimos conectar con las publicaciones. Vuelve a intentarlo.',
+        ),
       );
       return;
     }
@@ -175,7 +179,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
       _imagePath,
     ).validate(userType: widget.postId == null ? profile.userType : null);
     if (validation != null) {
-      setState(() => _error = validation);
+      setState(() => _error = AppLocalizations.tr(validation));
       return;
     }
     setState(() {
@@ -209,8 +213,8 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
         SnackBar(
           content: Text(
             widget.postId == null
-                ? 'Tu publicación ya está en MAREA.'
-                : 'Publicación actualizada.',
+                ? AppLocalizations.tr('Tu publicación ya está en MAREA.')
+                : AppLocalizations.tr('Publicación actualizada.'),
           ),
         ),
       );
@@ -240,7 +244,9 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
   Widget build(BuildContext context) {
     final profile = widget.controller.profile;
     if (profile == null) {
-      return const CommunityNotice(message: 'Carga tu perfil para publicar.');
+      return CommunityNotice(
+        message: AppLocalizations.tr('Carga tu perfil para publicar.'),
+      );
     }
     final kinds = profile.userType.postKinds;
     final kind = _kind ?? kinds.first;
@@ -252,16 +258,18 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
         final discard = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('¿Descartar borrador?'),
-            content: const Text('Los cambios todavía no se han publicado.'),
+            title: Text(AppLocalizations.tr('¿Descartar borrador?')),
+            content: Text(
+              AppLocalizations.tr('Los cambios todavía no se han publicado.'),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Seguir editando'),
+                child: Text(AppLocalizations.tr('Seguir editando')),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Descartar'),
+                child: Text(AppLocalizations.tr('Descartar')),
               ),
             ],
           ),
@@ -273,9 +281,9 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
       },
       child: CommunityPage(
         title: widget.postId == null
-            ? 'Comparte con MAREA'
-            : 'Editar publicación',
-        subtitle: profile.userType.description,
+            ? AppLocalizations.tr('Comparte con MAREA')
+            : AppLocalizations.tr('Editar publicación'),
+        subtitle: AppLocalizations.tr(profile.userType.description),
         action: widget.postId == null
             ? OutlinedButton.icon(
                 onPressed: _busy
@@ -286,7 +294,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                         await context.push('/missions/$id');
                       },
                 icon: const Icon(Icons.emoji_events_outlined),
-                label: const Text('Crear misión'),
+                label: Text(AppLocalizations.tr('Crear misión')),
               )
             : null,
         children: [
@@ -298,16 +306,20 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                     _allowsCollaboration = value;
                     _dirty = true;
                   }),
-            title: const Text('Invitar a colaborar'),
-            subtitle: const Text(
-              'Recibe mensajes privados de interés para esta publicación.',
+            title: Text(AppLocalizations.tr('Invitar a colaborar')),
+            subtitle: Text(
+              AppLocalizations.tr(
+                'Recibe mensajes privados de interés para esta publicación.',
+              ),
             ),
           ),
           if (_loading)
             const Center(child: MareaSkeleton(kind: SkeletonKind.form))
           else if (widget.postId != null && _kind == null)
             CommunityNotice(
-              message: _error ?? 'No encontramos la publicación.',
+              message:
+                  _error ??
+                  AppLocalizations.tr('No encontramos la publicación.'),
               onRetry: _load,
             )
           else
@@ -320,7 +332,11 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Publicas como ${profile.userType.databaseValue}',
+                    AppLocalizations.trTemplate('Publicas como {profile}', {
+                      'profile': AppLocalizations.tr(
+                        profile.userType.databaseValue,
+                      ),
+                    }),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
@@ -333,7 +349,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                         if (widget.postId != null) kind,
                       })
                         ChoiceChip(
-                          label: Text(option.label),
+                          label: Text(AppLocalizations.tr(option.label)),
                           selected: kind == option,
                           onSelected: _busy || widget.postId != null
                               ? null
@@ -345,15 +361,17 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Text(kind.description),
+                  Text(AppLocalizations.tr(kind.description)),
                   const SizedBox(height: 24),
                   TextFormField(
                     controller: _title,
                     enabled: !_busy,
                     maxLength: 100,
-                    decoration: const InputDecoration(labelText: 'Título'),
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.tr('Título'),
+                    ),
                     validator: (v) => (v?.trim().length ?? 0) < 3
-                        ? 'Escribe al menos 3 caracteres.'
+                        ? AppLocalizations.tr('Escribe al menos 3 caracteres.')
                         : null,
                   ),
                   const SizedBox(height: 16),
@@ -364,23 +382,25 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                     minLines: 4,
                     maxLines: 10,
                     decoration: InputDecoration(
-                      labelText: switch (kind) {
+                      labelText: AppLocalizations.tr(switch (kind) {
                         PostKind.project => 'Cuéntanos sobre tu proyecto',
                         PostKind.product => 'Describe tu producto',
                         PostKind.service => '¿Qué servicio ofreces?',
                         PostKind.space => 'Describe tu espacio',
                         PostKind.event => 'Detalles del evento',
                         _ => '¿Qué quieres compartir?',
-                      },
+                      }),
                     ),
                     validator: (v) => v == null || v.trim().isEmpty
-                        ? 'Agrega una descripción.'
+                        ? AppLocalizations.tr('Agrega una descripción.')
                         : null,
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     initialValue: _category,
-                    decoration: const InputDecoration(labelText: 'Categoría'),
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.tr('Categoría'),
+                    ),
                     items: [
                       for (final entry in {
                         ...ProfilePreferences.interests,
@@ -388,7 +408,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                       }.entries)
                         DropdownMenuItem(
                           value: entry.key,
-                          child: Text(entry.value),
+                          child: Text(AppLocalizations.tr(entry.value)),
                         ),
                     ],
                     onChanged: _busy
@@ -411,11 +431,17 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                     decoration: InputDecoration(
                       labelText:
                           kind == PostKind.space || kind == PostKind.event
-                          ? 'Ubicación del espacio o evento'
-                          : 'Ubicación (opcional)',
-                      hintText: 'Escribe una dirección o elige en el mapa',
+                          ? AppLocalizations.tr(
+                              'Ubicación del espacio o evento',
+                            )
+                          : AppLocalizations.tr('Ubicación (opcional)'),
+                      hintText: AppLocalizations.tr(
+                        'Escribe una dirección o elige en el mapa',
+                      ),
                       suffixIcon: IconButton(
-                        tooltip: 'Elegir ubicación en el mapa',
+                        tooltip: AppLocalizations.tr(
+                          'Elegir ubicación en el mapa',
+                        ),
                         onPressed: _busy ? null : _chooseLocation,
                         icon: const Icon(Icons.map_outlined),
                       ),
@@ -423,7 +449,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                     validator: (v) =>
                         (kind == PostKind.space || kind == PostKind.event) &&
                             (v?.trim().isEmpty ?? true)
-                        ? 'Indica dónde se encuentra.'
+                        ? AppLocalizations.tr('Indica dónde se encuentra.')
                         : null,
                   ),
                   if (commercial) ...[
@@ -434,15 +460,19 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
-                        labelText: 'Precio en MXN (opcional)',
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.tr(
+                          'Precio en MXN (opcional)',
+                        ),
                         prefixText: '\$ ',
                       ),
                       validator: (v) {
                         if (v == null || v.trim().isEmpty) return null;
                         final n = double.tryParse(v.replaceAll(',', '.'));
                         return n == null || !n.isFinite || n < 0 || n > 99999999
-                            ? 'Escribe un precio entre 0 y 99,999,999.'
+                            ? AppLocalizations.tr(
+                                'Escribe un precio entre 0 y 99,999,999.',
+                              )
                             : null;
                       },
                     ),
@@ -462,8 +492,9 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                       _imageUrl!,
                       height: 240,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, _, _) =>
-                          const Text('No pudimos cargar la imagen.'),
+                      errorBuilder: (_, _, _) => Text(
+                        AppLocalizations.tr('No pudimos cargar la imagen.'),
+                      ),
                     ),
                   Wrap(
                     spacing: 12,
@@ -473,8 +504,8 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                         icon: const Icon(Icons.add_photo_alternate_outlined),
                         label: Text(
                           _image != null || _imagePath != null
-                              ? 'Cambiar fotografía'
-                              : 'Agregar fotografía',
+                              ? AppLocalizations.tr('Cambiar fotografía')
+                              : AppLocalizations.tr('Agregar fotografía'),
                         ),
                       ),
                       if (_image != null || _imagePath != null)
@@ -487,13 +518,15 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                                   _imageUrl = null;
                                   _dirty = true;
                                 }),
-                          child: const Text('Quitar fotografía'),
+                          child: Text(AppLocalizations.tr('Quitar fotografía')),
                         ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Tu publicación será visible para las personas con cuenta en MAREA.',
+                  Text(
+                    AppLocalizations.tr(
+                      'Tu publicación será visible para las personas con cuenta en MAREA.',
+                    ),
                   ),
                   if (_error != null)
                     Padding(
@@ -511,12 +544,14 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
                     icon: const Icon(Icons.send_outlined),
                     label: Text(
                       _busy
-                          ? (widget.postId == null
-                                ? 'Publicando…'
-                                : 'Guardando…')
+                          ? AppLocalizations.tr(
+                              widget.postId == null
+                                  ? 'Publicando…'
+                                  : 'Guardando…',
+                            )
                           : widget.postId == null
-                          ? 'Publicar'
-                          : 'Guardar cambios',
+                          ? AppLocalizations.tr('Publicar')
+                          : AppLocalizations.tr('Guardar cambios'),
                     ),
                   ),
                 ],

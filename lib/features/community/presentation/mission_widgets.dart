@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/community/data/community_repository.dart';
@@ -10,6 +11,24 @@ String missionDate(DateTime value) {
   String two(int n) => n.toString().padLeft(2, '0');
   return '${two(d.day)}/${two(d.month)}/${d.year} · ${two(d.hour)}:${two(d.minute)}';
 }
+
+String missionCategoryLabel(String category) =>
+    AppLocalizations.tr(communityCategories[category] ?? 'Otros');
+
+String missionTargetLabel(UserType? target) => target == null
+    ? AppLocalizations.tr('Todos los perfiles')
+    : AppLocalizations.tr(target.databaseValue);
+
+String missionCompensationLocalizedLabel(String? type, int? cents) =>
+    switch (type) {
+      'unpaid' => AppLocalizations.tr('Sin pago'),
+      'negotiable' => AppLocalizations.tr('Compensación por acordar'),
+      'paid' when cents != null && cents > 0 && cents <= 9999999900 =>
+        AppLocalizations.trTemplate('{amount} MXN por participante', {
+          'amount': '\$${(cents / 100).toStringAsFixed(2)}',
+        }),
+      _ => AppLocalizations.tr('Compensación no indicada'),
+    };
 
 class MissionSurface extends StatelessWidget {
   const MissionSurface({super.key, required this.child, this.padding = 24});
@@ -124,7 +143,7 @@ class MissionSummary extends StatelessWidget {
       children: [
         if (preview) ...[
           Text(
-            'ASÍ LA VERÁ LA COMUNIDAD',
+            AppLocalizations.tr('ASÍ LA VERÁ LA COMUNIDAD'),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: AppColors.aquaDark,
               letterSpacing: 1.2,
@@ -145,11 +164,9 @@ class MissionSummary extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _badge(
-              communityCategories[mission.category] ?? 'Otros',
-              AppColors.mint,
-            ),
-            if (!preview) _badge(mission.statusLabel, AppColors.mist),
+            _badge(missionCategoryLabel(mission.category), AppColors.mint),
+            if (!preview)
+              _badge(AppLocalizations.tr(mission.statusLabel), AppColors.mist),
           ],
         ),
         const SizedBox(height: 12),
@@ -162,7 +179,11 @@ class MissionSummary extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Por ${mission.organizerName ?? 'la comunidad MAREA'}',
+          AppLocalizations.trTemplate('Por {organizer}', {
+            'organizer':
+                mission.organizerName ??
+                AppLocalizations.tr('la comunidad MAREA'),
+          }),
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 16),
@@ -171,45 +192,62 @@ class MissionSummary extends StatelessWidget {
           dateLabel ?? missionDate(mission.startsAt),
         ),
         _line(Icons.place_outlined, mission.location),
-        _line(Icons.payments_outlined, mission.compensationLabel),
+        _line(
+          Icons.payments_outlined,
+          missionCompensationLocalizedLabel(
+            mission.compensationType,
+            mission.compensationAmountCents,
+          ),
+        ),
         _line(
           Icons.people_outline,
-          '${mission.availableSeats} de ${mission.capacity} lugares disponibles',
+          AppLocalizations.trTemplate(
+            mission.availableSeats == 1
+                ? '{available} de {total} lugar disponible'
+                : '{available} de {total} lugares disponibles',
+            {
+              'available': '${mission.availableSeats}',
+              'total': '${mission.capacity}',
+            },
+          ),
         ),
         if (owner)
           _line(
             Icons.inbox_outlined,
-            '${mission.pendingCount} pendientes · ${mission.acceptedCount} aceptadas',
+            AppLocalizations.trTemplate(
+              '{pending} pendientes · {accepted} aceptadas',
+              {
+                'pending': '${mission.pendingCount}',
+                'accepted': '${mission.acceptedCount}',
+              },
+            ),
           ),
         if (!owner && !preview && viewerType != null)
           _line(
             Icons.account_circle_outlined,
             mission.authorId == viewerId
-                ? 'Misión que organizas'
+                ? AppLocalizations.tr('Misión que organizas')
                 : mission.targetType == null || mission.targetType == viewerType
-                ? 'Compatible con tu perfil'
-                : 'Busca otro tipo de perfil',
+                ? AppLocalizations.tr('Compatible con tu perfil')
+                : AppLocalizations.tr('Busca otro tipo de perfil'),
           ),
         if (preview) ...[
           const Divider(height: 28),
           Text(mission.body),
           const SizedBox(height: 14),
-          _line(
-            Icons.person_outline,
-            mission.targetType?.databaseValue ?? 'Todos los perfiles',
-          ),
+          _line(Icons.person_outline, missionTargetLabel(mission.targetType)),
           if (mission.requirements != null) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Requisitos',
+            Text(
+              AppLocalizations.tr('Requisitos'),
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
             Text(mission.requirements!),
           ],
           if (mission.conditions != null) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Qué ofrecemos y condiciones',
+            Text(
+              AppLocalizations.tr('Qué ofrecemos y condiciones'),
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
             Text(mission.conditions!),
@@ -222,7 +260,11 @@ class MissionSummary extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: onTap,
               icon: const Icon(Icons.arrow_forward, size: 18),
-              label: Text(owner ? 'Gestionar misión' : 'Ver misión'),
+              label: Text(
+                owner
+                    ? AppLocalizations.tr('Gestionar misión')
+                    : AppLocalizations.tr('Ver misión'),
+              ),
             ),
           ),
         ],

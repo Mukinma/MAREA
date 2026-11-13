@@ -8,6 +8,7 @@ import 'package:marea/features/profile/presentation/profile_sections.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
 import 'package:marea/features/showcase/presentation/showcase_widgets.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 
 typedef ProfileOpenRoute = Future<void> Function(String route);
 
@@ -33,14 +34,16 @@ class ProfileShowcasePreview extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ProfileSectionHeading(
-          title: profile.userType.showcaseLabel,
+          title: localizedProfileShowcaseLabel(context, profile.userType),
           action: repository == null ? null : 'Ver todo',
           onAction: onSeeAll,
         ),
         const SizedBox(height: 5),
         if (repository == null)
-          const _ProfileEmpty(
-            'El contenido no está disponible en este momento.',
+          _ProfileEmpty(
+            AppLocalizations.tr(
+              'El contenido no está disponible en este momento.',
+            ),
           )
         else
           CommunityLoad<List<ShowcaseItem>>(
@@ -59,8 +62,10 @@ class ProfileShowcasePreview extends StatelessWidget {
                   )
                   .toList();
               if (items.isEmpty) {
-                return const _ProfileEmpty(
-                  'Este perfil aún no tiene contenido para mostrar.',
+                return _ProfileEmpty(
+                  AppLocalizations.tr(
+                    'Este perfil aún no tiene contenido para mostrar.',
+                  ),
                 );
               }
               final height = MediaQuery.textScalerOf(context).scale(12) > 16
@@ -125,7 +130,10 @@ class ProfileShowcasePreview extends StatelessWidget {
                                     if (owner &&
                                         item.status != ShowcaseStatus.published)
                                       Text(
-                                        item.status.label,
+                                        localizedShowcaseStatusLabel(
+                                          context,
+                                          item.status,
+                                        ),
                                         style: const TextStyle(
                                           fontSize: 10,
                                           color: Colors.white,
@@ -199,14 +207,16 @@ class ProfileMissionsPreview extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ProfileSectionHeading(
-          title: 'Misiones destacadas',
+          title: AppLocalizations.tr('Misiones destacadas'),
           action: repository == null ? null : 'Ver todas',
           onAction: onSeeAll,
         ),
         const SizedBox(height: 5),
         if (repository == null)
-          const _ProfileEmpty(
-            'Las misiones no están disponibles en este momento.',
+          _ProfileEmpty(
+            AppLocalizations.tr(
+              'Las misiones no están disponibles en este momento.',
+            ),
           )
         else
           CommunityLoad<List<Mission>>(
@@ -220,8 +230,10 @@ class ProfileMissionsPreview extends StatelessWidget {
                   .take(3)
                   .toList();
               if (missions.isEmpty) {
-                return const _ProfileEmpty(
-                  'Este perfil aún no ha publicado misiones.',
+                return _ProfileEmpty(
+                  AppLocalizations.tr(
+                    'Este perfil aún no ha publicado misiones.',
+                  ),
                 );
               }
               return Column(
@@ -280,7 +292,9 @@ class ProfileMissionsPreview extends StatelessWidget {
                                             ),
                                           ),
                                           child: Text(
-                                            mission.statusLabel,
+                                            AppLocalizations.tr(
+                                              mission.statusLabel,
+                                            ),
                                             style: const TextStyle(
                                               fontSize: 9,
                                               color: Color(0xFF138E76),
@@ -349,7 +363,7 @@ Future<void> showProfileShowcase(
   required ProfileOpenRoute onOpen,
 }) => _showProfileList(
   context,
-  title: profile.userType.showcaseLabel,
+  title: localizedProfileShowcaseLabel(context, profile.userType),
   child: Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
@@ -365,7 +379,7 @@ Future<void> showProfileShowcase(
                   onOpen('/showcase/new?kind=${kind.name}');
                 },
                 icon: const Icon(Icons.add, size: 18),
-                label: Text(kind.action),
+                label: Text(localizedShowcaseKindAction(context, kind)),
               ),
           ],
         ),
@@ -386,16 +400,18 @@ Future<void> showProfileMissions(
   required String ownerId,
   required bool owner,
   required ProfileOpenRoute onOpen,
-}) => _showProfileList(
-  context,
-  title: 'Misiones del perfil',
-  child: _ProfileMissionsList(
-    repository: repository,
-    ownerId: ownerId,
-    owner: owner,
-    onOpen: onOpen,
-  ),
-);
+}) {
+  return _showProfileList(
+    context,
+    title: AppLocalizations.tr('Misiones del perfil'),
+    child: _ProfileMissionsList(
+      repository: repository,
+      ownerId: ownerId,
+      owner: owner,
+      onOpen: onOpen,
+    ),
+  );
+}
 
 Future<void> _showProfileList(
   BuildContext context, {
@@ -426,7 +442,7 @@ Future<void> _showProfileList(
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Cerrar lista',
+                  tooltip: AppLocalizations.tr('Cerrar lista'),
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close),
                 ),
@@ -501,31 +517,38 @@ class _ProfileMissionsListState extends State<_ProfileMissionsList> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      if (_items.isEmpty && !_loading && _error == null)
-        const _ProfileEmpty('Este perfil aún no ha publicado misiones.'),
-      for (final mission in _items)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: MissionSummary(
-            mission: mission,
-            repository: widget.repository,
-            owner: widget.owner,
-            onTap: () async {
-              await widget.onOpen('/missions/${mission.id}');
-              if (mounted) _load(reset: true);
-            },
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_items.isEmpty && !_loading && _error == null)
+          _ProfileEmpty(
+            AppLocalizations.tr('Este perfil aún no ha publicado misiones.'),
           ),
-        ),
-      if (_error != null) CommunityNotice(message: _error!, onRetry: _load),
-      if (_loading)
-        const Center(child: CircularProgressIndicator())
-      else if (_more)
-        TextButton(onPressed: _load, child: const Text('Cargar más misiones')),
-    ],
-  );
+        for (final mission in _items)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: MissionSummary(
+              mission: mission,
+              repository: widget.repository,
+              owner: widget.owner,
+              onTap: () async {
+                await widget.onOpen('/missions/${mission.id}');
+                if (mounted) _load(reset: true);
+              },
+            ),
+          ),
+        if (_error != null) CommunityNotice(message: _error!, onRetry: _load),
+        if (_loading)
+          const Center(child: CircularProgressIndicator())
+        else if (_more)
+          TextButton(
+            onPressed: _load,
+            child: Text(AppLocalizations.tr('Cargar más misiones')),
+          ),
+      ],
+    );
+  }
 }
 
 class _ProfileEmpty extends StatelessWidget {

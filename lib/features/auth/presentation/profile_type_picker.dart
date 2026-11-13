@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 
@@ -94,14 +95,14 @@ class ProfileTypePicker extends StatelessWidget {
                       controlAffinity: ListTileControlAffinity.trailing,
                       secondary: ProfileTypeIcon(type: type),
                       title: Text(
-                        type.label,
+                        AppLocalizations.tr(type.label),
                         style: const TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 15,
                         ),
                       ),
                       subtitle: Text(
-                        type.shortDescription,
+                        AppLocalizations.tr(type.shortDescription),
                         style: const TextStyle(fontSize: 12),
                       ),
                     ),

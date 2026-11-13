@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/location/data/location_repository.dart';
 import 'package:marea/features/location/models/location_models.dart';
@@ -19,6 +20,27 @@ class Cities implements LocationRepository {
 }
 
 void main() {
+  testWidgets('fallback location label follows the selected language', (
+    tester,
+  ) async {
+    await AppLocalizations.delegate.load(const Locale('en', 'US'));
+    addTearDown(() => AppLocalizations.delegate.load(const Locale('es', 'MX')));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FeedCityLabel(
+            contentKind: 'post',
+            contentId: 'post',
+            onTap: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('View location'), findsOneWidget);
+  });
+
   testWidgets(
     'city lookup is nonblocking and discards a previous content response',
     (tester) async {

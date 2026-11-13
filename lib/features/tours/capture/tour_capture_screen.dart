@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,20 @@ import '../presentation/tour_panorama.dart';
 import 'capture_plan.dart';
 import 'capture_motion_gate.dart';
 import 'capture_guidance_panel.dart';
+
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
+String _tourJobMessage(TourJob job, AppLocalizations l10n) {
+  final message = job.data['message'];
+  if (message != null) return message as String;
+  return switch (job.state) {
+    'queued' => core_l10n.AppLocalizations.tr(l10n.procesamientoEnEspera),
+    'running' => core_l10n.AppLocalizations.tr(l10n.procesandoPanorama),
+    'ready' => core_l10n.AppLocalizations.tr(l10n.panoramaListoRevision),
+    'needs_recapture' => core_l10n.AppLocalizations.tr(l10n.necesitamosNuevasFotografias),
+    'cancelled' => core_l10n.AppLocalizations.tr(l10n.procesamientoCancelado),
+    _ => core_l10n.AppLocalizations.tr(l10n.noPudimosProcesarPanorama),
+  };
+}
 
 Map<String, dynamic> _preparePhoto(Uint8List source) {
   final image = img.decodeImage(source);
@@ -70,6 +86,34 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   int _cameraGeneration = 0;
   bool _reviewed = false;
   bool get _current => mounted && widget.controller.profile?.id == _account;
+  String _captureError(Object error, AppLocalizations l10n) =>
+      switch (tourError(error, l10n: l10n)) {
+        'No pudimos leer la fotografía.' => core_l10n.AppLocalizations.tr(l10n.fotoNoLeida),
+        'La sesión cambió.' => core_l10n.AppLocalizations.tr(l10n.estadoSesionCambio),
+        'No hay cámara trasera disponible. Puedes importar un panorama.' =>
+          core_l10n.AppLocalizations.tr(l10n.sinCamaraTrasera),
+        'No pudimos obtener los datos de la lente. Importa un panorama 360°.' =>
+          core_l10n.AppLocalizations.tr(l10n.errorDatosLente),
+        'Retoma con la misma cámara o empieza otra captura.' =>
+          core_l10n.AppLocalizations.tr(l10n.mismaCamaraCaptura),
+        'No pudimos leer la orientación. Puedes importar un panorama.' =>
+          core_l10n.AppLocalizations.tr(l10n.orientacionNoLeida),
+        'Elige una esfera equirectangular completa de proporción 2:1, con metadatos GPano.' =>
+          core_l10n.AppLocalizations.tr(l10n.proporcionEsfericaGpano),
+        'El panorama supera 32 MB. Exporta un JPEG de menor tamaño.' =>
+          core_l10n.AppLocalizations.tr(l10n.panoramaSuperaLimite),
+        'No pudimos conocer la lente. Puedes importar un panorama 360°.' =>
+          core_l10n.AppLocalizations.tr(l10n.noConocemosLente),
+        'La lente cambió desde la primera toma. Usa la misma cámara o empieza otra captura.' =>
+          core_l10n.AppLocalizations.tr(l10n.lenteCambio),
+        'Esta lente requiere demasiadas tomas. Usa la cámara principal o importa una esfera completa.' =>
+          core_l10n.AppLocalizations.tr(l10n.demasiadasTomasLente),
+        'Vuelve a elegir el archivo para continuar la carga.' =>
+          core_l10n.AppLocalizations.tr(l10n.volverElegirArchivoCarga),
+        'El servidor no confirmó la fotografía completa.' =>
+          core_l10n.AppLocalizations.tr(l10n.fotoSubidaNoConfirmada),
+        _ => tourError(error, l10n: l10n),
+      };
   List<dynamic> get _frames => (_session['frames'] as List?) ?? [];
   CaptureTarget? get _target => _plan?.targets
       .where((t) => !_frames.any((f) => f['target_id'] == t.id))
@@ -122,11 +166,19 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       }
       setState(() {});
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) {
+        setState(
+          () => _error = tourError(
+            e,
+            l10n: AppLocalizations.of(context) ?? AppLocalizationsEs(),
+          ),
+        );
+      }
     }
   }
 
   Future<void> _openCamera() async {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     if (_busy) return;
     setState(() {
       _busy = true;
@@ -261,7 +313,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
             _resetMotion();
             setState(
               () => _error =
-                  'No pudimos leer la orientación. Puedes importar un panorama.',
+                  core_l10n.AppLocalizations.tr(l10n.orientacionNoLeida),
             );
           }
         },
@@ -281,7 +333,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       );
     } catch (e) {
       await _release();
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _captureError(e, l10n));
     } finally {
       if (_current) setState(() => _busy = false);
     }
@@ -290,6 +342,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   Future<void> _align() async {
     final camera = _camera;
     if (_busy || camera == null) return;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     final generation = _cameraGeneration;
     bool canAlign() =>
         _current &&
@@ -311,7 +364,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
     } catch (e) {
       if (canAlign()) {
         _resetMotion();
-        setState(() => _error = tourError(e));
+        setState(() => _error = _captureError(e, l10n));
       }
     } finally {
       if (_current) setState(() => _busy = false);
@@ -340,6 +393,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   Future<void> _take() async {
     final target = _target;
     if (_busy || !_aligned || !_aimed || !_steady || target == null) return;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     setState(() => _busy = true);
     final pose = {'yaw': _yaw, 'pitch': _pitch, 'roll': _roll};
     try {
@@ -365,7 +419,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       await _persist();
       _resetMotion();
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _captureError(e, l10n));
     } finally {
       if (_current) setState(() => _busy = false);
     }
@@ -373,6 +427,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
 
   Future<void> _import() async {
     if (_busy) return;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     setState(() => _busy = true);
     try {
       final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -381,12 +436,12 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       final decoded = await compute(img.decodeImage, bytes);
       if (decoded == null || decoded.width != decoded.height * 2) {
         throw StateError(
-          'Elige una esfera equirectangular completa de proporción 2:1, con metadatos GPano.',
+          core_l10n.AppLocalizations.tr(l10n.proporcionEsfericaGpano),
         );
       }
       if (bytes.length > 32 * 1024 * 1024) {
         throw StateError(
-          'El panorama supera 32 MB. Exporta un JPEG de menor tamaño.',
+          core_l10n.AppLocalizations.tr(l10n.panoramaSuperaLimite),
         );
       }
       if (!mounted || !_current) return;
@@ -411,7 +466,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       };
       await _persist();
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _captureError(e, l10n));
     } finally {
       if (_current) setState(() => _busy = false);
     }
@@ -420,6 +475,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   Future<void> _send() async {
     if (_busy || _frames.isEmpty) return;
     if (_session['mode'] != 'import' && _target != null) return;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     setState(() {
       _busy = true;
       _error = null;
@@ -474,7 +530,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       await _persist();
       _watch();
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _captureError(e, l10n));
     } finally {
       uploader.dispose();
       if (_current) setState(() => _busy = false);
@@ -494,7 +550,14 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
           if (j.terminal) _poll?.cancel();
         }
       } catch (e) {
-        if (_current) setState(() => _error = tourError(e));
+        if (_current) {
+          setState(
+            () => _error = tourError(
+              e,
+              l10n: AppLocalizations.of(context) ?? AppLocalizationsEs(),
+            ),
+          );
+        }
       } finally {
         _searching = false;
       }
@@ -536,11 +599,12 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     final c = _camera;
     return Scaffold(
       appBar: AppBar(
         leading: TourBackButton(fallback: '/tours/${widget.tourId}/edit'),
-        title: const Text('Capturar posición 360°'),
+        title: Text(core_l10n.AppLocalizations.tr(l10n.capturarPosicion360)),
       ),
       bottomNavigationBar:
           c != null && c.value.isInitialized && _aligned && _target != null
@@ -558,14 +622,12 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text(
-            'Quédate en la misma posición. Gira alrededor de la lente, sin caminar, e incluye techo y piso. Evita personas identificables y objetos demasiado cerca.',
-          ),
+          Text(core_l10n.AppLocalizations.tr(l10n.instruccionCapturaPanorama)),
           const SizedBox(height: 12),
           if (_error != null) TourNotice(_error!),
           if (_job != null) ...[
             Text(
-              _job!.message,
+              _tourJobMessage(_job!, l10n),
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
             ),
             if (!_job!.terminal) const LinearProgressIndicator(),
@@ -576,7 +638,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                   repository: widget.controller.tourRepository!,
                   scene: TourScene({
                     'id': widget.sceneId,
-                    'name': 'Panorama procesado',
+                    'name': core_l10n.AppLocalizations.tr(l10n.panoramaProcesado),
                     ...jsonMap(_job!.data['result']),
                     'points': [],
                     'connections': [],
@@ -586,9 +648,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
               CheckboxListTile(
                 value: _reviewed,
                 onChanged: (v) => setState(() => _reviewed = v ?? false),
-                title: const Text(
-                  'Revisé la costura, el techo y el piso sin huecos ni errores visibles.',
-                ),
+                title: Text(core_l10n.AppLocalizations.tr(l10n.confirmacionRevisionPanorama)),
               ),
               FilledButton(
                 onPressed: _busy || !_reviewed
@@ -605,12 +665,19 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                             Navigator.pop(context, true);
                           }
                         } catch (e) {
-                          if (_current) setState(() => _error = tourError(e));
+                          if (_current) {
+                            setState(
+                              () => _error = tourError(
+                                e,
+                                l10n: l10n,
+                              ),
+                            );
+                          }
                         } finally {
                           if (_current) setState(() => _busy = false);
                         }
                       },
-                child: const Text('Usar panorama revisado'),
+                child: Text(core_l10n.AppLocalizations.tr(l10n.usarPanoramaRevisado)),
               ),
             ],
             if (!_job!.terminal)
@@ -624,7 +691,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                     );
                   }
                 },
-                child: const Text('Cancelar procesamiento'),
+                child: Text(core_l10n.AppLocalizations.tr(l10n.cancelarProcesamiento)),
               ),
             if (_job!.terminal && _job!.state != 'ready')
               OutlinedButton(
@@ -638,13 +705,11 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                   });
                   _persist();
                 },
-                child: const Text('Preparar nueva captura'),
+                child: Text(core_l10n.AppLocalizations.tr(l10n.prepararNuevaCaptura)),
               ),
           ] else ...[
             if (_missingWebFile) ...[
-              const TourNotice(
-                'El navegador no conserva este archivo al cerrar la pantalla. Elige el panorama de nuevo para iniciar otra subida.',
-              ),
+              TourNotice(core_l10n.AppLocalizations.tr(l10n.archivoWebNoConservado)),
               OutlinedButton(
                 onPressed: _busy
                     ? null
@@ -656,7 +721,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                         if (_current) setState(() {});
                         if (_current) await _import();
                       },
-                child: const Text('Volver a elegir panorama'),
+                child: Text(core_l10n.AppLocalizations.tr(l10n.volverElegirPanorama)),
               ),
             ],
             if (c != null && c.value.isInitialized)
@@ -680,12 +745,17 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                         padding: const EdgeInsets.all(12),
                         child: Text(
                           _target == null
-                              ? 'Captura completa'
+                              ? core_l10n.AppLocalizations.tr(l10n.capturaCompleta)
                               : !_motionFresh
-                              ? 'Esperando orientación del teléfono'
+                              ? core_l10n.AppLocalizations.tr(l10n.esperandoOrientacion)
                               : _aimed
-                              ? 'Mantén el teléfono estable'
-                              : 'Apunta a ${_target!.yaw.toStringAsFixed(0)}° · inclinación ${_target!.pitch.toStringAsFixed(0)}°',
+                              ? core_l10n.AppLocalizations.tr(l10n.mantenerTelefonoEstable)
+                              : core_l10n.AppLocalizations.tr(
+                                  l10n.apuntarObjetivo(
+                                    _target!.yaw.toStringAsFixed(0),
+                                    _target!.pitch.toStringAsFixed(0),
+                                  ),
+                                ),
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
@@ -695,12 +765,15 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
               ),
             if (_plan != null)
               Text(
-                '${_frames.length} de ${_plan!.targets.length} tomas aceptadas',
+                core_l10n.AppLocalizations.tr(
+                  l10n.tomasAceptadas(
+                    _frames.length,
+                    _plan!.targets.length,
+                  ),
+                ),
               ),
             if (c != null && !_aligned && _frames.isNotEmpty) ...[
-              const TourNotice(
-                'Vuelve al mismo lugar. Alinea la cámara con esta primera fotografía para recuperar la dirección.',
-              ),
+              TourNotice(core_l10n.AppLocalizations.tr(l10n.alinearCapturaInicialAyuda)),
               FutureBuilder<Uint8List>(
                 future: _store.readBytes(_frames.first['local_path'] as String),
                 builder: (c, s) => s.hasData
@@ -709,7 +782,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
               ),
               FilledButton(
                 onPressed: _busy ? null : _align,
-                child: const Text('Ya alineé la primera toma'),
+                child: Text(core_l10n.AppLocalizations.tr(l10n.yaAlineePrimeraToma)),
               ),
             ],
             if (_frames.isNotEmpty && _session['mode'] != 'import')
@@ -722,7 +795,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                         await _persist();
                         if (_current) setState(() {});
                       },
-                child: const Text('Repetir última toma'),
+                child: Text(core_l10n.AppLocalizations.tr(l10n.repetirUltimaToma)),
               ),
             if (_frames.isNotEmpty)
               TextButton(
@@ -732,18 +805,16 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                         final restart = await showDialog<bool>(
                           context: context,
                           builder: (c) => AlertDialog(
-                            title: const Text('Empezar otra captura'),
-                            content: const Text(
-                              'Las tomas actuales dejarán de formar parte de esta posición. La versión publicada se conserva.',
-                            ),
+                            title: Text(core_l10n.AppLocalizations.tr(l10n.empezarOtraCaptura)),
+                            content: Text(core_l10n.AppLocalizations.tr(l10n.capturasDejaranPosicion)),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(c, false),
-                                child: const Text('Conservar tomas'),
+                                child: Text(core_l10n.AppLocalizations.tr(l10n.conservarTomas)),
                               ),
                               FilledButton(
                                 onPressed: () => Navigator.pop(c, true),
-                                child: const Text('Empezar otra'),
+                                child: Text(core_l10n.AppLocalizations.tr(l10n.empezarOtra)),
                               ),
                             ],
                           ),
@@ -757,7 +828,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                         await _persist();
                         if (_current) setState(() {});
                       },
-                child: const Text('Empezar otra captura'),
+                child: Text(core_l10n.AppLocalizations.tr(l10n.empezarOtraCaptura)),
               ),
             if (c == null &&
                 !kIsWeb &&
@@ -766,13 +837,15 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
               FilledButton(
                 onPressed: _busy ? null : _openCamera,
                 child: Text(
-                  _frames.isEmpty ? 'Abrir cámara guiada' : 'Retomar captura',
+                  _frames.isEmpty
+                      ? core_l10n.AppLocalizations.tr(l10n.abrirCamaraGuiada)
+                      : core_l10n.AppLocalizations.tr(l10n.retomarCaptura),
                 ),
               ),
             if (_frames.isEmpty)
               OutlinedButton(
                 onPressed: _busy ? null : _import,
-                child: const Text('Importar panorama esférico'),
+                child: Text(core_l10n.AppLocalizations.tr(l10n.importarPanoramaEsferico)),
               ),
             if (_frames.isNotEmpty &&
                 (_session['mode'] == 'import' || _target == null))
@@ -780,14 +853,18 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                 onPressed: _busy || _missingWebFile ? null : _send,
                 child: Text(
                   _busy
-                      ? 'Subiendo ${(_upload * 100).toStringAsFixed(0)} %'
-                      : 'Subir y procesar panorama',
+                      ? core_l10n.AppLocalizations.tr(
+                          l10n.subiendoPorcentaje(
+                            (_upload * 100).toStringAsFixed(0),
+                          ),
+                        )
+                      : core_l10n.AppLocalizations.tr(l10n.subirProcesarPanorama),
                 ),
               ),
             TourNotice(
               kIsWeb
-                  ? 'Mantén esta pantalla abierta durante la subida. Si la cierras, tendrás que elegir el archivo de nuevo. El procesamiento empieza tras confirmar la subida completa.'
-                  : 'Las tomas aceptadas se guardan en este dispositivo. El procesamiento empieza después de confirmar la subida completa.',
+                  ? core_l10n.AppLocalizations.tr(l10n.subidaWebEnCurso)
+                  : core_l10n.AppLocalizations.tr(l10n.subidaDispositivoEnCurso),
             ),
           ],
         ],

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 
@@ -243,9 +244,10 @@ class _MareaMobileNavigationState extends State<MareaMobileNavigation>
       );
       var labelHeight = 0.0;
       for (final destination in MobileDestination.values) {
+        final label = AppLocalizations.tr(destination.label);
         final painter = TextPainter(
           text: TextSpan(
-            text: destination.label,
+            text: label,
             style: labelStyle.copyWith(
               fontFamily: Theme.of(context).textTheme.labelSmall?.fontFamily,
             ),
@@ -314,14 +316,16 @@ class _MareaMobileNavigationState extends State<MareaMobileNavigation>
                           Expanded(
                             child: Semantics(
                               key: ValueKey('mobile-tab-${destination.name}'),
-                              label: destination.label,
+                              label: AppLocalizations.tr(destination.label),
                               button: true,
                               selected:
                                   widget.selectedDestination == destination,
                               excludeSemantics: true,
                               onTap: () => _tap(destination),
                               child: Tooltip(
-                                message: destination.label,
+                                message: AppLocalizations.tr(
+                                  destination.label,
+                                ),
                                 child: TextButton(
                                   onPressed: () => _tap(destination),
                                   style: TextButton.styleFrom(
@@ -378,7 +382,9 @@ class _MareaMobileNavigationState extends State<MareaMobileNavigation>
                                             height: labelHeight,
                                             child: Center(
                                               child: Text(
-                                                destination.label,
+                                                AppLocalizations.tr(
+                                                  destination.label,
+                                                ),
                                                 textAlign: TextAlign.center,
                                               ),
                                             ),

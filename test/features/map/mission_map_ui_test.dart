@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:marea/core/location/device_location_service.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
 import 'package:marea/features/map/data/mission_map_repository.dart';
@@ -192,6 +193,23 @@ void main() {
     await tester.pumpAndSettle();
     return (repo, location);
   }
+
+  testWidgets('map quick filters use the active language', (tester) async {
+    addTearDown(() async {
+      await AppLocalizations.delegate.load(const Locale('es', 'MX'));
+    });
+    await AppLocalizations.delegate.load(const Locale('en', 'US'));
+
+    await withTiles(() async {
+      await open(tester);
+      expect(find.text('All'), findsOneWidget);
+      expect(find.text('Today'), findsOneWidget);
+      expect(find.text('Art'), findsOneWidget);
+      expect(find.text('Music'), findsOneWidget);
+      expect(find.text('Food'), findsOneWidget);
+      expect(find.text('Fashion'), findsOneWidget);
+    });
+  });
 
   for (final width in [390.0, 1366.0]) {
     testWidgets('new map layout retains published AR entry at $width', (

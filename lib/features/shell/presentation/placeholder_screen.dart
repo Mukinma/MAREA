@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/app_radius.dart';
 import 'package:marea/core/theme/app_spacing.dart';
@@ -59,8 +60,8 @@ class PlaceholderScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  const Text(
-                    'Próximamente',
+                  Text(
+                    AppLocalizations.tr('Próximamente'),
                     style: TextStyle(
                       color: AppColors.actionBlue,
                       fontWeight: FontWeight.w800,

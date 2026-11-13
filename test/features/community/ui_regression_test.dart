@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/errors/app_failure.dart';
+import 'package:marea/core/localization/app_localizations.dart' as legacy;
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/data/community_repository.dart';
 import 'package:marea/features/community/models/community_models.dart';
+import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
 import 'package:marea/features/community/presentation/post_composer_screen.dart';
 import 'package:marea/features/community/presentation/moderation_screen.dart';
@@ -143,6 +145,32 @@ Future<AppSessionController> _session(
 }
 
 void main() {
+  testWidgets('generic community errors follow the active language', (
+    tester,
+  ) async {
+    addTearDown(() async {
+      await legacy.AppLocalizations.delegate.load(const Locale('es', 'MX'));
+    });
+    await legacy.AppLocalizations.delegate.load(const Locale('en', 'US'));
+
+    await tester.pumpWidget(
+      testApp(
+        const CommunityNotice(message: 'Algo salió mal. Inténtalo nuevamente.'),
+      ),
+    );
+
+    expect(
+      find.text('Something went wrong. Please try again.'),
+      findsOneWidget,
+    );
+    expect(
+      communityError(
+        const AppFailure('No pudimos conectarnos. Inténtalo nuevamente.'),
+      ),
+      'We could not connect. Please try again.',
+    );
+  });
+
   testWidgets('hiding the feed heading preserves accessible refresh', (
     tester,
   ) async {

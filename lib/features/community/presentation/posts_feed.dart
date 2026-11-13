@@ -1,3 +1,5 @@
+import 'package:marea/core/localization/app_localizations.dart';
+import 'package:marea/core/localization/on_device_post_translator.dart';
 import 'package:marea/features/home_feed/presentation/feed_city_label.dart';
 import 'package:marea/features/location/data/location_repository.dart';
 import 'package:marea/features/home_feed/presentation/home_feed_screen.dart';
@@ -80,8 +82,9 @@ class PostsFeedState extends State<PostsFeed> {
     if (repo == null) {
       setState(() {
         _loading = false;
-        _error =
-            'Las publicaciones no están disponibles. Vuelve a iniciar la aplicación.';
+        _error = AppLocalizations.tr(
+          'Las publicaciones no están disponibles. Vuelve a iniciar la aplicación.',
+        );
       });
       return;
     }
@@ -143,11 +146,13 @@ class PostsFeedState extends State<PostsFeed> {
             if (widget.showHeading)
               Expanded(
                 child: Text(
-                  widget.authorId != null
-                      ? 'Publicaciones'
-                      : widget.savedOnly
-                      ? 'Tus guardados'
-                      : 'Publicaciones recientes',
+                  AppLocalizations.tr(
+                    widget.authorId != null
+                        ? 'Publicaciones'
+                        : widget.savedOnly
+                        ? 'Tus guardados'
+                        : 'Publicaciones recientes',
+                  ),
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               )
@@ -155,7 +160,7 @@ class PostsFeedState extends State<PostsFeed> {
               const Spacer(),
             if (widget.showRefresh)
               IconButton(
-                tooltip: 'Actualizar publicaciones',
+                tooltip: AppLocalizations.tr('Actualizar publicaciones'),
                 onPressed: _loading ? null : () => _load(reset: true),
                 icon: const Icon(Icons.refresh_rounded),
               ),
@@ -174,6 +179,7 @@ class PostsFeedState extends State<PostsFeed> {
           mediaRepository: widget.controller.mediaRepository,
           stats: _stats[post.id],
           publicUrl: widget.controller.publicUrl,
+          contentTranslator: widget.controller.postContentTranslator,
           moderator: widget.controller.profile?.role == ProfileRole.admin,
           onStats: (stats) => _stats[post.id] = stats,
           onChanged: () => _load(reset: true),
@@ -207,16 +213,18 @@ class PostsFeedState extends State<PostsFeed> {
         )
       else if (_error == null && _posts.isEmpty)
         CommunityNotice(
-          message: widget.savedOnly
-              ? 'Guarda las publicaciones que te interesen para encontrarlas aquí.'
-              : widget.authorId != null
-              ? 'Este espacio está listo para sus primeras publicaciones.'
-              : 'Todavía no hay publicaciones con estos filtros. Comparte la primera idea.',
+          message: AppLocalizations.tr(
+            widget.savedOnly
+                ? 'Guarda las publicaciones que te interesen para encontrarlas aquí.'
+                : widget.authorId != null
+                ? 'Este espacio está listo para sus primeras publicaciones.'
+                : 'Todavía no hay publicaciones con estos filtros. Comparte la primera idea.',
+          ),
         ),
       if (!_loading && _more && _posts.isNotEmpty)
         TextButton(
           onPressed: _load,
-          child: const Text('Cargar más publicaciones'),
+          child: Text(AppLocalizations.tr('Cargar más publicaciones')),
         ),
     ],
   );
@@ -240,6 +248,7 @@ class PostCard extends StatefulWidget {
     this.locationRepository,
     this.moderator = false,
     this.publicUrl = 'https://marea-azul.netlify.app/',
+    this.contentTranslator,
     super.key,
   });
   final CommunityPost post;
@@ -252,6 +261,7 @@ class PostCard extends StatefulWidget {
   final ValueChanged<PostSocialStats>? onStats;
   final String? viewerId;
   final String publicUrl;
+  final PostContentTranslator? contentTranslator;
   final bool saved, moderator, homePresentation;
   final Future<void> Function() onChanged;
   final ValueChanged<bool>? onSaved, onSaveSettled;
@@ -261,10 +271,29 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool _busy = false, _expanded = false, _panel = false;
+  bool _translating = false, _sameLanguage = false;
+  String? _translatedLocale, _translationError;
+  TranslatedPostContent? _translatedContent;
   late bool _saved = widget.saved;
   late PostSocialStats? _stats = widget.stats;
   final _draft = CommentDraft();
   Future<String>? _url;
+
+  String get _displayTitle => _translatedContent?.title ?? widget.post.title;
+  String get _displayBody => _translatedContent?.body ?? widget.post.body;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = Localizations.localeOf(context).languageCode;
+    if (_translatedLocale != null && _translatedLocale != locale) {
+      _translatedContent = null;
+      _translatedLocale = null;
+      _sameLanguage = false;
+      _translationError = null;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -298,6 +327,104 @@ class _PostCardState extends State<PostCard> {
     }
     if (old.stats != widget.stats && !_reacting) _stats = widget.stats;
     if (old.post.imagePath != widget.post.imagePath) _loadImage();
+    if (old.post.title != widget.post.title ||
+        old.post.body != widget.post.body) {
+      _translatedContent = null;
+      _translatedLocale = null;
+      _sameLanguage = false;
+      _translationError = null;
+    }
+  }
+
+  Future<void> _translateContent() async {
+    final translator = widget.contentTranslator;
+    if (translator == null || !translator.isSupported || _translating) return;
+    if (_translatedContent != null || _sameLanguage) {
+      setState(() {
+        _translatedContent = null;
+        _translatedLocale = null;
+        _sameLanguage = false;
+        _translationError = null;
+      });
+      return;
+    }
+
+    final targetLanguage = Localizations.localeOf(context).languageCode;
+    setState(() {
+      _translating = true;
+      _translationError = null;
+      _sameLanguage = false;
+    });
+    try {
+      final result = await translator.translate(
+        title: widget.post.title,
+        body: widget.post.body,
+        targetLanguage: targetLanguage,
+      );
+      if (!mounted) return;
+      setState(() {
+        _translatedContent = result.alreadyInTargetLanguage ? null : result;
+        _translatedLocale = targetLanguage;
+        _sameLanguage = result.alreadyInTargetLanguage;
+      });
+    } on PostTranslationException catch (error) {
+      if (!mounted) return;
+      setState(
+        () => _translationError = AppLocalizations.tr(switch (error.failure) {
+          PostTranslationFailure.languageUndetermined =>
+            'No pudimos identificar el idioma de esta publicación.',
+          PostTranslationFailure.unsupportedLanguage =>
+            'Todavía no podemos traducir publicaciones en este idioma.',
+          PostTranslationFailure.modelUnavailable =>
+            'No se pudo descargar el modelo de traducción. Conéctate a internet e inténtalo de nuevo.',
+        }),
+      );
+    } finally {
+      if (mounted) setState(() => _translating = false);
+    }
+  }
+
+  Widget _translationControl() {
+    final translator = widget.contentTranslator;
+    if (translator == null || !translator.isSupported) {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextButton.icon(
+          onPressed: _translating ? null : _translateContent,
+          icon: _translating
+              ? const SizedBox.square(
+                  dimension: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.translate_rounded, size: 18),
+          label: Text(
+            AppLocalizations.tr(
+              _translatedContent != null
+                  ? 'Ver original'
+                  : 'Traducir publicación',
+            ),
+          ),
+        ),
+        if (_sameLanguage)
+          Text(
+            AppLocalizations.tr(
+              'Esta publicación ya está en el idioma seleccionado.',
+            ),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
+          ),
+        if (_translationError != null)
+          Text(
+            _translationError!,
+            style: const TextStyle(color: AppColors.error, fontSize: 12),
+          ),
+      ],
+    );
   }
 
   Future<void> _action(
@@ -440,12 +567,14 @@ class _PostCardState extends State<PostCard> {
             persist: false,
             showCloseIcon: true,
             content: Text(
-              next
-                  ? 'Publicación guardada.'
-                  : 'Publicación retirada de Guardados.',
+              AppLocalizations.tr(
+                next
+                    ? 'Publicación guardada.'
+                    : 'Publicación retirada de Guardados.',
+              ),
             ),
             action: SnackBarAction(
-              label: 'Deshacer',
+              label: AppLocalizations.tr('Deshacer'),
               onPressed: () => _save(!next),
             ),
           ),
@@ -485,21 +614,21 @@ class _PostCardState extends State<PostCard> {
               await widget.repository.removeImage(post.imagePath!);
             } catch (_) {}
           }
-        }, success: 'Publicación eliminada.');
+        }, success: AppLocalizations.tr('Publicación eliminada.'));
       }
       return;
     }
     final reason = await askCommunityText(
       context,
-      title: 'Reportar publicación',
-      label: 'Cuéntanos qué ocurre',
+      title: AppLocalizations.tr('Reportar publicación'),
+      label: AppLocalizations.tr('Cuéntanos qué ocurre'),
       maxLength: 500,
     );
     if (reason != null && mounted) {
       await _action(
         () => widget.repository.report(postId: post.id, reason: reason),
         reload: false,
-        success: 'Reporte enviado a moderación.',
+        success: AppLocalizations.tr('Reporte enviado a moderación.'),
       );
     }
   }
@@ -518,18 +647,20 @@ class _PostCardState extends State<PostCard> {
                       ? Icons.bookmark_rounded
                       : Icons.bookmark_border_rounded,
                 ),
-                title: Text(_saved ? 'Quitar guardado' : 'Guardar'),
+                title: Text(
+                  AppLocalizations.tr(_saved ? 'Quitar guardado' : 'Guardar'),
+                ),
                 onTap: () => Navigator.pop(context, 'save'),
               ),
             ListTile(
               leading: const Icon(Icons.open_in_new_rounded),
-              title: const Text('Ver detalles'),
+              title: Text(AppLocalizations.tr('Ver detalles')),
               onTap: () => Navigator.pop(context, 'details'),
             ),
             if (widget.post.authorId == widget.viewerId) ...[
               ListTile(
                 leading: const Icon(Icons.edit_outlined),
-                title: const Text('Editar'),
+                title: Text(AppLocalizations.tr('Editar')),
                 onTap: () => Navigator.pop(context, 'edit'),
               ),
               ListTile(
@@ -537,8 +668,8 @@ class _PostCardState extends State<PostCard> {
                   Icons.delete_outline_rounded,
                   color: AppColors.error,
                 ),
-                title: const Text(
-                  'Eliminar',
+                title: Text(
+                  AppLocalizations.tr('Eliminar'),
                   style: TextStyle(color: AppColors.error),
                 ),
                 onTap: () => Navigator.pop(context, 'delete'),
@@ -546,7 +677,7 @@ class _PostCardState extends State<PostCard> {
             ] else
               ListTile(
                 leading: const Icon(Icons.flag_outlined),
-                title: const Text('Reportar'),
+                title: Text(AppLocalizations.tr('Reportar')),
                 onTap: () => Navigator.pop(context, 'report'),
               ),
           ],
@@ -574,7 +705,7 @@ class _PostCardState extends State<PostCard> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                tooltip: 'Comentarios',
+                tooltip: AppLocalizations.tr('Comentarios'),
                 onPressed: enabled ? _comments : null,
                 icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
               ),
@@ -589,7 +720,7 @@ class _PostCardState extends State<PostCard> {
           ),
         ],
         IconButton(
-          tooltip: 'Compartir',
+          tooltip: AppLocalizations.tr('Compartir'),
           onPressed: enabled
               ? () => sharePost(
                   context,
@@ -603,7 +734,7 @@ class _PostCardState extends State<PostCard> {
           icon: const Icon(Icons.shortcut_rounded, size: 22),
         ),
         IconButton(
-          tooltip: _saved ? 'Quitar guardado' : 'Guardar',
+          tooltip: AppLocalizations.tr(_saved ? 'Quitar guardado' : 'Guardar'),
           onPressed: enabled ? () => _save(!_saved) : null,
           icon: Icon(
             _saved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
@@ -627,7 +758,7 @@ class _PostCardState extends State<PostCard> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                post.title,
+                _displayTitle,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -645,6 +776,9 @@ class _PostCardState extends State<PostCard> {
             city: post.city,
             coordinates: post.coordinates,
             repository: widget.locationRepository,
+            fallbackLabel: _translatedContent == null
+                ? 'Ver ubicación'
+                : AppLocalizations.tr('Ver ubicación'),
             onTap: () => post.coordinates == null
                 ? _openHomePost()
                 : showPostLocationViewer(
@@ -654,7 +788,7 @@ class _PostCardState extends State<PostCard> {
                   ),
           ),
         Text(
-          post.body,
+          _displayBody,
           maxLines: _expanded ? null : 3,
           overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
           style: const TextStyle(
@@ -663,10 +797,13 @@ class _PostCardState extends State<PostCard> {
             color: AppColors.textPrimary,
           ),
         ),
+        _translationControl(),
         if (_homeBodyTruncated(width))
           TextButton(
             onPressed: () => setState(() => _expanded = !_expanded),
-            child: Text(_expanded ? 'Ver menos' : 'Ver más'),
+            child: Text(
+              AppLocalizations.tr(_expanded ? 'Ver menos' : 'Ver más'),
+            ),
           ),
         if (post.price != null)
           Text(
@@ -681,7 +818,7 @@ class _PostCardState extends State<PostCard> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            communityCategories[post.category] ?? 'Otros',
+            AppLocalizations.tr(communityCategories[post.category] ?? 'Otros'),
             style: const TextStyle(fontSize: 10, color: AppColors.brandNavy),
           ),
         ),
@@ -698,7 +835,7 @@ class _PostCardState extends State<PostCard> {
           maxLines: maxLines,
         )..layout(maxWidth: width);
     final title = measure(
-      widget.post.title,
+      _displayTitle,
       const TextStyle(
         fontFamily: 'NunitoSans',
         fontSize: 18,
@@ -707,7 +844,7 @@ class _PostCardState extends State<PostCard> {
       ),
     );
     final body = measure(
-      widget.post.body,
+      _displayBody,
       const TextStyle(fontFamily: 'NunitoSans', fontSize: 12, height: 1.3),
       maxLines: _expanded ? null : 3,
     );
@@ -723,7 +860,7 @@ class _PostCardState extends State<PostCard> {
   bool _homeBodyTruncated(double width) {
     final painter = TextPainter(
       text: TextSpan(
-        text: widget.post.body,
+        text: _displayBody,
         style: const TextStyle(
           fontFamily: 'NunitoSans',
           fontSize: 12,
@@ -807,14 +944,22 @@ class _PostCardState extends State<PostCard> {
                                 children: [
                                   Text(
                                     widget.author?.fullName ??
-                                        'Perfil de MAREA',
+                                        AppLocalizations.tr('Perfil de MAREA'),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w700,
                                       fontSize: 13,
                                     ),
                                   ),
                                   Text(
-                                    '${socialDate(post.createdAt)} · ${post.kind.label}',
+                                    AppLocalizations.trTemplate(
+                                      '{date} · {kind}',
+                                      {
+                                        'date': socialDate(post.createdAt),
+                                        'kind': AppLocalizations.tr(
+                                          post.kind.label,
+                                        ),
+                                      },
+                                    ),
                                     style: const TextStyle(
                                       fontSize: 10,
                                       color: AppColors.textSecondary,
@@ -829,7 +974,7 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'Acciones',
+                    tooltip: AppLocalizations.tr('Acciones'),
                     onPressed: _busy ? null : _options,
                     icon: const Icon(Icons.more_horiz),
                   ),
@@ -936,7 +1081,7 @@ class _PostCardState extends State<PostCard> {
             ),
             const SizedBox(height: 8),
             MareaActionButton(
-              tooltip: 'Comentarios',
+              tooltip: AppLocalizations.tr('Comentarios'),
               onPressed: enabled ? _comments : null,
               icon: const Icon(
                 Icons.chat_bubble_outline_rounded,
@@ -950,7 +1095,7 @@ class _PostCardState extends State<PostCard> {
             const SizedBox(height: 8),
           ],
           MareaActionButton(
-            tooltip: 'Compartir',
+            tooltip: AppLocalizations.tr('Compartir'),
             onPressed: enabled
                 ? () async {
                     if (_panel) return;
@@ -976,23 +1121,23 @@ class _PostCardState extends State<PostCard> {
           ),
           const SizedBox(height: 8),
           MareaActionButton(
-            tooltip: 'Acciones',
+            tooltip: AppLocalizations.tr('Acciones'),
             onPressed: _busy ? null : _options,
             icon: Icon(
               _saved ? Icons.bookmark_rounded : Icons.more_horiz_rounded,
               color: _saved ? AppColors.aquaDark : AppColors.textSecondary,
             ),
           ),
-          const Text(
-            'Más',
+          Text(
+            AppLocalizations.tr('Más'),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
           ),
           if (_busy)
-            const Padding(
-              padding: EdgeInsets.all(8),
+            Padding(
+              padding: const EdgeInsets.all(8),
               child: Text(
-                'Guardando…',
+                AppLocalizations.tr('Guardando…'),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 11),
               ),
@@ -1010,7 +1155,7 @@ class _PostCardState extends State<PostCard> {
       children: [
         if (!widget.homePresentation || post.imagePath == null)
           Text(
-            post.title,
+            _displayTitle,
             style: const TextStyle(
               fontSize: 21,
               fontWeight: FontWeight.w800,
@@ -1021,7 +1166,7 @@ class _PostCardState extends State<PostCard> {
         if (!widget.homePresentation || post.imagePath == null)
           const SizedBox(height: 10),
         Text(
-          post.body,
+          _displayBody,
           maxLines: _expanded ? null : 3,
           overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
           style: TextStyle(
@@ -1030,11 +1175,12 @@ class _PostCardState extends State<PostCard> {
             color: AppColors.textPrimary,
           ),
         ),
+        _translationControl(),
         LayoutBuilder(
           builder: (context, bounds) {
             final painter = TextPainter(
               text: TextSpan(
-                text: post.body,
+                text: _displayBody,
                 style: TextStyle(
                   fontFamily: 'NunitoSans',
                   fontSize: widget.homePresentation ? 14 : 16,
@@ -1048,7 +1194,9 @@ class _PostCardState extends State<PostCard> {
             return painter.didExceedMaxLines
                 ? TextButton(
                     onPressed: () => setState(() => _expanded = !_expanded),
-                    child: Text(_expanded ? 'Ver menos' : 'Ver más'),
+                    child: Text(
+                      AppLocalizations.tr(_expanded ? 'Ver menos' : 'Ver más'),
+                    ),
                   )
                 : const SizedBox.shrink();
           },
@@ -1077,7 +1225,7 @@ class _PostCardState extends State<PostCard> {
                       coordinates: post.coordinates!,
                     ),
                     icon: const Icon(Icons.map_outlined),
-                    label: const Text('Ver mapa'),
+                    label: Text(AppLocalizations.tr('Ver mapa')),
                   ),
               ],
             ),
@@ -1115,9 +1263,11 @@ class _PostCardState extends State<PostCard> {
                     : Icons.handshake_outlined,
               ),
               label: Text(
-                _stats?.interestSent == true
-                    ? 'Interés enviado'
-                    : 'Me interesa colaborar',
+                AppLocalizations.tr(
+                  _stats?.interestSent == true
+                      ? 'Interés enviado'
+                      : 'Me interesa colaborar',
+                ),
               ),
             ),
           ),
@@ -1160,13 +1310,13 @@ class _PostCardState extends State<PostCard> {
             color: AppColors.textSecondary,
           ),
           const SizedBox(height: 8),
-          const Text(
-            'La fotografía no está disponible.',
+          Text(
+            AppLocalizations.tr('La fotografía no está disponible.'),
             textAlign: TextAlign.center,
           ),
           TextButton(
             onPressed: () => setState(_loadImage),
-            child: const Text('Reintentar'),
+            child: Text(AppLocalizations.tr('Reintentar')),
           ),
         ],
       ),
@@ -1214,13 +1364,27 @@ class _PostCardState extends State<PostCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.author?.fullName ?? 'Perfil de MAREA',
+                                widget.author?.fullName ??
+                                    AppLocalizations.tr('Perfil de MAREA'),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                               Text(
-                                '${socialDate(post.createdAt)} · ${post.kind.label} · ${ProfilePreferences.interests[post.category] ?? 'Otros'}',
+                                AppLocalizations.trTemplate(
+                                  '{date} · {kind} · {category}',
+                                  {
+                                    'date': socialDate(post.createdAt),
+                                    'kind': AppLocalizations.tr(
+                                      post.kind.label,
+                                    ),
+                                    'category': AppLocalizations.tr(
+                                      ProfilePreferences.interests[post
+                                              .category] ??
+                                          'Otros',
+                                    ),
+                                  },
+                                ),
                                 style: const TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 12,
@@ -1234,8 +1398,8 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
                 if (post.hidden)
-                  const Text(
-                    'Oculta por moderación',
+                  Text(
+                    AppLocalizations.tr('Oculta por moderación'),
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                 const SizedBox(height: 12),

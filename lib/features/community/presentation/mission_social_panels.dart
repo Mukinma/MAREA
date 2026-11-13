@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -132,7 +133,10 @@ class _MissionCommentsPanelState extends State<MissionCommentsPanel> {
     final body = widget.draft.text.trim();
     if (_sending) return;
     if (body.isEmpty || body.length > 1000) {
-      setState(() => _error = 'Escribe entre 1 y 1.000 caracteres.');
+      setState(
+        () =>
+            _error = AppLocalizations.tr('Escribe entre 1 y 1.000 caracteres.'),
+      );
       return;
     }
     if (widget.draft.submitted != body) {
@@ -168,7 +172,7 @@ class _MissionCommentsPanelState extends State<MissionCommentsPanel> {
     await runCommunityAction(
       context,
       () => widget.repository.deleteComment(c.id),
-      success: 'Comentario retirado.',
+      success: AppLocalizations.tr('Comentario retirado.'),
     );
     if (mounted) {
       // Reconcile a lost deletion response with the server before offering retry.
@@ -183,7 +187,7 @@ class _MissionCommentsPanelState extends State<MissionCommentsPanel> {
 
   @override
   Widget build(BuildContext context) => SocialPanelFrame(
-    title: 'Comentarios',
+    title: AppLocalizations.tr('Comentarios'),
     footer: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -193,7 +197,9 @@ class _MissionCommentsPanelState extends State<MissionCommentsPanel> {
           maxLength: 1000,
           minLines: 1,
           maxLines: 4,
-          decoration: const InputDecoration(labelText: 'Tu comentario'),
+          decoration: InputDecoration(
+            labelText: AppLocalizations.tr('Tu comentario'),
+          ),
           textCapitalization: TextCapitalization.sentences,
         ),
         const SizedBox(height: 8),
@@ -202,7 +208,7 @@ class _MissionCommentsPanelState extends State<MissionCommentsPanel> {
           child: FilledButton.icon(
             onPressed: _sending || widget.viewerId == null ? null : _send,
             icon: const Icon(Icons.send_outlined),
-            label: Text(_sending ? 'Enviando…' : 'Enviar'),
+            label: Text(_sending ? AppLocalizations.tr('Enviando…') : 'Enviar'),
           ),
         ),
       ],
@@ -213,7 +219,9 @@ class _MissionCommentsPanelState extends State<MissionCommentsPanel> {
         if (widget.commentId != null &&
             !_loading &&
             !_comments.any((c) => c.id == widget.commentId))
-          const CommunityNotice(message: 'Este comentario fue retirado.'),
+          CommunityNotice(
+            message: AppLocalizations.tr('Este comentario fue retirado.'),
+          ),
         for (final c in _comments)
           Container(
             key: ValueKey(c.id),
@@ -233,7 +241,7 @@ class _MissionCommentsPanelState extends State<MissionCommentsPanel> {
                     Expanded(
                       child: Text(
                         _authors[c.authorId]?.fullName ??
-                            'Cuenta no disponible',
+                            AppLocalizations.tr('Cuenta no disponible'),
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -241,7 +249,7 @@ class _MissionCommentsPanelState extends State<MissionCommentsPanel> {
                         widget.mission.authorId == widget.viewerId ||
                         widget.moderator)
                       IconButton(
-                        tooltip: 'Retirar comentario',
+                        tooltip: AppLocalizations.tr('Retirar comentario'),
                         onPressed: () => _delete(c),
                         icon: const Icon(Icons.delete_outline_rounded),
                       ),
@@ -273,13 +281,15 @@ class _MissionCommentsPanelState extends State<MissionCommentsPanel> {
             child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
           ),
         if (!_loading && _comments.isEmpty && _error == null)
-          const CommunityNotice(
-            message: 'Abre la conversación con el primer comentario.',
+          CommunityNotice(
+            message: AppLocalizations.tr(
+              'Abre la conversación con el primer comentario.',
+            ),
           ),
         if (!_loading && _more && _comments.isNotEmpty)
           TextButton(
             onPressed: _load,
-            child: const Text('Cargar más comentarios'),
+            child: Text(AppLocalizations.tr('Cargar más comentarios')),
           ),
       ],
     ),

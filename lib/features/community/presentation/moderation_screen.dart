@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/home_feed/presentation/story_moderation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
@@ -57,17 +58,20 @@ class _ModerationScreenState extends State<ModerationScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Moderación')),
+    appBar: AppBar(title: Text(AppLocalizations.tr('Moderación'))),
     body:
         widget.controller.profile?.role != ProfileRole.admin ||
             widget.controller.communityRepository == null
-        ? const CommunityNotice(
-            message: 'Esta sección está reservada para administradores.',
+        ? CommunityNotice(
+            message: AppLocalizations.tr(
+              'Esta sección está reservada para administradores.',
+            ),
           )
         : CommunityPage(
-            title: 'Reportes de la comunidad',
-            subtitle:
-                'Revisa el contenido antes de ocultarlo. Los reportes revisados se conservan para poder restaurarlo.',
+            title: AppLocalizations.tr('Reportes de la comunidad'),
+            subtitle: AppLocalizations.tr(
+              'Revisa el contenido antes de ocultarlo. Los reportes revisados se conservan para poder restaurarlo.',
+            ),
             onRefresh: _loading ? null : () => _load(reset: true),
             children: [
               if (widget.controller.storiesRepository != null)
@@ -77,16 +81,20 @@ class _ModerationScreenState extends State<ModerationScreen> {
               if (widget.controller.tourRepository != null)
                 ListTile(
                   leading: const Icon(Icons.view_in_ar_outlined),
-                  title: const Text('Espacios y recorridos'),
-                  subtitle: const Text(
-                    'Acreditar responsables y revisar versiones enviadas.',
+                  title: Text(AppLocalizations.tr('Espacios y recorridos')),
+                  subtitle: Text(
+                    AppLocalizations.tr(
+                      'Acreditar responsables y revisar versiones enviadas.',
+                    ),
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/tours/requests'),
                 ),
 
               if (_reports.isEmpty && !_loading && _error == null)
-                const CommunityNotice(message: 'No hay reportes para revisar.'),
+                CommunityNotice(
+                  message: AppLocalizations.tr('No hay reportes para revisar.'),
+                ),
               for (final report in _reports)
                 _ReportCard(
                   key: ValueKey(report.id),
@@ -101,7 +109,7 @@ class _ModerationScreenState extends State<ModerationScreen> {
               if (_more && !_loading && _error == null)
                 TextButton(
                   onPressed: _load,
-                  child: const Text('Cargar más reportes'),
+                  child: Text(AppLocalizations.tr('Cargar más reportes')),
                 ),
             ],
           ),
@@ -137,11 +145,17 @@ class _ReportCardState extends State<_ReportCard> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              report.state == 'open' ? 'Pendiente de revisión' : 'Revisado',
+              AppLocalizations.tr(
+                report.state == 'open' ? 'Pendiente de revisión' : 'Revisado',
+              ),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            Text('Motivo: ${report.reason}'),
+            Text(
+              AppLocalizations.trTemplate('Motivo: {reason}', {
+                'reason': report.reason,
+              }),
+            ),
             const Divider(height: 32),
             CommunityLoad<Object?>(
               load: () async => report.showcaseId != null
@@ -153,7 +167,9 @@ class _ReportCardState extends State<_ReportCard> {
                   : await repo.post(report.postId!),
               builder: (content, reload) {
                 if (content == null) {
-                  return const Text('El contenido fue eliminado.');
+                  return Text(
+                    AppLocalizations.tr('El contenido fue eliminado.'),
+                  );
                 }
                 final title = content is ShowcaseItem
                     ? content.title
@@ -178,7 +194,12 @@ class _ReportCardState extends State<_ReportCard> {
                     SelectableText(body),
                     const SizedBox(height: 12),
                     if (content is ShowcaseItem) ...[
-                      Text('${content.kind.label} · ${content.status.label}'),
+                      Text(
+                        AppLocalizations.trTemplate('{kind} · {status}', {
+                          'kind': content.kind.label,
+                          'status': content.status.label,
+                        }),
+                      ),
                       for (final path in content.imagePaths)
                         ShowcasePhoto(
                           path: path,
@@ -187,13 +208,19 @@ class _ReportCardState extends State<_ReportCard> {
                     ],
                     if (content is CommunityPost) ...[
                       Text(
-                        '${content.kind.label} · ${communityCategories[content.category] ?? 'Otros'}',
+                        '${AppLocalizations.tr(content.kind.label)} · ${missionCategoryLabel(content.category)}',
                       ),
                       if (content.location != null)
-                        Text('Ubicación: ${content.location}'),
+                        Text(
+                          AppLocalizations.trTemplate('Ubicación: {location}', {
+                            'location': content.location.toString(),
+                          }),
+                        ),
                       if (content.price != null)
                         Text(
-                          'Precio: \$${content.price!.toStringAsFixed(2)} MXN',
+                          AppLocalizations.trTemplate('Precio: {price} MXN', {
+                            'price': '\$${content.price!.toStringAsFixed(2)}',
+                          }),
                         ),
                       if (content.imagePath != null)
                         Padding(
@@ -205,11 +232,13 @@ class _ReportCardState extends State<_ReportCard> {
                               url,
                               height: 320,
                               fit: BoxFit.contain,
-                              semanticLabel:
-                                  'Imagen de la publicación reportada',
-                              errorBuilder: (_, _, _) => const CommunityNotice(
-                                message:
-                                    'No pudimos cargar la fotografía reportada.',
+                              semanticLabel: AppLocalizations.tr(
+                                'Imagen de la publicación reportada',
+                              ),
+                              errorBuilder: (_, _, _) => CommunityNotice(
+                                message: AppLocalizations.tr(
+                                  'No pudimos cargar la fotografía reportada.',
+                                ),
                               ),
                             ),
                           ),
@@ -226,24 +255,48 @@ class _ReportCardState extends State<_ReportCard> {
                         Text(content.requirements!),
                       if (content.conditions != null) Text(content.conditions!),
                       if (content.cancellationReason != null)
-                        Text('Cancelación: ${content.cancellationReason}'),
+                        Text(
+                          AppLocalizations.trTemplate('Cancelación: {reason}', {
+                            'reason': '${content.cancellationReason}',
+                          }),
+                        ),
                       Text(
-                        'Categoría: ${communityCategories[content.category] ?? 'Otros'}',
+                        AppLocalizations.trTemplate('Categoría: {category}', {
+                          'category': missionCategoryLabel(content.category),
+                        }),
                       ),
-                      Text('Ubicación: ${content.location}'),
-                      Text('Fecha: ${content.startsAt.toLocal()}'),
                       Text(
-                        'Cupo: ${content.capacity} · ${content.statusLabel}',
+                        AppLocalizations.trTemplate('Ubicación: {location}', {
+                          'location': content.location.toString(),
+                        }),
                       ),
                       Text(
-                        'Dirigida a: ${content.targetType?.databaseValue ?? 'Todos los perfiles'}',
+                        AppLocalizations.trTemplate('Fecha: {date}', {
+                          'date': content.startsAt.toLocal().toString(),
+                        }),
+                      ),
+                      Text(
+                        AppLocalizations.trTemplate(
+                          'Cupo: {capacity} · {status}',
+                          {
+                            'capacity': '${content.capacity}',
+                            'status': AppLocalizations.tr(content.statusLabel),
+                          },
+                        ),
+                      ),
+                      Text(
+                        AppLocalizations.trTemplate('Dirigida a: {target}', {
+                          'target': missionTargetLabel(content.targetType),
+                        }),
                       ),
                     ],
                     const SizedBox(height: 16),
                     Text(
-                      hidden
-                          ? 'Oculto para la comunidad'
-                          : 'Visible para la comunidad',
+                      AppLocalizations.tr(
+                        hidden
+                            ? 'Oculto para la comunidad'
+                            : 'Visible para la comunidad',
+                      ),
                     ),
                     const SizedBox(height: 12),
                     FilledButton.icon(
@@ -261,9 +314,11 @@ class _ReportCardState extends State<_ReportCard> {
                                         mission: isMission,
                                         hide: !hidden,
                                       ),
-                                success: hidden
-                                    ? 'Contenido restaurado.'
-                                    : 'Contenido ocultado.',
+                                success: AppLocalizations.tr(
+                                  hidden
+                                      ? 'Contenido restaurado.'
+                                      : 'Contenido ocultado.',
+                                ),
                               );
                               if (mounted) setState(() => _busy = false);
                               if (ok && mounted) {
@@ -278,7 +333,9 @@ class _ReportCardState extends State<_ReportCard> {
                             : Icons.visibility_off_outlined,
                       ),
                       label: Text(
-                        hidden ? 'Restaurar contenido' : 'Ocultar contenido',
+                        AppLocalizations.tr(
+                          hidden ? 'Restaurar contenido' : 'Ocultar contenido',
+                        ),
                       ),
                     ),
                   ],

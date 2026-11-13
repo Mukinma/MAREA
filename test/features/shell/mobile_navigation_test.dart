@@ -2,6 +2,7 @@ import 'dart:ui' show SemanticsAction, Tristate;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/theme/app_theme.dart';
 import 'package:marea/features/shell/presentation/marea_mobile_navigation.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
@@ -102,6 +103,20 @@ void main() {
     await tester.pumpAndSettle();
     expect(center(tester), original);
     expect(navigations, isEmpty);
+  });
+
+  testWidgets('mobile destination labels use the active language', (
+    tester,
+  ) async {
+    await AppLocalizations.delegate.load(const Locale('en', 'US'));
+    addTearDown(() => AppLocalizations.delegate.load(const Locale('es', 'MX')));
+    await mount(tester);
+
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('Discover'), findsOneWidget);
+    expect(find.text('Map'), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
+    expect(find.byTooltip('Map'), findsOneWidget);
   });
 
   testWidgets('one drag reaches profile, clamps, then confirms after snap', (

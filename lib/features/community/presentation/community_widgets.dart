@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
+import 'package:marea/l10n/app_localizations.dart' as gen;
+import 'package:marea/l10n/app_localizations_es.dart' as gen;
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class CommunityPage extends StatelessWidget {
   const CommunityPage({
     required this.title,
@@ -90,20 +93,26 @@ class CommunityNotice extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onRetry;
   @override
-  Widget build(BuildContext context) => MareaCard(
-    child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        children: [
-          Icon(icon, size: 32, color: AppColors.aquaDark),
-          const SizedBox(height: 12),
-          Text(message, textAlign: TextAlign.center),
-          if (onRetry != null)
-            TextButton(onPressed: onRetry, child: const Text('Reintentar')),
-        ],
+  Widget build(BuildContext context) {
+    final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
+    return MareaCard(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            Icon(icon, size: 32, color: AppColors.aquaDark),
+            const SizedBox(height: 12),
+            Text(
+              core_l10n.AppLocalizations.tr(message),
+              textAlign: TextAlign.center,
+            ),
+            if (onRetry != null)
+              TextButton(onPressed: onRetry, child: Text(core_l10n.AppLocalizations.tr(l10n.reintentar))),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 Future<bool> runCommunityAction(
@@ -130,7 +139,9 @@ Future<bool> runCommunityAction(
 }
 
 String communityError(Object error) =>
-    error is AppFailure ? error.message : AppFailureMapper.from(error).message;
+    core_l10n.AppLocalizations.tr(
+      error is AppFailure ? error.message : AppFailureMapper.from(error).message,
+    );
 
 Future<String?> askCommunityText(
   BuildContext context, {
@@ -167,56 +178,59 @@ class _TextDialogState extends State<_TextDialog> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-    title: Text(widget.title),
-    content: SizedBox(
-      width: 440,
-      child: TextField(
-        controller: _text,
-        autofocus: true,
-        minLines: 3,
-        maxLines: 6,
-        maxLength: widget.maxLength,
-        decoration: InputDecoration(labelText: widget.label),
-        onChanged: (_) => setState(() {}),
+  Widget build(BuildContext context) {
+    final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
+    return AlertDialog(
+      title: Text(widget.title),
+      content: SizedBox(
+        width: 440,
+        child: TextField(
+          controller: _text,
+          autofocus: true,
+          minLines: 3,
+          maxLines: 6,
+          maxLength: widget.maxLength,
+          decoration: InputDecoration(labelText: widget.label),
+          onChanged: (_) => setState(() {}),
+        ),
       ),
-    ),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Text('Cancelar'),
-      ),
-      FilledButton(
-        onPressed: _text.text.trim().length < 5
-            ? null
-            : () => Navigator.pop(context, _text.text.trim()),
-        child: const Text('Enviar'),
-      ),
-    ],
-  );
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(core_l10n.AppLocalizations.tr(l10n.cancelar)),
+        ),
+        FilledButton(
+          onPressed: _text.text.trim().length < 5
+              ? null
+              : () => Navigator.pop(context, _text.text.trim()),
+          child: Text(core_l10n.AppLocalizations.tr(l10n.enviar)),
+        ),
+      ],
+    );
+  }
 }
 
-Future<bool> confirmCommunityDelete(BuildContext context) async =>
-    await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('¿Eliminar publicación?'),
-        content: const Text(
-          'Se retirará de tu perfil y de los guardados de otras personas.',
+Future<bool> confirmCommunityDelete(BuildContext context) async {
+  final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
+  return await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(core_l10n.AppLocalizations.tr(l10n.confirmarEliminarPublicacion)),
+          content: Text(core_l10n.AppLocalizations.tr(l10n.eliminarPublicacionAdvertencia)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(core_l10n.AppLocalizations.tr(l10n.cancelar)),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(core_l10n.AppLocalizations.tr(l10n.eliminar)),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Eliminar'),
-          ),
-        ],
-      ),
-    ) ??
-    false;
+      ) ??
+      false;
+}
 
 /// Caches requests across rebuilds and permits retry/refresh without fake data.
 class CommunityLoad<T> extends StatefulWidget {

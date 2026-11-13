@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -202,7 +203,7 @@ class StoriesRailState extends State<StoriesRail> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _circle(
-                label: 'Tu historia',
+                label: AppLocalizations.tr('Tu historia'),
                 create: true,
                 onTap: _create,
                 avatar: const ColoredBox(

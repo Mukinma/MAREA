@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +18,8 @@ import '../data/tour_repository.dart';
 import '../models/business_ar_target.dart';
 import '../models/tour_models.dart';
 import 'tour_widgets.dart';
+
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 
 class BusinessARAction extends StatefulWidget {
   const BusinessARAction({
@@ -48,55 +52,64 @@ class _BusinessARActionState extends State<BusinessARAction> {
   }
 
   @override
-  Widget build(BuildContext context) => FutureBuilder<List<BusinessARTarget>>(
-    future: _targets,
-    builder: (context, snapshot) {
-      if (snapshot.hasError) {
-        return TextButton(
-          onPressed: () => setState(() {
-            _targets = _load();
-          }),
-          child: const Text('Reintentar consultar RA'),
-        );
-      }
-      final targets = snapshot.connectionState == ConnectionState.done
-          ? snapshot.data
-          : null;
-      if (targets == null || targets.isEmpty) {
-        return const SizedBox.shrink();
-      }
-      return OutlinedButton.icon(
-        icon: const Icon(Icons.view_in_ar),
-        label: const Text('Explorar en RA'),
-        onPressed: () async {
-          final target = targets.length == 1
-              ? targets.first
-              : await showModalBottomSheet<BusinessARTarget>(
-                  context: context,
-                  builder: (context) => SafeArea(
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: [
-                        const ListTile(
-                          title: Text('Elige la imagen que vas a buscar'),
-                        ),
-                        for (final target in targets)
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return FutureBuilder<List<BusinessARTarget>>(
+      future: _targets,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return TextButton(
+            onPressed: () => setState(() {
+              _targets = _load();
+            }),
+            child: Text(
+              core_l10n.AppLocalizations.tr(l10n.reintentarConsultaRa),
+            ),
+          );
+        }
+        final targets = snapshot.connectionState == ConnectionState.done
+            ? snapshot.data
+            : null;
+        if (targets == null || targets.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return OutlinedButton.icon(
+          icon: const Icon(Icons.view_in_ar),
+          label: Text(core_l10n.AppLocalizations.tr(l10n.explorarEnRa)),
+          onPressed: () async {
+            final target = targets.length == 1
+                ? targets.first
+                : await showModalBottomSheet<BusinessARTarget>(
+                    context: context,
+                    builder: (context) => SafeArea(
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: [
                           ListTile(
-                            title: Text(target.point.name),
-                            subtitle: Text(target.tour.title),
-                            onTap: () => Navigator.pop(context, target),
+                            title: Text(
+                              core_l10n.AppLocalizations.tr(
+                                l10n.eligeImagenBuscar,
+                              ),
+                            ),
                           ),
-                      ],
+                          for (final target in targets)
+                            ListTile(
+                              title: Text(target.point.name),
+                              subtitle: Text(target.tour.title),
+                              onTap: () => Navigator.pop(context, target),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-          if (mounted && target != null) {
-            widget.onOpen(target);
-          }
-        },
-      );
-    },
-  );
+                  );
+            if (mounted && target != null) {
+              widget.onOpen(target);
+            }
+          },
+        );
+      },
+    );
+  }
 }
 
 class BusinessARScreen extends StatefulWidget {
@@ -135,10 +148,13 @@ class _BusinessARScreenState extends State<BusinessARScreen>
   bool _loading = true, _busy = false, _scanning = false, _supported = false;
   bool _foreground = true;
   bool _routeVisible = true;
+  bool _initialLoadStarted = false;
   int _generation = 0;
   String? _scanId;
   bool get _current =>
       mounted && _account != null && widget.controller.profile?.id == _account;
+  AppLocalizations get _l10n =>
+      AppLocalizations.of(context) ?? AppLocalizationsEs();
   bool _valid(int generation) =>
       _current && _foreground && _routeVisible && generation == _generation;
 
@@ -148,13 +164,16 @@ class _BusinessARScreenState extends State<BusinessARScreen>
     _account = widget.controller.profile?.id;
     WidgetsBinding.instance.addObserver(this);
     widget.controller.addListener(_accountChanged);
-    _load();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _routeVisible = ModalRoute.of(context)?.isCurrent ?? true;
+    if (!_initialLoadStarted) {
+      _initialLoadStarted = true;
+      _load();
+    }
     if (!_routeVisible && (_scanning || _busy)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -179,6 +198,7 @@ class _BusinessARScreenState extends State<BusinessARScreen>
   }
 
   Future<void> _load() async {
+    final l10n = _l10n;
     // A reference-image retry can also happen while a download is pending.
     // Cancel that preparation before resolving the public revision again.
     await _stop();
@@ -197,7 +217,7 @@ class _BusinessARScreenState extends State<BusinessARScreen>
       final repo = widget.controller.tourRepository;
       final community = widget.controller.communityRepository;
       if (repo == null || community == null) {
-        throw StateError('RA no está disponible.');
+        throw StateError(core_l10n.AppLocalizations.tr(l10n.raNoDisponible));
       }
       // Always resolve the public revision, including when the viewer owns a draft.
       final targets = BusinessARTarget.fromPublicTours(
@@ -210,12 +230,16 @@ class _BusinessARScreenState extends State<BusinessARScreen>
           )
           .firstOrNull;
       if (target == null) {
-        throw StateError('Esta experiencia de RA ya no está disponible.');
+        throw StateError(
+          core_l10n.AppLocalizations.tr(l10n.experienciaRaNoDisponible),
+        );
       }
       final profiles = await community.profiles(ids: [widget.ownerId]);
       final profile = profiles.where((p) => p.id == widget.ownerId).firstOrNull;
       if (profile == null) {
-        throw StateError('El perfil ya no está disponible.');
+        throw StateError(
+          core_l10n.AppLocalizations.tr(l10n.perfilNoDisponible),
+        );
       }
       final url = await repo.assetUrl(
         target.point.ar!['reference_path'] as String,
@@ -243,7 +267,7 @@ class _BusinessARScreenState extends State<BusinessARScreen>
       });
     } catch (e) {
       if (_current && generation == _generation) {
-        setState(() => _error = tourError(e));
+        setState(() => _error = tourError(e, l10n: _l10n));
       }
     } finally {
       if (_current && generation == _generation) {
@@ -270,6 +294,7 @@ class _BusinessARScreenState extends State<BusinessARScreen>
   }
 
   Future<void> _scan() async {
+    final l10n = _l10n;
     if (mounted) {
       _routeVisible = ModalRoute.of(context)?.isCurrent ?? true;
     }
@@ -298,7 +323,9 @@ class _BusinessARScreenState extends State<BusinessARScreen>
           )
           .firstOrNull;
       if (target == null) {
-        throw StateError('Esta experiencia de RA ya no está disponible.');
+        throw StateError(
+          core_l10n.AppLocalizations.tr(l10n.experienciaRaNoDisponible),
+        );
       }
       final url = await repo.assetUrl(
         target.point.ar!['reference_path'] as String,
@@ -311,7 +338,9 @@ class _BusinessARScreenState extends State<BusinessARScreen>
             .get(Uri.parse(url))
             .timeout(const Duration(seconds: 25));
         if (response.statusCode != 200) {
-          throw StateError('No pudimos descargar la imagen. Reintenta.');
+          throw StateError(
+            core_l10n.AppLocalizations.tr(l10n.errorDescargarImagen),
+          );
         }
         bytes = response.bodyBytes;
       }
@@ -344,7 +373,8 @@ class _BusinessARScreenState extends State<BusinessARScreen>
           }
           if (event['state'] == 'error') {
             final message =
-                event['message'] as String? ?? 'No pudimos iniciar la cámara.';
+                event['message'] as String? ??
+                core_l10n.AppLocalizations.tr(l10n.errorIniciarCamara);
             unawaited(_stop());
             setState(() => _error = message);
             return;
@@ -371,7 +401,11 @@ class _BusinessARScreenState extends State<BusinessARScreen>
             return;
           }
           unawaited(_stop());
-          setState(() => _error = 'Se interrumpió la cámara. Reintenta.');
+          setState(
+            () => _error = core_l10n.AppLocalizations.tr(
+              l10n.errorCamaraInterrumpida,
+            ),
+          );
         },
       );
       setState(() {
@@ -380,7 +414,7 @@ class _BusinessARScreenState extends State<BusinessARScreen>
       });
     } catch (e) {
       if (_valid(generation)) {
-        setState(() => _error = tourError(e));
+        setState(() => _error = tourError(e, l10n: _l10n));
       }
     } finally {
       if (_valid(generation)) {
@@ -434,12 +468,16 @@ class _BusinessARScreenState extends State<BusinessARScreen>
   Widget build(BuildContext context) {
     final profile = _profile;
     return Scaffold(
-      appBar: AppBar(title: const Text('Explorar en RA')),
+      appBar: AppBar(
+        title: Text(core_l10n.AppLocalizations.tr(_l10n.explorarEnRa)),
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : !_current
-          ? const Center(
-              child: Text('La sesión cambió. Vuelve a abrir la experiencia.'),
+          ? Center(
+              child: Text(
+                core_l10n.AppLocalizations.tr(_l10n.sesionCambioExperiencia),
+              ),
             )
           : _scanning
           ? Column(
@@ -542,8 +580,11 @@ class _BusinessARScreenState extends State<BusinessARScreen>
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
-                                                    const Text(
-                                                      'Toca para ver más',
+                                                    Text(
+                                                      core_l10n
+                                                          .AppLocalizations.tr(
+                                                        _l10n.tocaVerMas,
+                                                      ),
                                                       style: TextStyle(
                                                         fontSize: 11,
                                                       ),
@@ -569,8 +610,12 @@ class _BusinessARScreenState extends State<BusinessARScreen>
                                     padding: const EdgeInsets.all(12),
                                     child: Text(
                                       transform == null
-                                          ? 'Busca la imagen de referencia. Acércate despacio y evita reflejos.'
-                                          : 'Imagen reconocida. Toca la tarjeta.',
+                                          ? core_l10n.AppLocalizations.tr(
+                                              _l10n.buscaImagenReferencia,
+                                            )
+                                          : core_l10n.AppLocalizations.tr(
+                                              _l10n.imagenReconocidaTocaTarjeta,
+                                            ),
                                     ),
                                   ),
                                 ),
@@ -584,7 +629,9 @@ class _BusinessARScreenState extends State<BusinessARScreen>
                 ),
                 TextButton(
                   onPressed: _stop,
-                  child: const Text('Cerrar cámara'),
+                  child: Text(
+                    core_l10n.AppLocalizations.tr(_l10n.cerrarCamara),
+                  ),
                 ),
               ],
             )
@@ -598,8 +645,10 @@ class _BusinessARScreenState extends State<BusinessARScreen>
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Busca esta imagen en el lugar para descubrir su tarjeta.',
+                  Text(
+                    core_l10n.AppLocalizations.tr(
+                      _l10n.buscaImagenLugarTarjeta,
+                    ),
                   ),
                   if (_referenceUrl != null)
                     Image.network(
@@ -608,38 +657,58 @@ class _BusinessARScreenState extends State<BusinessARScreen>
                       fit: BoxFit.contain,
                       errorBuilder: (_, error, stack) => Column(
                         children: [
-                          const TourNotice('No pudimos mostrar la referencia.'),
+                          TourNotice(
+                            core_l10n.AppLocalizations.tr(
+                              _l10n.referenciaNoMostrar,
+                            ),
+                          ),
                           TextButton(
                             onPressed: _load,
-                            child: const Text('Reintentar imagen'),
+                            child: Text(
+                              core_l10n.AppLocalizations.tr(
+                                _l10n.reintentarImagen,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   Text(_target!.point.name),
                   if (!_supported)
-                    const TourNotice(
-                      'La cámara de RA necesita un teléfono compatible con ARCore o ARKit. Puedes consultar el perfil.',
+                    TourNotice(
+                      core_l10n.AppLocalizations.tr(_l10n.camaraCompatibleAr),
                     ),
                   if (!_supported)
                     TextButton(
                       onPressed: _load,
-                      child: const Text('Volver a comprobar compatibilidad'),
+                      child: Text(
+                        core_l10n.AppLocalizations.tr(
+                          _l10n.comprobarCompatibilidad,
+                        ),
+                      ),
                     ),
                   FilledButton.icon(
                     onPressed: _supported && !_busy ? _scan : null,
                     icon: const Icon(Icons.camera_alt_outlined),
-                    label: Text(_busy ? 'Preparando cámara…' : 'Abrir cámara'),
+                    label: Text(
+                      _busy
+                          ? core_l10n.AppLocalizations.tr(
+                              _l10n.preparandoCamara,
+                            )
+                          : core_l10n.AppLocalizations.tr(_l10n.abrirCamara),
+                    ),
                   ),
                   OutlinedButton(
                     onPressed: () => context.push('/people/${widget.ownerId}'),
-                    child: const Text('Ver perfil'),
+                    child: Text(core_l10n.AppLocalizations.tr(_l10n.verPerfil)),
                   ),
                 ],
                 if (_error != null)
                   TextButton(
                     onPressed: _busy ? null : _load,
-                    child: const Text('Reintentar'),
+                    child: Text(
+                      core_l10n.AppLocalizations.tr(_l10n.reintentar),
+                    ),
                   ),
               ],
             ),
@@ -696,7 +765,10 @@ class _BusinessInformationState extends State<_BusinessInformation> {
       });
     } catch (_) {
       if (mounted) {
-        setState(() => _error = 'No pudimos consultar las Misiones.');
+        setState(
+          () => _error = (AppLocalizations.of(context) ?? AppLocalizationsEs())
+              .errorConsultarMisiones,
+        );
       }
     } finally {
       if (mounted) {
@@ -706,57 +778,64 @@ class _BusinessInformationState extends State<_BusinessInformation> {
   }
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-    child: ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        Row(
-          children: [
-            Expanded(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.profile.fullName,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              IconButton(
+                tooltip: core_l10n.AppLocalizations.tr(l10n.volverCamara),
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close),
+              ),
+            ],
+          ),
+          Text(widget.profile.userType.databaseValue),
+          if (widget.profile.bio?.trim().isNotEmpty ?? false)
+            Text(widget.profile.bio!),
+          FilledButton(
+            onPressed: () =>
+                Navigator.pop(context, '/people/${widget.profile.id}'),
+            child: Text(core_l10n.AppLocalizations.tr(l10n.verPerfil)),
+          ),
+          if (_missions.isNotEmpty)
+            Text(
+              core_l10n.AppLocalizations.tr(l10n.misionesActivas),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          for (final mission in _missions)
+            ListTile(
+              title: Text(mission.title),
+              subtitle: Text(mission.location),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.pop(context, '/missions/${mission.id}'),
+            ),
+          if (!_busy && _error == null && !_more && _missions.isEmpty)
+            Text(
+              core_l10n.AppLocalizations.tr(l10n.sinMisionesActivasOrganizador),
+            ),
+          if (_busy) const Center(child: CircularProgressIndicator()),
+          if (_error != null) Text(core_l10n.AppLocalizations.tr(_error!)),
+          if (!_busy && (_more || _error != null))
+            TextButton(
+              onPressed: _load,
               child: Text(
-                widget.profile.fullName,
-                style: Theme.of(context).textTheme.titleLarge,
+                _error == null
+                    ? core_l10n.AppLocalizations.tr(l10n.consultarMasMisiones)
+                    : core_l10n.AppLocalizations.tr(l10n.reintentarMisiones),
               ),
             ),
-            IconButton(
-              tooltip: 'Volver a cámara',
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.close),
-            ),
-          ],
-        ),
-        Text(widget.profile.userType.databaseValue),
-        if (widget.profile.bio?.trim().isNotEmpty ?? false)
-          Text(widget.profile.bio!),
-        FilledButton(
-          onPressed: () =>
-              Navigator.pop(context, '/people/${widget.profile.id}'),
-          child: const Text('Ver perfil'),
-        ),
-        if (_missions.isNotEmpty)
-          Text(
-            'Misiones activas',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        for (final mission in _missions)
-          ListTile(
-            title: Text(mission.title),
-            subtitle: Text(mission.location),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.pop(context, '/missions/${mission.id}'),
-          ),
-        if (!_busy && _error == null && !_more && _missions.isEmpty)
-          const Text('Este organizador no tiene Misiones activas por ahora.'),
-        if (_busy) const Center(child: CircularProgressIndicator()),
-        if (_error != null) Text(_error!),
-        if (!_busy && (_more || _error != null))
-          TextButton(
-            onPressed: _load,
-            child: Text(
-              _error == null ? 'Consultar más Misiones' : 'Reintentar Misiones',
-            ),
-          ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }

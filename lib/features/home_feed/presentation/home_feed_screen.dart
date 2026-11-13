@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/community/models/mission_social.dart';
 import 'package:marea/features/home_feed/data/home_feed_repository.dart';
 import 'dart:async';
@@ -238,8 +239,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       if (mounted && generation == _generation) {
         setState(
           () => _locationError = e is DeviceLocationFailure
-              ? e.message
-              : communityError(e),
+              ? AppLocalizations.tr(e.message)
+              : AppLocalizations.tr(communityError(e)),
         );
       }
     } finally {
@@ -254,7 +255,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       initial: _latitude == null || _longitude == null
           ? null
           : PostLocationSelection(
-              label: 'Punto elegido',
+              label: AppLocalizations.tr('Punto elegido'),
               coordinates: PostCoordinates(
                 latitude: _latitude!,
                 longitude: _longitude!,
@@ -287,42 +288,44 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Filtrar Inicio',
+                AppLocalizations.tr('Filtrar Inicio'),
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
-              const Text('Contenido'),
+              Text(AppLocalizations.tr('Contenido')),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 children: [
                   for (final value in HomeFeedKind.values)
                     ChoiceChip(
-                      label: Text(switch (value) {
-                        HomeFeedKind.all => 'Todo',
-                        HomeFeedKind.post => 'Publicaciones',
-                        HomeFeedKind.mission => 'Misiones',
-                      }),
+                      label: Text(
+                        AppLocalizations.tr(switch (value) {
+                          HomeFeedKind.all => 'Todo',
+                          HomeFeedKind.post => 'Publicaciones',
+                          HomeFeedKind.mission => 'Misiones',
+                        }),
+                      ),
                       selected: kind == value,
                       onSelected: (_) => update(() => kind = value),
                     ),
                 ],
               ),
               const SizedBox(height: 16),
-              const Text('Categoría'),
+              Text(AppLocalizations.tr('Categoría')),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: [
                   ChoiceChip(
-                    label: const Text('Todas'),
+                    label: Text(AppLocalizations.tr('Todas')),
                     selected: category == null,
                     onSelected: (_) => update(() => category = null),
                   ),
                   for (final entry in communityCategories.entries)
                     ChoiceChip(
-                      label: Text(entry.value),
+                      label: Text(AppLocalizations.tr(entry.value)),
                       selected: category == entry.key,
                       onSelected: (_) => update(() => category = entry.key),
                     ),
@@ -330,7 +333,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
               ),
               if (_mode == HomeFeedMode.nearby) ...[
                 const SizedBox(height: 16),
-                const Text('Distancia'),
+                Text(AppLocalizations.tr('Distancia')),
                 Wrap(
                   spacing: 8,
                   children: [
@@ -346,7 +349,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
               const SizedBox(height: 20),
               FilledButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Aplicar filtros'),
+                child: Text(AppLocalizations.tr('Aplicar filtros')),
               ),
               TextButton(
                 onPressed: () => update(() {
@@ -354,7 +357,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                   kind = HomeFeedKind.all;
                   radius = 10;
                 }),
-                child: const Text('Restablecer'),
+                child: Text(AppLocalizations.tr('Restablecer')),
               ),
             ],
           ),
@@ -390,12 +393,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                     Padding(
                       padding: const EdgeInsets.only(right: 6),
                       child: ChoiceChip(
-                        label: Text(switch (mode) {
-                          HomeFeedMode.forYou => 'Para ti',
-                          HomeFeedMode.nearby => 'Cerca',
-                          HomeFeedMode.following => 'Siguiendo',
-                          HomeFeedMode.trending => 'Tendencias',
-                        }),
+                        label: Text(
+                          AppLocalizations.tr(switch (mode) {
+                            HomeFeedMode.forYou => 'Para ti',
+                            HomeFeedMode.nearby => 'Cerca',
+                            HomeFeedMode.following => 'Siguiendo',
+                            HomeFeedMode.trending => 'Tendencias',
+                          }),
+                        ),
                         selected: _mode == mode,
                         showCheckmark: false,
                         selectedColor: AppColors.brandNavy,
@@ -417,7 +422,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
             ),
           ),
           IconButton(
-            tooltip: 'Filtrar Inicio',
+            tooltip: AppLocalizations.tr('Filtrar Inicio'),
             onPressed: _filters,
             icon: Badge(
               isLabelVisible: _category != null || _kind != HomeFeedKind.all,
@@ -432,17 +437,23 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
           spacing: 8,
           children: [
             Text(
-              'A $_radius km',
+              AppLocalizations.trTemplate('A {radius} km', {
+                'radius': '$_radius',
+              }),
               style: const TextStyle(color: AppColors.textSecondary),
             ),
             TextButton.icon(
               onPressed: _locating ? null : _locate,
               icon: const Icon(Icons.my_location, size: 18),
-              label: Text(_locating ? 'Localizando…' : 'Mi ubicación'),
+              label: Text(
+                _locating
+                    ? AppLocalizations.tr('Localizando…')
+                    : AppLocalizations.tr('Mi ubicación'),
+              ),
             ),
             TextButton(
               onPressed: _pickLocation,
-              child: const Text('Elegir punto'),
+              child: Text(AppLocalizations.tr('Elegir punto')),
             ),
           ],
         ),
@@ -457,7 +468,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
               if (mounted) _refresh();
             },
             icon: const Icon(Icons.shield_outlined),
-            label: const Text('Moderación'),
+            label: Text(AppLocalizations.tr('Moderación')),
           ),
         ),
       const SizedBox(height: 12),
@@ -466,7 +477,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   Widget _entry(HomeFeedEntry entry) {
     final repo = widget.controller.communityRepository;
     if (repo == null) {
-      return const CommunityNotice(message: 'La comunidad no está disponible.');
+      return CommunityNotice(
+        message: AppLocalizations.tr('La comunidad no está disponible.'),
+      );
     }
     if (entry.mission != null) {
       return MissionFeedCard(
@@ -504,6 +517,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       mediaRepository: widget.controller.mediaRepository,
       stats: _stats[entry.id],
       publicUrl: widget.controller.publicUrl,
+      contentTranslator: widget.controller.postContentTranslator,
       moderator: widget.controller.profile?.role == ProfileRole.admin,
       onStats: (value) => _stats[entry.id] = value,
       onChanged: () => _load(reset: true),
@@ -535,15 +549,20 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         ),
       if (!_loading && _error == null && _entries.isEmpty)
         CommunityNotice(
-          message: _mode == HomeFeedMode.following
-              ? 'No hay contenido de personas que sigues. Encuentra personas en Explorar y pulsa Seguir.'
-              : _mode == HomeFeedMode.nearby &&
-                    (_latitude == null || _longitude == null)
-              ? 'Elige tu ubicación para ver qué hay cerca.'
-              : 'No hay contenido con estos filtros. Vuelve más tarde o cambia los filtros.',
+          message: AppLocalizations.tr(
+            _mode == HomeFeedMode.following
+                ? 'No hay contenido de personas que sigues. Encuentra personas en Explorar y pulsa Seguir.'
+                : _mode == HomeFeedMode.nearby &&
+                      (_latitude == null || _longitude == null)
+                ? 'Elige tu ubicación para ver qué hay cerca.'
+                : 'No hay contenido con estos filtros. Vuelve más tarde o cambia los filtros.',
+          ),
         ),
       if (!_loading && _cursor != null && _error == null)
-        TextButton(onPressed: _load, child: const Text('Cargar más')),
+        TextButton(
+          onPressed: _load,
+          child: Text(AppLocalizations.tr('Cargar más')),
+        ),
     ],
   );
   @override

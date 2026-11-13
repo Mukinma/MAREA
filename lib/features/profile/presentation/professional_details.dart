@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
@@ -28,7 +29,7 @@ class ProfessionalDetails extends StatelessWidget {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  'Disponible para colaborar',
+                  AppLocalizations.tr('Disponible para colaborar'),
                   style: Theme.of(
                     context,
                   ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
@@ -52,7 +53,7 @@ class ProfessionalDetails extends StatelessWidget {
               }
             }),
             icon: const Icon(Icons.open_in_new),
-            label: const Text('Contactar'),
+            label: Text(AppLocalizations.tr('Contactar')),
           ),
         ),
       if (showLocation &&
@@ -89,16 +90,16 @@ class ProfessionalDetails extends StatelessWidget {
         ExpansionTile(
           tilePadding: EdgeInsets.zero,
           childrenPadding: const EdgeInsets.only(bottom: 8),
-          title: const Text(
-            'Horarios',
+          title: Text(
+            AppLocalizations.tr('Horarios'),
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
           ),
           leading: const Icon(Icons.schedule_outlined, size: 20),
           children: [
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Hora local del negocio',
+                AppLocalizations.tr('Hora local del negocio'),
                 style: TextStyle(fontSize: 12),
               ),
             ),
@@ -108,8 +109,11 @@ class ProfessionalDetails extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Expanded(child: Text(entry.value)),
-                      Text(profile.businessHours[entry.key] ?? 'Cerrado'),
+                      Expanded(child: Text(AppLocalizations.tr(entry.value))),
+                      Text(
+                        profile.businessHours[entry.key] ??
+                            AppLocalizations.tr('Cerrado'),
+                      ),
                     ],
                   ),
                 ),

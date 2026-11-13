@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:marea/core/localization/app_localizations.dart';
+import 'package:marea/core/localization/on_device_post_translator.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/models/post_social.dart';
@@ -43,7 +45,13 @@ class Social implements SocialRepository {
   dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
 }
 
-Widget card(Social social, {String viewerId = 'b'}) => testApp(
+Widget card(
+  Social social, {
+  String viewerId = 'b',
+  PostContentTranslator? contentTranslator,
+  bool withLocation = false,
+  bool homePresentation = false,
+}) => testApp(
   Scaffold(
     body: SingleChildScrollView(
       child: PostCard(
@@ -54,6 +62,14 @@ Widget card(Social social, {String viewerId = 'b'}) => testApp(
           title: 'Pieza',
           body: 'Descripción',
           category: 'arte',
+          location: withLocation ? 'Ubicación de prueba' : null,
+          coordinates: withLocation
+              ? const PostCoordinates(
+                  latitude: 19.119762,
+                  longitude: -104.405987,
+                  precision: PostLocationPrecision.exact,
+                )
+              : null,
           createdAt: DateTime.utc(2026),
           updatedAt: DateTime.utc(2026),
         ),
@@ -63,12 +79,52 @@ Widget card(Social social, {String viewerId = 'b'}) => testApp(
         onChanged: () async {},
         socialRepository: social,
         stats: const PostSocialStats(postId: 'p'),
+        contentTranslator: contentTranslator,
+        homePresentation: homePresentation,
       ),
     ),
   ),
 );
 
 void main() {
+  testWidgets('post translation is opt-in and keeps the original available', (
+    tester,
+  ) async {
+    await AppLocalizations.delegate.load(const Locale('en', 'US'));
+    addTearDown(() => AppLocalizations.delegate.load(const Locale('es', 'MX')));
+    final translator = _FakePostContentTranslator();
+    await tester.pumpWidget(
+      card(
+        Social(),
+        contentTranslator: translator,
+        withLocation: true,
+        homePresentation: true,
+      ),
+    );
+
+    expect(find.text('Pieza'), findsOneWidget);
+    expect(find.text('Descripción'), findsOneWidget);
+    expect(find.text('Ver ubicación'), findsOneWidget);
+    expect(find.text('Translate post'), findsOneWidget);
+    expect(translator.calls, 0);
+
+    await tester.tap(find.text('Translate post'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Artwork'), findsOneWidget);
+    expect(find.text('A handmade piece.'), findsOneWidget);
+    expect(find.text('View location'), findsOneWidget);
+    expect(find.text('Show original'), findsOneWidget);
+    expect(translator.targetLanguage, 'en');
+    expect(translator.calls, 1);
+
+    await tester.tap(find.text('Show original'));
+    await tester.pumpAndSettle();
+    expect(find.text('Pieza'), findsOneWidget);
+    expect(find.text('Descripción'), findsOneWidget);
+    expect(find.text('Ver ubicación'), findsOneWidget);
+  });
+
   testWidgets('compact reaction count stays visible with enlarged text', (
     tester,
   ) async {
@@ -338,4 +394,27 @@ void main() {
     await tester.pumpAndSettle();
     expect(social.selected, isNull);
   });
+}
+
+class _FakePostContentTranslator implements PostContentTranslator {
+  int calls = 0;
+  String? targetLanguage;
+
+  @override
+  bool get isSupported => true;
+
+  @override
+  Future<TranslatedPostContent> translate({
+    required String title,
+    required String body,
+    required String targetLanguage,
+  }) async {
+    calls++;
+    this.targetLanguage = targetLanguage;
+    return const TranslatedPostContent(
+      title: 'Artwork',
+      body: 'A handmade piece.',
+      alreadyInTargetLanguage: false,
+    );
+  }
 }

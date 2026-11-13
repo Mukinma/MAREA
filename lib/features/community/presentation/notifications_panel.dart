@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/notifications/models/notification_destination.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter/material.dart';
@@ -92,23 +93,34 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
   }
 
   String _verb(NotificationKind kind) => switch (kind) {
-    NotificationKind.reaction => 'reaccionó a',
-    NotificationKind.comment => 'comentó en',
-    NotificationKind.interest => 'quiere colaborar en',
-    NotificationKind.missionApplication => 'envió una candidatura a',
-    NotificationKind.missionAccepted => 'aceptó tu candidatura en',
-    NotificationKind.missionRejected =>
+    NotificationKind.reaction => AppLocalizations.tr('reaccionó a'),
+    NotificationKind.comment => AppLocalizations.tr('comentó en'),
+    NotificationKind.interest => AppLocalizations.tr('quiere colaborar en'),
+    NotificationKind.missionApplication => AppLocalizations.tr(
+      'envió una candidatura a',
+    ),
+    NotificationKind.missionAccepted => AppLocalizations.tr(
+      'aceptó tu candidatura en',
+    ),
+    NotificationKind.missionRejected => AppLocalizations.tr(
       'revisó tu candidatura sin seleccionarla en',
-    NotificationKind.missionWithdrawn => 'retiró su candidatura de',
-    NotificationKind.missionClosed => 'cerró la convocatoria de',
-    NotificationKind.missionReopened => 'reabrió la convocatoria de',
-    NotificationKind.missionCancelled => 'canceló',
-    NotificationKind.missionCompleted => 'finalizó',
+    ),
+    NotificationKind.missionWithdrawn => AppLocalizations.tr(
+      'retiró su candidatura de',
+    ),
+    NotificationKind.missionClosed => AppLocalizations.tr(
+      'cerró la convocatoria de',
+    ),
+    NotificationKind.missionReopened => AppLocalizations.tr(
+      'reabrió la convocatoria de',
+    ),
+    NotificationKind.missionCancelled => AppLocalizations.tr('canceló'),
+    NotificationKind.missionCompleted => AppLocalizations.tr('finalizó'),
     NotificationKind.mareaMessage => '',
   };
   @override
   Widget build(BuildContext context) => SocialPanelFrame(
-    title: 'Notificaciones',
+    title: AppLocalizations.tr('Notificaciones'),
     child: Column(
       children: [
         Padding(
@@ -118,7 +130,7 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
             runSpacing: 8,
             children: [
               ChoiceChip(
-                label: const Text('Todo'),
+                label: Text(AppLocalizations.tr('Todo')),
                 selected: !_unreadOnly,
                 onSelected: (_) {
                   setState(() => _unreadOnly = false);
@@ -126,7 +138,7 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
                 },
               ),
               ChoiceChip(
-                label: const Text('Sin leer'),
+                label: Text(AppLocalizations.tr('Sin leer')),
                 selected: _unreadOnly,
                 onSelected: (_) {
                   setState(() => _unreadOnly = true);
@@ -135,7 +147,11 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
               ),
               TextButton(
                 onPressed: _busy || _cutoff == null ? null : _markAll,
-                child: Text(_busy ? 'Marcando…' : 'Marcar todo como leído'),
+                child: Text(
+                  _busy
+                      ? AppLocalizations.tr('Marcando…')
+                      : AppLocalizations.tr('Marcar todo como leído'),
+                ),
               ),
             ],
           ),
@@ -168,19 +184,42 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
                       }, color: AppColors.textSecondary),
                       title: Text(
                         n.eventKey?.startsWith('chat_request:') == true
-                            ? '${_authors[n.actorId]?.fullName ?? 'Una persona'} '
-                                  'te envió una solicitud de mensaje.'
+                            ? AppLocalizations.trTemplate(
+                                '{actor} te envió una solicitud de mensaje.',
+                                {
+                                  'actor':
+                                      _authors[n.actorId]?.fullName ??
+                                      AppLocalizations.tr('Una persona'),
+                                },
+                              )
                             : n.eventKey?.startsWith('chat_rejected:') == true
-                            ? '${_authors[n.actorId]?.fullName ?? 'Una persona'} '
-                                  'rechazó tu solicitud de mensaje.'
+                            ? AppLocalizations.trTemplate(
+                                '{actor} rechazó tu solicitud de mensaje.',
+                                {
+                                  'actor':
+                                      _authors[n.actorId]?.fullName ??
+                                      AppLocalizations.tr('Una persona'),
+                                },
+                              )
                             : n.kind == NotificationKind.mareaMessage
                             ? n.postTitle
-                            : '${_authors[n.actorId]?.fullName ?? 'Cuenta no disponible'} ${_verb(n.kind)} «${n.postTitle}».',
+                            : AppLocalizations.trTemplate(
+                                '{actor} {verb} «{title}».',
+                                {
+                                  'actor':
+                                      _authors[n.actorId]?.fullName ??
+                                      AppLocalizations.tr(
+                                        'Cuenta no disponible',
+                                      ),
+                                  'verb': _verb(n.kind),
+                                  'title': n.postTitle,
+                                },
+                              ),
                       ),
                       subtitle: Text(socialDate(n.createdAt)),
                       trailing: n.isUnread
                           ? Semantics(
-                              label: 'Sin leer',
+                              label: AppLocalizations.tr('Sin leer'),
                               child: Icon(
                                 Icons.circle,
                                 size: 8,
@@ -205,13 +244,17 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
               if (!_loading && _error == null && _items.isEmpty)
                 CommunityNotice(
                   message: _unreadOnly
-                      ? 'Estás al día. No hay notificaciones sin leer.'
-                      : 'Aquí aparecerán las novedades de tu comunidad y tus misiones.',
+                      ? AppLocalizations.tr(
+                          'Estás al día. No hay notificaciones sin leer.',
+                        )
+                      : AppLocalizations.tr(
+                          'Aquí aparecerán las novedades de tu comunidad y tus misiones.',
+                        ),
                 ),
               if (!_loading && _more && _items.isNotEmpty)
                 TextButton(
                   onPressed: _load,
-                  child: const Text('Cargar más notificaciones'),
+                  child: Text(AppLocalizations.tr('Cargar más notificaciones')),
                 ),
             ],
           ),

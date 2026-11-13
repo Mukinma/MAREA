@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -69,7 +70,7 @@ class MissionFlowScaffold extends StatelessWidget {
           title: Text(title),
           centerTitle: true,
           leading: IconButton(
-            tooltip: 'Volver a misiones',
+            tooltip: AppLocalizations.tr('Volver a misiones'),
             onPressed:
                 onBack ??
                 () =>
@@ -245,8 +246,9 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
     } catch (_) {
       if (mounted && generation == _generation) {
         setState(
-          () => _workError =
-              'No pudimos cargar tus fichas. Puedes adjuntar un enlace o reintentar.',
+          () => _workError = AppLocalizations.tr(
+            'No pudimos cargar tus fichas. Puedes adjuntar un enlace o reintentar.',
+          ),
         );
       }
     } finally {
@@ -258,8 +260,12 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
 
   String? get _restriction {
     final viewer = widget.controller.profile, mission = _mission;
-    if (viewer == null) return 'Inicia sesión para participar.';
-    if (mission == null) return 'Esta misión ya no está disponible.';
+    if (viewer == null) {
+      return AppLocalizations.tr('Inicia sesión para participar.');
+    }
+    if (mission == null) {
+      return AppLocalizations.tr('Esta misión ya no está disponible.');
+    }
     return mission.applicationRestriction(
       viewerId: viewer.id,
       viewerType: viewer.userType,
@@ -274,18 +280,20 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
       final exit = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
-          title: const Text('¿Salir de tu candidatura?'),
-          content: const Text(
-            'Los datos de esta candidatura todavía no se han enviado.',
+          title: Text(AppLocalizations.tr('¿Salir de tu candidatura?')),
+          content: Text(
+            AppLocalizations.tr(
+              'Los datos de esta candidatura todavía no se han enviado.',
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c, false),
-              child: const Text('Seguir editando'),
+              child: Text(AppLocalizations.tr('Seguir editando')),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('Descartar y salir'),
+              child: Text(AppLocalizations.tr('Descartar y salir')),
             ),
           ],
         ),
@@ -371,8 +379,9 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
           } else {
             setState(() {
               _own = recovered;
-              _error =
-                  'Tu candidatura ya fue enviada. Los cambios posteriores no se enviaron.';
+              _error = AppLocalizations.tr(
+                'Tu candidatura ya fue enviada. Los cambios posteriores no se enviaron.',
+              );
             });
           }
           return;
@@ -414,7 +423,11 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
     );
     if (!mounted || evidence == null) return;
     if (_samples.any((e) => e.url == evidence.url)) {
-      setState(() => _error = 'Este enlace ya está en tu candidatura.');
+      setState(
+        () => _error = AppLocalizations.tr(
+          'Este enlace ya está en tu candidatura.',
+        ),
+      );
       return;
     }
     setState(() {
@@ -435,17 +448,17 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
         if (!didPop) _leave();
       },
       child: MissionFlowScaffold(
-        title: 'Tu candidatura',
+        title: AppLocalizations.tr('Tu candidatura'),
         onBack: _leave,
         actions: [
           IconButton(
-            tooltip: 'Cerrar candidatura',
+            tooltip: AppLocalizations.tr('Cerrar candidatura'),
             onPressed: _busy ? null : _leave,
             icon: const Icon(Icons.close),
           ),
         ],
         body: _loading
-            ? const Center(child: MareaSkeleton(kind: SkeletonKind.form))
+            ? Center(child: MareaSkeleton(kind: SkeletonKind.form))
             : ListView(
                 key: ValueKey(_step),
                 padding: const EdgeInsets.all(20),
@@ -458,13 +471,16 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                     const SizedBox(height: 16),
                   ],
                   if (mission == null && _error == null)
-                    const CommunityNotice(
-                      message: 'Esta misión ya no está disponible.',
+                    CommunityNotice(
+                      message: AppLocalizations.tr(
+                        'Esta misión ya no está disponible.',
+                      ),
                     )
                   else if (_own != null) ...[
-                    const CommunityNotice(
-                      message:
-                          'Ya tienes una candidatura para esta misión. Puedes seguir su estado en Mis candidaturas.',
+                    CommunityNotice(
+                      message: AppLocalizations.tr(
+                        'Ya tienes una candidatura para esta misión. Puedes seguir su estado en Mis candidaturas.',
+                      ),
                       icon: Icons.task_alt,
                     ),
                     const SizedBox(height: 16),
@@ -473,7 +489,7 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Candidatura enviada',
+                            AppLocalizations.tr('Candidatura enviada'),
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 12),
@@ -482,8 +498,12 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                           MissionFact(
                             icon: Icons.event_available,
                             text: _own!.availabilityConfirmed == true
-                                ? 'Disponibilidad confirmada'
-                                : 'Disponibilidad no registrada',
+                                ? AppLocalizations.tr(
+                                    'Disponibilidad confirmada',
+                                  )
+                                : AppLocalizations.tr(
+                                    'Disponibilidad no registrada',
+                                  ),
                           ),
                           for (final sample in _own!.evidence)
                             MissionEvidenceTile(
@@ -497,7 +517,7 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                     TextButton(
                       onPressed: () =>
                           context.go('/missions?section=applications'),
-                      child: const Text('Ver mis candidaturas'),
+                      child: Text(AppLocalizations.tr('Ver mis candidaturas')),
                     ),
                   ] else if (restricted != null)
                     CommunityNotice(message: restricted)
@@ -521,7 +541,9 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      'PASO ${_step + 1} DE 3',
+                      AppLocalizations.trTemplate('PASO {step} DE 3', {
+                        'step': '${_step + 1}',
+                      }),
                       style: const TextStyle(
                         color: AppColors.aquaDark,
                         fontWeight: FontWeight.w800,
@@ -530,11 +552,13 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      [
-                        'Antes de sumarte',
-                        'Haz que tu trabajo hable',
-                        'Tu candidatura, lista para salir',
-                      ][_step],
+                      AppLocalizations.tr(
+                        [
+                          'Antes de sumarte',
+                          'Haz que tu trabajo hable',
+                          'Tu candidatura, lista para salir',
+                        ][_step],
+                      ),
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
                             fontWeight: FontWeight.w800,
@@ -543,11 +567,13 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      [
-                        'Revisa lo que haremos juntos y las condiciones de la misión.',
-                        'Cuéntanos qué puedes aportar. Las muestras de trabajo son opcionales.',
-                        'Comprueba tus datos antes de compartirlos con el organizador.',
-                      ][_step],
+                      AppLocalizations.tr(
+                        [
+                          'Revisa lo que haremos juntos y las condiciones de la misión.',
+                          'Cuéntanos qué puedes aportar. Las muestras de trabajo son opcionales.',
+                          'Comprueba tus datos antes de compartirlos con el organizador.',
+                        ][_step],
+                      ),
                       style: const TextStyle(color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: 24),
@@ -573,26 +599,29 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                             ),
                             MissionFact(
                               icon: Icons.people_outline,
-                              text:
-                                  mission.targetType?.databaseValue ??
-                                  'Todos los perfiles',
+                              text: missionTargetLabel(mission.targetType),
                             ),
                             MissionFact(
                               icon: Icons.payments_outlined,
-                              text: mission.compensationLabel,
+                              text: missionCompensationLocalizedLabel(
+                                mission.compensationType,
+                                mission.compensationAmountCents,
+                              ),
                             ),
                             if (mission.requirements?.isNotEmpty == true) ...[
                               const SizedBox(height: 12),
-                              const Text(
-                                'Lo que necesitas',
+                              Text(
+                                AppLocalizations.tr('Lo que necesitas'),
                                 style: TextStyle(fontWeight: FontWeight.w800),
                               ),
                               Text(mission.requirements!),
                             ],
                             if (mission.conditions?.isNotEmpty == true) ...[
                               const SizedBox(height: 12),
-                              const Text(
-                                'Condiciones de colaboración',
+                              Text(
+                                AppLocalizations.tr(
+                                  'Condiciones de colaboración',
+                                ),
                                 style: TextStyle(fontWeight: FontWeight.w800),
                               ),
                               Text(mission.conditions!),
@@ -601,16 +630,19 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const MissionHint(
+                      MissionHint(
                         icon: Icons.handshake_outlined,
-                        text:
-                            'Enviar una candidatura expresa tu interés. El organizador revisará tu propuesta y podrás consultar la respuesta en MAREA.',
+                        text: AppLocalizations.tr(
+                          'Enviar una candidatura expresa tu interés. El organizador revisará tu propuesta y podrás consultar la respuesta en MAREA.',
+                        ),
                       ),
                     ],
                     if (_step == 1) ...[
                       if (_works.isNotEmpty) ...[
-                        const Text(
-                          'Elige hasta 3 muestras relevantes',
+                        Text(
+                          AppLocalizations.tr(
+                            'Elige hasta 3 muestras relevantes',
+                          ),
                           style: TextStyle(fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(height: 12),
@@ -633,8 +665,9 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                                     );
                                     if (index < 0 && _samples.length >= 3) {
                                       setState(
-                                        () => _error =
-                                            'Puedes incluir hasta tres muestras.',
+                                        () => _error = AppLocalizations.tr(
+                                          'Puedes incluir hasta tres muestras.',
+                                        ),
                                       );
                                       return;
                                     }
@@ -663,8 +696,8 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                               : () => _loadWorks(append: true),
                           child: Text(
                             _workBusy
-                                ? 'Cargando fichas…'
-                                : 'Cargar más fichas',
+                                ? AppLocalizations.tr('Cargando fichas…')
+                                : AppLocalizations.tr('Cargar más fichas'),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -687,7 +720,7 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           trailing: IconButton(
-                            tooltip: 'Quitar muestra',
+                            tooltip: AppLocalizations.tr('Quitar muestra'),
                             onPressed: () =>
                                 setState(() => _samples.remove(sample)),
                             icon: const Icon(Icons.close),
@@ -696,7 +729,12 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                       OutlinedButton.icon(
                         onPressed: _samples.length >= 3 ? null : _addLink,
                         icon: const Icon(Icons.add_link),
-                        label: Text('Añadir enlace · ${_samples.length}/3'),
+                        label: Text(
+                          AppLocalizations.trTemplate(
+                            'Añadir enlace · {count}/3',
+                            {'count': '${_samples.length}'},
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 24),
                       Form(
@@ -706,20 +744,25 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                           minLines: 4,
                           maxLines: 7,
                           maxLength: 1000,
-                          decoration: const InputDecoration(
-                            labelText: 'Cuéntanos por qué encajas',
+                          decoration: InputDecoration(
+                            labelText: AppLocalizations.tr(
+                              'Cuéntanos por qué encajas',
+                            ),
                             alignLabelWithHint: true,
                           ),
                           validator: (v) => (v?.trim().isEmpty ?? true)
-                              ? 'Cuéntanos por qué encajas.'
+                              ? AppLocalizations.tr(
+                                  'Cuéntanos por qué encajas.',
+                                )
                               : null,
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const MissionHint(
+                      MissionHint(
                         icon: Icons.lightbulb_outline,
-                        text:
-                            'Cuenta qué puedes aportar de forma concreta. Una candidatura personal ayuda a conocer tu propuesta.',
+                        text: AppLocalizations.tr(
+                          'Cuenta qué puedes aportar de forma concreta. Una candidatura personal ayuda a conocer tu propuesta.',
+                        ),
                       ),
                       const SizedBox(height: 18),
                       CheckboxListTile(
@@ -729,13 +772,17 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                         value: _available,
                         onChanged: (v) =>
                             setState(() => _available = v ?? false),
-                        title: const Text('Confirmo mi disponibilidad'),
+                        title: Text(
+                          AppLocalizations.tr('Confirmo mi disponibilidad'),
+                        ),
                         subtitle: Text(missionDate(mission.startsAt)),
                         controlAffinity: ListTileControlAffinity.leading,
                       ),
                       if (_validation && !_available)
-                        const Text(
-                          'Confirma tu disponibilidad para la fecha de la misión.',
+                        Text(
+                          AppLocalizations.tr(
+                            'Confirma tu disponibilidad para la fecha de la misión.',
+                          ),
                           style: TextStyle(color: AppColors.error),
                         ),
                     ],
@@ -751,20 +798,22 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                             const SizedBox(height: 16),
                             MissionFact(
                               icon: Icons.event_available,
-                              text:
-                                  'Disponibilidad confirmada · ${missionDate(mission.startsAt)}',
+                              text: AppLocalizations.trTemplate(
+                                'Disponibilidad confirmada · {date}',
+                                {'date': missionDate(mission.startsAt)},
+                              ),
                             ),
                             const SizedBox(height: 12),
-                            const Text(
-                              'Tu propuesta',
+                            Text(
+                              AppLocalizations.tr('Tu propuesta'),
                               style: TextStyle(fontWeight: FontWeight.w800),
                             ),
                             const SizedBox(height: 8),
                             Text(_message.text.trim()),
                             if (_samples.isNotEmpty) ...[
                               const SizedBox(height: 18),
-                              const Text(
-                                'Tus muestras',
+                              Text(
+                                AppLocalizations.tr('Tus muestras'),
                                 style: TextStyle(fontWeight: FontWeight.w800),
                               ),
                               for (final sample in _samples)
@@ -784,17 +833,20 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                                 onPressed: _busy
                                     ? null
                                     : () => setState(() => _step = 1),
-                                child: const Text('Editar candidatura'),
+                                child: Text(
+                                  AppLocalizations.tr('Editar candidatura'),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const MissionHint(
+                      MissionHint(
                         icon: Icons.lock_outline,
-                        text:
-                            'Tu candidatura y tus muestras solo serán visibles para ti y para el organizador.',
+                        text: AppLocalizations.tr(
+                          'Tu candidatura y tus muestras solo serán visibles para ti y para el organizador.',
+                        ),
                       ),
                     ],
                     const SizedBox(height: 24),
@@ -813,7 +865,7 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                               _step--;
                               _error = null;
                             }),
-                      child: const Text('Atrás'),
+                      child: Text(AppLocalizations.tr('Atrás')),
                     ),
                     const SizedBox(width: 12),
                   ],
@@ -829,12 +881,14 @@ class _MissionApplicationScreenState extends State<MissionApplicationScreen> {
                       ),
                       label: Text(
                         _busy
-                            ? 'Enviando…'
-                            : [
-                                'Continuar',
-                                'Revisar candidatura',
-                                'Enviar candidatura',
-                              ][_step],
+                            ? AppLocalizations.tr('Enviando…')
+                            : AppLocalizations.tr(
+                                [
+                                  'Continuar',
+                                  'Revisar candidatura',
+                                  'Enviar candidatura',
+                                ][_step],
+                              ),
                       ),
                     ),
                   ),
@@ -999,7 +1053,7 @@ class _EvidenceLinkDialogState extends State<_EvidenceLinkDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Añadir una muestra'),
+    title: Text(AppLocalizations.tr('Añadir una muestra')),
     content: SizedBox(
       width: 440,
       child: Form(
@@ -1011,17 +1065,20 @@ class _EvidenceLinkDialogState extends State<_EvidenceLinkDialog> {
               TextFormField(
                 controller: _title,
                 maxLength: 100,
-                decoration: const InputDecoration(
-                  labelText: 'Título de la muestra',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.tr('Título de la muestra'),
                 ),
-                validator: (v) =>
-                    v?.trim().isNotEmpty == true ? null : 'Escribe un título.',
+                validator: (v) => v?.trim().isNotEmpty == true
+                    ? null
+                    : AppLocalizations.tr('Escribe un título.'),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _url,
                 keyboardType: TextInputType.url,
-                decoration: const InputDecoration(labelText: 'Enlace HTTPS'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.tr('Enlace HTTPS'),
+                ),
                 validator: (_) => MissionEvidence(
                   title: _title.text,
                   url: _url.text.trim(),
@@ -1035,7 +1092,7 @@ class _EvidenceLinkDialogState extends State<_EvidenceLinkDialog> {
     actions: [
       TextButton(
         onPressed: () => Navigator.pop(context),
-        child: const Text('Volver'),
+        child: Text(AppLocalizations.tr('Volver')),
       ),
       FilledButton(
         onPressed: () {
@@ -1046,7 +1103,7 @@ class _EvidenceLinkDialogState extends State<_EvidenceLinkDialog> {
             );
           }
         },
-        child: const Text('Añadir muestra'),
+        child: Text(AppLocalizations.tr('Añadir muestra')),
       ),
     ],
   );
@@ -1110,13 +1167,21 @@ class _MissionEvidenceTileState extends State<MissionEvidenceTile> {
             );
             if (!opened && context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('No pudimos abrir el enlace.')),
+                SnackBar(
+                  content: Text(
+                    AppLocalizations.tr('No pudimos abrir el enlace.'),
+                  ),
+                ),
               );
             }
           } catch (_) {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('No pudimos abrir el enlace.')),
+                SnackBar(
+                  content: Text(
+                    AppLocalizations.tr('No pudimos abrir el enlace.'),
+                  ),
+                ),
               );
             }
           }
@@ -1143,8 +1208,8 @@ class _MissionEvidenceTileState extends State<MissionEvidenceTile> {
             visible
                 ? item.title
                 : snapshot.connectionState == ConnectionState.done
-                ? 'Muestra no disponible'
-                : 'Cargando muestra…',
+                ? AppLocalizations.tr('Muestra no disponible')
+                : AppLocalizations.tr('Cargando muestra…'),
           ),
           trailing: visible ? const Icon(Icons.chevron_right) : null,
           onTap: visible ? () => context.push('/showcase/${item.id}') : null,
@@ -1201,13 +1266,13 @@ class _MissionApplicationSentScreenState
 
   @override
   Widget build(BuildContext context) => MissionFlowScaffold(
-    title: 'Candidatura',
+    title: AppLocalizations.tr('Candidatura'),
     onBack: () => context.go('/missions?section=applications'),
     body: FutureBuilder<(Mission?, MissionApplication?)>(
       future: _future,
       builder: (_, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: MareaSkeleton(kind: SkeletonKind.form));
+          return Center(child: MareaSkeleton(kind: SkeletonKind.form));
         }
         if (snapshot.hasError) {
           return CommunityNotice(
@@ -1217,8 +1282,10 @@ class _MissionApplicationSentScreenState
         }
         final (mission, application) = snapshot.data!;
         if (application == null) {
-          return const CommunityNotice(
-            message: 'No encontramos una candidatura tuya para esta misión.',
+          return CommunityNotice(
+            message: AppLocalizations.tr(
+              'No encontramos una candidatura tuya para esta misión.',
+            ),
           );
         }
         return ListView(
@@ -1233,7 +1300,7 @@ class _MissionApplicationSentScreenState
                   color: AppColors.mist,
                   shape: BoxShape.circle,
                 ),
-                child: const Center(
+                child: Center(
                   child: CircleAvatar(
                     radius: 48,
                     backgroundColor: AppColors.success,
@@ -1248,7 +1315,7 @@ class _MissionApplicationSentScreenState
             ),
             const SizedBox(height: 36),
             Text(
-              '¡Tu candidatura ya está en movimiento!',
+              AppLocalizations.tr('¡Tu candidatura ya está en movimiento!'),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w800,
@@ -1258,27 +1325,33 @@ class _MissionApplicationSentScreenState
             const SizedBox(height: 16),
             Text(
               mission == null
-                  ? 'Tu candidatura se guardó. La misión ya no está disponible; puedes consultar tu historial.'
-                  : 'Hemos enviado tu candidatura para «${mission.title}». Puedes seguir su estado en Mis candidaturas.',
+                  ? AppLocalizations.tr(
+                      'Tu candidatura se guardó. La misión ya no está disponible; puedes consultar tu historial.',
+                    )
+                  : AppLocalizations.trTemplate(
+                      'Hemos enviado tu candidatura para «{title}». Puedes seguir su estado en Mis candidaturas.',
+                      {'title': mission.title},
+                    ),
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 24),
-            const MissionHint(
+            MissionHint(
               icon: Icons.notifications_none_rounded,
-              text:
-                  '¿Qué pasa ahora? El organizador revisará tu propuesta. Cuando haya una respuesta, aparecerá en tus notificaciones de MAREA.',
+              text: AppLocalizations.tr(
+                '¿Qué pasa ahora? El organizador revisará tu propuesta. Cuando haya una respuesta, aparecerá en tus notificaciones de MAREA.',
+              ),
             ),
             const SizedBox(height: 28),
             FilledButton(
               onPressed: () => context.go('/missions?section=applications'),
-              child: const Text('Ver mis candidaturas'),
+              child: Text(AppLocalizations.tr('Ver mis candidaturas')),
             ),
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: () => context.go('/missions'),
               icon: const Icon(Icons.explore_outlined),
-              label: const Text('Seguir explorando'),
+              label: Text(AppLocalizations.tr('Seguir explorando')),
             ),
           ],
         );

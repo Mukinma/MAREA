@@ -5,7 +5,10 @@ import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/auth/presentation/profile_type_picker.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/profile/models/profile.dart';
+import 'package:marea/features/profile/presentation/profile_sections.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
+import 'package:marea/features/showcase/presentation/showcase_widgets.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 
 Future<String?> showProfileTools(
   BuildContext context, {
@@ -70,12 +73,12 @@ class _ProfileTools extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Tus herramientas',
+                    AppLocalizations.tr('Tus herramientas'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Cerrar herramientas',
+                  tooltip: AppLocalizations.tr('Cerrar herramientas'),
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close_rounded),
                 ),
@@ -92,11 +95,11 @@ class _ProfileTools extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    type.databaseValue,
+                    localizedProfileUserTypeLabel(context, type),
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 4),
-                  Text(type.description),
+                  Text(localizedProfileUserTypeDescription(context, type)),
                 ],
               ),
             ),
@@ -104,20 +107,26 @@ class _ProfileTools extends StatelessWidget {
             if (controller.communityRepository != null) ...[
               action(
                 Icons.edit_note_rounded,
-                'Crear publicación',
-                'Comparte con la comunidad. Elige entre los formatos de tu perfil.',
+                AppLocalizations.tr('Crear publicación'),
+                AppLocalizations.tr(
+                  'Comparte con la comunidad. Elige entre los formatos de tu perfil.',
+                ),
                 '/posts/new',
               ),
               action(
                 Icons.flag_outlined,
-                'Crear misión',
-                'Todos los perfiles pueden organizar una colaboración.',
+                AppLocalizations.tr('Crear misión'),
+                AppLocalizations.tr(
+                  'Todos los perfiles pueden organizar una colaboración.',
+                ),
                 '/missions/new',
               ),
               action(
                 Icons.handshake_outlined,
-                'Encontrar colaboraciones',
-                'Misiones para tu tipo de perfil y convocatorias abiertas a todos.',
+                AppLocalizations.tr('Encontrar colaboraciones'),
+                AppLocalizations.tr(
+                  'Misiones para tu tipo de perfil y convocatorias abiertas a todos.',
+                ),
                 '/missions?section=compatible',
               ),
             ],
@@ -129,94 +138,114 @@ class _ProfileTools extends StatelessWidget {
                     ShowcaseKind.product => Icons.inventory_2_outlined,
                     ShowcaseKind.service => Icons.work_outline,
                   },
-                  kind.action,
-                  'Gestiona borradores, fotografías y fichas de tu ${type.showcaseLabel.toLowerCase()}.',
+                  localizedShowcaseKindAction(context, kind),
+                  AppLocalizations.tr(
+                    'Gestiona borradores, fotografías y fichas de tu perfil.',
+                  ),
                   '/showcase/new?kind=${kind.name}',
                 ),
             if (controller.tourRepository != null && type != UserType.general)
               action(
                 Icons.panorama_photosphere_outlined,
-                'Tus recorridos 360°',
-                'Captura posiciones del local, conecta panoramas y prepara AR.',
+                AppLocalizations.tr('Tus recorridos 360°'),
+                AppLocalizations.tr(
+                  'Captura posiciones del local, conecta panoramas y prepara AR.',
+                ),
                 '/tours',
               ),
             if (controller.tourRepository != null)
               action(
                 Icons.approval_outlined,
-                'Solicitudes de recorridos',
-                'Autoriza contenido y revisa propuestas.',
+                AppLocalizations.tr('Solicitudes de recorridos'),
+                AppLocalizations.tr(
+                  'Autoriza contenido y revisa propuestas.',
+                ),
                 '/tours/requests',
               ),
             const Divider(height: 28),
             action(
               Icons.map_outlined,
-              'Mapa',
-              'Explora las misiones en el mapa.',
+              AppLocalizations.tr('Mapa'),
+              AppLocalizations.tr('Explora las misiones en el mapa.'),
               '/map',
             ),
             if (controller.socialRepository != null)
               action(
                 Icons.notifications_none_rounded,
-                'Notificaciones',
-                'Revisa tus avisos.',
+                AppLocalizations.tr('Notificaciones'),
+                AppLocalizations.tr('Revisa tus avisos.'),
                 '#notifications',
               ),
             action(
               Icons.bookmark_border,
-              'Guardados',
-              'Contenido que guardaste.',
+              AppLocalizations.tr('Guardados'),
+              AppLocalizations.tr('Contenido que guardaste.'),
               '/explore?section=saved',
             ),
             action(
               Icons.flag_outlined,
-              'Mis misiones',
-              'Misiones de tu cuenta.',
+              AppLocalizations.tr('Mis misiones'),
+              AppLocalizations.tr('Misiones de tu cuenta.'),
               '/missions?section=own',
             ),
             action(
               Icons.assignment_outlined,
-              'Mis postulaciones',
-              'Revisa tus candidaturas.',
+              AppLocalizations.tr('Mis postulaciones'),
+              AppLocalizations.tr('Revisa tus candidaturas.'),
               '/missions?section=applications',
             ),
             action(
               Icons.auto_awesome_outlined,
               (controller.profile?.setupStep ?? 0) >= type.setupSteps
-                  ? 'Guía de perfil'
-                  : 'Completar perfil',
-              'Presentación, intereses y opciones de tu cuenta.',
+                  ? AppLocalizations.tr('Guía de perfil')
+                  : AppLocalizations.tr('Completar perfil'),
+              AppLocalizations.tr(
+                'Presentación, intereses y opciones de tu cuenta.',
+              ),
               '/profile/setup',
             ),
             if (type.showcaseKinds.isNotEmpty)
               action(
                 Icons.contact_page_outlined,
-                'Datos profesionales',
-                'Edita contacto${type == UserType.business
-                    ? ', ubicación y horarios'
-                    : type == UserType.creator
-                    ? ' y disponibilidad para colaborar'
-                    : ''}.',
+                AppLocalizations.tr('Datos profesionales'),
+                switch (type) {
+                  UserType.business => AppLocalizations.tr(
+                    'Edita contacto, ubicación y horarios.',
+                  ),
+                  UserType.creator => AppLocalizations.tr(
+                    'Edita contacto y disponibilidad para colaborar.',
+                  ),
+                  _ => AppLocalizations.tr(
+                    'Edita la información profesional de tu perfil.',
+                  ),
+                },
                 '/profile/edit?section=professional',
               ),
             if (admin && controller.profile?.role == ProfileRole.admin)
               action(
                 Icons.shield_outlined,
-                'Moderación',
-                'Revisa reportes y visibilidad de contenido.',
+                AppLocalizations.tr('Moderación'),
+                AppLocalizations.tr(
+                  'Revisa reportes y visibilidad de contenido.',
+                ),
                 '/moderation',
               ),
             const Divider(height: 28),
-            const Text(
-              'Cómo funcionan las misiones',
+            Text(
+              AppLocalizations.tr('Cómo funcionan las misiones'),
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Puedes organizar misiones con cualquier tipo de perfil. Para postularte, el perfil solicitado debe coincidir con el tuyo o aceptar a todos.',
+            Text(
+              AppLocalizations.tr(
+                'Puedes organizar misiones con cualquier tipo de perfil. Para postularte, el perfil solicitado debe coincidir con el tuyo o aceptar a todos.',
+              ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'El organizador revisa y selecciona participantes. Solo él puede editar, cerrar, cancelar o finalizar su misión. La moderación de contenido requiere una cuenta administradora.',
+            Text(
+              AppLocalizations.tr(
+                'El organizador revisa y selecciona participantes. Solo él puede editar, cerrar, cancelar o finalizar su misión. La moderación de contenido requiere una cuenta administradora.',
+              ),
             ),
           ],
         ),
@@ -229,47 +258,60 @@ class _VisitorProfileTools extends StatelessWidget {
   const _VisitorProfileTools({required this.profile});
   final CommunityProfile profile;
   @override
-  Widget build(BuildContext context) => SafeArea(
-    child: SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 0, 12, 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              const Expanded(
-                child: Text(
-                  'Opciones del perfil',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+  Widget build(BuildContext context) {
+    final showcaseLabel = localizedProfileShowcaseLabel(
+      context,
+      profile.userType,
+    );
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 12, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    AppLocalizations.tr('Opciones del perfil'),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
-              ),
-              IconButton(
-                tooltip: 'Cerrar menú',
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close),
-              ),
-            ],
-          ),
-          if (profile.userType.showcaseKinds.isNotEmpty)
-            ListTile(
-              leading: const Icon(Icons.grid_view_outlined),
-              title: Text(
-                'Ver ${profile.userType.showcaseLabel.toLowerCase()}',
-              ),
-              onTap: () => Navigator.pop(context, '#showcase'),
+                IconButton(
+                  tooltip: AppLocalizations.tr('Cerrar menú'),
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
             ),
-          ListTile(
-            leading: const Icon(Icons.flag_outlined),
-            title: const Text('Ver misiones del perfil'),
-            onTap: () => Navigator.pop(context, '#missions'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.article_outlined),
-            title: const Text('Ver publicaciones'),
-            onTap: () => Navigator.pop(context, '#posts'),
-          ),
-        ],
+            if (profile.userType.showcaseKinds.isNotEmpty)
+              ListTile(
+                leading: const Icon(Icons.grid_view_outlined),
+                title: Text(
+                  AppLocalizations.trTemplate('Ver {section}', {
+                    'section': showcaseLabel.toLowerCase(),
+                  }),
+                ),
+                onTap: () => Navigator.pop(context, '#showcase'),
+              ),
+            ListTile(
+              leading: const Icon(Icons.flag_outlined),
+              title: Text(
+                AppLocalizations.tr('Ver misiones del perfil'),
+              ),
+              onTap: () => Navigator.pop(context, '#missions'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.article_outlined),
+              title: Text(AppLocalizations.tr('Ver publicaciones')),
+              onTap: () => Navigator.pop(context, '#posts'),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

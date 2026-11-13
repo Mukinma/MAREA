@@ -1,3 +1,5 @@
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:panorama_viewer/panorama_viewer.dart';
@@ -5,6 +7,7 @@ import '../data/tour_repository.dart';
 import '../models/tour_models.dart';
 import 'tour_widgets.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class TourPanorama extends StatefulWidget {
   const TourPanorama({
     required this.repository,
@@ -40,9 +43,10 @@ class _TourPanoramaState extends State<TourPanorama> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     if (_url == null) {
-      return const Center(
-        child: TourNotice('Esta posición todavía no tiene un panorama listo.'),
+      return Center(
+        child: TourNotice(core_l10n.AppLocalizations.tr(l10n.panoramaNoListoPosicion)),
       );
     }
     return FutureBuilder<String>(
@@ -51,12 +55,12 @@ class _TourPanoramaState extends State<TourPanorama> {
         if (s.hasError) {
           return Center(
             child: TourNotice(
-              tourError(s.error!),
+              tourError(s.error!, l10n: l10n),
               onRetry: () => setState(() => _url = _load()),
             ),
           );
         }
-        if (!s.hasData) return const Center(child: CircularProgressIndicator());
+        if (!s.hasData) return Center(child: CircularProgressIndicator());
         return ClipRect(
           child: Stack(
             children: [
@@ -114,8 +118,11 @@ class _TourPanoramaState extends State<TourPanorama> {
                     ],
                     child: Image.network(
                       s.data!,
-                      errorBuilder: (_, e, st) => const Center(
-                        child: Text('No pudimos abrir el panorama.'),
+                      errorBuilder: (_, e, st) => Center(
+                        child: Text(
+                          (AppLocalizations.of(context) ?? AppLocalizationsEs())
+                              .noPudimosAbrirPanorama,
+                        ),
                       ),
                     ),
                   ),
@@ -126,8 +133,10 @@ class _TourPanoramaState extends State<TourPanorama> {
                 right: 8,
                 child: IconButton.filled(
                   tooltip: _sensors
-                      ? 'Mirar arrastrando'
-                      : 'Mirar con el movimiento del teléfono',
+                      ? (AppLocalizations.of(context) ?? AppLocalizationsEs())
+                          .mirarArrastrando
+                      : (AppLocalizations.of(context) ?? AppLocalizationsEs())
+                          .mirarMovimientoTelefono,
                   onPressed: kIsWeb
                       ? null
                       : () => setState(() => _sensors = !_sensors),
@@ -153,13 +162,18 @@ Future<(double, double)?> pickPanoramaPosition(
   return Navigator.of(context).push<(double, double)>(
     MaterialPageRoute(
       builder: (c) => Scaffold(
-        appBar: AppBar(title: const Text('Colocar punto')),
+        appBar: AppBar(
+          title: Text(
+            (AppLocalizations.of(c) ?? AppLocalizationsEs()).colocarPunto,
+          ),
+        ),
         body: Column(
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16),
               child: Text(
-                'Mira hacia el lugar del punto y pulsa Colocar aquí. También puedes dejarlo solo en la lista.',
+                (AppLocalizations.of(c) ?? AppLocalizationsEs())
+                    .instruccionColocarPunto,
               ),
             ),
             Expanded(
@@ -177,7 +191,10 @@ Future<(double, double)?> pickPanoramaPosition(
                 padding: const EdgeInsets.all(16),
                 child: FilledButton(
                   onPressed: () => Navigator.pop(c, (yaw, pitch)),
-                  child: const Text('Colocar aquí'),
+                  child: Text(
+                    (AppLocalizations.of(c) ?? AppLocalizationsEs())
+                        .colocarAqui,
+                  ),
                 ),
               ),
             ),

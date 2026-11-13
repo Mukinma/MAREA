@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,11 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
     });
     try {
       if (repo == null || viewer == null) {
-        setState(() => _error = 'Inicia sesión para gestionar tus misiones.');
+        setState(
+          () => _error = AppLocalizations.tr(
+            'Inicia sesión para gestionar tus misiones.',
+          ),
+        );
         return;
       }
       final mission = await repo.mission(widget.missionId);
@@ -73,8 +78,10 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
           _mission = null;
           _applications = [];
           _error = mission == null
-              ? 'Esta misión ya no está disponible.'
-              : 'Solo el organizador puede gestionar esta misión.';
+              ? AppLocalizations.tr('Esta misión ya no está disponible.')
+              : AppLocalizations.tr(
+                  'Solo el organizador puede gestionar esta misión.',
+                );
         });
         return;
       }
@@ -122,7 +129,7 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(success)));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.tr(success))));
       await _load();
     } catch (error) {
       if (mounted) setState(() => _error = communityError(error));
@@ -135,16 +142,16 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
       await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
-          title: Text(title),
-          content: Text(message),
+          title: Text(AppLocalizations.tr(title)),
+          content: Text(AppLocalizations.tr(message)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c, false),
-              child: const Text('Volver'),
+              child: Text(AppLocalizations.tr('Volver')),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(c, true),
-              child: Text(action),
+              child: Text(AppLocalizations.tr(action)),
             ),
           ],
         ),
@@ -156,7 +163,7 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
       !_mission!.hidden &&
       !_mission!.isExpired;
   String _name(MissionApplication a) =>
-      _profiles[a.applicantId]?.fullName ?? 'Participante';
+      _profiles[a.applicantId]?.fullName ?? AppLocalizations.tr('Participante');
   Future<void> _confirmSelection() async {
     final mission = _mission;
     if (_busy || !_canReview || mission == null || _selection.isEmpty) return;
@@ -165,32 +172,45 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
         .toList();
     if (selected.length > mission.availableSeats) {
       setState(
-        () => _error =
-            'Solo quedan ${mission.availableSeats} lugares disponibles. Ajusta tu selección.',
+        () => _error = AppLocalizations.trTemplate(
+          mission.availableSeats == 1
+              ? 'Solo queda {count} lugar disponible. Ajusta tu selección.'
+              : 'Solo quedan {count} lugares disponibles. Ajusta tu selección.',
+          {'count': '${mission.availableSeats}'},
+        ),
       );
       return;
     }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Revisar selección'),
+        title: Text(AppLocalizations.tr('Revisar selección')),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Confirmarás ${selected.length} participantes para «${mission.title}».',
+                AppLocalizations.trTemplate(
+                  selected.length == 1
+                      ? 'Confirmarás 1 participante para «{title}».'
+                      : 'Confirmarás {count} participantes para «{title}».',
+                  {'count': '${selected.length}', 'title': mission.title},
+                ),
               ),
               const SizedBox(height: 16),
               for (final a in selected)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: Text('• ${_name(a)}'),
+                  child: Text(
+                    AppLocalizations.trTemplate('• {name}', {'name': _name(a)}),
+                  ),
                 ),
               const SizedBox(height: 12),
-              const Text(
-                'La convocatoria conservará su estado. Las otras candidaturas seguirán pendientes.',
+              Text(
+                AppLocalizations.tr(
+                  'La convocatoria conservará su estado. Las otras candidaturas seguirán pendientes.',
+                ),
               ),
             ],
           ),
@@ -198,11 +218,11 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Volver'),
+            child: Text(AppLocalizations.tr('Volver')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Confirmar participantes'),
+            child: Text(AppLocalizations.tr('Confirmar participantes')),
           ),
         ],
       ),
@@ -224,8 +244,10 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
     if (status == 'cancelled') {
       reason = await askCommunityText(
         context,
-        title: 'Cancelar misión',
-        label: 'Motivo de cancelación (visible para la comunidad)',
+        title: AppLocalizations.tr('Cancelar misión'),
+        label: AppLocalizations.tr(
+          'Motivo de cancelación (visible para la comunidad)',
+        ),
         maxLength: 500,
       );
       if (!mounted || reason == null) return;
@@ -269,12 +291,12 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
     int count(String status) =>
         _applications.where((a) => a.status == status).length;
     return MissionFlowScaffold(
-      title: 'Candidaturas',
+      title: AppLocalizations.tr('Candidaturas'),
       actions: mission == null || mission.isTerminal || mission.hidden
           ? []
           : [
               PopupMenuButton<String>(
-                tooltip: 'Opciones de misión',
+                tooltip: AppLocalizations.tr('Opciones de misión'),
                 onSelected: (value) async {
                   if (value == 'edit') {
                     await context.push('/missions/${mission.id}/edit');
@@ -284,34 +306,34 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                   }
                 },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'edit',
-                    child: Text('Editar misión'),
+                    child: Text(AppLocalizations.tr('Editar misión')),
                   ),
                   if (mission.status == 'open')
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'closed',
-                      child: Text('Cerrar convocatoria'),
+                      child: Text(AppLocalizations.tr('Cerrar convocatoria')),
                     )
                   else if (!mission.isExpired)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'open',
-                      child: Text('Reabrir convocatoria'),
+                      child: Text(AppLocalizations.tr('Reabrir convocatoria')),
                     ),
                   if (mission.isExpired)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'completed',
-                      child: Text('Finalizar misión'),
+                      child: Text(AppLocalizations.tr('Finalizar misión')),
                     ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'cancelled',
-                    child: Text('Cancelar misión'),
+                    child: Text(AppLocalizations.tr('Cancelar misión')),
                   ),
                 ],
               ),
             ],
       body: _loading && mission == null
-          ? const Center(child: MareaSkeleton(kind: SkeletonKind.list))
+          ? Center(child: MareaSkeleton(kind: SkeletonKind.list))
           : MareaRefreshIndicator(
               onRefresh: _load,
               child: ListView(
@@ -342,22 +364,29 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                             color: AppColors.success,
                             size: 12,
                           ),
-                          label: Text(mission.statusLabel),
+                          label: Text(AppLocalizations.tr(mission.statusLabel)),
                         ),
-                        Text('Inicio · ${missionDate(mission.startsAt)}'),
+                        Text(
+                          AppLocalizations.trTemplate('Inicio · {date}', {
+                            'date': missionDate(mission.startsAt),
+                          }),
+                        ),
                       ],
                     ),
                     if (mission.hidden)
-                      const MissionHint(
+                      MissionHint(
                         icon: Icons.visibility_off_outlined,
-                        text:
-                            'Esta misión fue ocultada. Sus acciones de gestión están suspendidas.',
+                        text: AppLocalizations.tr(
+                          'Esta misión fue ocultada. Sus acciones de gestión están suspendidas.',
+                        ),
                       ),
                     if (mission.cancellationReason != null)
                       MissionHint(
                         icon: Icons.info_outline,
-                        text:
-                            'Motivo de cancelación: ${mission.cancellationReason}',
+                        text: AppLocalizations.trTemplate(
+                          'Motivo de cancelación: {reason}',
+                          {'reason': mission.cancellationReason!},
+                        ),
                       ),
                     const SizedBox(height: 16),
                     Row(
@@ -366,14 +395,14 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                         Expanded(
                           child: _Metric(
                             number: '${_applications.length}',
-                            label: 'Candidaturas',
+                            label: AppLocalizations.tr('Candidaturas'),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: _Metric(
                             number: '${count('accepted')}',
-                            label: 'Confirmadas',
+                            label: AppLocalizations.tr('Confirmadas'),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -381,7 +410,7 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                           child: _Metric(
                             number:
                                 '${mission.availableSeats}/${mission.capacity}',
-                            label: 'Disponibles',
+                            label: AppLocalizations.tr('Disponibles'),
                           ),
                         ),
                       ],
@@ -401,7 +430,7 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                         }.entries)
                           ChoiceChip(
                             label: Text(
-                              '${filter.value} ${filter.key == 'all'
+                              '${AppLocalizations.tr(filter.value)} ${filter.key == 'all'
                                   ? _applications.length
                                   : filter.key == 'finalists'
                                   ? _applications.where((a) => a.status == 'pending' && _finalists.contains(a.id)).length
@@ -415,8 +444,10 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                     ),
                     const SizedBox(height: 16),
                     if (visible.isEmpty)
-                      const CommunityNotice(
-                        message: 'No hay candidaturas en este grupo.',
+                      CommunityNotice(
+                        message: AppLocalizations.tr(
+                          'No hay candidaturas en este grupo.',
+                        ),
                         icon: Icons.inbox_outlined,
                       ),
                     for (final a in visible)
@@ -425,10 +456,11 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                         child: _card(a, mission),
                       ),
                     if (_selection.isNotEmpty && !_canReview)
-                      const MissionHint(
+                      MissionHint(
                         icon: Icons.info_outline,
-                        text:
-                            'Esta misión ya no permite confirmar participantes.',
+                        text: AppLocalizations.tr(
+                          'Esta misión ya no permite confirmar participantes.',
+                        ),
                       ),
                     const SizedBox(height: 24),
                   ],
@@ -443,8 +475,11 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
               icon: const Icon(Icons.check),
               label: Text(
                 _busy
-                    ? 'Confirmando…'
-                    : 'Confirmar selección (${_selection.length})',
+                    ? AppLocalizations.tr('Confirmando…')
+                    : AppLocalizations.trTemplate(
+                        'Confirmar selección ({count})',
+                        {'count': '${_selection.length}'},
+                      ),
               ),
             ),
     );
@@ -456,10 +491,10 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
         finalist = _finalists.contains(application.id);
     final pending = application.status == 'pending';
     final status = switch (application.status) {
-      'accepted' => 'Aceptada',
-      'rejected' => 'No seleccionada',
-      'withdrawn' => 'Retirada',
-      _ => finalist ? 'Finalista' : 'Pendiente',
+      'accepted' => AppLocalizations.tr('Aceptada'),
+      'rejected' => AppLocalizations.tr('No seleccionada'),
+      'withdrawn' => AppLocalizations.tr('Retirada'),
+      _ => AppLocalizations.tr(finalist ? 'Finalista' : 'Pendiente'),
     };
     return Container(
       padding: const EdgeInsets.all(16),
@@ -518,7 +553,7 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                       ),
                       if (profile != null)
                         Text(
-                          profile.userType.databaseValue,
+                          AppLocalizations.tr(profile.userType.databaseValue),
                           style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textSecondary,
@@ -548,9 +583,9 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
             children: [
               Chip(label: Text(status), visualDensity: VisualDensity.compact),
               if (application.availabilityConfirmed == true)
-                const Chip(
+                Chip(
                   avatar: Icon(Icons.event_available, size: 16),
-                  label: Text('Disponible'),
+                  label: Text(AppLocalizations.tr('Disponible')),
                   visualDensity: VisualDensity.compact,
                 ),
             ],
@@ -562,8 +597,10 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
               padding: const EdgeInsets.only(top: 10),
               child: Text(
                 application.availabilityConfirmed == null
-                    ? 'Esta candidatura anterior no registró disponibilidad.'
-                    : 'Disponibilidad sin confirmar.',
+                    ? AppLocalizations.tr(
+                        'Esta candidatura anterior no registró disponibilidad.',
+                      )
+                    : AppLocalizations.tr('Disponibilidad sin confirmar.'),
                 style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
@@ -572,8 +609,8 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
             ),
           if (application.evidence.isNotEmpty) ...[
             const SizedBox(height: 14),
-            const Text(
-              'Muestras de trabajo',
+            Text(
+              AppLocalizations.tr('Muestras de trabajo'),
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
             for (final sample in application.evidence)
@@ -593,11 +630,13 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                 onPressed: () =>
                     context.push('/people/${application.applicantId}'),
                 icon: const Icon(Icons.person_outline, size: 18),
-                label: const Text('Ver perfil'),
+                label: Text(AppLocalizations.tr('Ver perfil')),
               ),
               if (pending && _canReview) ...[
                 IconButton.filledTonal(
-                  tooltip: finalist ? 'Quitar finalista' : 'Marcar finalista',
+                  tooltip: AppLocalizations.tr(
+                    finalist ? 'Quitar finalista' : 'Marcar finalista',
+                  ),
                   onPressed: _busy
                       ? null
                       : () => _action(
@@ -635,7 +674,7 @@ class _MissionManagementScreenState extends State<MissionManagementScreen> {
                             'Candidatura revisada.',
                           );
                         },
-                  child: const Text('No seleccionar'),
+                  child: Text(AppLocalizations.tr('No seleccionar')),
                 ),
               ],
             ],

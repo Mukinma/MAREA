@@ -1,3 +1,5 @@
+import 'package:marea/core/localization/app_localizations.dart';
+
 abstract final class FormValidators {
   static final RegExp _emailPattern = RegExp(
     r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$",
@@ -11,46 +13,58 @@ abstract final class FormValidators {
 
   static String? fullName(String? value) {
     final name = value?.trim() ?? '';
-    if (name.isEmpty) return 'Escribe tu nombre.';
-    if (name.length > 80) return 'Usa un nombre de máximo 80 caracteres.';
+    if (name.isEmpty) return AppLocalizations.tr('Escribe tu nombre.');
+    if (name.length > 80) {
+      return AppLocalizations.tr('Usa un nombre de máximo 80 caracteres.');
+    }
     return null;
   }
 
   static String? username(String? value) {
     final normalized = normalizeUsername(value ?? '');
-    if (normalized.isEmpty) return 'Elige un nombre de usuario.';
-    if (normalized.length < 3) return 'Usa al menos 3 caracteres.';
-    if (normalized.length > 24) return 'Usa máximo 24 caracteres.';
+    if (normalized.isEmpty) return AppLocalizations.tr('Elige un nombre de usuario.');
+    if (normalized.length < 3) return AppLocalizations.tr('Usa al menos 3 caracteres.');
+    if (normalized.length > 24) return AppLocalizations.tr('Usa máximo 24 caracteres.');
     if (!_usernamePattern.hasMatch(normalized)) {
-      return 'Usa solo letras, números, punto o guion bajo.';
+      return AppLocalizations.tr(
+        'Usa solo letras, números, punto o guion bajo.',
+      );
     }
     return null;
   }
 
   static String? email(String? value) {
     final email = value ?? '';
-    if (email.isEmpty) return 'Escribe tu correo.';
+    if (email.isEmpty) return AppLocalizations.tr('Escribe tu correo.');
     if (email != email.trim() || !_emailPattern.hasMatch(email)) {
-      return 'Escribe un correo válido.';
+      return AppLocalizations.tr('Escribe un correo válido.');
     }
     return null;
   }
 
   static String? password(String? value) {
     final password = value ?? '';
-    if (password.isEmpty) return 'Escribe una contraseña.';
-    if (password.length < 8) return 'Usa al menos 8 caracteres.';
+    if (password.isEmpty) return AppLocalizations.tr('Escribe una contraseña.');
+    if (password.length < 8) {
+      return AppLocalizations.tr('Usa al menos 8 caracteres.');
+    }
     return null;
   }
 
   static String? confirmPassword(String? value, String password) {
-    if ((value ?? '').isEmpty) return 'Confirma tu contraseña.';
-    if (value != password) return 'Las contraseñas no coinciden.';
+    if ((value ?? '').isEmpty) {
+      return AppLocalizations.tr('Confirma tu contraseña.');
+    }
+    if (value != password) {
+      return AppLocalizations.tr('Las contraseñas no coinciden.');
+    }
     return null;
   }
 
   static String? bio(String? value) {
-    if ((value ?? '').length > 160) return 'Usa máximo 160 caracteres.';
+    if ((value ?? '').length > 160) {
+      return AppLocalizations.tr('Usa máximo 160 caracteres.');
+    }
     return null;
   }
 }

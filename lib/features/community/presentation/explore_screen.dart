@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/features/profile/presentation/profile_experience.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
@@ -56,7 +57,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) => CommunityPage(
-    title: _section == 'saved' ? 'Guardados' : 'Explorar',
+    title: AppLocalizations.tr(_section == 'saved' ? 'Guardados' : 'Explorar'),
     children: [
       MareaSurface(
         inset: true,
@@ -67,14 +68,16 @@ class _ExploreScreenState extends State<ExploreScreen> {
           onSubmitted: (v) => setState(() => _query = v.trim()),
           decoration: InputDecoration(
             filled: false,
-            labelText: _section == 'people'
-                ? 'Buscar nombre o usuario'
-                : _section == 'showcases'
-                ? 'Buscar fichas por título'
-                : 'Buscar por título',
+            labelText: AppLocalizations.tr(
+              _section == 'people'
+                  ? 'Buscar nombre o usuario'
+                  : _section == 'showcases'
+                  ? 'Buscar fichas por título'
+                  : 'Buscar por título',
+            ),
             prefixIcon: const Icon(Icons.search),
             suffixIcon: IconButton(
-              tooltip: 'Buscar',
+              tooltip: AppLocalizations.tr('Buscar'),
               onPressed: () => setState(() => _query = _search.text.trim()),
               icon: const Icon(Icons.arrow_forward),
             ),
@@ -83,11 +86,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
       ),
       const SizedBox(height: 20),
       MareaTabs(
-        options: const {
-          'posts': 'Publicaciones',
-          'people': 'Personas',
-          'showcases': 'Fichas',
-          'saved': 'Guardados',
+        options: {
+          'posts': AppLocalizations.tr('Publicaciones'),
+          'people': AppLocalizations.tr('Personas'),
+          'showcases': AppLocalizations.tr('Fichas'),
+          'saved': AppLocalizations.tr('Guardados'),
         },
         value: _section,
         onChanged: (value) => setState(() => _section = value),
@@ -95,7 +98,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
       const SizedBox(height: 20),
       if (_section == 'saved') ...[
         MareaTabs(
-          options: const {'posts': 'Publicaciones', 'showcases': 'Fichas'},
+          options: {
+            'posts': AppLocalizations.tr('Publicaciones'),
+            'showcases': AppLocalizations.tr('Fichas'),
+          },
           value: _savedSection,
           onChanged: (value) => setState(() => _savedSection = value),
         ),
@@ -107,7 +113,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           child: Row(
             children: [
               ChoiceChip(
-                label: const Text('Todas'),
+                label: Text(AppLocalizations.tr('Todas')),
                 selected: _category == null,
                 onSelected: (_) => setState(() => _category = null),
               ),
@@ -115,7 +121,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: ChoiceChip(
-                    label: Text(entry.value),
+                    label: Text(AppLocalizations.tr(entry.value)),
                     selected: _category == entry.key,
                     onSelected: (_) => setState(() => _category = entry.key),
                   ),
@@ -130,13 +136,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
             runSpacing: 8,
             children: [
               ChoiceChip(
-                label: const Text('Todos los tipos'),
+                label: Text(AppLocalizations.tr('Todos los tipos')),
                 selected: _kind == null,
                 onSelected: (_) => setState(() => _kind = null),
               ),
               for (final kind in ShowcaseKind.values)
                 ChoiceChip(
-                  label: Text(kind.label),
+                  label: Text(AppLocalizations.tr(kind.label)),
                   selected: _kind == kind,
                   onSelected: (_) => setState(() => _kind = kind),
                 ),
@@ -146,7 +152,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             (_section != 'saved' || _savedSection == 'posts')) ...[
           if (_section == 'saved')
             Text(
-              'Publicaciones guardadas',
+              AppLocalizations.tr('Publicaciones guardadas'),
               style: Theme.of(context).textTheme.titleLarge,
             ),
           PostsFeed(
@@ -162,7 +168,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           const SizedBox(height: 20),
           if (_section == 'saved')
             Text(
-              'Fichas guardadas',
+              AppLocalizations.tr('Fichas guardadas'),
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ShowcaseList(
@@ -174,7 +180,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         ],
       ] else if (widget.controller.communityRepository == null)
-        const CommunityNotice(message: 'No pudimos conectar con la comunidad.')
+        CommunityNotice(
+          message: AppLocalizations.tr('No pudimos conectar con la comunidad.'),
+        )
       else
         CommunityLoad<List<CommunityProfile>>(
           key: ValueKey(_query),
@@ -184,8 +192,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (people.isEmpty)
-                const CommunityNotice(
-                  message: 'No encontramos perfiles con ese nombre.',
+                CommunityNotice(
+                  message: AppLocalizations.tr(
+                    'No encontramos perfiles con ese nombre.',
+                  ),
                 ),
               for (final person in people)
                 MareaCard(
@@ -209,15 +219,23 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     ),
                     title: Text(person.fullName),
                     subtitle: Text(
-                      '@${person.username} · ${person.userType.databaseValue}',
+                      AppLocalizations.trTemplate('@{username} · {profile}', {
+                        'username': person.username,
+                        'profile': AppLocalizations.tr(
+                          person.userType.databaseValue,
+                        ),
+                      }),
                     ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.push('/people/${person.id}'),
                   ),
                 ),
               if (people.length == 100)
-                const Text(
-                  'Se muestran los primeros 100 perfiles. Usa la búsqueda para encontrar a alguien.',
+                Text(
+                  AppLocalizations.trTemplate(
+                    'Se muestran los primeros {count} perfiles. Usa la búsqueda para encontrar a alguien.',
+                    {'count': '100'},
+                  ),
                 ),
             ],
           ),
@@ -273,7 +291,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
               .where((profile) => profile.id == widget.profileId)
               .firstOrNull;
           _error = _profile == null
-              ? 'Este perfil ya no está disponible.'
+              ? AppLocalizations.tr('Este perfil ya no está disponible.')
               : null;
           _loading = false;
         });
@@ -295,13 +313,17 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
     child: Scaffold(
       appBar: AppBar(
         leading: const ProfileBackButton(fallback: '/explore'),
-        title: const Text('Perfil'),
+        title: Text(AppLocalizations.tr('Perfil')),
       ),
       body: _profile == null
           ? _loading
                 ? const Center(child: MareaSkeleton(kind: SkeletonKind.list))
                 : CommunityNotice(
-                    message: _error ?? 'Este perfil ya no está disponible.',
+                    message:
+                        _error ??
+                        AppLocalizations.tr(
+                          'Este perfil ya no está disponible.',
+                        ),
                     onRetry: _load,
                   )
           : ProfileExperience(

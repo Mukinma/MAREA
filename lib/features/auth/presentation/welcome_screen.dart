@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/config/app_config.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -12,7 +13,7 @@ class WelcomeScreen extends StatelessWidget {
   final AppSessionController? controller;
 
   Widget _brand() => Semantics(
-    label: 'MAREA. Conecta. Crea. Explora.',
+    label: AppLocalizations.tr('MAREA. Conecta. Crea. Explora.'),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -29,8 +30,8 @@ class WelcomeScreen extends StatelessWidget {
                 height: 45,
                 fit: BoxFit.contain,
               ),
-              const Text(
-                'Conecta. Crea. Explora.',
+              Text(
+                AppLocalizations.tr('Conecta. Crea. Explora.'),
                 style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
               ),
             ],
@@ -95,11 +96,11 @@ class WelcomeScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text.rich(
-          const TextSpan(
+          TextSpan(
             children: [
-              TextSpan(text: 'Tu ciudad\ntambién '),
+              TextSpan(text: AppLocalizations.tr('Tu ciudad\ntambién ')),
               TextSpan(
-                text: 'crea.',
+                text: AppLocalizations.tr('crea.'),
                 style: TextStyle(color: Color(0xFF00BDCF)),
               ),
             ],
@@ -116,8 +117,10 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        const Text(
-          'Conecta con artistas, emprendedores\ny negocios que hacen la ciudad más viva.',
+        Text(
+          AppLocalizations.tr(
+            'Conecta con artistas, emprendedores\ny negocios que hacen la ciudad más viva.',
+          ),
           style: TextStyle(
             fontSize: 16,
             height: 1.4,
@@ -134,12 +137,12 @@ class WelcomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           ),
           onPressed: () => context.go('/register'),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
                 child: Text(
-                  'Crear cuenta',
+                  AppLocalizations.tr('Crear cuenta'),
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                 ),
               ),
@@ -159,8 +162,8 @@ class WelcomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           ),
           onPressed: () => context.go('/login'),
-          child: const Text(
-            'Iniciar sesión',
+          child: Text(
+            AppLocalizations.tr('Iniciar sesión'),
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
           ),
         ),

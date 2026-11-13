@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/features/community/models/community_models.dart';
@@ -37,19 +38,19 @@ class _MapFilterSheetState extends State<MapFilterSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Filtros del mapa',
+              AppLocalizations.tr('Filtros del mapa'),
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Categoría',
+            Text(
+              AppLocalizations.tr('Categoría'),
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
             Wrap(
               spacing: 8,
               children: [
                 ChoiceChip(
-                  label: const Text('Todas'),
+                  label: Text(AppLocalizations.tr('Todas')),
                   selected: _value.category == null,
                   onSelected: (_) =>
                       setState(() => _value = _value.withCategory(null)),
@@ -64,8 +65,8 @@ class _MapFilterSheetState extends State<MapFilterSheet> {
               ],
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Radio alrededor del centro de esta zona',
+            Text(
+              AppLocalizations.tr('Radio alrededor del centro de esta zona'),
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
             Wrap(
@@ -74,7 +75,9 @@ class _MapFilterSheetState extends State<MapFilterSheet> {
                 for (final radius in <double?>[null, 1, 3, 5, 10])
                   ChoiceChip(
                     label: Text(
-                      radius == null ? 'Sin límite' : '${radius.toInt()} km',
+                      radius == null
+                          ? AppLocalizations.tr('Sin límite')
+                          : '${radius.toInt()} km',
                     ),
                     selected: _value.radiusKm == radius,
                     onSelected: (_) => setState(
@@ -88,14 +91,20 @@ class _MapFilterSheetState extends State<MapFilterSheet> {
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Fecha', style: TextStyle(fontWeight: FontWeight.w800)),
+            Text(
+              AppLocalizations.tr('Fecha'),
+              style: const TextStyle(fontWeight: FontWeight.w800),
+            ),
             Wrap(
               spacing: 8,
               children: [
                 for (final (value, label) in [
-                  (MissionMapDate.any, 'Cualquier fecha'),
-                  (MissionMapDate.today, 'Hoy'),
-                  (MissionMapDate.next7Days, 'Próximos siete días'),
+                  (MissionMapDate.any, AppLocalizations.tr('Cualquier fecha')),
+                  (MissionMapDate.today, AppLocalizations.tr('Hoy')),
+                  (
+                    MissionMapDate.next7Days,
+                    AppLocalizations.tr('Próximos siete días'),
+                  ),
                 ])
                   ChoiceChip(
                     label: Text(label),
@@ -110,7 +119,7 @@ class _MapFilterSheetState extends State<MapFilterSheet> {
               width: double.infinity,
               child: FilledButton(
                 onPressed: () => Navigator.pop(context, _value),
-                child: const Text('Aplicar filtros'),
+                child: Text(AppLocalizations.tr('Aplicar filtros')),
               ),
             ),
             Align(
@@ -118,7 +127,7 @@ class _MapFilterSheetState extends State<MapFilterSheet> {
               child: TextButton(
                 onPressed: () =>
                     Navigator.pop(context, const MissionMapFilters()),
-                child: const Text('Limpiar filtros'),
+                child: Text(AppLocalizations.tr('Limpiar filtros')),
               ),
             ),
           ],
