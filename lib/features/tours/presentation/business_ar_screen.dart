@@ -434,7 +434,38 @@ class _BusinessARScreenState extends State<BusinessARScreen>
   Widget build(BuildContext context) {
     final profile = _profile;
     return Scaffold(
-      appBar: AppBar(title: const Text('Explorar en RA')),
+      appBar: AppBar(
+        title: const Text('Explorar en RA'),
+        actions: [
+          if (_current && profile != null)
+            PopupMenuButton<String>(
+              tooltip: 'Más opciones de RA',
+              onOpened: () {
+                unawaited(_stop());
+              },
+              onSelected: (action) async {
+                await _stop();
+                if (!_current || !context.mounted) return;
+                if (action == 'profile') {
+                  await context.push('/people/${widget.ownerId}');
+                } else {
+                  await _load();
+                }
+              },
+              itemBuilder: (_) => [
+                const PopupMenuItem(
+                  value: 'profile',
+                  child: Text('Ver perfil'),
+                ),
+                if (!_supported)
+                  const PopupMenuItem(
+                    value: 'support',
+                    child: Text('Comprobar compatibilidad'),
+                  ),
+              ],
+            ),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : !_current
@@ -621,19 +652,10 @@ class _BusinessARScreenState extends State<BusinessARScreen>
                     const TourNotice(
                       'La cámara de RA necesita un teléfono compatible con ARCore o ARKit. Puedes consultar el perfil.',
                     ),
-                  if (!_supported)
-                    TextButton(
-                      onPressed: _load,
-                      child: const Text('Volver a comprobar compatibilidad'),
-                    ),
                   FilledButton.icon(
                     onPressed: _supported && !_busy ? _scan : null,
                     icon: const Icon(Icons.camera_alt_outlined),
                     label: Text(_busy ? 'Preparando cámara…' : 'Abrir cámara'),
-                  ),
-                  OutlinedButton(
-                    onPressed: () => context.push('/people/${widget.ownerId}'),
-                    child: const Text('Ver perfil'),
                   ),
                 ],
                 if (_error != null)

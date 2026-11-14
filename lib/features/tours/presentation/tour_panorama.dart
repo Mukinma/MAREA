@@ -4,6 +4,7 @@ import 'package:panorama_viewer/panorama_viewer.dart';
 import '../data/tour_repository.dart';
 import '../models/tour_models.dart';
 import 'tour_widgets.dart';
+import 'horizontal_panorama.dart';
 
 class TourPanorama extends StatefulWidget {
   const TourPanorama({
@@ -26,9 +27,15 @@ class TourPanorama extends StatefulWidget {
 class _TourPanoramaState extends State<TourPanorama> {
   late Future<String>? _url = _load();
   bool _sensors = false;
-  Future<String>? _load() => widget.scene.previewPath == null
-      ? null
-      : widget.repository.assetUrl(widget.scene.previewPath!);
+  Future<String>? _load() {
+    final path = widget.scene.previewPath;
+    if (path == null) return null;
+    final url = widget.repository.assetUrl(path);
+    // Retries may fail before FutureBuilder subscribes in the next frame.
+    url.ignore();
+    return url;
+  }
+
   @override
   void didUpdateWidget(TourPanorama old) {
     super.didUpdateWidget(old);
@@ -48,15 +55,26 @@ class _TourPanoramaState extends State<TourPanorama> {
     return FutureBuilder<String>(
       future: _url,
       builder: (c, s) {
+        if (s.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
         if (s.hasError) {
           return Center(
             child: TourNotice(
               tourError(s.error!),
-              onRetry: () => setState(() => _url = _load()),
+              onRetry: () => setState(() {
+                _url = _load();
+              }),
             ),
           );
         }
         if (!s.hasData) return const Center(child: CircularProgressIndicator());
+        if (widget.scene.isHorizontalPanorama) {
+          return HorizontalPanorama(
+            image: NetworkImage(s.data!),
+            aspectRatio: widget.scene.panoramaAspectRatio,
+          );
+        }
         return ClipRect(
           child: Stack(
             children: [

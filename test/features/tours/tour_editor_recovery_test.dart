@@ -100,6 +100,34 @@ class OfflineRepo extends EditorialRepo {
       throw StateError('offline');
 }
 
+Future<void> chooseEditorStep(WidgetTester tester, String label) async {
+  await tester.ensureVisible(find.byType(DropdownButtonFormField<int>));
+  await tester.tap(find.byType(DropdownButtonFormField<int>));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(label).last);
+  await tester.pumpAndSettle();
+}
+
+class PointEditorRepo extends EditorialRepo {
+  PointEditorRepo({bool reference = false}) {
+    data = clone(data);
+    TourRecord(data).document.scenes.first.data['points'] = [
+      {
+        'id': 'point',
+        'name': 'Mural del local',
+        'description': 'Encuentra el mural',
+        if (reference)
+          'ar': {
+            'reference_path': 'owner/references/reference.jpg',
+            'reference_version': 'reference-v1',
+            'tested_version': 'reference-v1',
+            'width_cm': 20,
+          },
+      },
+    ];
+  }
+}
+
 void main() {
   testWidgets(
     'offline reopening restores accepted local edits and back preserves them',
@@ -191,8 +219,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Publicación'));
-      await tester.pumpAndSettle();
+      await chooseEditorStep(tester, 'Publicación');
       await tester.ensureVisible(find.text('Enviar a revisión'));
       await tester.tap(find.text('Enviar a revisión'));
       await tester.pumpAndSettle();
@@ -204,6 +231,113 @@ void main() {
       expect(repo.submissions, 1);
       expect(repo.saves, 0);
       expect(tester.takeException(), isNull);
+      c.dispose();
+    },
+  );
+  testWidgets('point exposes one AR action and moves editing into a menu', (
+    tester,
+  ) async {
+    final repo = PointEditorRepo(), c = await session(repo);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TourEditorScreen(
+          controller: c,
+          tourId: 'tour',
+          localStore: MemoryDrafts(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Editar recorrido 360°'), findsOneWidget);
+    expect(find.byType(ChoiceChip), findsNothing);
+    await chooseEditorStep(tester, 'Puntos y AR');
+    await tester.ensureVisible(find.text('Añadir imagen RA'));
+    expect(find.text('Editar texto'), findsNothing);
+    expect(find.text('Vincular contenido'), findsNothing);
+    await tester.tap(find.byTooltip('Más opciones de Mural del local'));
+    await tester.pumpAndSettle();
+    expect(find.text('Editar texto'), findsOneWidget);
+    expect(find.text('Ubicar en 360°'), findsOneWidget);
+    await tester.tap(find.text('Editar texto'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Texto actualizado');
+    await tester.tap(find.text('Guardar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Texto actualizado'), findsOneWidget);
+    expect(repo.saves, 0);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    c.dispose();
+  });
+
+  testWidgets(
+    'reference chooser groups photo and printed mark without replacing tested data on cancel',
+    (tester) async {
+      final repo = PointEditorRepo(reference: true),
+          c = await session(repo),
+          disk = MemoryDrafts();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: TourEditorScreen(
+            controller: c,
+            tourId: 'tour',
+            localStore: disk,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await chooseEditorStep(tester, 'Puntos y AR');
+      await tester.ensureVisible(find.text('Volver a probar RA'));
+      await tester.tap(find.byTooltip('Más opciones de Mural del local'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cambiar imagen RA'));
+      await tester.pumpAndSettle();
+      expect(find.text('Usar una imagen del lugar'), findsOneWidget);
+      expect(find.text('Crear una marca para imprimir'), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('Volver a probar RA'), findsOneWidget);
+      expect(
+        TourRecord(repo.data).document.point('point')!.ar!['tested_version'],
+        'reference-v1',
+      );
+      expect(repo.saves, 0);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      c.dispose();
+    },
+  );
+
+  testWidgets(
+    'continue synchronizes entered fields before advancing the editor',
+    (tester) async {
+      final repo = EditorialRepo(), c = await session(repo);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: TourEditorScreen(
+            controller: c,
+            tourId: 'tour',
+            localStore: MemoryDrafts(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byType(TextField).first,
+        'Recorrido corregido',
+      );
+      await tester.scrollUntilVisible(
+        find.text('Guardar y continuar'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Guardar y continuar'));
+      await tester.pumpAndSettle();
+      expect(repo.saves, 1);
+      expect(repo.data['title'], 'Recorrido corregido');
+      expect(find.text('Paso 2 de 6'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
       c.dispose();
     },
   );

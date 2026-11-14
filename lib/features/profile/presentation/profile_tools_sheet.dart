@@ -140,6 +140,20 @@ class _ProfileTools extends StatelessWidget {
                 'Captura posiciones del local, conecta panoramas y prepara AR.',
                 '/tours',
               ),
+            if (controller.markerRepository != null) ...[
+              action(
+                Icons.image_search_outlined,
+                'Tus marcadores RA',
+                'Sube imágenes y configura el contenido que abre su reconocimiento.',
+                '/ar-markers',
+              ),
+              action(
+                Icons.notifications_active_outlined,
+                'Avisos a 20 metros',
+                'Misiones y marcadores cercanos, también con el teléfono bloqueado.',
+                '/nearby-alerts',
+              ),
+            ],
             if (controller.tourRepository != null)
               action(
                 Icons.approval_outlined,

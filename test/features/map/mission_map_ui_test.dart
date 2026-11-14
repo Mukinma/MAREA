@@ -68,13 +68,17 @@ class MapToursFake implements TourRepository {
   MapToursFake({this.tested = true});
   final bool tested;
   final owners = <String>[];
+  final mapQueries = <({String? owner, double? latitude, double? longitude})>[];
 
   @override
   Future<List<TourRecord>> list({
     String? owner,
     double? latitude,
     double? longitude,
-  }) async => [];
+  }) async {
+    mapQueries.add((owner: owner, latitude: latitude, longitude: longitude));
+    return [businessARLocalTourRecord()];
+  }
 
   @override
   Future<List<TourRecord>> publicList(String owner) async {
@@ -112,6 +116,7 @@ void main() {
     int count = 1,
     double scale = 1,
     TourRepository? tours,
+    bool showTours = false,
   }) async {
     tester.view.physicalSize = Size(width, height);
     tester.view.devicePixelRatio = 1;
@@ -137,10 +142,18 @@ void main() {
           routes: [
             GoRoute(
               path: '/map',
-              builder: (_, _) =>
-                  MissionMapScreen(session: session, locationService: location),
+              builder: (_, _) => MissionMapScreen(
+                session: session,
+                locationService: location,
+                showTours: showTours,
+              ),
             ),
           ],
+        ),
+        GoRoute(
+          path: '/tours/:id',
+          builder: (_, state) =>
+              Scaffold(body: Text('Recorrido ${state.pathParameters['id']}')),
         ),
         GoRoute(
           path: '/tours/:id/business-ar',
@@ -192,6 +205,40 @@ void main() {
     await tester.pumpAndSettle();
     return (repo, location);
   }
+
+  testWidgets('nearby map entry immediately shows public experience markers', (
+    tester,
+  ) async {
+    await withTiles(() async {
+      final tours = MapToursFake();
+      final (_, location) = await open(tester, tours: tours, showTours: true);
+      expect(tours.mapQueries, [
+        (owner: null, latitude: 19.4326, longitude: -99.1332),
+      ]);
+      expect(tours.owners, isEmpty);
+      final marker = find.byTooltip('Explorar Laboratorio local');
+      expect(marker.hitTestable(), findsOneWidget);
+      expect(location.prompts, [false]);
+      await tester.tap(marker);
+      await tester.pumpAndSettle();
+      expect(find.text('Recorrido $businessARLocalTour'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  testWidgets('ordinary map does not load or show public experience markers', (
+    tester,
+  ) async {
+    await withTiles(() async {
+      final tours = MapToursFake();
+      await open(tester, tours: tours);
+      expect(tours.mapQueries, isEmpty);
+      expect(tours.owners, isEmpty);
+      expect(find.byTooltip('Explorar Laboratorio local'), findsNothing);
+      expect(find.byTooltip('Arte local').hitTestable(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
 
   for (final width in [390.0, 1366.0]) {
     testWidgets('new map layout retains published AR entry at $width', (

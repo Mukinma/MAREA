@@ -2,7 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "MAREA Prueba RA · base actual · cuentas del piloto",
+      "name": "MAREA · app principal",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "env": {"PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"},
+      "toolArgs": ["--dart-define-from-file=config/supabase.production.json"]
+    },
+    {
+      "name": "MAREA · capturas locales · cuentas del piloto",
       "request": "launch",
       "type": "dart",
       "program": "test/manual/business_ar_live_probe.dart",

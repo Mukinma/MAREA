@@ -146,6 +146,14 @@ class TourScene {
   String get name => data['name'] as String? ?? '';
   String? get panoramaPath => data['panorama_path'] as String?;
   String? get previewPath => data['preview_path'] as String? ?? panoramaPath;
+  bool get isHorizontalPanorama => data['panorama_kind'] == 'horizontal';
+  double get panoramaAspectRatio {
+    final width = data['panorama_width'], height = data['panorama_height'];
+    return width is num && height is num && width > height && height > 0
+        ? width / height
+        : 2;
+  }
+
   List<TourPoint> get points =>
       jsonList(data['points']).map((p) => TourPoint(jsonMap(p))).toList();
   List<Map<String, dynamic>> get connections =>
