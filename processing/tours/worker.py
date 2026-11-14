@@ -7,6 +7,7 @@ import hmac
 import math
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
@@ -23,6 +24,7 @@ Image.MAX_IMAGE_PIXELS = 120_000_000
 UUID_RE = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')
 TRANSIENT = {'network', 'storage_unavailable', 'timeout'}
 ALLOWED_TOOLS = {'cpfind', 'cpclean', 'autooptimiser', 'pano_modify', 'nona', 'enblend'}
+PHOTOMETRIC_SECONDS = 45
 
 class TourError(Exception):
     def __init__(self, code):
@@ -198,6 +200,28 @@ def command(args, cwd, deadline, check_current):
                 except subprocess.TimeoutExpired:
                     proc.kill(); proc.wait()
 
+def optimize_project(frames, directory, deadline, check_current, *, source='clean.pto'):
+    """Finish geometry first; optional color fitting cannot exhaust the job."""
+    command(['autooptimiser','-n','-o','geometry.pto',source],directory,deadline,check_current)
+    geometry = directory/'geometry.pto'
+    validate_camera_geometry(geometry.read_text(),frames)
+    color_deadline = min(deadline, time.monotonic()+PHOTOMETRIC_SECONDS)
+    fitted = True
+    try:
+        command(['autooptimiser','-m','-o','optimized.pto','geometry.pto'],directory,color_deadline,check_current)
+    except TourError as error:
+        if error.code != 'timeout' or time.monotonic() >= deadline:
+            raise
+        # A lost lease/cancellation still aborts; only the optional color budget
+        # may fall back to the already validated geometry and original colors.
+        check_current()
+        shutil.copyfile(geometry,directory/'optimized.pto')
+        fitted = False
+        print(json.dumps({'component':'marea_tour_worker','event':'photometric_skipped','reason':'stage_timeout'}),flush=True)
+    validate_camera_geometry((directory/'optimized.pto').read_text(),frames)
+    return fitted
+
+
 def stitch_photos(frames, files, directory, deadline, check_current, *, feature_alignment=False):
     # Fixed names and numeric values only. Each lens FOV is independent: phones
     # may change focal length, but accepted inputs must be rectilinear JPEGs.
@@ -225,8 +249,7 @@ def stitch_photos(frames, files, directory, deadline, check_current, *, feature_
     if feature_alignment:
         command(['autooptimiser','-p','-o','pairwise.pto',aligned_input],directory,deadline,check_current)
         aligned_input = 'pairwise.pto'
-    command(['autooptimiser','-n','-m','-o','optimized.pto',aligned_input],directory,deadline,check_current)
-    validate_camera_geometry((directory/'optimized.pto').read_text(),frames)
+    optimize_project(frames,directory,deadline,check_current,source=aligned_input)
     command(['pano_modify','--projection=2','--fov=360x180','--canvas=4096x2048','--crop=0,4096,0,2048','-o','sphere.pto','optimized.pto'],directory,deadline,check_current)
     # Disable cropped TIFFs explicitly. Alpha masks must inhabit the complete
     # sphere canvas, not the bounding boxes of the remapped photographs.

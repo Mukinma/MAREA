@@ -69,7 +69,7 @@ android {
         manifestPlaceholders["mareaAppLabel"] = when {
             proximityQaTarget -> "MAREA Avisos QA"
             arLocalTarget -> "MAREA RA local"
-            arLiveTarget -> "MAREA Prueba RA"
+            arLiveTarget -> "MAREA"
             developmentTarget -> "MAREA Desarrollo"
             else -> "MAREA"
         }

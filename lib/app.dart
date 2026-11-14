@@ -253,20 +253,16 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: widget.productionPilot
-          ? 'MAREA · Prueba RA'
-          : widget.development
-          ? 'MAREA Desarrollo'
-          : 'MAREA',
+      title: widget.development ? 'MAREA Desarrollo' : 'MAREA',
       locale: const Locale('es', 'MX'),
       supportedLocales: const [Locale('es', 'MX')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       routerConfig: _router,
-      builder: widget.development || widget.productionPilot
+      builder: widget.development
           ? (context, child) => Banner(
-              message: widget.productionPilot ? 'PRUEBA RA' : 'DESARROLLO',
+              message: 'DESARROLLO',
               location: BannerLocation.topEnd,
               color: Colors.deepOrange,
               child: child ?? const SizedBox.shrink(),

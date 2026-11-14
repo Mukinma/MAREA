@@ -19,7 +19,11 @@ object TourOrientation {
 
 class TourNative(private val activity: Activity, messenger: BinaryMessenger) : SensorEventListener {
  private val sensors = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
- private val sensor = sensors.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+ // A tour needs relative camera turns, not magnetic north. Prefer the
+ // gyroscope-based vector so nearby metal/magnets cannot change its heading.
+ // Devices without it retain the existing rotation-vector fallback.
+ private val sensor = sensors.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
+  ?: sensors.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
  private var sink: EventChannel.EventSink? = null
  private var origin: Double? = null
  private var started = false
