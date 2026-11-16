@@ -28,7 +28,6 @@ if (-not (Get-Command flutter -ErrorAction SilentlyContinue)) {
 }
 
 $target = 'test/manual/business_ar_probe.dart'
-$mapDefine = '--dart-define=MAP_TILE_URL=http://127.0.0.1:38765/tiles/{z}/{x}/{y}.png'
 switch ($Action) {
     'Reference' { dart run tool/ar_reference.dart }
     'Test' {
@@ -37,7 +36,7 @@ switch ($Action) {
         flutter test --no-pub test/features/tours test/features/map test/features/profile/profile_tools_test.dart test/core/router/app_router_test.dart
     }
     'Build' {
-        flutter build apk --debug --no-pub -t $target $mapDefine
+        flutter build apk --debug --no-pub -t $target
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         New-Item -ItemType Directory -Path build/ar-local -Force | Out-Null
         Copy-Item -LiteralPath build/app/outputs/flutter-apk/app-debug.apk -Destination build/ar-local/marea-ar-local-debug.apk
@@ -45,7 +44,7 @@ switch ($Action) {
     }
     'Run' {
         if (-not $Device) { throw 'Indica -Device con un ID de flutter devices.' }
-        flutter run --debug --no-pub -d $Device -t $target $mapDefine
+        flutter run --debug --no-pub -d $Device -t $target
     }
 }
 exit $LASTEXITCODE

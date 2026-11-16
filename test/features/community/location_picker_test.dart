@@ -6,7 +6,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:marea/core/maps/map_surface.dart';
+import '../../support/fake_map_surface.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -100,6 +101,8 @@ Future<void> _open(
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.light(),
+      builder: (_, child) =>
+          MapSurfaceScope(builder: fakeMapSurfaceBuilder, child: child!),
       home: Scaffold(
         body: Builder(
           builder: (context) => TextButton(
@@ -149,11 +152,8 @@ void main() {
       await http.runWithClient(() async {
         PostLocationSelection? selected;
         await _open(tester, onSelection: (value) => selected = value);
-        final map = tester.widget<FlutterMap>(find.byType(FlutterMap));
-        map.options.onTap!(
-          const TapPosition(Offset.zero, Offset.zero),
-          const LatLng(20.123456, -103.123456),
-        );
+        final map = tester.widget<FakeMapSurface>(find.byType(FakeMapSurface));
+        map.options.onTap(const LatLng(20.123456, -103.123456));
         await tester.pump();
         await tester.tap(find.text('Usar esta ubicación'));
         await tester.pumpAndSettle();
@@ -255,7 +255,9 @@ void main() {
         _geolocator,
         (call) async {
           calls.add(call.method);
-          if (call.method == 'isLocationServiceEnabled') return service.future;
+          if (call.method == 'isLocationServiceEnabled') {
+            return service.future;
+          }
           return 0;
         },
       );
@@ -280,6 +282,53 @@ void main() {
     },
   );
 
+  testWidgets('camera gestures cancel a pending GPS recenter in the picker', (
+    tester,
+  ) async {
+    final service = Completer<bool>();
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      _geolocator,
+      (call) async {
+        if (call.method == 'isLocationServiceEnabled') return service.future;
+        if (call.method == 'checkPermission') return 2;
+        if (call.method == 'getCurrentPosition') {
+          return <String, dynamic>{
+            'latitude': 21.5,
+            'longitude': -104.5,
+            'timestamp': 0,
+            'accuracy': 1.0,
+            'altitude': 0.0,
+            'heading': 0.0,
+            'speed': 0.0,
+            'speed_accuracy': 0.0,
+          };
+        }
+        return 0;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        _geolocator,
+        null,
+      ),
+    );
+    await http.runWithClient(() async {
+      await _open(tester);
+      final options = tester
+          .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+          .options;
+      final before = (await options.controller.capture())!.center;
+      await tester.tap(find.byTooltip('Usar mi ubicación actual'));
+      await tester.pump();
+      options.onGesture();
+      service.complete(true);
+      await tester.pumpAndSettle();
+      expect((await options.controller.capture())!.center, before);
+      expect(find.text('Usar esta ubicación'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }, () => MockClient((_) async => _tile()));
+  });
+
   testWidgets('moving an existing point replaces its old address label', (
     tester,
   ) async {
@@ -291,10 +340,10 @@ void main() {
         onSelection: (value) => selected = value,
       );
       expect(find.text('Dirección anterior'), findsOneWidget);
-      tester.widget<FlutterMap>(find.byType(FlutterMap)).options.onTap!(
-        const TapPosition(Offset.zero, Offset.zero),
-        const LatLng(21.5, -104.5),
-      );
+      tester
+          .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+          .options
+          .onTap(const LatLng(21.5, -104.5));
       await tester.pump();
       expect(find.text('Dirección anterior'), findsNothing);
       await tester.tap(find.text('Usar esta ubicación'));
@@ -316,10 +365,10 @@ void main() {
     await http.runWithClient(
       () async {
         await _open(tester);
-        tester.widget<FlutterMap>(find.byType(FlutterMap)).options.onTap!(
-          const TapPosition(Offset.zero, Offset.zero),
-          const LatLng(19.5, -99.2),
-        );
+        tester
+            .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+            .options
+            .onTap(const LatLng(19.5, -99.2));
         await tester.pumpAndSettle();
         expect(find.text('Reintentar ubicación'), findsOneWidget);
         await tester.tap(find.text('Reintentar ubicación'));
@@ -402,16 +451,12 @@ void main() {
         () async {
           PostLocationSelection? selected;
           await _open(tester, onSelection: (value) => selected = value);
-          final map = tester.widget<FlutterMap>(find.byType(FlutterMap));
-          map.options.onTap!(
-            const TapPosition(Offset.zero, Offset.zero),
-            const LatLng(19, -98),
+          final map = tester.widget<FakeMapSurface>(
+            find.byType(FakeMapSurface),
           );
+          map.options.onTap(const LatLng(19, -98));
           await tester.pump();
-          map.options.onTap!(
-            const TapPosition(Offset.zero, Offset.zero),
-            const LatLng(20, -99),
-          );
+          map.options.onTap(const LatLng(20, -99));
           current.complete(
             http.Response(
               jsonEncode({

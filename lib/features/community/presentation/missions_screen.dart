@@ -1,9 +1,6 @@
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
-import 'package:marea/shared/widgets/marea_panel.dart';
-import 'package:marea/shared/widgets/marea_tabs.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/config/app_config.dart';
@@ -37,33 +34,29 @@ String _applicationStatus(String status) => switch (status) {
   _ => 'Pendiente',
 };
 
-class MissionsScreen extends StatefulWidget {
-  const MissionsScreen({
+class PersonalMissionsScreen extends StatefulWidget {
+  const PersonalMissionsScreen({
     super.key,
     required this.controller,
-    this.initialSection,
+    required this.initialSection,
   });
   final AppSessionController controller;
-  final String? initialSection;
+  final String initialSection;
   @override
-  State<MissionsScreen> createState() => _MissionsScreenState();
+  State<PersonalMissionsScreen> createState() => _PersonalMissionsScreenState();
 }
 
-class _MissionsScreenState extends State<MissionsScreen> {
-  int _tab = 0, _offset = 0, _generation = 0;
-  String _query = '';
-  final _search = TextEditingController();
-  String? _category;
-  UserType? _target;
+class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
+  int _offset = 0, _generation = 0;
   String? _applicationFilter;
-  bool _history = false, _draftView = false, _savedOnly = false;
+  bool _history = false;
+  late bool _draftView = widget.initialSection == 'drafts';
+  bool get _showApplications => widget.initialSection == 'applications';
   final _scroll = ScrollController();
   List<MissionDraft> _drafts = [];
-  Timer? _debounce;
+
   @override
   void dispose() {
-    _debounce?.cancel();
-    _search.dispose();
     _scroll.dispose();
     super.dispose();
   }
@@ -76,14 +69,6 @@ class _MissionsScreenState extends State<MissionsScreen> {
   @override
   void initState() {
     super.initState();
-    _tab = widget.initialSection == 'own'
-        ? 1
-        : widget.initialSection == 'applications'
-        ? 2
-        : 0;
-    if (widget.initialSection == 'compatible') {
-      _target = widget.controller.profile?.userType;
-    }
     _load();
   }
 
@@ -106,14 +91,14 @@ class _MissionsScreenState extends State<MissionsScreen> {
       }
     });
     try {
-      if (_tab == 1 && _draftView) {
+      if (_draftView) {
         final drafts = await repo.missionDrafts();
         if (!mounted || generation != _generation) return;
         setState(() {
           _drafts = drafts;
           _more = false;
         });
-      } else if (_tab == 2) {
+      } else if (_showApplications) {
         final applications = (await repo.applications())
             .where((a) => a.applicantId == viewer.id)
             .toList();
@@ -128,25 +113,11 @@ class _MissionsScreenState extends State<MissionsScreen> {
           _more = false;
         });
       } else {
-        final page = _tab == 0 && _savedOnly
-            ? await repo.savedMissions(
-                query: _query,
-                category: _category,
-                targetType: _target,
-                offset: _offset,
-              )
-            : await repo.missions(
-                authorId: _tab == 1 ? viewer.id : null,
-                query: _tab == 0 ? _query : '',
-                category: _tab == 0 ? _category : null,
-                targetType: _tab == 0 ? _target : null,
-                scope: _tab == 0
-                    ? 'discover'
-                    : _history
-                    ? 'history'
-                    : 'active',
-                offset: _offset,
-              );
+        final page = await repo.missions(
+          authorId: viewer.id,
+          scope: _history ? 'history' : 'active',
+          offset: _offset,
+        );
         if (!mounted || generation != _generation) return;
         setState(() {
           _offset += page.length;
@@ -181,56 +152,6 @@ class _MissionsScreenState extends State<MissionsScreen> {
     if (!mounted) return;
     setState(() => _withdrawing = false);
     if (ok) await _load();
-  }
-
-  Future<void> _filters() async {
-    var target = _target;
-    final result = await showMareaBottomSheet<Map<String, UserType?>>(
-      context: context,
-      isScrollControlled: true,
-      builder: (c) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: StatefulBuilder(
-            builder: (c, setSheet) => Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Filtrar misiones',
-                  style: Theme.of(c).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 20),
-                DropdownButtonFormField<UserType?>(
-                  initialValue: target,
-                  isExpanded: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Perfil buscado',
-                  ),
-                  items: [
-                    const DropdownMenuItem<UserType?>(
-                      value: null,
-                      child: Text('Cualquier perfil'),
-                    ),
-                    for (final t in UserType.values)
-                      DropdownMenuItem(value: t, child: Text(t.databaseValue)),
-                  ],
-                  onChanged: (v) => setSheet(() => target = v),
-                ),
-                const SizedBox(height: 20),
-                FilledButton(
-                  onPressed: () => Navigator.pop(c, {'target': target}),
-                  child: const Text('Aplicar filtros'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-    if (!mounted || result == null) return;
-    setState(() => _target = result['target']);
-    await _load();
   }
 
   Future<void> _deleteDraft(MissionDraft draft) async {
@@ -283,7 +204,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
         color: AppColors.canvas,
         child: CommunityPage(
           scrollController: _scroll,
-          title: 'Misiones',
+          title: _showApplications ? 'Mis postulaciones' : 'Mis misiones',
           onRefresh: () => _load(),
           action: FilledButton.icon(
             onPressed: () async {
@@ -298,122 +219,16 @@ class _MissionsScreenState extends State<MissionsScreen> {
             label: const Text('Crear misión'),
           ),
           children: [
-            MareaTabs(
-              options: const {
-                '0': 'Explorar',
-                '1': 'Mis misiones',
-                '2': 'Mis candidaturas',
-              },
-              value: '$_tab',
-              onChanged: (value) {
-                final tab = int.parse(value);
-                if (_tab == tab) return;
-                setState(() {
-                  _tab = tab;
-                  _missions = [];
-                  _applications = [];
-                  _drafts = [];
-                });
-                _load();
-              },
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () => _backToMissions(context),
+                icon: const Icon(Icons.arrow_back_rounded),
+                label: const Text('Volver a misiones'),
+              ),
             ),
-            const SizedBox(height: 20),
-            if (_tab == 0) ...[
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ChoiceChip(
-                    label: const Text('Todas'),
-                    selected: _target == null,
-                    onSelected: (_) {
-                      setState(() => _target = null);
-                      _load();
-                    },
-                  ),
-                  if (viewer != null)
-                    ChoiceChip(
-                      avatar: const Icon(Icons.person_outline, size: 18),
-                      label: const Text('Para mi perfil'),
-                      selected: _target == viewer.userType,
-                      onSelected: (_) {
-                        setState(() => _target = viewer.userType);
-                        _load();
-                      },
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: FilterChip(
-                  avatar: const Icon(Icons.bookmark_border, size: 18),
-                  label: const Text('Guardadas'),
-                  selected: _savedOnly,
-                  onSelected: (v) {
-                    setState(() => _savedOnly = v);
-                    _load();
-                  },
-                ),
-              ),
-              if (_target == viewer?.userType && viewer != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Para ${viewer.userType.databaseValue} y convocatorias para todos.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _search,
-                decoration: const InputDecoration(
-                  labelText: 'Buscar misiones',
-                  prefixIcon: Icon(Icons.search),
-                ),
-                onChanged: (value) {
-                  _query = value;
-                  _debounce?.cancel();
-                  _debounce = Timer(
-                    const Duration(milliseconds: 350),
-                    () => _load(),
-                  );
-                },
-              ),
-              const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String?>(
-                      initialValue: _category,
-                      isExpanded: true,
-                      decoration: const InputDecoration(labelText: 'Categoría'),
-                      items: [
-                        const DropdownMenuItem<String?>(
-                          value: null,
-                          child: Text('Todas las categorías'),
-                        ),
-                        for (final e in communityCategories.entries)
-                          DropdownMenuItem(value: e.key, child: Text(e.value)),
-                      ],
-                      onChanged: (v) {
-                        setState(() => _category = v);
-                        _load();
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton.filledTonal(
-                    tooltip: 'Más filtros',
-                    onPressed: _filters,
-                    icon: const Icon(Icons.tune),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-            ],
-            if (_tab == 1) ...[
+            const SizedBox(height: 12),
+            if (!_showApplications) ...[
               Wrap(
                 spacing: 8,
                 children: [
@@ -447,7 +262,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
             ],
             if (_error != null)
               CommunityNotice(message: _error!, onRetry: () => _load()),
-            if (_tab == 2) ...[
+            if (_showApplications) ...[
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -469,7 +284,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
               ),
               const SizedBox(height: 16),
             ],
-            if (_tab == 2)
+            if (_showApplications)
               for (final application in applications)
                 MareaCard(
                   child: Column(
@@ -516,7 +331,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
                     ],
                   ),
                 )
-            else if (_tab == 1 && _draftView)
+            else if (_draftView)
               for (final draft in _drafts)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -553,43 +368,34 @@ class _MissionsScreenState extends State<MissionsScreen> {
                     viewerType: viewer?.userType,
                     viewerId: viewer?.id,
                     repository: widget.controller.communityRepository,
-                    owner: _tab == 1,
+                    owner: true,
                     onTap: () async {
-                      await context.push(
-                        '/missions/${mission.id}${_tab == 1 ? '/manage' : ''}',
-                      );
+                      await context.push('/missions/${mission.id}/manage');
                       if (mounted) _load();
                     },
                   ),
                 ),
             if (!_loading &&
                 _error == null &&
-                (_tab == 2
+                (_showApplications
                     ? applications.isEmpty
-                    : _tab == 1 && _draftView
+                    : _draftView
                     ? _drafts.isEmpty
                     : visible.isEmpty))
               CommunityNotice(
-                message: switch (_tab) {
-                  1 =>
-                    _draftView
-                        ? 'Tus ideas guardadas aparecerán aquí.'
-                        : 'Aún no has creado misiones. Invita a la comunidad a colaborar.',
-                  2 =>
-                    _applicationFilter == null
-                        ? 'Tus postulaciones y sus respuestas aparecerán aquí.'
-                        : 'No tienes postulaciones en este estado.',
-                  _ =>
-                    _savedOnly
-                        ? 'Aún no has guardado misiones.'
-                        : 'No hay misiones abiertas en esta página. Vuelve pronto o crea la primera.',
-                },
+                message: _showApplications
+                    ? _applicationFilter == null
+                          ? 'Tus postulaciones y sus respuestas aparecerán aquí.'
+                          : 'No tienes postulaciones en este estado.'
+                    : _draftView
+                    ? 'Tus ideas guardadas aparecerán aquí.'
+                    : 'Aún no has creado misiones. Invita a la comunidad a colaborar.',
                 icon: Icons.explore_outlined,
               ),
             if (_loading &&
-                (_tab == 1 && _draftView
+                (_draftView
                     ? _drafts.isEmpty
-                    : _tab == 2
+                    : _showApplications
                     ? _applications.isEmpty
                     : _missions.isEmpty))
               const Padding(

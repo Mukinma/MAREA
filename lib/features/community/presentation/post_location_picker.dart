@@ -4,7 +4,9 @@ import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:marea/core/maps/map_surface.dart';
+import 'package:marea/core/maps/location_map.dart';
+import 'package:marea/core/maps/map_overlay.dart';
 import 'package:marea/core/location/device_location_service.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:marea/features/community/models/community_models.dart';
@@ -65,7 +67,7 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
   late LatLng _point;
   late PostLocationPrecision _precision;
   late String _label;
-  final _mapController = MapController();
+  final _mapController = MapSurfaceController();
   List<LocationPlace> _results = [];
   LocationCity? _city;
   bool _searching = false;
@@ -74,6 +76,7 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
   bool _cityLookupFailed = false;
   int _searchGeneration = 0;
   int _selectionGeneration = 0;
+  int _cameraGestureGeneration = 0;
   String? _message;
 
   @override
@@ -162,11 +165,12 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
   }
 
   void _moveMap(LatLng point) {
-    if (mounted && _mapReady) _mapController.move(point, 15);
+    if (mounted && _mapReady) _mapController.move(point, zoom: 15);
   }
 
   Future<void> _useCurrentLocation() async {
     final generation = ++_selectionGeneration;
+    final cameraGeneration = _cameraGestureGeneration;
     ++_searchGeneration;
     setState(() {
       _locating = true;
@@ -187,7 +191,7 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
         _label = _pointLabel(point);
         _city = null;
       });
-      _moveMap(point);
+      if (cameraGeneration == _cameraGestureGeneration) _moveMap(point);
       await _resolvePoint(_geocodingPoint(), generation);
     } catch (error) {
       if (_selectionIsCurrent(generation)) {
@@ -399,57 +403,27 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
                 borderRadius: BorderRadius.circular(16),
                 child: Stack(
                   children: [
-                    FlutterMap(
-                      mapController: _mapController,
-                      options: MapOptions(
-                        onMapReady: () => _mapReady = true,
-                        initialCenter: _point,
-                        initialZoom: widget.initial == null ? 5 : 15,
-                        onTap: (_, point) => _selectPoint(point),
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'com.marea.app',
-                        ),
-                        MarkerLayer(
-                          markers: [
-                            Marker(
-                              point: _point,
-                              width: 48,
-                              height: 48,
-                              child: const Icon(
-                                Icons.location_pin,
-                                color: Colors.red,
-                                size: 44,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const Positioned(
-                      left: 8,
-                      bottom: 8,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(color: Colors.white70),
-                        child: Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Text('© OpenStreetMap contributors'),
-                        ),
-                      ),
+                    LocationMap(
+                      controller: _mapController,
+                      ornamentBottom: 72,
+                      point: _point,
+                      initialZoom: widget.initial == null ? 5 : 15,
+                      onReady: () => _mapReady = true,
+                      onTap: _selectPoint,
+                      onGesture: () => ++_cameraGestureGeneration,
                     ),
                     Positioned(
                       right: 12,
                       bottom: 12,
-                      child: FloatingActionButton.small(
-                        heroTag: 'post-location-current',
-                        onPressed: _locating ? null : _useCurrentLocation,
-                        tooltip: 'Usar mi ubicación actual',
-                        child: _locating
-                            ? const MareaSkeleton(kind: SkeletonKind.list)
-                            : const Icon(Icons.my_location),
+                      child: MapOverlay(
+                        child: FloatingActionButton.small(
+                          heroTag: 'post-location-current',
+                          onPressed: _locating ? null : _useCurrentLocation,
+                          tooltip: 'Usar mi ubicación actual',
+                          child: _locating
+                              ? const MareaSkeleton(kind: SkeletonKind.list)
+                              : const Icon(Icons.my_location),
+                        ),
                       ),
                     ),
                   ],
@@ -554,35 +528,8 @@ class _PostLocationViewer extends StatelessWidget {
             Expanded(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: FlutterMap(
-                  options: MapOptions(initialCenter: point, initialZoom: 14),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.marea.app',
-                    ),
-                    MarkerLayer(
-                      markers: [
-                        Marker(
-                          point: point,
-                          width: 48,
-                          height: 48,
-                          child: const Icon(
-                            Icons.location_pin,
-                            color: Colors.red,
-                            size: 44,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                child: LocationMap(point: point),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 6),
-              child: Text('© OpenStreetMap contributors'),
             ),
           ],
         ),

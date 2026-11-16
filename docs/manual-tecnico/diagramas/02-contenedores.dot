@@ -1,0 +1,33 @@
+digraph G {
+  graph [rankdir=TB, bgcolor=transparent, nodesep=.35, ranksep=.46];
+  node [shape=box, style="rounded,filled", color="#BBCADA", fillcolor="#F3F5F7", fontcolor="#14263D", fontname="Helvetica", fontsize=11.5, margin=".14,.10"];
+  edge [color="#64748B", fontcolor="#475569", fontname="Helvetica", fontsize=9.5, arrowsize=.65];
+  client [label="Flutter · Android / iOS / Web",fillcolor="#14263D",fontcolor=white];
+  map [label="SDK Mapbox
+Cartografía externa"];
+  subgraph cluster_supa {
+    label="SUPABASE";fontname="Helvetica";fontsize=10;color="#BBCADA";style=rounded;
+    auth [label="Auth
+Sesión"];
+    api [label="PostgREST / Realtime
+API y eventos"];
+    storage [label="Storage
+Objetos privados"];
+    db [label="PostgreSQL
+RPC, RLS, colas",fillcolor="#E8F0FF"];
+    edgefn [label="Edge Functions
+Integraciones y privilegios"];
+    {rank=same;auth;api;storage}
+    {rank=same;db;edgefn}
+    api -> db; edgefn -> db [label=" RPC",constraint=false];
+    edgefn -> storage [label=" Objetos",constraint=false];
+  }
+  worker [label="Worker 360°
+Python / Hugin / Enblend",fillcolor="#E8F0FF"];
+  external [label="FCM / proveedor geográfico"];
+  client -> auth;client -> api;client -> storage;client -> edgefn [label=" HTTPS"];client -> map;
+  edgefn -> worker [label=" Cloud Run"];
+  edgefn -> external;
+  db -> worker [dir=back,label=" RPC"];
+  storage -> worker [dir=back,label=" JPEG"];
+}

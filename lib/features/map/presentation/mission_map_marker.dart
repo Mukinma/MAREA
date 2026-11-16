@@ -33,15 +33,11 @@ class MissionMapMarker extends StatelessWidget {
               duration: const Duration(milliseconds: 180),
               scale: selected ? 1.12 : 1,
               child: Container(
-                width: 38,
-                height: 38,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: visual.color,
-                  border: Border.all(
-                    color: selected ? AppColors.brandNavy : Colors.white,
-                    width: selected ? 3 : 2.5,
-                  ),
+                  color: selected ? AppColors.aqua : Colors.white,
                   boxShadow: const [
                     BoxShadow(
                       color: Color(0x260B255E),
@@ -50,7 +46,24 @@ class MissionMapMarker extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(visual.icon, size: 21, color: AppColors.brandNavy),
+                padding: const EdgeInsets.all(3),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: visual.color,
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.brandNavy
+                          : Colors.white,
+                      width: 2,
+                    ),
+                  ),
+                  child: Icon(
+                    visual.icon,
+                    size: 20,
+                    color: AppColors.brandNavy,
+                  ),
+                ),
               ),
             ),
           ),

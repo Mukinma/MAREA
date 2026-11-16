@@ -3,7 +3,7 @@ import 'package:marea/features/ar_markers/presentation/marker_editor_screen.dart
 import 'package:marea/features/ar_markers/presentation/marker_scan_screen.dart';
 import 'package:marea/features/proximity/presentation/proximity_settings_screen.dart';
 import 'package:marea/features/tours/presentation/business_ar_screen.dart';
-import 'package:marea/features/discover/presentation/discover_screen.dart';
+import 'package:marea/features/missions/presentation/mission_catalog_screen.dart';
 import 'package:marea/features/home_feed/presentation/story_composer.dart';
 import 'package:marea/features/tours/presentation/tour_management_screen.dart';
 import 'package:marea/features/tours/presentation/tour_editor_screen.dart';
@@ -37,6 +37,7 @@ import 'package:marea/features/profile/presentation/profile_screen.dart';
 import 'package:marea/features/profile/presentation/settings_screen.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
 import 'package:marea/features/map/presentation/mission_map_screen.dart';
+import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
 import 'package:marea/features/community/presentation/explore_screen.dart';
 import 'package:marea/features/community/presentation/post_composer_screen.dart';
@@ -207,6 +208,9 @@ abstract final class AppRouter {
         ShellRoute(
           builder: (_, state, child) => AppShell(
             location: state.uri.path,
+            returnToMissions:
+                state.uri.path == '/map' &&
+                state.uri.queryParameters['from'] == 'missions',
             controller: controller,
             child: child,
           ),
@@ -220,7 +224,8 @@ abstract final class AppRouter {
             ),
             GoRoute(
               path: '/discover',
-              builder: (_, _) => const DiscoverScreen(),
+              redirect: (_, state) =>
+                  state.uri.replace(path: '/missions').toString(),
             ),
             GoRoute(
               path: '/explore',
@@ -228,6 +233,8 @@ abstract final class AppRouter {
                 key: ValueKey(controller.profile?.id),
                 controller: controller,
                 initialSection: state.uri.queryParameters['section'],
+                initialCategory: _routeCategory(state.uri),
+                discoverOnly: state.uri.queryParameters['from'] == 'discover',
               ),
             ),
             GoRoute(
@@ -241,21 +248,31 @@ abstract final class AppRouter {
             ),
             GoRoute(
               path: '/missions',
-              builder: (_, state) => MissionsScreen(
-                key: ValueKey(
-                  '${controller.profile?.id}:${state.uri.queryParameters['section']}',
-                ),
-                controller: controller,
-                initialSection: state.uri.queryParameters['section'],
-              ),
+              builder: (_, state) {
+                final section = state.uri.queryParameters['section'];
+                final key = ValueKey((controller.profile?.id, section));
+                return switch (section) {
+                  'own' || 'drafts' || 'applications' => PersonalMissionsScreen(
+                    key: key,
+                    controller: controller,
+                    initialSection: section!,
+                  ),
+                  _ => MissionCatalogScreen(
+                    key: key,
+                    session: controller,
+                    compatibleOnly: section == 'compatible',
+                    savedOnly: section == 'saved',
+                  ),
+                };
+              },
             ),
             GoRoute(
               path: '/map',
               builder: (_, state) => MissionMapScreen(
-                key: ValueKey(
-                  '${controller.profile?.id}:${state.uri.queryParameters['experiences']}',
-                ),
+                key: ValueKey((controller.profile?.id, state.uri)),
                 session: controller,
+                initialQuery: state.uri.queryParameters['q'] ?? '',
+                initialCategory: _routeCategory(state.uri),
                 showTours: state.uri.queryParameters['experiences'] == '1',
               ),
             ),
@@ -627,7 +644,7 @@ class AppRouteGuard {
         uri.hasScheme ||
         uri.hasAuthority ||
         !RegExp(
-          r'^/(tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|ar-markers(?:/new|/[A-Za-z0-9_-]+/(?:edit|scan))?|nearby-alerts|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
+          r'^/(discover|tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|ar-markers(?:/new|/[A-Za-z0-9_-]+/(?:edit|scan))?|nearby-alerts|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
         ).hasMatch(uri.path)) {
       return null;
     }
@@ -709,4 +726,9 @@ class AppRouteGuard {
     }
     return redirect;
   }
+}
+
+String? _routeCategory(Uri uri) {
+  final category = uri.queryParameters['category'];
+  return communityCategories.containsKey(category) ? category : null;
 }

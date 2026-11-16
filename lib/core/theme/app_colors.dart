@@ -6,6 +6,7 @@ abstract final class AppColors {
   static const aqua = Color(0xFF22C5C1);
   static const aquaDark = Color(0xFF087F80);
   static const canvas = Color(0xFFF7FBFF);
+  static const profileCanvas = Color(0xFFF4FBFE);
   static const mist = Color(0xFFEAF6FD);
   static const surface = Color(0xFFFFFFFF);
   static const textPrimary = Color(0xFF102149);

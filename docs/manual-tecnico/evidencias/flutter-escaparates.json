@@ -1,0 +1,13 @@
+{
+  "inicio_utc": "2026-11-12T00:12:36Z",
+  "duracion_segundos": 5.02,
+  "comando": "flutter test --no-pub --reporter expanded test/features/showcase/showcase_flow_test.dart",
+  "codigo_salida": 1,
+  "alcance": "widgets con repositorios simulados; copia temporal",
+  "resultado": {
+    "aprobadas": 7,
+    "omitidas": 0,
+    "fallidas": 7
+  },
+  "log_sha256": "41a4d077dd7bc1a3e68fe2422c0bac665743eb47b6f45240d34c210f64ce5e9d"
+}

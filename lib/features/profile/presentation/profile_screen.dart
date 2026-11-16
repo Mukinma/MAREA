@@ -21,7 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: const Color(0xFFF4FBFE),
+      color: AppColors.profileCanvas,
       child: AnimatedBuilder(
         animation: widget.controller,
         builder: (context, _) {

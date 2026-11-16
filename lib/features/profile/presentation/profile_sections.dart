@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marea/core/theme/category_visuals.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/profile/models/profile.dart';
@@ -226,16 +227,6 @@ class ProfileInterests extends StatelessWidget {
   const ProfileInterests({required this.profile, this.onEdit, super.key});
   final CommunityProfile profile;
   final VoidCallback? onEdit;
-  static const _styles = [
-    (Icons.palette_outlined, Color(0xFFFFE5DF), Color(0xFFE46C55)),
-    (Icons.music_note_outlined, Color(0xFFECE4FF), Color(0xFF7750C9)),
-    (Icons.computer_outlined, Color(0xFFDEECFF), Color(0xFF316CC4)),
-    (Icons.restaurant_outlined, Color(0xFFDDF5EF), Color(0xFF178E7B)),
-    (Icons.checkroom_outlined, Color(0xFFFFE0EE), Color(0xFFE94E92)),
-    (Icons.edit_outlined, Color(0xFFFFF0CC), Color(0xFFB78013)),
-    (Icons.photo_camera_outlined, Color(0xFFDFF3F3), Color(0xFF23858A)),
-    (Icons.design_services_outlined, Color(0xFFE4F3E9), Color(0xFF398569)),
-  ];
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -258,23 +249,22 @@ class ProfileInterests extends StatelessWidget {
           for (final interest in profile.interests)
             Builder(
               builder: (_) {
-                final index = ProfilePreferences.interests.keys
-                    .toList()
-                    .indexOf(interest);
-                final style = _styles[index < 0 ? 0 : index % _styles.length];
+                final style =
+                    CategoryVisuals.profileInterests[interest] ??
+                    CategoryVisuals.profileInterests['arte']!;
                 return Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 7,
                   ),
                   decoration: BoxDecoration(
-                    color: style.$2,
+                    color: style.color,
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(style.$1, size: 15, color: style.$3),
+                      Icon(style.icon, size: 15, color: style.accent),
                       const SizedBox(width: 5),
                       Flexible(
                         child: Text(

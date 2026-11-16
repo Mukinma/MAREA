@@ -168,6 +168,20 @@ class MissionRepositoryFake implements CommunityRepository {
   }
 
   @override
+  Future<List<Mission>> missionCatalogByStart({
+    String query = '',
+    String? category,
+    UserType? targetType,
+    int offset = 0,
+  }) => missions(
+    query: query,
+    category: category,
+    targetType: targetType,
+    scope: 'discover',
+    offset: offset,
+  );
+
+  @override
   Future<List<MissionApplication>> applications({String? missionId}) async =>
       requests;
   @override
@@ -283,6 +297,7 @@ class MissionRepositoryFake implements CommunityRepository {
     String query = '',
     String? category,
     bool savedOnly = false,
+    bool discoverOnly = false,
     int offset = 0,
   }) async => [];
   @override

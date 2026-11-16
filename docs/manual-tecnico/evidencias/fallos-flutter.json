@@ -1,0 +1,121 @@
+[
+  {
+    "suite": "test/features/auth/mobile_intro_test.dart",
+    "caso": "four pages finish at welcome and persist across app restarts (variant: TargetPlatform.android)",
+    "grupo": "F01",
+    "evidencia": "flutter-intro.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/auth/mobile_intro_test.dart",
+    "caso": "four pages finish at welcome and persist across app restarts (variant: TargetPlatform.iOS)",
+    "grupo": "F01",
+    "evidencia": "flutter-intro.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/auth/mobile_intro_test.dart",
+    "caso": "skip on a middle page records completion (variant: TargetPlatform.android)",
+    "grupo": "F01",
+    "evidencia": "flutter-intro.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/auth/mobile_intro_test.dart",
+    "caso": "skip on a middle page records completion (variant: TargetPlatform.iOS)",
+    "grupo": "F01",
+    "evidencia": "flutter-intro.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/auth/mobile_intro_test.dart",
+    "caso": "desktop retains the original welcome (variant: TargetPlatform.macOS)",
+    "grupo": "F01",
+    "evidencia": "flutter-intro.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/auth/mobile_intro_test.dart",
+    "caso": "desktop retains the original welcome (variant: TargetPlatform.linux)",
+    "grupo": "F01",
+    "evidencia": "flutter-intro.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/auth/mobile_intro_test.dart",
+    "caso": "desktop retains the original welcome (variant: TargetPlatform.windows)",
+    "grupo": "F01",
+    "evidencia": "flutter-intro.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/home_feed/home_feed_experience_test.dart",
+    "caso": "opening a story covers the shell navigation",
+    "grupo": "F02",
+    "evidencia": "flutter-historias.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/home_feed/home_feed_experience_test.dart",
+    "caso": "a failed publish retains text and retries the same operation",
+    "grupo": "F02",
+    "evidencia": "flutter-historias.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/home_feed/home_feed_experience_test.dart",
+    "caso": "story viewer marks shown content seen and supports pause and next",
+    "grupo": "F02",
+    "evidencia": "flutter-historias.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/showcase/showcase_flow_test.dart",
+    "caso": "creator completes initial choices and gets the right tools",
+    "grupo": "F03",
+    "evidencia": "flutter-escaparates.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/showcase/showcase_flow_test.dart",
+    "caso": "entrepreneur completes initial choices and gets the right tools",
+    "grupo": "F03",
+    "evidencia": "flutter-escaparates.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/showcase/showcase_flow_test.dart",
+    "caso": "business completes initial choices and gets the right tools",
+    "grupo": "F03",
+    "evidencia": "flutter-escaparates.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/showcase/showcase_flow_test.dart",
+    "caso": "general visitor sees its public section without owner tools",
+    "grupo": "F03",
+    "evidencia": "flutter-escaparates.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/showcase/showcase_flow_test.dart",
+    "caso": "creator visitor sees its public section without owner tools",
+    "grupo": "F03",
+    "evidencia": "flutter-escaparates.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/showcase/showcase_flow_test.dart",
+    "caso": "entrepreneur visitor sees its public section without owner tools",
+    "grupo": "F03",
+    "evidencia": "flutter-escaparates.log",
+    "estado": "FALLA_REPRODUCIDA"
+  },
+  {
+    "suite": "test/features/showcase/showcase_flow_test.dart",
+    "caso": "business visitor sees its public section without owner tools",
+    "grupo": "F03",
+    "evidencia": "flutter-escaparates.log",
+    "estado": "FALLA_REPRODUCIDA"
+  }
+]

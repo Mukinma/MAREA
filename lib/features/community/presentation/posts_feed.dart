@@ -36,6 +36,7 @@ class PostsFeed extends StatefulWidget {
     this.query = '',
     this.category,
     this.savedOnly = false,
+    this.discoverOnly = false,
     this.showHeading = true,
     this.showRefresh = true,
     super.key,
@@ -43,7 +44,7 @@ class PostsFeed extends StatefulWidget {
   final AppSessionController controller;
   final String? authorId, category;
   final String query;
-  final bool savedOnly, showHeading, showRefresh;
+  final bool savedOnly, discoverOnly, showHeading, showRefresh;
   @override
   State<PostsFeed> createState() => PostsFeedState();
 }
@@ -70,6 +71,7 @@ class PostsFeedState extends State<PostsFeed> {
         oldWidget.query != widget.query ||
         oldWidget.category != widget.category ||
         oldWidget.savedOnly != widget.savedOnly ||
+        oldWidget.discoverOnly != widget.discoverOnly ||
         oldWidget.controller != widget.controller) {
       _load(reset: true);
     }
@@ -96,6 +98,7 @@ class PostsFeedState extends State<PostsFeed> {
         query: widget.query,
         category: widget.category,
         savedOnly: widget.savedOnly,
+        discoverOnly: widget.discoverOnly,
         offset: reset ? 0 : _posts.length,
       );
       final authors = posts.isEmpty

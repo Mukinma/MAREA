@@ -18,12 +18,14 @@ class AppShell extends StatelessWidget {
     required this.child,
     this.onRefresh,
     this.controller,
+    this.returnToMissions = false,
     super.key,
   });
   final AppSessionController? controller;
   final String location;
   final Widget child;
   final RefreshCallback? onRefresh;
+  final bool returnToMissions;
   static const _destinations = [
     _Destination('Inicio', '/home', Icons.home_outlined, Icons.home_rounded),
     _Destination(
@@ -46,6 +48,14 @@ class AppShell extends StatelessWidget {
       Icons.person_rounded,
     ),
   ];
+  void _navigate(BuildContext context, String path) {
+    if (returnToMissions && path == '/missions' && context.canPop()) {
+      context.pop();
+    } else if (location != path) {
+      context.go(path);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, bounds) {
@@ -111,7 +121,7 @@ class AppShell extends StatelessWidget {
                 destination: destination,
                 selected: location.startsWith(destination.path),
                 showLabel: !compact,
-                onTap: () => context.go(destination.path),
+                onTap: () => _navigate(context, destination.path),
               ),
           ],
         ),
@@ -166,7 +176,7 @@ class AppShell extends StatelessWidget {
       }
       return AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
+          statusBarColor: AppColors.profileCanvas,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
         ),
@@ -179,7 +189,9 @@ class AppShell extends StatelessWidget {
               children: [
                 if (location != '/map' && !profileLayout)
                   ColoredBox(
-                    color: AppColors.surface,
+                    color: location == '/missions'
+                        ? AppColors.profileCanvas
+                        : AppColors.surface,
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(
                         16,
@@ -189,7 +201,7 @@ class AppShell extends StatelessWidget {
                       ),
                       child: SizedBox(
                         height: 56,
-                        child: location == '/home'
+                        child: location == '/home' || location == '/missions'
                             ? Stack(
                                 alignment: Alignment.center,
                                 children: [
@@ -218,26 +230,31 @@ class AppShell extends StatelessWidget {
               ],
             ),
           ),
-          bottomNavigationBar: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {},
-            child: MareaPanelAwareDock(
-              child: SafeArea(
-                top: false,
-                minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-                child: MareaMobileNavigation(
-                  location: location,
-                  selectedDestination: MobileDestination.forLocation(location),
-                  navigationChanges: GoRouter.maybeOf(context)?.routerDelegate,
-                  onSelected: (destination) {
-                    if (location != destination.path) {
-                      context.go(destination.path);
-                    }
-                  },
+          bottomNavigationBar:
+              Uri.parse(location).path == '/missions' &&
+                  MediaQuery.viewInsetsOf(context).bottom > 0
+              ? null
+              : GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {},
+                  child: MareaPanelAwareDock(
+                    child: SafeArea(
+                      top: false,
+                      minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                      child: MareaMobileNavigation(
+                        location: location,
+                        selectedDestination: MobileDestination.forLocation(
+                          location,
+                        ),
+                        navigationChanges: GoRouter.maybeOf(
+                          context,
+                        )?.routerDelegate,
+                        onSelected: (destination) =>
+                            _navigate(context, destination.path),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
       );
     },

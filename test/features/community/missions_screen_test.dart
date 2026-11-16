@@ -169,7 +169,13 @@ void main() {
     (tester) async {
       final repo = MissionRepositoryFake();
       await openRoute(tester, repo, '/missions');
-      await tapVisible(tester, find.text('Crear misión'));
+      final createLabel = find.text('Crear misión');
+      await tapVisible(
+        tester,
+        createLabel.evaluate().isNotEmpty
+            ? createLabel
+            : find.byTooltip('Crear misión'),
+      );
       await validComposer(tester);
       await tapVisible(tester, find.text('Publicar misión'));
       expect(find.byType(MissionDetailScreen), findsOneWidget);
@@ -278,8 +284,7 @@ void main() {
           application(),
           application(applicant: sampleProfile.id, status: 'withdrawn'),
         ];
-      await openRoute(tester, repo, '/missions');
-      await tapVisible(tester, find.text('Mis candidaturas'));
+      await openRoute(tester, repo, '/missions?section=applications');
       expect(find.text('Misión no disponible'), findsOneWidget);
       expect(find.textContaining('Postulación retirada'), findsOneWidget);
       expect(find.textContaining('Postulación pendiente'), findsNothing);
@@ -289,12 +294,13 @@ void main() {
     'discover sends search to server and own list separates history',
     (tester) async {
       final repo = MissionRepositoryFake();
-      await openRoute(tester, repo, '/missions');
+      final router = await openRoute(tester, repo, '/missions');
       await tester.enterText(find.byType(TextField).first, 'mural');
       await tester.pump(const Duration(milliseconds: 400));
       await tester.pumpAndSettle();
       expect(repo.lastQuery, 'mural');
-      await tapVisible(tester, find.text('Mis misiones'));
+      router.go('/missions?section=own');
+      await tester.pumpAndSettle();
       expect(repo.lastScope, 'active');
       await tapVisible(tester, find.text('Historial'));
       expect(repo.lastScope, 'history');

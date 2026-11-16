@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:marea/core/maps/map_surface.dart';
+import '../../support/fake_map_surface.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -22,6 +24,7 @@ import 'mission_map_test.dart' show mission;
 class MapFake implements MissionMapRepository {
   int calls = 0;
   List<MissionMapFilters> filters = [];
+  final queriedBounds = <MapBounds>[];
   bool empty = false;
   int count = 1;
   @override
@@ -33,6 +36,7 @@ class MapFake implements MissionMapRepository {
   }) async {
     calls++;
     this.filters.add(filters);
+    queriedBounds.add(bounds);
     return empty
         ? const MissionMapPage(missions: [], total: 0)
         : MissionMapPage(
@@ -117,6 +121,7 @@ void main() {
     double scale = 1,
     TourRepository? tours,
     bool showTours = false,
+    MapSurfaceBuilder surfaceBuilder = fakeMapSurfaceBuilder,
   }) async {
     tester.view.physicalSize = Size(width, height);
     tester.view.devicePixelRatio = 1;
@@ -194,11 +199,14 @@ void main() {
       MaterialApp.router(
         theme: AppTheme.light(),
         routerConfig: router,
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(scale)),
-          child: child!,
+        builder: (context, child) => MapSurfaceScope(
+          builder: surfaceBuilder,
+          child: MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(scale)),
+            child: child!,
+          ),
         ),
       ),
     );
@@ -238,6 +246,131 @@ void main() {
       expect(find.byTooltip('Arte local').hitTestable(), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+  });
+
+  testWidgets(
+    'startup still searches when idle supersedes its pending viewport capture',
+    (tester) async {
+      final pending = <Completer<void>>[];
+      final (repo, _) = await open(
+        tester,
+        surfaceBuilder: (_, options) => FakeMapSurface(
+          options: options,
+          beforeCapture: () {
+            final p = Completer<void>();
+            pending.add(p);
+            return p.future;
+          },
+        ),
+      );
+      expect(repo.calls, 0);
+      expect(pending, hasLength(1));
+      tester
+          .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+          .options
+          .onIdle();
+      expect(pending, hasLength(2));
+      pending[0].complete();
+      await tester.pumpAndSettle();
+      pending[1].complete();
+      await tester.pumpAndSettle();
+      expect(repo.calls, 1);
+    },
+  );
+
+  testWidgets('idle cannot replace a filter query viewport capture', (
+    tester,
+  ) async {
+    final pending = <Completer<void>>[];
+    var holdCapture = false;
+    final (repo, _) = await open(
+      tester,
+      surfaceBuilder: (_, options) => FakeMapSurface(
+        options: options,
+        beforeCapture: () async {
+          if (!holdCapture) return;
+          final gate = Completer<void>();
+          pending.add(gate);
+          await gate.future;
+        },
+      ),
+    );
+    final options = tester
+        .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+        .options;
+    await options.controller.move(const LatLng(20, -100));
+    holdCapture = true;
+    await tester.tap(find.text('Hoy'));
+    await tester.pump();
+    options.onIdle();
+    pending.first.complete();
+    await tester.pumpAndSettle();
+    for (final capture in pending.skip(1)) {
+      capture.complete();
+    }
+    await tester.pumpAndSettle();
+    expect(repo.calls, 2);
+    expect(repo.queriedBounds.last.center.latitude, closeTo(20, .001));
+    expect(repo.filters.last.date, MissionMapDate.today);
+  });
+
+  testWidgets(
+    '2D and 3D preserve results, selection and camera position without zone queries',
+    (tester) async {
+      final (repo, _) = await open(tester);
+      final controller = tester
+          .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+          .options
+          .controller;
+      final initial = await controller.capture();
+      await tester.tap(find.text('2D'));
+      await tester.pumpAndSettle();
+      expect(controller.viewport!.pitch, 0);
+      expect(controller.viewport!.center, initial!.center);
+      expect(repo.calls, 1);
+      expect(find.text('Buscar en esta zona'), findsNothing);
+      await tester.tap(find.byTooltip('Arte local'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('3D'));
+      await tester.pumpAndSettle();
+      expect(controller.viewport!.pitch, 45);
+      expect(find.text('Ver misión'), findsOneWidget);
+      expect(repo.calls, 1);
+      expect(find.text('Resultados de la zona anterior'), findsNothing);
+    },
+  );
+
+  testWidgets('filter actions remain visible with enlarged text', (
+    tester,
+  ) async {
+    await open(tester, scale: 2);
+    await tester.tap(find.byTooltip('Filtros del mapa'));
+    await tester.pumpAndSettle();
+    expect(find.text('Aplicar filtros').hitTestable(), findsOneWidget);
+    expect(find.text('Limpiar filtros').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('quick categories expand inline and apply the selected category', (
+    tester,
+  ) async {
+    final (repo, _) = await open(tester);
+    expect(find.text('Categorías'), findsOneWidget);
+    await tester.tap(find.text('Categorías'));
+    await tester.pumpAndSettle();
+    expect(find.text('Arte'), findsOneWidget);
+    expect(find.byTooltip('Ocultar categorías'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Arte'));
+    await tester.tap(find.widgetWithText(ActionChip, 'Arte'));
+    await tester.pumpAndSettle();
+    expect(repo.filters.last.category, 'arte');
+
+    await tester.tap(find.byTooltip('Ocultar categorías'));
+    await tester.pumpAndSettle();
+    expect(find.text('Arte'), findsNothing);
+    expect(find.bySemanticsLabel('Arte'), findsOneWidget);
+    expect(find.byTooltip('Ocultar categorías'), findsNothing);
   });
 
   for (final width in [390.0, 1366.0]) {
@@ -296,7 +429,7 @@ void main() {
           tester.getBottomRight(find.byTooltip('Centrar en mi ubicación')).dy,
           lessThan(dockTop),
         );
-        final attribution = find.textContaining('OpenStreetMap');
+        final attribution = find.byKey(const Key('map-attribution'));
         expect(tester.getBottomRight(attribution).dy, lessThan(dockTop));
         await tester.tap(find.byTooltip('Arte local'));
         await tester.pumpAndSettle();
@@ -313,7 +446,7 @@ void main() {
   );
 
   testWidgets(
-    'selected mission controls remain reachable on a short mobile screen',
+    'selected mission and pending area search fit a short screen with enlarged text',
     (tester) async {
       tester.view.padding = const FakeViewPadding(bottom: 34);
       addTearDown(tester.view.resetPadding);
@@ -321,6 +454,9 @@ void main() {
         await open(tester, scale: 2);
         await tester.tap(find.byTooltip('Arte local'));
         await tester.pumpAndSettle();
+        await tester.dragFrom(const Offset(100, 270), const Offset(160, 0));
+        await tester.pumpAndSettle();
+        expect(find.text('Buscar en esta zona'), findsOneWidget);
         tester.view.physicalSize = const Size(320, 568);
         await tester.pumpAndSettle();
         final locate = find.byTooltip('Centrar en mi ubicación');
@@ -338,6 +474,21 @@ void main() {
     },
   );
 
+  testWidgets('search stays accessible above the keyboard at 320 px', (
+    tester,
+  ) async {
+    await open(tester, width: 320, height: 568, scale: 2);
+    await tester.showKeyboard(find.byType(TextField));
+    tester.view.viewInsets = const FakeViewPadding(bottom: 240);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pumpAndSettle();
+    expect(find.byType(TextField).hitTestable(), findsOneWidget);
+    final helper = find.text('Por título, lugar u organizador');
+    expect(helper, findsOneWidget);
+    expect(tester.getBottomRight(helper).dy, lessThan(568 - 240));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('select preview before navigation and retain camera on return', (
     tester,
   ) async {
@@ -349,16 +500,25 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Ver misión'), findsOneWidget);
       expect(find.text('Detalle one'), findsNothing);
-      final camera = MapController.of(
-        tester.element(find.byType(TileLayer)),
-      ).camera.center;
+      final camera =
+          (await tester
+                  .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+                  .options
+                  .controller
+                  .capture())!
+              .center;
       await tester.tap(find.text('Ver misión'));
       await tester.pumpAndSettle();
       expect(find.text('Detalle one'), findsOneWidget);
       await tester.tap(find.text('Volver'));
       await tester.pumpAndSettle();
       expect(
-        MapController.of(tester.element(find.byType(TileLayer))).camera.center,
+        (await tester
+                .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+                .options
+                .controller
+                .capture())!
+            .center,
         camera,
       );
       expect(repo.calls, 2);
@@ -413,7 +573,7 @@ void main() {
       await tester.tap(find.byTooltip('Centrar en mi ubicación'));
       await tester.pumpAndSettle();
       expect(location.prompts, [false, true]);
-      expect(find.byType(FlutterMap), findsOneWidget);
+      expect(find.byType(FakeMapSurface), findsOneWidget);
     });
   });
   testWidgets('a pan cancels recenter from a pending explicit GPS request', (
@@ -426,15 +586,24 @@ void main() {
       await tester.pump();
       await tester.dragFrom(const Offset(150, 400), const Offset(140, 0));
       await tester.pump(const Duration(milliseconds: 300));
-      final camera = MapController.of(
-        tester.element(find.byType(TileLayer)),
-      ).camera.center;
+      final camera =
+          (await tester
+                  .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+                  .options
+                  .controller
+                  .capture())!
+              .center;
       location.pending!.complete(
         const DevicePosition(latitude: 19.4326, longitude: -99.1332),
       );
       await tester.pumpAndSettle();
       expect(
-        MapController.of(tester.element(find.byType(TileLayer))).camera.center,
+        (await tester
+                .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+                .options
+                .controller
+                .capture())!
+            .center,
         camera,
       );
       expect(repo.calls, 1);
@@ -446,12 +615,12 @@ void main() {
     ) async {
       await withTiles(() async {
         await open(tester, width: width, empty: true, scale: 1.3);
-        expect(find.byType(FlutterMap), findsOneWidget);
+        expect(find.byType(FakeMapSurface), findsOneWidget);
         expect(
           find.text('No encontramos misiones por aquí todavía.'),
           findsOneWidget,
         );
-        expect(find.text('© OpenStreetMap'), findsOneWidget);
+        expect(find.byKey(const Key('map-attribution')), findsOneWidget);
         expect(
           find.byTooltip('Centrar en mi ubicación').hitTestable(),
           findsOneWidget,

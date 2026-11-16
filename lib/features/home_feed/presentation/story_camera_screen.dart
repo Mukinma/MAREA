@@ -24,6 +24,7 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
   double _zoom = 1;
   double _minZoom = 1;
   double _maxZoom = 1;
+  double _zoomAtScaleStart = 1;
   String? _error;
   bool _loading = true;
   bool _capturing = false;
@@ -250,8 +251,12 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
     if (camera?.value.isInitialized == true) {
       preview = GestureDetector(
         onDoubleTap: _switchCamera,
+        onScaleStart: (_) => _zoomAtScaleStart = _zoom,
         onScaleUpdate: (details) {
-          final next = (_zoom * details.scale).clamp(_minZoom, _maxZoom);
+          final next = (_zoomAtScaleStart * details.scale).clamp(
+            _minZoom,
+            _maxZoom,
+          );
           camera?.setZoomLevel(next);
           setState(() => _zoom = next);
         },

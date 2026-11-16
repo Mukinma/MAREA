@@ -59,7 +59,7 @@ void main() {
           expect(find.text('Mariana Torres'), findsWidgets);
           expect(find.byTooltip('Inicio'), findsOneWidget);
           expect(
-            find.byTooltip(width < 600 ? 'Descubrir' : 'Misiones'),
+            find.byTooltip('Misiones'),
             findsOneWidget,
           );
           expect(tester.takeException(), isNull);

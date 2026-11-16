@@ -1,0 +1,12 @@
+{
+  "fecha_utc_archivo": "2026-11-12T00:12:00.819923+00:00",
+  "comando": "flutter test --no-pub --reporter expanded",
+  "codigo_salida": 1,
+  "alcance": "suite completa en copia temporal; backend simulado",
+  "resultado": {
+    "aprobadas": 653,
+    "omitidas": 2,
+    "fallidas": 17
+  },
+  "log_sha256": "c8e28814a52a40b8cbd1ec25be0831677895a77f06c8353626e25dc2cc50077c"
+}

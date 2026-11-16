@@ -1,0 +1,29 @@
+digraph G {
+  graph [rankdir=TB, bgcolor=transparent, nodesep=.35, ranksep=.46];
+  node [shape=box, style="rounded,filled", color="#BBCADA", fillcolor="#F3F5F7", fontcolor="#14263D", fontname="Helvetica", fontsize=11.5, margin=".14,.10"];
+  edge [color="#64748B", fontcolor="#475569", fontname="Helvetica", fontsize=9.5, arrowsize=.65];
+  tours [label="tours
+id · owner_id",fillcolor="#14263D",fontcolor=white];
+  rev [label="tour_revisions
+id · tour_id"];
+  req [label="tour_requests
+id · tour_id
+revision_id sin FK"];
+  capture [label="private.tour_captures
+id · tour_id",fillcolor="#E8F0FF"];
+  prog [label="tour_progress
+PK (revision_id,user_id)
+tour_id"];
+  job [label="private.tour_jobs
+id · capture_id UNIQUE",fillcolor="#E8F0FF"];
+  write [label="private.tour_output_writes
+job_id PK/FK · expires_at",fillcolor="#E8F0FF"];
+  {rank=same;rev;req;capture}
+  tours -> rev [dir=back,label=" 1 : 0..N"];
+  tours -> req [dir=back,label=" 1 : 0..N"];
+  tours -> capture [dir=back,label=" 1 : 0..N"];
+  rev -> prog [dir=back,label=" 1 : 0..N"];
+  capture -> job [dir=back,label=" 1 : 0..1"];
+  job -> write [dir=back,label=" 1 : 0..1"];
+
+}
