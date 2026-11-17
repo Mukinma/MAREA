@@ -144,13 +144,30 @@ class _Feed extends HomeFeedFake {
   );
 }
 
+String _fixtureImage(String path) {
+  const origin = String.fromEnvironment('MAREA_HOME_PROBE_ORIGIN');
+  return '$origin/assets/assets/onboarding/$path';
+}
+
 class _Community extends HomeCommunityFake {
+  final _savedPosts = <String>{};
+
   @override
-  Future<String> imageUrl(String path) async =>
-      '/assets/assets/onboarding/$path';
+  Future<Set<String>> savedPostIds() async => {..._savedPosts};
+
   @override
-  Future<String> missionImageUrl(String path) async =>
-      '/assets/assets/onboarding/$path';
+  Future<void> setSaved(String postId, bool saved) async {
+    if (saved) {
+      _savedPosts.add(postId);
+    } else {
+      _savedPosts.remove(postId);
+    }
+  }
+
+  @override
+  Future<String> imageUrl(String path) async => _fixtureImage(path);
+  @override
+  Future<String> missionImageUrl(String path) async => _fixtureImage(path);
   @override
   Future<List<CommunityProfile>> profiles({
     List<String>? ids,
@@ -175,8 +192,7 @@ class _Community extends HomeCommunityFake {
 
 class _Media implements ProfileMediaRepository {
   @override
-  Future<String> signedUrl(String path) async =>
-      '/assets/assets/onboarding/$path';
+  Future<String> signedUrl(String path) async => _fixtureImage(path);
   @override
   Future<String> upload(Uint8List png) async => 'unused';
   @override

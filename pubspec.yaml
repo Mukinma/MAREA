@@ -95,6 +95,7 @@ flutter:
     - assets/brand/MAREA.png
     - assets/brand/MAREA_LOGOTIPO.png
     - assets/onboarding/
+    - assets/missions/fiebrin-explorador.webp
   fonts:
     - family: NunitoSans
       fonts:

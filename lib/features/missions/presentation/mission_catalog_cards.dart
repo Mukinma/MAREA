@@ -1,19 +1,197 @@
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
-import 'package:marea/core/theme/app_depth.dart';
+import 'package:marea/core/theme/app_radius.dart';
 import 'package:marea/core/theme/category_visuals.dart';
 import 'package:marea/features/community/models/community_models.dart';
-import 'package:marea/features/community/presentation/mission_widgets.dart';
 import 'package:marea/features/missions/application/mission_catalog_controller.dart';
 
 typedef MissionBookmark = ({bool saved, VoidCallback? onPressed});
 
-class NearbyMissionCard extends StatelessWidget {
-  const NearbyMissionCard({
+const _metadataColor = Color(0xFF536078);
+const _featuredSurface = Color(0xFFE3F5F5);
+const _featuredBorder = Color(0xFFCEE8EC);
+
+class FeaturedMissionCard extends StatelessWidget {
+  const FeaturedMissionCard({
     required this.mission,
     required this.onOpen,
     this.resolveImage,
+    this.bookmark,
+    super.key,
+  });
+
+  final Mission mission;
+  final VoidCallback onOpen;
+  final Future<String> Function(String)? resolveImage;
+  final MissionBookmark? bookmark;
+
+  @override
+  Widget build(BuildContext context) {
+    final info = _MissionCardInfo(context, mission);
+    final text = Theme.of(context).textTheme;
+    final cover = Stack(
+      children: [
+        Positioned.fill(
+          child: _MissionCover(mission: mission, resolveImage: resolveImage),
+        ),
+        if (bookmark case final value?)
+          PositionedDirectional(
+            top: 2,
+            end: 2,
+            child: _Bookmark(value: value, onCover: true),
+          ),
+      ],
+    );
+    final description = Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 12, 9),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            header: true,
+            child: Text(
+              'Misión destacada',
+              style: text.labelSmall?.copyWith(
+                color: AppColors.brandNavy,
+                fontWeight: FontWeight.w800,
+                letterSpacing: .35,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          _MissionTitle(info.title, featured: true),
+          const SizedBox(height: 7),
+          _MissionSchedule(info: info),
+          const SizedBox(height: 4),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: FilledButton(
+              onPressed: onOpen,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.brandNavy,
+                minimumSize: const Size(48, 48),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 13,
+                  vertical: 5,
+                ),
+                textStyle: text.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(child: Text('Ver misión')),
+                  SizedBox(width: 6),
+                  Icon(Icons.arrow_forward_rounded, size: 16),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return _MissionSurface(
+      color: _featuredSurface,
+      borderColor: _featuredBorder,
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < 295 || _largeText(context)) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  description,
+                  SizedBox(height: 112, child: cover),
+                ],
+              );
+            }
+            return IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    width: (constraints.maxWidth * .41).clamp(116, 210),
+                    child: cover,
+                  ),
+                  Expanded(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 140),
+                      child: description,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class FeaturedMissionEmptyCard extends StatelessWidget {
+  const FeaturedMissionEmptyCard({required this.hasMissions, super.key});
+
+  final bool hasMissions;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    return _MissionSurface(
+      color: _featuredSurface,
+      borderColor: _featuredBorder,
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(15, 9, 7, 9),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      'Aún no hay una destacada',
+                      style: text.titleMedium?.copyWith(
+                        color: AppColors.brandNavy,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 19,
+                        height: 1.15,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    hasMissions
+                        ? 'Descubre las misiones disponibles más abajo.'
+                        : 'Vuelve pronto para ver nuevas convocatorias.',
+                    style: text.bodySmall?.copyWith(color: _metadataColor),
+                  ),
+                ],
+              ),
+            ),
+            Image.asset(
+              'assets/missions/fiebrin-explorador.webp',
+              width: _largeText(context) ? 76 : 102,
+              excludeFromSemantics: true,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class NearbyMissionCard extends StatelessWidget {
+  const NearbyMissionCard({
+    required this.mission,
     required this.nearby,
+    required this.onOpen,
+    this.resolveImage,
     this.bookmark,
     super.key,
   });
@@ -24,115 +202,42 @@ class NearbyMissionCard extends StatelessWidget {
   final MissionBookmark? bookmark;
   final VoidCallback onOpen;
 
-  static double height(BuildContext context) =>
-      126.0 +
-      2 * (MediaQuery.textScalerOf(context).scale(16) - 16).clamp(0, 48);
+  static const imageHeight = 94.0;
+  static const height = 192.0;
 
   @override
   Widget build(BuildContext context) {
-    final visual = CategoryVisuals.forProfileInterest(mission.category);
-    final location = _distanceLabel(context, nearby);
-    final large = MediaQuery.textScalerOf(context).scale(16) > 22;
-    final title = mission.title.trim().isEmpty
-        ? mission.body.trim()
-        : mission.title;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: AppDepth.floating,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: Stack(
-          fit: StackFit.expand,
+    final info = _MissionCardInfo(context, mission, nearby);
+    return _MissionSurface(
+      child: _MissionCardTarget(
+        info: info,
+        bookmark: bookmark,
+        bookmarkOnCover: true,
+        onOpen: onOpen,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _Cover(
-              path: mission.imagePath,
-              resolve: resolveImage,
-              color: Color.alphaBlend(
-                AppColors.brandNavy.withValues(alpha: .48),
-                visual.accent,
-              ),
-              icon: visual.icon,
-              iconColor: visual.color,
-              iconAlignment: const Alignment(0, -.42),
-            ),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Color(0x220B255E),
-                    Color(0xAB041734),
-                    Color(0xF0041734),
-                  ],
-                  stops: [0, .27, .56, 1],
-                ),
+            SizedBox(
+              height: imageHeight,
+              child: _MissionCover(
+                mission: mission,
+                resolveImage: resolveImage,
+                borderRadius: BorderRadius.zero,
               ),
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: CustomPaint(
-                size: const Size(92, 29),
-                painter: _CornerWave(visual.accent),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _CategoryTag(category: mission.category),
+                  const SizedBox(height: 4),
+                  _MissionTitle(info.title),
+                  const SizedBox(height: 4),
+                  if (info.hasLocation) _MissionLocation(info),
+                ],
               ),
             ),
-            Positioned(
-              left: 12,
-              right: 12,
-              bottom: 10,
-              child: ExcludeSemantics(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style:
-                          (large
-                                  ? Theme.of(context).textTheme.titleSmall
-                                  : Theme.of(context).textTheme.titleMedium)
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
-                                height: 1.08,
-                              ),
-                    ),
-                    const SizedBox(height: 5),
-                    Wrap(
-                      spacing: 7,
-                      runSpacing: 4,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        _CategoryPill(category: mission.category),
-                        _MissionFact(
-                          icon: Icons.location_on_outlined,
-                          label: location,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: _OpenCard(
-                title: title,
-                detail: _distanceLabel(context, nearby, spoken: true),
-                onOpen: onOpen,
-                light: true,
-              ),
-            ),
-            if (bookmark case final action?)
-              Positioned(
-                top: 3,
-                right: 3,
-                child: _Bookmark(value: action, light: true),
-              ),
           ],
         ),
       ),
@@ -140,7 +245,7 @@ class NearbyMissionCard extends StatelessWidget {
   }
 }
 
-class MissionCatalogCard extends StatefulWidget {
+class MissionCatalogCard extends StatelessWidget {
   const MissionCatalogCard({
     required this.mission,
     required this.onOpen,
@@ -157,369 +262,401 @@ class MissionCatalogCard extends StatefulWidget {
   final VoidCallback onOpen;
 
   @override
-  State<MissionCatalogCard> createState() => _MissionCatalogCardState();
-}
-
-class _MissionCatalogCardState extends State<MissionCatalogCard> {
-  bool _coverFailed = false;
-
-  @override
-  void didUpdateWidget(covariant MissionCatalogCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.mission.imagePath != oldWidget.mission.imagePath ||
-        widget.resolveImage != oldWidget.resolveImage) {
-      _coverFailed = false;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final mission = widget.mission;
-    final visual = CategoryVisuals.forProfileInterest(mission.category);
-    final category = communityCategories[mission.category] ?? mission.category;
-    final body = mission.body.trim();
-    final title = mission.title.trim().isEmpty ? body : mission.title.trim();
-    final theme = Theme.of(context).textTheme;
-    final start = mission.startsAt.toLocal();
-    final localizations = MaterialLocalizations.of(context);
-    final shortStart = start.year == DateTime.now().year
-        ? localizations.formatShortMonthDay(start)
-        : localizations.formatCompactDate(start);
-    final date = 'Inicia $shortStart';
-    final location = mission.location.trim();
-    final distance = widget.distance;
-    final available = mission.isOpen && !mission.isExpired && !mission.isFull;
-    final availability = available
-        ? mission.availableSeats == 1
-              ? '1 cupo disponible'
-              : '${mission.availableSeats} cupos disponibles'
-        : mission.statusLabel;
-    final large = MediaQuery.textScalerOf(context).scale(16) > 21;
-    final path = mission.imagePath;
-    final hasCover =
-        !_coverFailed &&
-        widget.resolveImage != null &&
-        path?.trim().isNotEmpty == true;
-
-    return Material(
-      color: AppColors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(17),
-        side: const BorderSide(color: AppColors.border),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          ExcludeSemantics(
+    final info = _MissionCardInfo(context, mission, distance);
+    final large = _largeText(context);
+    return _MissionSurface(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final bookmarkOnCover = large || constraints.maxWidth < 310;
+          final imageWidth = large
+              ? 66.0
+              : (constraints.maxWidth * .31).clamp(80.0, 124.0);
+          return _MissionCardTarget(
+            info: info,
+            bookmark: bookmark,
+            bookmarkOnCover: bookmarkOnCover,
+            bookmarkAtStart: bookmarkOnCover,
+            onOpen: onOpen,
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(6),
               child: Row(
+                crossAxisAlignment: bookmarkOnCover
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.center,
                 children: [
-                  if (hasCover) ...[
-                    SizedBox(
-                      width: large ? 54 : 92,
-                      height: large ? 68 : 91,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: _Cover(
-                          path: path,
-                          resolve: widget.resolveImage,
-                          color: visual.color,
-                          icon: visual.icon,
-                          iconColor: visual.accent,
-                          onUnavailable: () {
-                            if (mounted &&
-                                widget.mission.imagePath == path &&
-                                !_coverFailed) {
-                              setState(() => _coverFailed = true);
-                            }
-                          },
-                        ),
-                      ),
+                  SizedBox(
+                    width: imageWidth,
+                    height: imageWidth + 2,
+                    child: _MissionCover(
+                      mission: mission,
+                      resolveImage: resolveImage,
+                      alignment: bookmarkOnCover && bookmark != null
+                          ? const Alignment(0, .65)
+                          : Alignment.center,
                     ),
-                    const SizedBox(width: 9),
-                  ],
+                  ),
+                  const SizedBox(width: 11),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(
-                            right: widget.bookmark == null ? 0 : 39,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                maxLines: large ? 3 : 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.titleMedium?.copyWith(
-                                  color: AppColors.brandNavy,
-                                  fontWeight: FontWeight.w800,
-                                  height: 1.12,
-                                ),
-                              ),
-                              if (body.isNotEmpty && body != title)
-                                Text(
-                                  body,
-                                  maxLines: large ? 2 : 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.bodySmall,
-                                ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            right: widget.bookmark == null ? 0 : 31,
-                          ),
-                          child: Wrap(
-                            spacing: 5,
-                            runSpacing: 4,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              _CategoryPill(category: mission.category),
-                              _MissionPill(
-                                icon: available ? Icons.circle : null,
-                                iconSize: 7,
-                                label: availability,
-                                background: available
-                                    ? const Color(0xFFDBF6E8)
-                                    : AppColors.mist,
-                                foreground: available
-                                    ? const Color(0xFF00673C)
-                                    : AppColors.textSecondary,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Wrap(
-                          spacing: 9,
-                          runSpacing: 3,
-                          children: [
-                            _MissionFact(
-                              icon: Icons.calendar_today_outlined,
-                              label: date,
+                    child: Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(0, 4, 6, 4),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsetsDirectional.only(
+                              end: bookmark == null || bookmarkOnCover ? 0 : 36,
                             ),
-                            if (distance != null || location.isNotEmpty)
-                              _MissionFact(
-                                icon: Icons.location_on_outlined,
-                                label: [
-                                  if (location.isNotEmpty) location,
-                                  if (distance != null)
-                                    _distanceLabel(context, distance),
-                                ].join(' · '),
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _CategoryTag(category: mission.category),
+                                const SizedBox(height: 4),
+                                _MissionTitle(info.title),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          if (info.hasLocation) ...[
+                            _MissionLocation(info),
+                            const SizedBox(height: 3),
                           ],
-                        ),
-                      ],
+                          _MissionSchedule(info: info),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-          Positioned.fill(
-            child: _OpenCard(
-              title: title,
-              detail: [
-                if (body.isNotEmpty && body != title) body,
-                category,
-                'Inicia ${missionDate(mission.startsAt)}',
-                if (location.isNotEmpty) location,
-                if (distance != null)
-                  _distanceLabel(context, distance, spoken: true),
-                availability,
-              ].join(', '),
-              onOpen: widget.onOpen,
-            ),
-          ),
-          if (widget.bookmark case final action?)
-            Positioned(top: 0, right: 1, child: _Bookmark(value: action)),
-        ],
+          );
+        },
       ),
     );
   }
 }
 
-String _distanceLabel(
-  BuildContext context,
-  NearbyMission distance, {
-  bool spoken = false,
-}) {
-  final meters = distance.meters;
-  final label = meters < 1000
-      ? '${MaterialLocalizations.of(context).formatDecimal(meters.round())} m'
-      : '${(meters / 1000).toStringAsFixed(1)} km';
-  if (!distance.approximate) return label;
-  return spoken ? 'Distancia aproximada $label' : '≈ $label';
+bool _largeText(BuildContext context) =>
+    MediaQuery.textScalerOf(context).scale(16) > 20;
+
+class _MissionSurface extends StatelessWidget {
+  const _MissionSurface({
+    required this.child,
+    this.color = AppColors.surface,
+    this.borderColor = AppColors.border,
+  });
+
+  final Widget child;
+  final Color color, borderColor;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: color,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadius.medium),
+      side: BorderSide(color: borderColor),
+    ),
+    clipBehavior: Clip.antiAlias,
+    child: child,
+  );
 }
 
-class _CategoryPill extends StatelessWidget {
-  const _CategoryPill({required this.category});
+class _MissionCardTarget extends StatelessWidget {
+  const _MissionCardTarget({
+    required this.info,
+    required this.bookmark,
+    required this.onOpen,
+    required this.child,
+    required this.bookmarkOnCover,
+    this.bookmarkAtStart = false,
+  });
 
+  final _MissionCardInfo info;
+  final MissionBookmark? bookmark;
+  final VoidCallback onOpen;
+  final bool bookmarkOnCover, bookmarkAtStart;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    children: [
+      ExcludeSemantics(child: child),
+      Positioned.fill(
+        child: Semantics(
+          button: true,
+          label: 'Abrir ${info.title}',
+          hint: info.semanticDetail,
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppRadius.medium),
+              overlayColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.focused)) {
+                  return AppColors.brandNavy.withValues(alpha: .18);
+                }
+                return null;
+              }),
+              onTap: onOpen,
+            ),
+          ),
+        ),
+      ),
+      if (bookmark case final value?)
+        PositionedDirectional(
+          top: 2,
+          start: bookmarkAtStart ? 3 : null,
+          end: bookmarkAtStart ? null : 2,
+          child: _Bookmark(value: value, onCover: bookmarkOnCover),
+        ),
+    ],
+  );
+}
+
+class _MissionCardInfo {
+  _MissionCardInfo(BuildContext context, this.mission, [NearbyMission? nearby])
+    : category = communityCategories[mission.category] ?? mission.category,
+      title = mission.title.trim().isNotEmpty
+          ? mission.title.trim()
+          : mission.body.trim(),
+      location = _locationLabel(mission),
+      date = _startLabel(context, mission.startsAt),
+      distance = nearby == null
+          ? null
+          : (
+              label: _distanceLabel(context, nearby),
+              approximate: nearby.approximate,
+            );
+
+  final Mission mission;
+  final String title, category, location, date;
+  final ({String label, bool approximate})? distance;
+
+  bool get available => mission.isOpen && !mission.isExpired && !mission.isFull;
+  String get availability {
+    if (!available) return mission.statusLabel;
+    final seats = mission.availableSeats;
+    return seats == 1 ? '1 cupo disponible' : '$seats cupos disponibles';
+  }
+
+  bool get hasLocation => location.isNotEmpty || distance != null;
+
+  String get semanticDetail => [
+    category,
+    'Inicia $date',
+    if (location.isNotEmpty) location,
+    if (distance case final value?)
+      value.approximate ? 'Distancia aproximada ${value.label}' : value.label,
+    availability,
+  ].join(', ');
+
+  static String _locationLabel(Mission mission) {
+    final label = mission.location.trim();
+    if (label.toLowerCase().startsWith('ubicación seleccionada (')) {
+      return mission.city?.name ?? 'Punto en el mapa';
+    }
+    return label.isEmpty ? mission.city?.name ?? '' : label;
+  }
+
+  static String _startLabel(BuildContext context, DateTime startsAt) {
+    final date = startsAt.toLocal();
+    final local = MaterialLocalizations.of(context);
+    return date.year == DateTime.now().year
+        ? local.formatShortMonthDay(date)
+        : local.formatCompactDate(date);
+  }
+
+  static String _distanceLabel(BuildContext context, NearbyMission distance) {
+    final meters = distance.meters;
+    return meters < 1000
+        ? '${MaterialLocalizations.of(context).formatDecimal(meters.round())} m'
+        : '${(meters / 1000).toStringAsFixed(1)} km';
+  }
+}
+
+class _MissionTitle extends StatelessWidget {
+  const _MissionTitle(this.title, {this.featured = false});
+  final String title;
+  final bool featured;
+
+  @override
+  Widget build(BuildContext context) {
+    final large = _largeText(context);
+    return Text(
+      title,
+      maxLines: large ? null : (featured ? 3 : 2),
+      overflow: large ? null : TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        color: AppColors.brandNavy,
+        fontSize: featured ? 20 : 17,
+        fontWeight: FontWeight.w800,
+        height: 1.1,
+        letterSpacing: -.2,
+      ),
+    );
+  }
+}
+
+class _CategoryTag extends StatelessWidget {
+  const _CategoryTag({required this.category});
   final String category;
 
   @override
   Widget build(BuildContext context) {
     final visual = CategoryVisuals.forProfileInterest(category);
-    return _MissionPill(
-      icon: visual.icon,
-      label: communityCategories[category] ?? category,
-      background: visual.color,
-      foreground: AppColors.brandNavy,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: visual.color,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+        child: Text(
+          communityCategories[category] ?? category,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: AppColors.brandNavy,
+            fontWeight: FontWeight.w800,
+            height: 1.18,
+            letterSpacing: .1,
+          ),
+        ),
+      ),
     );
   }
 }
 
-class _MissionPill extends StatelessWidget {
-  const _MissionPill({
-    required this.label,
-    required this.background,
-    required this.foreground,
-    this.icon,
-    this.iconSize = 13,
-  });
+TextStyle? _metadataStyle(BuildContext context) => Theme.of(context)
+    .textTheme
+    .bodySmall
+    ?.copyWith(color: _metadataColor, height: 1.2, letterSpacing: 0);
 
-  final String label;
-  final Color background, foreground;
-  final IconData? icon;
-  final double iconSize;
+class _MissionLocation extends StatelessWidget {
+  const _MissionLocation(this.info);
+  final _MissionCardInfo info;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: background,
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, color: foreground, size: iconSize),
-            const SizedBox(width: 4),
-          ],
-          Flexible(
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: foreground,
-                fontWeight: FontWeight.w800,
-                height: 1.15,
-              ),
+  Widget build(BuildContext context) {
+    final large = _largeText(context);
+    final style = _metadataStyle(context);
+    final distance = info.distance;
+    final distanceText = distance == null
+        ? null
+        : distance.approximate
+        ? '≈ ${distance.label}'
+        : distance.label;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Icon(Icons.location_on_outlined, size: 14, color: _metadataColor),
+        const SizedBox(width: 4),
+        Flexible(
+          child: large
+              ? Text(
+                  [
+                    if (info.location.isNotEmpty) info.location,
+                    ?distanceText,
+                  ].join(' · '),
+                  style: style,
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (info.location.isNotEmpty)
+                      Flexible(
+                        child: Text(
+                          info.location,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: style,
+                        ),
+                      ),
+                    if (distanceText != null)
+                      Text(
+                        info.location.isEmpty
+                            ? distanceText
+                            : ' · $distanceText',
+                        style: style,
+                      ),
+                  ],
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MissionSchedule extends StatelessWidget {
+  const _MissionSchedule({required this.info});
+  final _MissionCardInfo info;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = _metadataStyle(context);
+    return Wrap(
+      spacing: 8,
+      runSpacing: 3,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.calendar_today_outlined,
+              size: 13,
+              color: _metadataColor,
             ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-class _MissionFact extends StatelessWidget {
-  const _MissionFact({
-    required this.icon,
-    required this.label,
-    this.color = AppColors.textSecondary,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Icon(icon, size: 14, color: color),
-      const SizedBox(width: 4),
-      Flexible(
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: color,
+            const SizedBox(width: 4),
+            Flexible(child: Text('Inicia ${info.date}', style: style)),
+          ],
+        ),
+        Text(
+          info.availability,
+          style: style?.copyWith(
+            color: info.available ? const Color(0xFF086449) : null,
             fontWeight: FontWeight.w700,
-            height: 1.15,
           ),
         ),
-      ),
-    ],
-  );
-}
-
-class _OpenCard extends StatelessWidget {
-  const _OpenCard({
-    required this.title,
-    required this.detail,
-    required this.onOpen,
-    this.light = false,
-  });
-
-  final String title, detail;
-  final VoidCallback onOpen;
-  final bool light;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    label: detail.isEmpty ? 'Abrir $title' : 'Abrir $title, $detail',
-    child: Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        onTap: onOpen,
-        overlayColor: WidgetStatePropertyAll(
-          (light ? Colors.white : AppColors.brandNavy).withValues(alpha: .12),
-        ),
-      ),
-    ),
-  );
+      ],
+    );
+  }
 }
 
 class _Bookmark extends StatelessWidget {
-  const _Bookmark({required this.value, this.light = false});
+  const _Bookmark({required this.value, required this.onCover});
 
   final MissionBookmark value;
-  final bool light;
+  final bool onCover;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.all(1),
+  Widget build(BuildContext context) => Semantics(
+    selected: value.saved,
     child: Material(
       type: MaterialType.transparency,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          if (light)
+          if (onCover)
             Ink(
               width: 34,
               height: 34,
-              decoration: ShapeDecoration(
-                color: AppColors.brandNavy.withValues(alpha: .64),
-                shape: const CircleBorder(),
+              decoration: const ShapeDecoration(
+                color: AppColors.surface,
+                shape: CircleBorder(),
               ),
             ),
-          Semantics(
-            selected: value.saved,
-            child: IconButton(
-              tooltip: value.saved ? 'Quitar de guardados' : 'Guardar',
-              onPressed: value.onPressed,
-              icon: Icon(
-                value.saved
-                    ? Icons.bookmark_rounded
-                    : Icons.bookmark_border_rounded,
-                size: 22,
-              ),
-              style: IconButton.styleFrom(
-                minimumSize: const Size.square(48),
-                foregroundColor: light ? Colors.white : AppColors.brandNavy,
-                disabledForegroundColor: light
-                    ? Colors.white70
-                    : AppColors.textSecondary,
-              ),
+          IconButton(
+            tooltip: value.saved ? 'Quitar de guardados' : 'Guardar',
+            onPressed: value.onPressed,
+            icon: Icon(
+              value.saved
+                  ? Icons.bookmark_rounded
+                  : Icons.bookmark_border_rounded,
+              size: 21,
+            ),
+            style: IconButton.styleFrom(
+              fixedSize: const Size.square(48),
+              minimumSize: const Size.square(48),
+              foregroundColor: AppColors.brandNavy,
+              disabledForegroundColor: AppColors.textSecondary,
             ),
           ),
         ],
@@ -528,110 +665,77 @@ class _Bookmark extends StatelessWidget {
   );
 }
 
-class _Cover extends StatefulWidget {
-  const _Cover({
-    required this.path,
-    required this.resolve,
-    required this.color,
-    required this.icon,
-    required this.iconColor,
-    this.iconAlignment = Alignment.center,
-    this.onUnavailable,
+class _MissionCover extends StatefulWidget {
+  const _MissionCover({
+    required this.mission,
+    required this.resolveImage,
+    this.alignment = Alignment.center,
+    this.borderRadius = const BorderRadius.all(
+      Radius.circular(AppRadius.small),
+    ),
   });
 
-  final String? path;
-  final Future<String> Function(String)? resolve;
-  final Color color;
-  final IconData icon;
-  final Color iconColor;
-  final Alignment iconAlignment;
-  final VoidCallback? onUnavailable;
+  final Mission mission;
+  final Future<String> Function(String)? resolveImage;
+  final Alignment alignment;
+  final BorderRadius borderRadius;
 
   @override
-  State<_Cover> createState() => _CoverState();
+  State<_MissionCover> createState() => _MissionCoverState();
 }
 
-class _CoverState extends State<_Cover> {
+class _MissionCoverState extends State<_MissionCover> {
   late Future<String>? _url = _resolve();
 
   Future<String>? _resolve() {
-    final path = widget.path?.trim();
-    return path == null || path.isEmpty ? null : widget.resolve?.call(path);
+    final path = widget.mission.imagePath?.trim();
+    return path == null || path.isEmpty
+        ? null
+        : widget.resolveImage?.call(path);
   }
 
   @override
-  void didUpdateWidget(covariant _Cover oldWidget) {
+  void didUpdateWidget(covariant _MissionCover oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.path != widget.path || oldWidget.resolve != widget.resolve) {
+    if (oldWidget.mission.imagePath != widget.mission.imagePath ||
+        oldWidget.resolveImage != widget.resolveImage) {
       _url = _resolve();
     }
   }
 
-  void _reportUnavailable() {
-    final request = _url;
-    if (widget.onUnavailable == null) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && request == _url) widget.onUnavailable?.call();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final visual = CategoryVisuals.forProfileInterest(widget.mission.category);
     final fallback = ColoredBox(
-      color: widget.color,
+      color: visual.color,
       child: Align(
-        alignment: widget.iconAlignment,
-        child: Icon(widget.icon, color: widget.iconColor, size: 26),
+        alignment: widget.alignment,
+        child: Icon(visual.icon, color: visual.accent, size: 26),
       ),
     );
-    if (_url == null) return fallback;
-    return FutureBuilder<String>(
-      future: _url,
-      builder: (context, snapshot) {
-        final url = snapshot.data;
-        if (snapshot.connectionState != ConnectionState.done) return fallback;
-        if (url == null || url.isEmpty) {
-          _reportUnavailable();
-          return fallback;
-        }
-        return Image.network(
-          url,
-          fit: BoxFit.cover,
-          excludeFromSemantics: true,
-          frameBuilder: (context, child, frame, synchronous) =>
-              frame == null && !synchronous ? fallback : child,
-          errorBuilder: (_, _, _) {
-            _reportUnavailable();
-            return fallback;
-          },
-        );
-      },
+    return ClipRRect(
+      borderRadius: widget.borderRadius,
+      child: _url == null
+          ? fallback
+          : FutureBuilder<String>(
+              future: _url,
+              builder: (context, snapshot) {
+                final url = snapshot.data;
+                if (snapshot.connectionState != ConnectionState.done ||
+                    url == null ||
+                    url.isEmpty) {
+                  return fallback;
+                }
+                return Image.network(
+                  url,
+                  fit: BoxFit.cover,
+                  excludeFromSemantics: true,
+                  frameBuilder: (context, child, frame, synchronous) =>
+                      frame == null && !synchronous ? fallback : child,
+                  errorBuilder: (_, _, _) => fallback,
+                );
+              },
+            ),
     );
   }
-}
-
-class _CornerWave extends CustomPainter {
-  const _CornerWave(this.color);
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path()
-      ..moveTo(0, size.height)
-      ..cubicTo(
-        size.width * .45,
-        size.height * .94,
-        size.width * .46,
-        0,
-        size.width,
-        0,
-      )
-      ..lineTo(size.width, size.height)
-      ..close();
-    canvas.drawPath(path, Paint()..color = color.withValues(alpha: .54));
-  }
-
-  @override
-  bool shouldRepaint(covariant _CornerWave oldDelegate) =>
-      oldDelegate.color != color;
 }

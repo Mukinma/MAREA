@@ -86,15 +86,6 @@ class MissionCatalogController extends ChangeNotifier {
   bool get hasPosition => _position != null;
   bool get showNearby => _query.isEmpty && !savedOnly;
   MissionCatalogPage get catalog => _catalog;
-  List<Mission> get visibleMissions {
-    final nearbyIds = showNearby
-        ? _nearby.map((item) => item.mission.id).toSet()
-        : const <String>{};
-    return _catalog._items
-        .where((mission) => !nearbyIds.contains(mission.id))
-        .toList(growable: false);
-  }
-
   NearbyMission? distanceTo(Mission mission) {
     final position = _position;
     final pin = mission.coordinates;
@@ -225,9 +216,7 @@ class MissionCatalogController extends ChangeNotifier {
     _notify();
     try {
       final knownIds = page._items.map((mission) => mission.id).toSet();
-      final initiallyVisible = visibleMissions
-          .map((mission) => mission.id)
-          .toSet();
+      final initialCount = page._items.length;
       do {
         final raw = await switch ((savedOnly, order)) {
           (true, _) => repo.savedMissions(
@@ -264,10 +253,7 @@ class MissionCatalogController extends ChangeNotifier {
             return visible && knownIds.add(mission.id);
           }),
         );
-      } while (page._hasMore &&
-          !visibleMissions.any(
-            (mission) => !initiallyVisible.contains(mission.id),
-          ));
+      } while (page._hasMore && page._items.length == initialCount);
     } catch (_) {
       if (!_disposed && identical(page, _catalog)) {
         page._error = 'No pudimos cargar las misiones.';
@@ -456,19 +442,7 @@ class MissionCatalogController extends ChangeNotifier {
       if (!_disposed && generation == _nearGeneration) {
         _nearLoading = false;
         _notify();
-        _ensureVisiblePage();
       }
-    }
-  }
-
-  void _ensureVisiblePage() {
-    final page = _catalog;
-    if (showNearby &&
-        page.hasMore &&
-        !page.waiting &&
-        page.error == null &&
-        visibleMissions.isEmpty) {
-      unawaited(loadCatalog());
     }
   }
 
@@ -580,7 +554,12 @@ class MissionCatalogController extends ChangeNotifier {
         }
       }
       _notify();
-      _ensureVisiblePage();
+      if (page.hasMore &&
+          !page.waiting &&
+          page.error == null &&
+          page._items.isEmpty) {
+        unawaited(loadCatalog());
+      }
     } catch (_) {
       // Leave the last loaded card in place if the detail refresh fails.
     }

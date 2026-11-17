@@ -60,6 +60,7 @@ class AppShell extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, bounds) {
       final desktop = bounds.maxWidth >= 600;
+      final isHome = location == '/home';
       final profileLayout =
           location == '/profile' || location.startsWith('/people/');
       final scaler = MediaQuery.textScalerOf(context);
@@ -129,12 +130,13 @@ class AppShell extends StatelessWidget {
       final create = _CreateAction(
         selected: location.startsWith('/create'),
         expanded: desktop && !compact,
+        stacked: !desktop,
         onTap: () async {
           if (controller == null) {
             context.go('/create');
             return;
           }
-          await showCreateMenu(context, controller!);
+          await showCreateMenu(context, controller!, homeOnly: isHome);
         },
       );
       if (desktop) {
@@ -241,16 +243,25 @@ class AppShell extends StatelessWidget {
                     child: SafeArea(
                       top: false,
                       minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-                      child: MareaMobileNavigation(
-                        location: location,
-                        selectedDestination: MobileDestination.forLocation(
-                          location,
-                        ),
-                        navigationChanges: GoRouter.maybeOf(
-                          context,
-                        )?.routerDelegate,
-                        onSelected: (destination) =>
-                            _navigate(context, destination.path),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: MareaMobileNavigation(
+                              location: location,
+                              selectedDestination:
+                                  MobileDestination.forLocation(location),
+                              navigationChanges: GoRouter.maybeOf(
+                                context,
+                              )?.routerDelegate,
+                              onSelected: (destination) =>
+                                  _navigate(context, destination.path),
+                            ),
+                          ),
+                          if (isHome && controller != null) ...[
+                            const SizedBox(width: 8),
+                            create,
+                          ],
+                        ],
                       ),
                     ),
                   ),
@@ -419,9 +430,10 @@ class _CreateAction extends StatefulWidget {
     required this.onTap,
     required this.selected,
     required this.expanded,
+    required this.stacked,
   });
   final Future<void> Function() onTap;
-  final bool selected, expanded;
+  final bool selected, expanded, stacked;
   @override
   State<_CreateAction> createState() => _CreateActionState();
 }
@@ -439,63 +451,82 @@ class _CreateActionState extends State<_CreateAction> {
   }
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    label: 'Crear',
-    button: true,
-    selected: widget.selected,
-    excludeSemantics: true,
-    onTap: _tap,
-    child: Tooltip(
-      message: 'Crear',
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: AppDepth.action,
-        ),
-        child: Material(
-          key: const Key('create-destination'),
-          color: AppColors.actionBlue,
-          borderRadius: BorderRadius.circular(28),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(28),
-            onTap: _tap,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: widget.expanded ? 20 : 16,
-                vertical: 16,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedRotation(
-                    turns: _open ? 0.125 : 0,
-                    duration: MediaQuery.disableAnimationsOf(context)
-                        ? Duration.zero
-                        : const Duration(milliseconds: 180),
-                    child: const Icon(
-                      Icons.add_rounded,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  if (widget.expanded) ...[
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Crear',
-                      style: TextStyle(
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(widget.stacked ? 22 : 28);
+    return Semantics(
+      label: 'Crear',
+      button: true,
+      selected: widget.selected,
+      excludeSemantics: true,
+      onTap: _tap,
+      child: Tooltip(
+        message: 'Crear',
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            boxShadow: AppDepth.action,
+          ),
+          child: Material(
+            key: const Key('create-destination'),
+            color: AppColors.actionBlue,
+            borderRadius: radius,
+            child: InkWell(
+              borderRadius: radius,
+              onTap: _tap,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: widget.stacked ? 6 : (widget.expanded ? 20 : 16),
+                  vertical: widget.stacked ? 8 : 16,
+                ),
+                child: Flex(
+                  direction: widget.stacked ? Axis.vertical : Axis.horizontal,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimatedRotation(
+                      turns: _open ? 0.125 : 0,
+                      duration: MediaQuery.disableAnimationsOf(context)
+                          ? Duration.zero
+                          : const Duration(milliseconds: 180),
+                      child: const Icon(
+                        Icons.add_rounded,
                         color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                        size: 24,
                       ),
                     ),
+                    if (widget.stacked)
+                      const SizedBox(
+                        width: 48,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'Crear',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (widget.expanded) ...[
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Crear',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _Destination {

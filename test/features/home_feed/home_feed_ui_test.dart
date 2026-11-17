@@ -41,12 +41,13 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Tu historia'), findsOneWidget);
+      expect(find.text('Tu historia'), findsNothing);
       expect(find.text('Para ti'), findsOneWidget);
-      expect(find.textContaining('No hay contenido'), findsOneWidget);
+      expect(find.text('Aún no hay publicaciones para ti.'), findsOneWidget);
       await tester.tap(find.text('Siguiendo'));
       await tester.pumpAndSettle();
       expect(feed.requests.last.mode, HomeFeedMode.following);
+      expect(find.text('Explorar perfiles'), findsOneWidget);
       controller.dispose();
     },
   );

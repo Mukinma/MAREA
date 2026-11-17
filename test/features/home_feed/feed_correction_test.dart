@@ -94,6 +94,7 @@ void main() {
     await tester.pump();
     expect(tester.takeException(), isNull);
     expect(find.text('Creamos juntos'), findsOneWidget);
+    expect(find.byKey(const Key('home-post-action-rail')), findsOneWidget);
   });
 
   testWidgets('Home posts suppress collaboration while full detail keeps it', (
@@ -125,6 +126,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text(post.title), findsOneWidget);
+    expect(find.byKey(const Key('home-post-action-row')), findsOneWidget);
     expect(find.text('Me interesa colaborar'), findsNothing);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(

@@ -307,13 +307,22 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _roundButton(Icons.close, () => Navigator.of(context).pop()),
-                  const Text(
-                    'HISTORIA',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.2,
+                  _roundButton(
+                    Icons.close,
+                    () => Navigator.of(context).pop(),
+                    tooltip: 'Cerrar cámara',
+                  ),
+                  const Expanded(
+                    child: Text(
+                      'HISTORIA',
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.2,
+                      ),
                     ),
                   ),
                   _roundButton(

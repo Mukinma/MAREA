@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
-import 'package:marea/core/theme/app_depth.dart';
+import 'package:marea/core/theme/app_radius.dart';
 import 'package:marea/core/theme/category_visuals.dart';
 import 'package:marea/features/missions/application/mission_catalog_controller.dart';
 import 'package:marea/features/community/models/community_models.dart';
@@ -26,43 +26,22 @@ class MissionCatalogSearchBar extends StatelessWidget {
   final int activeFilterCount;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(28),
-      boxShadow: AppDepth.floating,
+  Widget build(BuildContext context) => Material(
+    color: AppColors.surface,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadius.medium),
+      side: const BorderSide(color: AppColors.border),
     ),
+    clipBehavior: Clip.antiAlias,
     child: Row(
       children: [
-        ValueListenableBuilder(
-          valueListenable: text,
-          builder: (context, value, _) {
-            if (value.text.isNotEmpty) {
-              return IconButton(
-                tooltip: 'Limpiar búsqueda',
-                onPressed: () {
-                  text.clear();
-                  onChanged('');
-                },
-                icon: const Icon(
-                  Icons.close,
-                  color: AppColors.brandNavy,
-                  size: 20,
-                ),
-              );
-            }
-            return MediaQuery.sizeOf(context).width >= 350 &&
-                    MediaQuery.textScalerOf(context).scale(16) <= 22
-                ? const Padding(
-                    padding: EdgeInsets.only(left: 12, right: 6),
-                    child: Icon(
-                      Icons.search_outlined,
-                      color: AppColors.brandNavy,
-                      size: 23,
-                    ),
-                  )
-                : const SizedBox(width: 10);
-          },
+        const Padding(
+          padding: EdgeInsetsDirectional.only(start: 13, end: 9),
+          child: Icon(
+            Icons.search_rounded,
+            color: AppColors.brandNavy,
+            size: 22,
+          ),
         ),
         Expanded(
           child: TextField(
@@ -86,6 +65,19 @@ class MissionCatalogSearchBar extends StatelessWidget {
               ),
             ),
           ),
+        ),
+        ValueListenableBuilder(
+          valueListenable: text,
+          builder: (context, value, _) => value.text.isEmpty
+              ? const SizedBox(width: 8)
+              : IconButton(
+                  tooltip: 'Limpiar búsqueda',
+                  onPressed: () {
+                    text.clear();
+                    onChanged('');
+                  },
+                  icon: const Icon(Icons.close_rounded, size: 20),
+                ),
         ),
         const SizedBox(
           height: 24,
@@ -113,6 +105,95 @@ class MissionCatalogSearchBar extends StatelessWidget {
         ),
       ],
     ),
+  );
+}
+
+class MissionCatalogSectionHeader extends StatelessWidget {
+  const MissionCatalogSectionHeader({
+    required this.title,
+    this.subtitle,
+    this.compact = false,
+    this.actions = const [],
+    super.key,
+  });
+
+  final String title;
+  final String? subtitle;
+  final bool compact;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final heading = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          header: true,
+          child: Text(
+            title,
+            style: text.titleLarge?.copyWith(
+              color: AppColors.brandNavy,
+              fontSize: compact ? 19 : null,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -.45,
+              height: 1.12,
+            ),
+          ),
+        ),
+        if (subtitle case final value?) ...[
+          const SizedBox(height: 3),
+          Text(value, style: text.bodySmall),
+        ],
+      ],
+    );
+    if (actions.isEmpty) return heading;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final controls = Wrap(
+          spacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: actions,
+        );
+        final scale = MediaQuery.textScalerOf(context).scale(16);
+        if (constraints.maxWidth < 275 || scale > 20) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [heading, controls],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: heading),
+            const SizedBox(width: 8),
+            controls,
+          ],
+        );
+      },
+    );
+  }
+}
+
+class MissionCatalogMapButton extends StatelessWidget {
+  const MissionCatalogMapButton({required this.onPressed, super.key});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => TextButton.icon(
+    onPressed: onPressed,
+    style: TextButton.styleFrom(
+      backgroundColor: AppColors.mint,
+      foregroundColor: AppColors.brandNavy,
+      padding: const EdgeInsets.symmetric(horizontal: 11),
+      textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontWeight: FontWeight.w800,
+        letterSpacing: 0,
+      ),
+    ),
+    icon: const Icon(Icons.map_outlined, size: 18),
+    label: const Text('Ver mapa'),
   );
 }
 
@@ -162,9 +243,9 @@ class _MissionCatalogCategoriesState extends State<MissionCatalogCategories> {
     scrollDirection: Axis.horizontal,
     padding: const EdgeInsets.fromLTRB(
       missionCatalogInset,
-      4,
+      2,
       missionCatalogInset,
-      8,
+      2,
     ),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,10 +283,23 @@ class _CategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final category = this.category;
     final visual = CategoryVisuals.forProfileInterest(category ?? 'otros');
-    final label = communityCategories[category] ?? 'Todo';
-    final activeAll = category == null && selected;
-    final foreground = activeAll ? Colors.white : AppColors.brandNavy;
-    final radius = BorderRadius.circular(16);
+    final label = communityCategories[category] ?? 'Todas';
+    final isAll = category == null;
+    final onlyLabel = selected && !isAll;
+    final foreground = selected && isAll ? Colors.white : AppColors.brandNavy;
+    final fill = isAll
+        ? (selected ? AppColors.brandNavy : AppColors.surface)
+        : (selected
+              ? Color.alphaBlend(
+                  visual.accent.withValues(alpha: .35),
+                  visual.color,
+                )
+              : visual.color);
+    final radius = BorderRadius.circular(AppRadius.medium);
+    final extraHeight = (MediaQuery.textScalerOf(context).scale(12) - 12).clamp(
+      0.0,
+      double.infinity,
+    );
     return Semantics(
       key: tileKey,
       selected: selected,
@@ -215,18 +309,14 @@ class _CategoryTile extends StatelessWidget {
             ? Duration.zero
             : const Duration(milliseconds: 160),
         decoration: BoxDecoration(
-          color: activeAll
-              ? AppColors.brandNavy
-              : category == null
-              ? AppColors.surface
-              : visual.color,
+          color: fill,
           borderRadius: radius,
-          boxShadow: AppDepth.floating,
           border: Border.all(
-            color: selected && !activeAll
-                ? AppColors.brandNavy
+            color: onlyLabel
+                ? visual.accent
+                : isAll && !selected
+                ? AppColors.border
                 : Colors.transparent,
-            width: 1.5,
           ),
         ),
         child: Material(
@@ -235,23 +325,29 @@ class _CategoryTile extends StatelessWidget {
             borderRadius: radius,
             onTap: onTap,
             child: Container(
-              constraints: const BoxConstraints(minWidth: 57, minHeight: 49),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              constraints: BoxConstraints(
+                minWidth: 58,
+                minHeight: 53 + extraHeight,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    category == null ? Icons.explore_outlined : visual.icon,
-                    size: 21,
-                    color: category == null ? foreground : visual.accent,
-                  ),
-                  const SizedBox(height: 2),
+                  if (!onlyLabel) ...[
+                    Icon(
+                      isAll ? Icons.explore_outlined : visual.icon,
+                      size: 19,
+                      color: foreground,
+                    ),
+                    const SizedBox(height: 2),
+                  ],
                   Text(
                     label,
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: foreground,
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
+                      letterSpacing: 0,
                     ),
                   ),
                 ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:marea/core/location/device_location_service.dart';
 import 'package:marea/core/maps/map_surface.dart';
 import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -18,6 +19,108 @@ import '../../support/fakes.dart';
 import '../../support/mission_repository_fake.dart';
 
 void main() {
+  testWidgets('local missions fill the spotlight, preview and catalog once', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final near = _photographedMission('near', 'Mural del barrio', -104.31);
+    final featured = _photographedMission(
+      'featured',
+      'Retratos del puerto',
+      -104.312,
+    );
+    final remaining = [
+      _photographedMission('third', 'Pinta el malecón', -104.314),
+      _photographedMission('fourth', 'Festival del puerto', -104.316),
+      _photographedMission(
+        'fifth',
+        'Retratos en Miramar',
+        -104.318,
+        category: 'fotografia',
+        location: 'Ubicación seleccionada (19.12000, -104.31000)',
+      ),
+    ];
+    final community = _DiscoveryCommunity([featured, near, ...remaining]);
+    final session = AppSessionController(
+      authRepository: FakeAuthRepository(),
+      profileRepository: FakeProfileRepository()..value = sampleProfile,
+      communityRepository: community,
+      missionMapRepository: _Map(missions: [near, featured, ...remaining]),
+    );
+    await session.initialize();
+    addTearDown(session.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: Scaffold(
+          body: MissionCatalogScreen(
+            session: session,
+            locationService: const _Location(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Ver misión'), findsOneWidget);
+    expect(find.byKey(const Key('nearby-mission-featured')), findsNothing);
+    expect(find.byKey(const Key('nearby-mission-fifth')), findsNothing);
+    expect(find.byKey(const Key('mission-catalog-card-fifth')), findsOneWidget);
+    expect(
+      find.text('Por ahora, las misiones disponibles están en tu zona.'),
+      findsNothing,
+    );
+    expect(find.text(near.title), findsOneWidget);
+    expect(find.text(featured.title), findsOneWidget);
+    expect(
+      find.byKey(const Key('mission-catalog-card-featured')),
+      findsNothing,
+    );
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('featured-mission-featured')),
+        matching: find.byTooltip('Guardar'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(community.missionSaves, {featured.id});
+
+    await tester.enterText(
+      find.byKey(const Key('mission-catalog-search')),
+      'Retratos del puerto',
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+    expect(find.text('Ver misión'), findsNothing);
+    expect(find.text('Cerca de ti'), findsNothing);
+    expect(
+      find.byKey(const Key('mission-catalog-card-featured')),
+      findsOneWidget,
+    );
+    expect(find.byTooltip('Quitar de guardados'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Limpiar búsqueda'));
+    await tester.pumpAndSettle();
+    final photo = find.byKey(const Key('mission-catalog-category-fotografia'));
+    await tester.ensureVisible(photo);
+    await tester.tap(photo);
+    await tester.pumpAndSettle();
+    final onlyNearby = find.byKey(const Key('nearby-mission-fifth'));
+    expect(onlyNearby, findsOneWidget);
+    expect(tester.getSize(onlyNearby).width, closeTo(358, 1));
+    expect(find.text('Punto en el mapa'), findsOneWidget);
+    expect(find.text('Explorar misiones'), findsNothing);
+    expect(find.text('Misión destacada'), findsNothing);
+    expect(
+      find.descendant(of: photo, matching: find.byType(Icon)),
+      findsNothing,
+    );
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('filters stay synchronized and survive real route pushes', (
     tester,
   ) async {
@@ -52,6 +155,7 @@ void main() {
     expect(router.state.uri.path, '/missions');
     expect(find.byType(MissionCatalogScreen), findsOneWidget);
     expect(find.text('Publicaciones'), findsNothing);
+    expect(find.text('Aún no hay una destacada'), findsOneWidget);
     expect(find.text('2 cupos disponibles'), findsOneWidget);
     expect(find.text(community.value.location), findsOneWidget);
     final search = find.byKey(const Key('mission-catalog-search'));
@@ -135,7 +239,7 @@ void main() {
     await tester.pumpAndSettle();
     final offset = scroll.pixels;
     expect(offset, greaterThan(0));
-    await tester.tap(find.byTooltip('Guardadas'));
+    await tester.tap(find.text('Guardadas'));
     await tester.pumpAndSettle();
     expect(router.state.uri.queryParameters['section'], 'saved');
     expect(find.text('Misiones guardadas'), findsOneWidget);
@@ -149,7 +253,17 @@ void main() {
       tester.widget<TextField>(search).controller!.text,
       'Pintemos & arte',
     );
-    expect(find.text('Ordenar · Por fecha de inicio'), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byTooltip('Ordenar'),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.value == 'Por fecha de inicio',
+        ),
+      ),
+      findsOneWidget,
+    );
     await tester.ensureVisible(card);
     await tester.tap(card);
     await tester.pumpAndSettle();
@@ -252,6 +366,9 @@ class _Community extends MissionRepositoryFake {
 }
 
 class _Map implements MissionMapRepository {
+  _Map({this.missions = const []});
+
+  final List<Mission> missions;
   final calls = <(String, String?)>[];
 
   @override
@@ -262,6 +379,76 @@ class _Map implements MissionMapRepository {
     required DateTime now,
   }) async {
     calls.add((query, filters.category));
-    return const MissionMapPage(missions: [], total: 0);
+    final matching = missions
+        .where(
+          (mission) =>
+              filters.category == null || mission.category == filters.category,
+        )
+        .toList();
+    return MissionMapPage(missions: matching, total: matching.length);
   }
 }
+
+class _Location implements DeviceLocationService {
+  const _Location();
+
+  @override
+  Future<DevicePosition> current({
+    bool requestPermission = false,
+    bool Function()? isCurrent,
+  }) async => const DevicePosition(latitude: 19.05, longitude: -104.31);
+
+  @override
+  Future<bool> openSettings({bool locationDisabled = false}) async => false;
+}
+
+class _DiscoveryCommunity extends MissionRepositoryFake {
+  _DiscoveryCommunity(this.items);
+
+  final List<Mission> items;
+
+  @override
+  Future<List<Mission>> missions({
+    String? authorId,
+    int offset = 0,
+    String query = '',
+    String? category,
+    UserType? targetType,
+    String scope = 'all',
+  }) async => offset > 0
+      ? []
+      : items
+            .where(
+              (mission) =>
+                  (category == null || category == mission.category) &&
+                  mission.title.contains(query),
+            )
+            .toList();
+
+  @override
+  Future<String> missionImageUrl(String path) async => '';
+}
+
+Mission _photographedMission(
+  String id,
+  String title,
+  double longitude, {
+  String category = 'arte',
+  String location = 'Manzanillo',
+}) => Mission(
+  id: id,
+  authorId: 'organizer',
+  title: title,
+  body: '',
+  category: category,
+  location: location,
+  startsAt: DateTime.now().add(const Duration(days: 5)),
+  capacity: 2,
+  createdAt: DateTime.now(),
+  imagePath: '$id.webp',
+  coordinates: PostCoordinates(
+    latitude: 19.05,
+    longitude: longitude,
+    precision: PostLocationPrecision.approximate,
+  ),
+);

@@ -127,7 +127,7 @@ void main() {
     expect(map.calls, greaterThan(1));
   });
 
-  testWidgets('a late carousel skips duplicate pages without losing rows', (
+  testWidgets('nearby completion leaves pagination to the catalog', (
     tester,
   ) async {
     final near = _mission('close', longitude: 179.998);
@@ -141,11 +141,13 @@ void main() {
     addTearDown(controller.dispose);
     controller.start();
     await tester.pump();
-    expect(controller.visibleMissions.map((mission) => mission.id), ['close']);
+    expect(controller.catalog.items.single.id, 'close');
     pending.complete(MissionMapPage(missions: [near], total: 1));
     await tester.pump();
+    expect(repo.missionCalls.map((call) => call.$2), [0]);
+    expect(controller.nearby.single.mission.id, 'close');
+    await controller.loadCatalog();
     expect(repo.missionCalls.map((call) => call.$2), [0, 30, 60]);
-    expect(controller.visibleMissions.map((mission) => mission.id), ['far']);
     expect(controller.catalog.hasMore, isFalse);
     expect(controller.catalog.items.map((mission) => mission.id), [
       'close',
@@ -164,14 +166,16 @@ void main() {
     addTearDown(controller.dispose);
     controller.start();
     await tester.pump();
+    expect(controller.catalog.hasMore, isTrue);
+    await controller.loadCatalog();
     expect(repo.missionCalls.map((call) => call.$2), [0, 30]);
-    expect(controller.visibleMissions, isEmpty);
+    expect(controller.catalog.items.single.id, near.id);
     expect(controller.catalog.hasMore, isFalse);
     expect(controller.nearby.single.mission.id, near.id);
     controller.type('close', immediate: true);
     await tester.pump();
     expect(controller.showNearby, isFalse);
-    expect(controller.visibleMissions.single.id, near.id);
+    expect(controller.catalog.items.single.id, near.id);
   });
 
   testWidgets('start ordering and profile ignore a late recent page', (
@@ -193,7 +197,7 @@ void main() {
     recent.complete([_mission('late')]);
     await tester.pump();
     expect(repo.startCalls.single, ('', 'musica', UserType.business, 0));
-    expect(controller.visibleMissions.single.id, 'early');
+    expect(controller.catalog.items.single.id, 'early');
   });
 
   testWidgets('refreshes GPS without prompting when the user has moved', (
@@ -238,7 +242,7 @@ void main() {
     expect(controller.hasPosition, isFalse);
     expect(controller.distanceTo(_mission('pin')), isNull);
     expect(geocoding.points, hasLength(1));
-    expect(controller.visibleMissions, isNotEmpty);
+    expect(controller.catalog.items, isNotEmpty);
   });
 
   testWidgets('searches mission punctuation literally', (tester) async {

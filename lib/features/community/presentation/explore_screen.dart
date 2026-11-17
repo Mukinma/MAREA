@@ -35,10 +35,17 @@ class _ExploreScreenState extends State<ExploreScreen> {
   String _query = '', _section = 'posts', _savedSection = 'posts';
   String? _category;
   ShowcaseKind? _kind;
+
+  String get _initialSection => switch (widget.initialSection) {
+    'people' => 'people',
+    'saved' => 'saved',
+    _ => 'posts',
+  };
+
   @override
   void initState() {
     super.initState();
-    _section = widget.initialSection == 'saved' ? 'saved' : 'posts';
+    _section = _initialSection;
     _category = widget.initialCategory;
   }
 
@@ -46,7 +53,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   void didUpdateWidget(ExploreScreen old) {
     super.didUpdateWidget(old);
     if (old.initialSection != widget.initialSection) {
-      _section = widget.initialSection == 'saved' ? 'saved' : 'posts';
+      _section = _initialSection;
     }
     if (old.initialCategory != widget.initialCategory) {
       _category = widget.initialCategory;

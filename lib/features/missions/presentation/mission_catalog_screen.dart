@@ -31,9 +31,8 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
     with WidgetsBindingObserver {
   static const _featuredCategories = [
     'arte',
-    'digital',
-    'diseno',
     'musica',
+    'gastronomia',
     'fotografia',
   ];
   static const _orders = {
@@ -168,129 +167,81 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
     if (mounted) await _catalog.refreshMission(id);
   }
 
-  Widget _action({
-    required String label,
-    required IconData icon,
-    required VoidCallback onPressed,
-    bool primary = false,
-  }) => IconButton(
-    tooltip: label,
-    onPressed: onPressed,
-    style: IconButton.styleFrom(
-      backgroundColor: primary ? AppColors.brandNavy : AppColors.surface,
-      foregroundColor: primary ? Colors.white : AppColors.brandNavy,
-      fixedSize: const Size.square(48),
-      minimumSize: const Size.square(48),
-      padding: EdgeInsets.zero,
-    ),
-    icon: Icon(icon, size: 23),
-  );
-
-  Widget _searchActions() => Row(
+  Widget _catalogActions() => Wrap(
+    spacing: 6,
     children: [
-      Expanded(
-        child: MissionCatalogSearchBar(
-          text: _search,
-          onChanged: _catalog.type,
-          onSubmitted: (value) => _catalog.type(value, immediate: true),
-          onFilters: _filters,
-          activeFilterCount:
-              (_catalog.target != null ? 1 : 0) +
-              (_catalog.showNearby &&
-                      _catalog.radiusKm !=
-                          MissionCatalogController.defaultRadius
-                  ? 1
-                  : 0),
-        ),
-      ),
-      const SizedBox(width: 7),
-      _action(
-        label: 'Guardadas',
-        icon: Icons.bookmark_border_rounded,
+      TextButton.icon(
         onPressed: () => _open('/missions', parameters: {'section': 'saved'}),
+        icon: const Icon(Icons.bookmark_border_rounded, size: 18),
+        label: const Text('Guardadas'),
       ),
-      const SizedBox(width: 7),
-      _action(
-        label: 'Crear misión',
-        icon: Icons.add_rounded,
-        primary: true,
+      TextButton.icon(
         onPressed: _createMission,
+        icon: const Icon(Icons.add_rounded, size: 19),
+        label: const Text('Crear misión'),
       ),
     ],
   );
 
-  Widget _catalogToolbar(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: PopupMenuButton<MissionCatalogOrder>(
-            tooltip: 'Ordenar',
-            initialValue: _catalog.order,
-            onSelected: _catalog.setOrder,
-            itemBuilder: (_) => [
-              for (final entry in _orders.entries)
-                CheckedPopupMenuItem(
-                  value: entry.key,
-                  checked: entry.key == _catalog.order,
-                  child: Text(entry.value),
-                ),
-            ],
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(24),
+  Widget _searchBar() => MissionCatalogSearchBar(
+    text: _search,
+    onChanged: _catalog.type,
+    onSubmitted: (value) => _catalog.type(value, immediate: true),
+    onFilters: _filters,
+    activeFilterCount:
+        (_catalog.target != null ? 1 : 0) +
+        (_catalog.showNearby &&
+                _catalog.radiusKm != MissionCatalogController.defaultRadius
+            ? 1
+            : 0),
+  );
+
+  Widget _catalogToolbar(BuildContext context) => MissionCatalogSectionHeader(
+    title: _catalog.query.isEmpty ? 'Explorar misiones' : 'Resultados',
+    actions: [
+      if (!_catalog.showNearby) MissionCatalogMapButton(onPressed: _openMap),
+      Semantics(
+        value: _orders[_catalog.order],
+        child: PopupMenuButton<MissionCatalogOrder>(
+          tooltip: 'Ordenar',
+          initialValue: _catalog.order,
+          onSelected: _catalog.setOrder,
+          itemBuilder: (_) => [
+            for (final entry in _orders.entries)
+              CheckedPopupMenuItem(
+                value: entry.key,
+                checked: entry.key == _catalog.order,
+                child: Text(entry.value),
               ),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 48),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+          ],
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Ordenar',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.brandNavy,
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.swap_vert_rounded,
-                        color: AppColors.brandNavy,
-                        size: 19,
-                      ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          'Ordenar · ${_orders[_catalog.order]}',
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.brandNavy,
-                              ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.expand_more_rounded,
-                        color: AppColors.brandNavy,
-                        size: 17,
-                      ),
-                    ],
+                  const SizedBox(width: 3),
+                  Icon(
+                    Icons.expand_more_rounded,
+                    size: 18,
+                    color: _catalog.order == MissionCatalogOrder.recent
+                        ? AppColors.brandNavy
+                        : AppColors.aquaDark,
                   ),
-                ),
+                ],
               ),
             ),
           ),
         ),
       ),
-      if (!_catalog.showNearby)
-        if (MediaQuery.sizeOf(context).width <= 340 ||
-            MediaQuery.textScalerOf(context).scale(16) > 22)
-          _action(
-            label: 'Ver mapa',
-            icon: Icons.map_outlined,
-            onPressed: _openMap,
-          )
-        else
-          TextButton(onPressed: _openMap, child: const Text('Ver mapa')),
     ],
   );
 
@@ -304,17 +255,14 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
       ),
       const SizedBox(width: 6),
       Expanded(
-        child: Text(
-          'Misiones guardadas',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+        child: const MissionCatalogSectionHeader(title: 'Misiones guardadas'),
       ),
     ],
   );
 
   @override
   Widget build(BuildContext context) => ColoredBox(
-    color: AppColors.mist,
+    color: AppColors.profileCanvas,
     child: SafeArea(
       top: false,
       child: Center(
@@ -323,7 +271,34 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
           child: ListenableBuilder(
             listenable: _catalog,
             builder: (context, _) {
-              final missions = _catalog.visibleMissions;
+              final page = _catalog.catalog;
+              final items = page.items;
+              final showFeatured =
+                  _catalog.showNearby && _catalog.category == null;
+              final featured = showFeatured
+                  ? items
+                        .where(
+                          (item) => item.imagePath?.trim().isNotEmpty == true,
+                        )
+                        .firstOrNull
+                  : null;
+              final remaining = items
+                  .where((item) => item.id != featured?.id)
+                  .toList();
+              final nearby = _nearbyPreview(remaining, featured?.id);
+              final nearbyIds = nearby.map((item) => item.mission.id).toSet();
+              final missions = remaining
+                  .where((item) => !nearbyIds.contains(item.id))
+                  .toList();
+              final showProximity =
+                  _catalog.showNearby &&
+                  (nearby.isNotEmpty || _catalog.nearby.isEmpty);
+              final hideEmptyResults =
+                  (showFeatured || nearby.isNotEmpty) &&
+                  missions.isEmpty &&
+                  !page.waiting &&
+                  !page.hasMore &&
+                  page.error == null;
               return Focus(
                 focusNode: _catalogFocus,
                 child: RefreshIndicator(
@@ -341,9 +316,9 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
                         ScrollViewKeyboardDismissBehavior.onDrag,
                     slivers: [
                       if (widget.savedOnly)
-                        _box(_savedHeader(context), top: 6, bottom: 8)
+                        _box(_savedHeader(context), top: 10, bottom: 12)
                       else ...[
-                        _box(_searchActions(), top: 6, bottom: 3),
+                        _box(_searchBar(), top: 8, bottom: 10),
                         SliverToBoxAdapter(
                           child: MissionCatalogCategories(
                             categories: _categories,
@@ -351,18 +326,47 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
                             onSelected: _selectCategory,
                           ),
                         ),
-                        if (_catalog.showNearby)
+                        if (featured != null)
                           _box(
-                            MissionProximityPanel(
-                              catalog: _catalog,
-                              onMap: _openMap,
-                              onSettings: _locationSettings,
-                              onOpen: _openMission,
-                              bookmark: _bookmark,
+                            FeaturedMissionCard(
+                              key: ValueKey('featured-mission-${featured.id}'),
+                              mission: featured,
+                              resolveImage: _catalog.community?.missionImageUrl,
+                              bookmark: _bookmark(featured.id),
+                              onOpen: () => _openMission(featured.id),
                             ),
-                            top: 5,
+                            top: 16,
+                          )
+                        else if (showFeatured && page.error == null)
+                          _box(
+                            page.waiting
+                                ? const SizedBox(
+                                    height: 116,
+                                    child: MareaSkeleton(),
+                                  )
+                                : FeaturedMissionEmptyCard(
+                                    hasMissions:
+                                        items.isNotEmpty || nearby.isNotEmpty,
+                                  ),
+                            top: 16,
                           ),
-                        _box(_catalogToolbar(context), top: 5, bottom: 5),
+                        if (showProximity)
+                          SliverPadding(
+                            padding: const EdgeInsets.only(top: 16),
+                            sliver: SliverToBoxAdapter(
+                              child: MissionProximityPanel(
+                                catalog: _catalog,
+                                missions: nearby,
+                                onMap: _openMap,
+                                onSettings: _locationSettings,
+                                onOpen: _openMission,
+                                bookmark: _bookmark,
+                              ),
+                            ),
+                          ),
+                        if (!hideEmptyResults)
+                          _box(_catalogToolbar(context), top: 14),
+                        _box(_catalogActions(), bottom: 6),
                       ],
                       SliverPadding(
                         padding: const EdgeInsets.symmetric(
@@ -373,7 +377,7 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
                           itemBuilder: (context, index) {
                             final mission = missions[index];
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 7),
+                              padding: const EdgeInsets.only(bottom: 9),
                               child: MissionCatalogCard(
                                 key: ValueKey(
                                   'mission-catalog-card-${mission.id}',
@@ -389,8 +393,8 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
                           },
                         ),
                       ),
-                      _box(_feedback(missions.isEmpty)),
-                      const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                      if (!hideEmptyResults) _box(_feedback(missions.isEmpty)),
+                      const SliverToBoxAdapter(child: SizedBox(height: 16)),
                     ],
                   ),
                 ),
@@ -401,6 +405,27 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
       ),
     ),
   );
+
+  List<NearbyMission> _nearbyPreview(
+    List<Mission> catalog,
+    String? featuredId,
+  ) {
+    if (!_catalog.showNearby) return const [];
+    final preview = _catalog.nearby
+        .where((item) => item.mission.id != featuredId)
+        .take(3)
+        .toList();
+    final previewIds = preview.map((item) => item.mission.id).toSet();
+    if (catalog.length > 1 &&
+        catalog.every((item) => previewIds.contains(item.id))) {
+      // Leave a result for Explorar when the whole catalog is in walking range.
+      final catalogIds = catalog.map((item) => item.id).toSet();
+      preview.removeAt(
+        preview.lastIndexWhere((item) => catalogIds.contains(item.mission.id)),
+      );
+    }
+    return preview;
+  }
 
   Widget _feedback(bool empty) {
     final page = _catalog.catalog;
@@ -416,22 +441,29 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
         onAction: _catalog.loadCatalog,
       );
     }
-    if (empty) {
-      final message = widget.savedOnly
-          ? 'Aún no has guardado misiones.'
-          : _catalog.query.isNotEmpty
-          ? 'No encontramos misiones para esta búsqueda.'
-          : _catalog.nearby.isNotEmpty
-          ? 'Por ahora, las misiones disponibles están en tu zona.'
-          : 'No hay misiones disponibles con estos filtros.';
-      return MissionCatalogNotice(message: message);
-    }
     if (page.hasMore) {
       return Center(
         child: TextButton(
           onPressed: _catalog.loadCatalog,
           child: const Text('Cargar más misiones'),
         ),
+      );
+    }
+    if (empty) {
+      final message = widget.savedOnly
+          ? 'Aún no has guardado misiones.'
+          : _catalog.query.isNotEmpty
+          ? 'No encontramos misiones para esta búsqueda.'
+          : 'No hay misiones disponibles con estos filtros.';
+      return MissionCatalogNotice(
+        message: message,
+        action: _catalog.query.isNotEmpty ? 'Limpiar búsqueda' : null,
+        onAction: _catalog.query.isNotEmpty
+            ? () {
+                _search.clear();
+                _catalog.type('');
+              }
+            : null,
       );
     }
     return const SizedBox.shrink();

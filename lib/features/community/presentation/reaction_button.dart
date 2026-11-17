@@ -21,11 +21,12 @@ class ReactionButton extends StatefulWidget {
     required this.onSelected,
     this.inline = false,
     this.compact = false,
+    this.stackedCount = false,
     super.key,
   });
   final PostReaction? selected;
   final int count;
-  final bool enabled, inline, compact;
+  final bool enabled, inline, compact, stackedCount;
   final ValueChanged<PostReaction?> onSelected;
   @override
   State<ReactionButton> createState() => _ReactionButtonState();
@@ -340,7 +341,9 @@ class _ReactionButtonState extends State<ReactionButton>
                 child: AnimatedContainer(
                   key: _anchor,
                   duration: _duration,
-                  width: widget.compact ? _compactWidth(context) : 48,
+                  width: widget.compact && !widget.stackedCount
+                      ? _compactWidth(context)
+                      : 48,
                   height: 48,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
@@ -349,9 +352,13 @@ class _ReactionButtonState extends State<ReactionButton>
                         : AppColors.mint,
                   ),
                   child: widget.compact
-                      ? Row(
+                      ? Flex(
+                          direction: widget.stackedCount
+                              ? Axis.vertical
+                              : Axis.horizontal,
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
+                          spacing: widget.stackedCount ? 3 : 4,
                           children: [
                             Icon(
                               reactionIcon(widget.selected),
@@ -360,14 +367,14 @@ class _ReactionButtonState extends State<ReactionButton>
                                   ? AppColors.error
                                   : AppColors.textPrimary,
                             ),
-                            const SizedBox(width: 4),
                             Flexible(
                               child: Text(
                                 '${widget.count}',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 10,
+                                  height: widget.stackedCount ? 1.1 : null,
                                   color: AppColors.textSecondary,
                                 ),
                               ),
