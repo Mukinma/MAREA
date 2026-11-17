@@ -5,87 +5,137 @@ import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/map/models/mission_map_models.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 
-class MapSearchBar extends StatelessWidget {
+class MapSearchBar extends StatefulWidget {
   const MapSearchBar({
     required this.controller,
-    required this.filtersActive,
     required this.onSubmitted,
     required this.onFilters,
+    this.filterCount = 0,
     super.key,
   });
   final TextEditingController controller;
-  final bool filtersActive;
+  final int filterCount;
   final ValueChanged<String> onSubmitted;
   final VoidCallback onFilters;
   @override
-  Widget build(BuildContext context) => MareaSurface(
-    color: AppColors.surface,
-    radius: 32,
-    shadows: const [
-      BoxShadow(color: Color(0x1A0B255E), offset: Offset(0, 4), blurRadius: 12),
-    ],
-    padding: const EdgeInsets.only(left: 8, right: 6),
-    child: SizedBox(
-      height: 56,
-      child: Row(
-        children: [
-          IconButton(
-            tooltip: 'Buscar en el mapa',
-            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
-            padding: EdgeInsets.zero,
-            onPressed: () => onSubmitted(controller.text),
-            icon: const Icon(
-              Icons.search_rounded,
-              color: AppColors.brandNavy,
-              size: 27,
-            ),
-          ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              textInputAction: TextInputAction.search,
-              onSubmitted: onSubmitted,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 15,
+  State<MapSearchBar> createState() => _MapSearchBarState();
+}
+
+class _MapSearchBarState extends State<MapSearchBar> {
+  final _focus = FocusNode();
+  @override
+  void initState() {
+    super.initState();
+    _focus.addListener(_changed);
+  }
+
+  void _changed() => setState(() {});
+  @override
+  void dispose() {
+    _focus.removeListener(_changed);
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      MareaSurface(
+        color: AppColors.surface,
+        radius: 18,
+        padding: EdgeInsets.zero,
+        floating: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 2, right: 4),
+              child: Row(
+                children: [
+              IconButton(
+                tooltip: 'Buscar en el mapa',
+                onPressed: () => widget.onSubmitted(widget.controller.text),
+                constraints: const BoxConstraints.tightFor(
+                  width: 48,
+                  height: 48,
+                ),
+                icon: const Icon(
+                  Icons.search_rounded,
+                  color: AppColors.brandNavy,
+                  size: 23,
+                ),
               ),
-              decoration: const InputDecoration(
-                hintText: 'Buscar misiones o lugares',
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                filled: false,
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 16),
+              Expanded(
+                child: TextField(
+                  controller: widget.controller,
+                  focusNode: _focus,
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: widget.onSubmitted,
+                  decoration: const InputDecoration(
+                    hintText: 'Buscar misiones',
+                    filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              Tooltip(
+                message: 'Filtros del mapa',
+                child: TextButton.icon(
+                  onPressed: widget.onFilters,
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    foregroundColor: AppColors.brandNavy,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  icon: const Icon(Icons.tune_rounded, size: 19),
+                  label: Text(
+                    widget.filterCount > 0
+                        ? 'Filtros ${widget.filterCount}'
+                        : 'Filtros',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+                ],
               ),
             ),
-          ),
-          IconButton(
-            tooltip: 'Filtros del mapa',
-            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
-            padding: EdgeInsets.zero,
-            onPressed: onFilters,
-            style: IconButton.styleFrom(
-              backgroundColor: AppColors.mint,
-              shape: const CircleBorder(),
-            ),
-            icon: Badge(
-              isLabelVisible: filtersActive,
-              backgroundColor: AppColors.aqua,
-              child: const Icon(
-                Icons.tune_rounded,
-                color: AppColors.aquaDark,
-                size: 21,
+            if (_focus.hasFocus)
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 14, right: 14, bottom: 8),
+                  child: Text(
+                    'Por título, lugar u organizador',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
+    ],
   );
 }
 
-class MapQuickFilters extends StatelessWidget {
+class MapQuickFilters extends StatefulWidget {
   const MapQuickFilters({
     required this.filters,
     required this.onChanged,
@@ -94,63 +144,181 @@ class MapQuickFilters extends StatelessWidget {
   final MissionMapFilters filters;
   final ValueChanged<MissionMapFilters> onChanged;
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-    scrollDirection: Axis.horizontal,
-    child: Row(
+  State<MapQuickFilters> createState() => _MapQuickFiltersState();
+}
+
+class _MapQuickFiltersState extends State<MapQuickFilters> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final activeCategory = widget.filters.category == null
+        ? null
+        : CategoryVisuals.forCategory(widget.filters.category!);
+    final categoryButton = _chip(
+      'Categorías',
+      false,
+      () => setState(() => _expanded = true),
+      icon: Icons.category_outlined,
+      iconColor: AppColors.brandNavy,
+    );
+    final activeCategoryButton = activeCategory == null
+        ? null
+        : _activeCategoryButton(
+            communityCategories[widget.filters.category] ?? 'Categoría',
+            activeCategory,
+          );
+    final commonChips = [
+      for (final entry in communityCategories.entries)
+        _chip(
+          entry.value,
+          widget.filters.category == entry.key,
+          () => widget.onChanged(
+            widget.filters.withCategory(
+              widget.filters.category == entry.key ? null : entry.key,
+            ),
+          ),
+          color: CategoryVisuals.forCategory(entry.key).color,
+          icon: CategoryVisuals.forCategory(entry.key).icon,
+          iconColor: CategoryVisuals.forCategory(entry.key).iconColor,
+          alwaysColored: true,
+        ),
+      _chip(
+        'Hoy',
+        widget.filters.date == MissionMapDate.today,
+        () => widget.onChanged(
+          widget.filters.withDate(
+            widget.filters.date == MissionMapDate.today
+                ? MissionMapDate.any
+                : MissionMapDate.today,
+          ),
+        ),
+      ),
+      if (widget.filters.radiusKm != null)
+        _chip(
+          '${widget.filters.radiusKm!.toInt()} km',
+          true,
+          () => setState(() => _expanded = true),
+          icon: Icons.near_me_outlined,
+        ),
+    ];
+    if (!_expanded) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            categoryButton,
+            ?activeCategoryButton,
+            ...commonChips.skip(communityCategories.length),
+          ],
+        ),
+      );
+    }
+    return Row(
       children: [
-        _chip(
-          'Todo',
-          filters.category == null,
-          () => onChanged(filters.withCategory(null)),
-        ),
-        _chip(
-          'Hoy',
-          filters.date == MissionMapDate.today,
-          () => onChanged(
-            filters.withDate(
-              filters.date == MissionMapDate.today
-                  ? MissionMapDate.any
-                  : MissionMapDate.today,
+        Padding(
+          padding: const EdgeInsets.only(right: 4),
+          child: IconButton(
+            tooltip: 'Ocultar categorías',
+            onPressed: () => setState(() => _expanded = false),
+            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
+            padding: EdgeInsets.zero,
+            icon: const Icon(Icons.chevron_left_rounded, size: 28),
+            color: AppColors.brandNavy,
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.surface,
+              side: const BorderSide(color: AppColors.border),
+              shape: const CircleBorder(),
             ),
           ),
         ),
-        for (final entry in communityCategories.entries)
-          _chip(
-            entry.value,
-            filters.category == entry.key,
-            () => onChanged(
-              filters.withCategory(
-                filters.category == entry.key ? null : entry.key,
-              ),
-            ),
-            color: CategoryVisuals.forCategory(entry.key).color,
+        const SizedBox(width: 4),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(children: commonChips),
           ),
+        ),
       ],
+    );
+  }
+
+  Widget _activeCategoryButton(String label, CategoryVisual visual) => Padding(
+    padding: const EdgeInsets.only(right: 8),
+    child: Tooltip(
+      message: label,
+      child: Semantics(
+        button: true,
+        selected: true,
+        label: label,
+        child: IconButton(
+          onPressed: () => widget.onChanged(
+            widget.filters.withCategory(null),
+          ),
+          constraints: const BoxConstraints.tightFor(width: 48, height: 48),
+          padding: EdgeInsets.zero,
+          icon: Icon(visual.icon, size: 22, color: visual.iconColor),
+          style: IconButton.styleFrom(
+            backgroundColor: visual.color,
+            side: BorderSide(color: visual.iconColor, width: 2),
+            shape: const CircleBorder(),
+          ),
+        ),
+      ),
     ),
   );
+
   Widget _chip(
     String label,
     bool selected,
     VoidCallback action, {
     Color? color,
+    IconData? icon,
+    Color? iconColor,
+    bool alwaysColored = false,
   }) => Padding(
     padding: const EdgeInsets.only(right: 8),
-    child: FilterChip(
-      label: Text(label),
-      selected: selected,
-      onSelected: (_) => action(),
-      showCheckmark: false,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      selectedColor: color ?? AppColors.brandNavy,
-      backgroundColor: AppColors.surface,
-      labelStyle: TextStyle(
-        color: selected ? Colors.white : AppColors.brandNavy,
-        fontWeight: FontWeight.w700,
+    child: SizedBox(
+      height: 48,
+      child: MergeSemantics(
+        child: Semantics(
+          selected: selected,
+          child: ActionChip(
+            label: Text(label),
+            avatar: icon == null
+                ? null
+                : Icon(
+                    icon,
+                    size: 17,
+                    color: iconColor ?? color ?? AppColors.brandNavy,
+                  ),
+            onPressed: action,
+            backgroundColor: alwaysColored && color != null
+              ? color.withValues(alpha: selected ? 1 : .28)
+              : selected
+              ? color ?? AppColors.navigationAqua
+              : AppColors.surface,
+            labelStyle: const TextStyle(
+              color: AppColors.brandNavy,
+              fontWeight: FontWeight.w700,
+            ),
+            side: BorderSide(
+              color: selected && alwaysColored && color != null
+                  ? iconColor ?? color
+                  : selected
+                  ? AppColors.aquaDark
+                  : alwaysColored && color != null
+                  ? color
+                  : AppColors.border,
+              width: selected ? 2.5 : 1,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+        ),
       ),
-      side: BorderSide(
-        color: selected ? (color ?? AppColors.brandNavy) : AppColors.border,
-      ),
-      shape: const StadiumBorder(),
     ),
   );
 }

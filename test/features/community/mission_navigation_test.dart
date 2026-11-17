@@ -134,8 +134,12 @@ void main() {
       );
       await tapVisible(tester, find.byTooltip('Crear'));
       expect(find.text('Pon tu idea en movimiento'), findsOneWidget);
-      expect(find.text('Crear misión'), findsNWidgets(2));
-      await tapVisible(tester, find.text('Crear misión').last);
+      final create = find.descendant(
+        of: find.byType(CreationChoices),
+        matching: find.text('Crear misión'),
+      );
+      expect(create, findsOneWidget);
+      await tapVisible(tester, create);
       expect(find.text('Nueva misión'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });

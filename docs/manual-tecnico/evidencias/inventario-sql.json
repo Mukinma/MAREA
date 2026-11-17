@@ -1,0 +1,1546 @@
+{
+  "alcance": "Índice textual de declaraciones; incluye objetos eliminados y redefiniciones. No es un catálogo efectivo ni remoto.",
+  "migraciones": 42,
+  "declaraciones": [
+    {
+      "archivo": "supabase/migrations/001_initial_schema.sql",
+      "linea": 1,
+      "declaracion": "create table public.profiles"
+    },
+    {
+      "archivo": "supabase/migrations/001_initial_schema.sql",
+      "linea": 47,
+      "declaracion": "create policy \"Public usernames are discoverable\""
+    },
+    {
+      "archivo": "supabase/migrations/001_initial_schema.sql",
+      "linea": 53,
+      "declaracion": "create policy \"Users can read their profile\""
+    },
+    {
+      "archivo": "supabase/migrations/001_initial_schema.sql",
+      "linea": 59,
+      "declaracion": "create policy \"Users can create their profile\""
+    },
+    {
+      "archivo": "supabase/migrations/001_initial_schema.sql",
+      "linea": 65,
+      "declaracion": "create policy \"Users can update their profile\""
+    },
+    {
+      "archivo": "supabase/migrations/001_initial_schema.sql",
+      "linea": 72,
+      "declaracion": "create or replace function public.is_username_available"
+    },
+    {
+      "archivo": "supabase/migrations/001_initial_schema.sql",
+      "linea": 91,
+      "declaracion": "create or replace function public.set_profile_updated_at"
+    },
+    {
+      "archivo": "supabase/migrations/001_initial_schema.sql",
+      "linea": 110,
+      "declaracion": "create or replace function public.handle_new_user"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 2,
+      "declaracion": "create table public.legal_documents"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 10,
+      "declaracion": "create table public.registration_settings"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 20,
+      "declaracion": "create table public.legal_acceptances"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 35,
+      "declaracion": "create policy \"Own legal history\" on public.legal_acceptances for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 36,
+      "declaracion": "create function public.protect_published_legal"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 49,
+      "declaracion": "create function public.registration_policy"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 64,
+      "declaracion": "create function public.accept_current_legal"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 79,
+      "declaracion": "create or replace function public.handle_new_user"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 115,
+      "declaracion": "drop policy \"Public usernames are discoverable\" on public.profiles;"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 116,
+      "declaracion": "create table public.account_deletion_requests"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 129,
+      "declaracion": "create policy \"Read own profile media\" on storage.objects for select to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 131,
+      "declaracion": "create function public.validate_profile_media"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 149,
+      "declaracion": "create table public.profile_media_operations"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 157,
+      "declaracion": "create function public.begin_profile_media_operation"
+    },
+    {
+      "archivo": "supabase/migrations/002_account_completion.sql",
+      "linea": 169,
+      "declaracion": "create function public.request_account_deletion"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 2,
+      "declaracion": "create function public.community_is_admin"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 6,
+      "declaracion": "create function public.community_active_account"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 19,
+      "declaracion": "create table public.posts"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 42,
+      "declaracion": "create table public.post_saves"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 48,
+      "declaracion": "create table public.missions"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 64,
+      "declaracion": "create table public.mission_applications"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 74,
+      "declaracion": "create table public.content_reports"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 100,
+      "declaracion": "create policy \"Visible posts\" on public.posts for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 101,
+      "declaracion": "create policy \"Create own posts\" on public.posts for insert to authenticated with check"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 102,
+      "declaracion": "create policy \"Edit own posts\" on public.posts for update to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 103,
+      "declaracion": "create policy \"Delete own posts\" on public.posts for delete to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 104,
+      "declaracion": "create policy \"Read own saves\" on public.post_saves for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 105,
+      "declaracion": "create policy \"Save visible posts\" on public.post_saves for insert to authenticated with check"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 106,
+      "declaracion": "create policy \"Delete own saves\" on public.post_saves for delete to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 107,
+      "declaracion": "create policy \"Visible missions\" on public.missions for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 108,
+      "declaracion": "create policy \"Create own missions\" on public.missions for insert to authenticated with check"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 109,
+      "declaracion": "create policy \"Delete own missions\" on public.missions for delete to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 110,
+      "declaracion": "create policy \"Private applications\" on public.mission_applications for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 111,
+      "declaracion": "create policy \"Read own reports or moderate\" on public.content_reports for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 112,
+      "declaracion": "create policy \"Report visible content\" on public.content_reports for insert to authenticated with check"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 113,
+      "declaracion": "create function public.validate_community_content"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 145,
+      "declaracion": "create function public.community_profiles"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 158,
+      "declaracion": "create function public.set_mission_status"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 169,
+      "declaracion": "create function public.apply_to_mission"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 183,
+      "declaracion": "create function public.withdraw_application"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 193,
+      "declaracion": "create function public.review_application"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 213,
+      "declaracion": "create function public.moderate_content"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 236,
+      "declaracion": "create policy \"Read visible post images\" on storage.objects for select to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 238,
+      "declaracion": "create policy \"Upload own post images\" on storage.objects for insert to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 240,
+      "declaracion": "create policy \"Delete own unused post images\" on storage.objects for delete to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/003_community.sql",
+      "linea": 244,
+      "declaracion": "create function public.guard_post_image_operation"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 36,
+      "declaracion": "create function public.validate_mission_lifecycle"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 55,
+      "declaracion": "create function public.create_mission"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 66,
+      "declaracion": "create function public.update_mission"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 79,
+      "declaracion": "drop function public.set_mission_status"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 80,
+      "declaracion": "create function public.set_mission_status"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 97,
+      "declaracion": "create or replace function public.apply_to_mission"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 114,
+      "declaracion": "create or replace function public.withdraw_application"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 126,
+      "declaracion": "create or replace function public.review_application"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 147,
+      "declaracion": "create function public.list_missions"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 179,
+      "declaracion": "create policy \"Read visible mission images\" on storage.objects for select to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 181,
+      "declaracion": "create policy \"Upload own mission images\" on storage.objects for insert to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 183,
+      "declaracion": "create policy \"Delete own unused mission images\" on storage.objects for delete to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/005_mission_lifecycle.sql",
+      "linea": 185,
+      "declaracion": "create function public.guard_mission_image_operation"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 16,
+      "declaracion": "create function public.validate_profile_presentation"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 37,
+      "declaracion": "create function public.complete_initial_profile"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 59,
+      "declaracion": "create or replace function public.community_active_account"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 73,
+      "declaracion": "create or replace function public.validate_community_content"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 98,
+      "declaracion": "drop function public.community_profiles"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 99,
+      "declaracion": "create function public.community_profiles"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 111,
+      "declaracion": "create function public.visible_profile_media"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 117,
+      "declaracion": "create policy \"Read presented profile photos\" on storage.objects for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 118,
+      "declaracion": "create table public.showcase_items"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 134,
+      "declaracion": "create table public.showcase_images"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 139,
+      "declaracion": "create table public.showcase_saves"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 151,
+      "declaracion": "create function public.showcase_owner_visible"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 157,
+      "declaracion": "create policy \"Read available showcases or own management\" on public.showcase_items for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 159,
+      "declaracion": "create policy \"Read visible showcase images\" on public.showcase_images for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 160,
+      "declaracion": "create policy \"Read own showcase saves\" on public.showcase_saves for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 161,
+      "declaracion": "create policy \"Save published showcases\" on public.showcase_saves for insert to authenticated with check"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 162,
+      "declaracion": "create policy \"Remove own showcase saves\" on public.showcase_saves for delete to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 163,
+      "declaracion": "create function public.save_showcase"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 199,
+      "declaracion": "create function public.delete_showcase"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 211,
+      "declaracion": "create policy \"Read attached showcase photos\" on storage.objects for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 212,
+      "declaracion": "create policy \"Upload own showcase photos\" on storage.objects for insert to authenticated with check"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 213,
+      "declaracion": "create policy \"Delete unused showcase photos\" on storage.objects for delete to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 214,
+      "declaracion": "create function public.guard_showcase_photo"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 241,
+      "declaracion": "create function public.report_showcase"
+    },
+    {
+      "archivo": "supabase/migrations/006_profile_experience.sql",
+      "linea": 251,
+      "declaracion": "create or replace function public.moderate_content"
+    },
+    {
+      "archivo": "supabase/migrations/007_minimal_registration.sql",
+      "linea": 8,
+      "declaracion": "create or replace function public.validate_profile_presentation"
+    },
+    {
+      "archivo": "supabase/migrations/007_minimal_registration.sql",
+      "linea": 28,
+      "declaracion": "create or replace function public.complete_initial_profile"
+    },
+    {
+      "archivo": "supabase/migrations/007_minimal_registration.sql",
+      "linea": 50,
+      "declaracion": "create or replace function public.handle_new_user"
+    },
+    {
+      "archivo": "supabase/migrations/009_post_reactions.sql",
+      "linea": 2,
+      "declaracion": "create table public.post_reactions"
+    },
+    {
+      "archivo": "supabase/migrations/009_post_reactions.sql",
+      "linea": 9,
+      "declaracion": "create table public.notifications"
+    },
+    {
+      "archivo": "supabase/migrations/009_post_reactions.sql",
+      "linea": 29,
+      "declaracion": "create policy \"Visible reaction totals\" on public.post_reactions for select to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/009_post_reactions.sql",
+      "linea": 31,
+      "declaracion": "create policy \"Recipient notifications\" on public.notifications for select to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/009_post_reactions.sql",
+      "linea": 33,
+      "declaracion": "create function public.social_post"
+    },
+    {
+      "archivo": "supabase/migrations/009_post_reactions.sql",
+      "linea": 45,
+      "declaracion": "create function public.notify_post_reaction"
+    },
+    {
+      "archivo": "supabase/migrations/009_post_reactions.sql",
+      "linea": 67,
+      "declaracion": "create function public.set_post_reaction"
+    },
+    {
+      "archivo": "supabase/migrations/009_post_reactions.sql",
+      "linea": 80,
+      "declaracion": "create function public.post_social_stats"
+    },
+    {
+      "archivo": "supabase/migrations/009_post_reactions.sql",
+      "linea": 91,
+      "declaracion": "create function public.mark_notifications_read"
+    },
+    {
+      "archivo": "supabase/migrations/010_post_comments.sql",
+      "linea": 1,
+      "declaracion": "create table public.post_comments"
+    },
+    {
+      "archivo": "supabase/migrations/010_post_comments.sql",
+      "linea": 15,
+      "declaracion": "create policy \"Visible conversation\" on public.post_comments for select to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/010_post_comments.sql",
+      "linea": 17,
+      "declaracion": "create function public.create_post_comment"
+    },
+    {
+      "archivo": "supabase/migrations/010_post_comments.sql",
+      "linea": 37,
+      "declaracion": "create function public.delete_post_comment"
+    },
+    {
+      "archivo": "supabase/migrations/010_post_comments.sql",
+      "linea": 48,
+      "declaracion": "create or replace function public.post_social_stats"
+    },
+    {
+      "archivo": "supabase/migrations/011_post_collaboration.sql",
+      "linea": 3,
+      "declaracion": "create table public.post_collaboration_interests"
+    },
+    {
+      "archivo": "supabase/migrations/011_post_collaboration.sql",
+      "linea": 15,
+      "declaracion": "create policy \"Interest participants\" on public.post_collaboration_interests for select to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/011_post_collaboration.sql",
+      "linea": 17,
+      "declaracion": "create function public.send_post_interest"
+    },
+    {
+      "archivo": "supabase/migrations/011_post_collaboration.sql",
+      "linea": 33,
+      "declaracion": "create or replace function public.post_social_stats"
+    },
+    {
+      "archivo": "supabase/migrations/012_mission_map.sql",
+      "linea": 6,
+      "declaracion": "create function public.list_map_missions"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 11,
+      "declaracion": "create function public.lock_mission_compensation"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 23,
+      "declaracion": "create function public.create_mission"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 32,
+      "declaracion": "create function public.update_mission"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 40,
+      "declaracion": "create table public.mission_drafts"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 50,
+      "declaracion": "create table public.mission_saves"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 55,
+      "declaracion": "create table public.mission_finalists"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 66,
+      "declaracion": "create policy \"Private mission drafts\" on public.mission_drafts for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 67,
+      "declaracion": "create policy \"Private mission saves\" on public.mission_saves for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 68,
+      "declaracion": "create policy \"Organizer finalists\" on public.mission_finalists for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 69,
+      "declaracion": "create function public.save_mission_draft"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 118,
+      "declaracion": "create function public.publish_mission_draft"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 132,
+      "declaracion": "create function public.delete_mission_draft"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 140,
+      "declaracion": "create function public.set_mission_saved"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 155,
+      "declaracion": "create table public.mission_application_operations"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 165,
+      "declaracion": "create function public.submit_mission_application"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 195,
+      "declaracion": "create function public.set_mission_finalist"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 210,
+      "declaracion": "create function public.confirm_mission_selection"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 233,
+      "declaracion": "create function public.version_mission_event"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 248,
+      "declaracion": "create function public.notify_mission_application"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 266,
+      "declaracion": "create function public.notify_mission_status"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 283,
+      "declaracion": "drop policy \"Delete own unused mission images\" on storage.objects;"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 284,
+      "declaracion": "create policy \"Delete own unused mission images\" on storage.objects for delete to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 288,
+      "declaracion": "create or replace function public.guard_mission_image_operation"
+    },
+    {
+      "archivo": "supabase/migrations/013_missions_redesign.sql",
+      "linea": 311,
+      "declaracion": "create function public.list_saved_missions"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 14,
+      "declaracion": "create table public.notification_preferences"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 23,
+      "declaracion": "create table public.notification_devices"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 30,
+      "declaracion": "create table private.push_settings"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 35,
+      "declaracion": "create table private.push_queue"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 57,
+      "declaracion": "create policy \"Own notification preferences\" on public.notification_preferences for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 58,
+      "declaracion": "create function public.set_notification_preferences"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 71,
+      "declaracion": "create function public.record_notification_activity"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 81,
+      "declaracion": "create function public.register_notification_device"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 93,
+      "declaracion": "create function public.unregister_notification_device"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 104,
+      "declaracion": "create function private.wake_push_worker"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 118,
+      "declaracion": "create function private.enqueue_notification_push"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 133,
+      "declaracion": "create function private.schedule_marea_messages"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 170,
+      "declaracion": "create function public.claim_push_jobs"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 215,
+      "declaracion": "create function public.finish_push_job"
+    },
+    {
+      "archivo": "supabase/migrations/014_android_push.sql",
+      "linea": 237,
+      "declaracion": "create function public.push_job_is_current"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 4,
+      "declaracion": "create table public.tours"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 10,
+      "declaracion": "create table public.tour_revisions"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 14,
+      "declaracion": "create table private.tour_captures"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 18,
+      "declaracion": "create table private.tour_jobs"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 27,
+      "declaracion": "create table private.tour_output_writes"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 31,
+      "declaracion": "create table public.tour_requests"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 38,
+      "declaracion": "create table private.tour_permissions"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 42,
+      "declaracion": "create table private.tour_ar_tests"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 46,
+      "declaracion": "create table public.tour_progress"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 57,
+      "declaracion": "create function private.tour_visible"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 64,
+      "declaracion": "create function private.tour_live_document"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 82,
+      "declaracion": "create function private.tour_json"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 89,
+      "declaracion": "create function public.tours_get"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 96,
+      "declaracion": "create function public.tours_list"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 107,
+      "declaracion": "create function private.tour_link"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 117,
+      "declaracion": "create function public.tours_link_search"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 130,
+      "declaracion": "create function private.tour_document"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 181,
+      "declaracion": "create function private.tour_space_verified"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 186,
+      "declaracion": "create function public.tours_save"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 204,
+      "declaracion": "create function public.tours_ar_report_test"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 216,
+      "declaracion": "create function private.tour_public_document"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 229,
+      "declaracion": "create function public.tours_submit"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 257,
+      "declaracion": "create function public.tours_link_request"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 269,
+      "declaracion": "create function public.tours_requests"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 273,
+      "declaracion": "create function public.tours_review"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 308,
+      "declaracion": "create function public.tours_pause"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 314,
+      "declaracion": "create function public.tours_progress"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 330,
+      "declaracion": "create function private.tour_job_json"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 334,
+      "declaracion": "create function public.tours_capture_begin"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 339,
+      "declaracion": "create function public.tours_capture_submit"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 354,
+      "declaracion": "create function public.tours_job_get"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 356,
+      "declaracion": "create function public.tours_job_cancel"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 358,
+      "declaracion": "create function public.tours_attach_result"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 376,
+      "declaracion": "create function public.tours_claim_jobs"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 386,
+      "declaracion": "create function public.tours_job_is_current"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 389,
+      "declaracion": "create function public.tours_begin_output_write"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 396,
+      "declaracion": "create function public.tours_end_output_write"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 399,
+      "declaracion": "create function public.tours_finish_job"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 414,
+      "declaracion": "create or replace function public.request_account_deletion"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 426,
+      "declaracion": "create function private.tour_input_write"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 432,
+      "declaracion": "create function private.tour_asset_read"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 439,
+      "declaracion": "create function private.tour_reference_write"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 442,
+      "declaracion": "create policy \"Tour input owner reads\" on storage.objects for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 444,
+      "declaracion": "drop policy \"Tour input owner reads\" on storage.objects;"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 445,
+      "declaracion": "create policy \"Tour input owner reads\" on storage.objects for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 446,
+      "declaracion": "create policy \"Tour input draft writes\" on storage.objects for insert to authenticated with check"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 447,
+      "declaracion": "create policy \"Tour assets permitted reads\" on storage.objects for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 448,
+      "declaracion": "create policy \"Tour reference inserts\" on storage.objects for insert to authenticated with check"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 463,
+      "declaracion": "create function public.tours_job_context"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 470,
+      "declaracion": "create function private.wake_tour_dispatcher"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 480,
+      "declaracion": "create function private.tour_queue_wake"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 488,
+      "declaracion": "create function public.tours_claim_cleanup"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 496,
+      "declaracion": "create function public.tours_finish_cleanup"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 505,
+      "declaracion": "create function private.tour_input_read"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 513,
+      "declaracion": "drop policy \"Tour input owner reads\" on storage.objects;"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 514,
+      "declaracion": "create policy \"Tour inputs permitted reads\" on storage.objects for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 517,
+      "declaracion": "create function private.tour_review_asset"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 526,
+      "declaracion": "create policy \"Tour review asset reads\" on storage.objects for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 530,
+      "declaracion": "create function public.tours_completion_receipt"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 535,
+      "declaracion": "create function public.tours_permission_revoke"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 550,
+      "declaracion": "create function public.tours_public_list"
+    },
+    {
+      "archivo": "supabase/migrations/015_tours.sql",
+      "linea": 562,
+      "declaracion": "create or replace function public.tours_renew_cleanup"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 2,
+      "declaracion": "create table public.profile_follows"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 12,
+      "declaracion": "create policy \"Own following\" on public.profile_follows for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 13,
+      "declaracion": "create function public.set_profile_follow"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 22,
+      "declaracion": "create table public.stories"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 36,
+      "declaracion": "create table public.story_views"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 41,
+      "declaracion": "create table public.story_reports"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 53,
+      "declaracion": "create policy \"Live stories\" on public.stories for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 56,
+      "declaracion": "create policy \"Own story views\" on public.story_views for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 57,
+      "declaracion": "create policy \"Story reports moderation\" on public.story_reports for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 61,
+      "declaracion": "create policy \"Upload own story image\" on storage.objects for insert to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 64,
+      "declaracion": "create function public.story_image_visible"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 73,
+      "declaracion": "create policy \"Read live story image\" on storage.objects for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 74,
+      "declaracion": "create policy \"Delete unused story image\" on storage.objects for delete to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 76,
+      "declaracion": "create function public.publish_story"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 94,
+      "declaracion": "create function public.list_stories"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 103,
+      "declaracion": "create function public.mark_story_seen"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 111,
+      "declaracion": "create function public.delete_story"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 118,
+      "declaracion": "create function public.report_story"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 127,
+      "declaracion": "create function public.reported_stories"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 135,
+      "declaracion": "create function public.moderate_story"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 144,
+      "declaracion": "create table public.home_feed_snapshots"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 156,
+      "declaracion": "create function public.timestamp_mission_acceptance"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 168,
+      "declaracion": "create function public.home_feed_candidates"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 195,
+      "declaracion": "create function public.home_feed"
+    },
+    {
+      "archivo": "supabase/migrations/016_home_feed.sql",
+      "linea": 226,
+      "declaracion": "create function public.story_cleanup_images"
+    },
+    {
+      "archivo": "supabase/migrations/017_story_cleanup_schedule.sql",
+      "linea": 4,
+      "declaracion": "create function public.dispatch_story_cleanup"
+    },
+    {
+      "archivo": "supabase/migrations/018_story_publication_retries.sql",
+      "linea": 3,
+      "declaracion": "create table public.story_publications"
+    },
+    {
+      "archivo": "supabase/migrations/018_story_publication_retries.sql",
+      "linea": 14,
+      "declaracion": "create or replace function public.publish_story"
+    },
+    {
+      "archivo": "supabase/migrations/019_story_receipt_upgrade.sql",
+      "linea": 2,
+      "declaracion": "create function public.journal_story_publication"
+    },
+    {
+      "archivo": "supabase/migrations/019_story_receipt_upgrade.sql",
+      "linea": 16,
+      "declaracion": "create or replace function public.publish_story"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 3,
+      "declaracion": "create table public.mission_reactions"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 10,
+      "declaracion": "create table public.mission_comments"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 21,
+      "declaracion": "create table public.mission_comment_operations"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 38,
+      "declaracion": "create function public.mission_social_visible"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 48,
+      "declaracion": "create policy \"Visible mission reactions\" on public.mission_reactions for select to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 50,
+      "declaracion": "create policy \"Visible mission conversation\" on public.mission_comments for select to authenticated"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 53,
+      "declaracion": "create function public.social_mission"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 64,
+      "declaracion": "create function public.notify_mission_reaction"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 86,
+      "declaracion": "create function public.set_mission_reaction"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 99,
+      "declaracion": "create function public.create_mission_comment"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 124,
+      "declaracion": "create function public.retract_mission_comment_notification"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 133,
+      "declaracion": "create function public.delete_mission_comment"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 144,
+      "declaracion": "create function public.mission_social_stats"
+    },
+    {
+      "archivo": "supabase/migrations/020_mission_social.sql",
+      "linea": 160,
+      "declaracion": "create or replace function public.home_feed_candidates"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 2,
+      "declaracion": "create function public.valid_content_city"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 16,
+      "declaracion": "create function public.content_city_matches_point"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 25,
+      "declaracion": "create function public.invalidate_content_city"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 41,
+      "declaracion": "create function public.create_mission"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 47,
+      "declaracion": "create function public.update_mission"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 54,
+      "declaracion": "create function public.save_mission_draft"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 65,
+      "declaracion": "create table public.geocoding_provider"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 71,
+      "declaracion": "create table public.geocoding_cache"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 76,
+      "declaracion": "create function public.claim_geocoding_request"
+    },
+    {
+      "archivo": "supabase/migrations/021_content_cities.sql",
+      "linea": 83,
+      "declaracion": "create function public.finish_geocoding_request"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 1,
+      "declaracion": "create table public.chat_conversations"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 12,
+      "declaracion": "create table public.chat_messages"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 19,
+      "declaracion": "create table public.chat_blocks"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 26,
+      "declaracion": "create table public.chat_reports"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 34,
+      "declaracion": "create table public.chat_bans"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 40,
+      "declaracion": "create table public.chat_banned_words"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 57,
+      "declaracion": "create policy \"Chat participants can read conversations\" on public.chat_conversations for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 58,
+      "declaracion": "create policy \"Chat participants can read messages\" on public.chat_messages for select to authenticated using"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 59,
+      "declaracion": "create or replace function public.chat_active_account"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 67,
+      "declaracion": "create or replace function public.request_chat"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 82,
+      "declaracion": "create or replace function public.accept_chat"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 89,
+      "declaracion": "create or replace function public.reject_chat"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 96,
+      "declaracion": "create or replace function public.send_chat_message"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 120,
+      "declaracion": "create or replace function public.set_chat_block"
+    },
+    {
+      "archivo": "supabase/migrations/022_private_chat.sql",
+      "linea": 128,
+      "declaracion": "create or replace function public.report_chat"
+    },
+    {
+      "archivo": "supabase/migrations/023_chat_request_notifications.sql",
+      "linea": 1,
+      "declaracion": "create or replace function public.request_chat"
+    },
+    {
+      "archivo": "supabase/migrations/024_chat_language_warning.sql",
+      "linea": 1,
+      "declaracion": "create or replace function public.send_chat_message"
+    },
+    {
+      "archivo": "supabase/migrations/025_chat_notification_grouping.sql",
+      "linea": 3,
+      "declaracion": "create or replace function public.send_chat_message"
+    },
+    {
+      "archivo": "supabase/migrations/026_force_grouped_chat_notifications.sql",
+      "linea": 3,
+      "declaracion": "create or replace function public.send_chat_message"
+    },
+    {
+      "archivo": "supabase/migrations/027_disable_chat_bans.sql",
+      "linea": 7,
+      "declaracion": "create or replace function public.chat_active_account"
+    },
+    {
+      "archivo": "supabase/migrations/027_disable_chat_bans.sql",
+      "linea": 26,
+      "declaracion": "drop table if exists public.chat_banned_words;"
+    },
+    {
+      "archivo": "supabase/migrations/027_disable_chat_bans.sql",
+      "linea": 28,
+      "declaracion": "drop table if exists public.chat_bans;"
+    },
+    {
+      "archivo": "supabase/migrations/028_chat_request_sender_notifications.sql",
+      "linea": 8,
+      "declaracion": "create or replace function public.request_chat"
+    },
+    {
+      "archivo": "supabase/migrations/029_chat_request_rejection_notifications.sql",
+      "linea": 1,
+      "declaracion": "create or replace function public.reject_chat"
+    },
+    {
+      "archivo": "supabase/migrations/031_censor_chat_messages.sql",
+      "linea": 1,
+      "declaracion": "create or replace function public.chat_censor_message"
+    },
+    {
+      "archivo": "supabase/migrations/031_censor_chat_messages.sql",
+      "linea": 33,
+      "declaracion": "create or replace function public.send_chat_message"
+    },
+    {
+      "archivo": "supabase/migrations/032_fix_chat_censorship.sql",
+      "linea": 1,
+      "declaracion": "create or replace function public.chat_censor_message"
+    },
+    {
+      "archivo": "supabase/migrations/032_fix_chat_censorship.sql",
+      "linea": 34,
+      "declaracion": "create or replace function public.send_chat_message"
+    },
+    {
+      "archivo": "supabase/migrations/033_censor_entire_chat_message.sql",
+      "linea": 1,
+      "declaracion": "create or replace function public.chat_censor_message"
+    },
+    {
+      "archivo": "supabase/migrations/034_profile_wave_colors.sql",
+      "linea": 22,
+      "declaracion": "drop function public.community_profiles"
+    },
+    {
+      "archivo": "supabase/migrations/034_profile_wave_colors.sql",
+      "linea": 23,
+      "declaracion": "create function public.community_profiles"
+    },
+    {
+      "archivo": "supabase/migrations/034_story_metadata.sql",
+      "linea": 20,
+      "declaracion": "create or replace function public.journal_story_publication"
+    },
+    {
+      "archivo": "supabase/migrations/034_story_metadata.sql",
+      "linea": 51,
+      "declaracion": "drop function if exists public.publish_story"
+    },
+    {
+      "archivo": "supabase/migrations/034_story_metadata.sql",
+      "linea": 53,
+      "declaracion": "create function public.publish_story"
+    },
+    {
+      "archivo": "supabase/migrations/035_profile_public_interests.sql",
+      "linea": 4,
+      "declaracion": "drop function public.community_profiles"
+    },
+    {
+      "archivo": "supabase/migrations/035_profile_public_interests.sql",
+      "linea": 6,
+      "declaracion": "create function public.community_profiles"
+    },
+    {
+      "archivo": "supabase/migrations/036_refresh_story_rpc.sql",
+      "linea": 3,
+      "declaracion": "drop function if exists public.publish_story"
+    },
+    {
+      "archivo": "supabase/migrations/036_refresh_story_rpc.sql",
+      "linea": 4,
+      "declaracion": "create function public.publish_story"
+    },
+    {
+      "archivo": "supabase/migrations/039_remove_legacy_story_rpc.sql",
+      "linea": 3,
+      "declaracion": "drop function if exists public.publish_story"
+    }
+  ]
+}

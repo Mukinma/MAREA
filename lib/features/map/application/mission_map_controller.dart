@@ -6,12 +6,16 @@ import 'package:marea/features/map/data/mission_map_repository.dart';
 import 'package:marea/features/map/models/mission_map_models.dart';
 
 class MissionMapController extends ChangeNotifier {
-  MissionMapController(this.repository);
+  MissionMapController(
+    this.repository, {
+    String initialQuery = '',
+    this.filters = const MissionMapFilters(),
+  }) : query = initialQuery.trim();
   final MissionMapRepository? repository;
-  MissionMapFilters filters = const MissionMapFilters();
+  MissionMapFilters filters;
   MissionMapPage page = const MissionMapPage(missions: [], total: 0);
   MapBounds? viewport, loadedBounds;
-  String query = '';
+  String query;
   String? error, _selectedId, _loadedKey, _activeKey;
   bool loading = false, _disposed = false;
   int _generation = 0;

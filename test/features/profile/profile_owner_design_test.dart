@@ -212,9 +212,9 @@ void main() {
     );
     expect(find.byType(MareaMobileNavigation), findsOneWidget);
     expect(find.byTooltip('Crear'), findsNothing);
-    await tester.tap(find.byTooltip('Descubrir'));
+    await tester.tap(find.byTooltip('Misiones'));
     await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, '/discover');
+    expect(router.routeInformationProvider.value.uri.path, '/missions');
     router.go('/profile');
     await tester.pumpAndSettle();
     await tester.tap(

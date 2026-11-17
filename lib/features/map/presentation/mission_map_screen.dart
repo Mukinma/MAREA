@@ -5,60 +5,58 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:marea/core/maps/map_surface.dart';
+import 'package:marea/core/maps/map_overlay.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:marea/core/config/map_tile_configuration.dart';
 import 'package:marea/core/location/device_location_service.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/map/application/mission_map_controller.dart';
-import 'package:marea/features/map/models/mission_map_models.dart';
 import 'package:marea/features/map/presentation/map_filter_sheet.dart';
 import 'package:marea/features/map/presentation/map_search_bar.dart';
 import 'package:marea/features/map/presentation/mission_map_canvas.dart';
 import 'package:marea/features/map/presentation/mission_map_preview.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
-import 'package:marea/shared/widgets/marea_logo.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:marea/features/map/presentation/map_camera_controls.dart';
+import 'package:marea/features/map/models/mission_map_models.dart';
 
 class MissionMapScreen extends StatefulWidget {
   const MissionMapScreen({
     required this.session,
     this.locationService = const GeolocatorDeviceLocationService(),
-    this.tiles = const MapTileConfiguration(),
+    this.initialQuery = '',
+    this.initialCategory,
     this.showTours = false,
     super.key,
   });
   final AppSessionController session;
   final DeviceLocationService locationService;
-  final MapTileConfiguration tiles;
+  final String initialQuery;
+  final String? initialCategory;
   final bool showTours;
   @override
   State<MissionMapScreen> createState() => _MissionMapScreenState();
 }
 
-class _MissionMapScreenState extends State<MissionMapScreen>
-    with SingleTickerProviderStateMixin {
-  late final _state = MissionMapController(widget.session.missionMapRepository);
-  final _map = MapController();
-  final _search = TextEditingController();
-  late final _cameraAnimation = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 260),
+class _MissionMapScreenState extends State<MissionMapScreen> {
+  late final _state = MissionMapController(
+    widget.session.missionMapRepository,
+    initialQuery: widget.initialQuery,
+    filters: MissionMapFilters(category: widget.initialCategory),
   );
+  final _map = MapSurfaceController();
+  late final _search = TextEditingController(text: _state.query);
+  late final _changes = Listenable.merge([_state, _map]);
   List<TourRecord> _tours = [];
-  late final bool _showTours = widget.showTours;
   int _tourGeneration = 0;
-  int _tileRevision = 0;
   int _cameraGestureGeneration = 0;
-  bool _tileError = false, _tileErrorScheduled = false;
-  Timer? _idle;
   bool _ready = false, _locating = false, _manuallyExplored = false;
   DevicePosition? _position;
+  ({DevicePosition fix, int gesture})? _pendingLocation;
   DeviceLocationFailure? _locationFailure;
-  LatLng? _animationFrom, _animationTo;
-  double _zoomFrom = 15;
+  bool _initialSearchStarted = false;
 
   LatLng get _initialCenter {
     final p = widget.session.profile;
@@ -79,7 +77,6 @@ class _MissionMapScreenState extends State<MissionMapScreen>
   @override
   void initState() {
     super.initState();
-    _cameraAnimation.addListener(_animateFrame);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _locate(explicit: false);
     });
@@ -87,56 +84,60 @@ class _MissionMapScreenState extends State<MissionMapScreen>
 
   @override
   void dispose() {
-    _idle?.cancel();
-    _cameraAnimation.dispose();
     _state.dispose();
     _search.dispose();
     _map.dispose();
     super.dispose();
   }
 
-  void _animateFrame() {
-    if (!_ready || !mounted || _animationFrom == null || _animationTo == null) {
-      return;
-    }
-    final t = Curves.easeInOut.transform(_cameraAnimation.value);
-    final from = _animationFrom!, to = _animationTo!;
-    final delta = MapBounds.normalizeLongitude(to.longitude - from.longitude);
-    _map.move(
-      LatLng(
-        from.latitude + (to.latitude - from.latitude) * t,
-        MapBounds.normalizeLongitude(from.longitude + delta * t),
-      ),
-      _zoomFrom + (15 - _zoomFrom) * t,
-    );
-  }
-
-  MapBounds _bounds() {
-    final b = _map.camera.visibleBounds;
-    final wide = b.east - b.west >= 360;
-    return MapBounds(
-      south: b.south.clamp(-90, 90),
-      north: b.north.clamp(-90, 90),
-      west: wide ? -180 : MapBounds.normalizeLongitude(b.west),
-      east: wide ? 180 : MapBounds.normalizeLongitude(b.east),
-    );
-  }
-
-  void _captureViewport() {
-    if (mounted && _ready) _state.updateViewport(_bounds());
-  }
-
-  Future<void> _loadTours() async {
-    if (!_showTours || !_ready || widget.session.tourRepository == null) return;
-    final generation = ++_tourGeneration;
-    final center = _map.camera.center;
+  Future<MapViewport?> _captureViewport({bool observing = false}) async {
+    if (!mounted || !_ready) return null;
     try {
-      final tours = await widget.session.tourRepository!.list(
+      final viewport = await (observing ? _map.observe() : _map.capture());
+      if (!mounted || viewport == null || !viewport.bounds.isValid) {
+        return null;
+      }
+      _state.updateViewport(viewport.bounds);
+      return viewport;
+    } catch (_) {
+      // The surface presents recoverable cartographic errors locally.
+      return null;
+    }
+  }
+
+  Future<void> _queryAtViewport(Future<void> Function() query) async {
+    if (await _captureViewport() != null && mounted) {
+      _initialSearchStarted = true;
+      await query();
+    }
+  }
+
+  Future<void> _searchArea() async {
+    final viewport = await _captureViewport();
+    if (!mounted || viewport == null) return;
+    await _refreshArea(viewport, force: true);
+  }
+
+  Future<void> _refreshArea(MapViewport viewport, {bool force = false}) async {
+    _initialSearchStarted = true;
+    await Future.wait([
+      _state.search(force: force),
+      _loadTours(viewport),
+    ]);
+  }
+
+  Future<void> _loadTours(MapViewport snapshot) async {
+    final repository = widget.session.tourRepository;
+    if (!widget.showTours || repository == null) return;
+    final generation = ++_tourGeneration;
+    try {
+      final center = snapshot.center;
+      final tours = await repository.list(
         latitude: center.latitude,
         longitude: center.longitude,
       );
-      if (!mounted || generation != _tourGeneration || !_showTours) return;
-      final bounds = _bounds();
+      if (!mounted || generation != _tourGeneration || !widget.showTours) return;
+      final bounds = snapshot.bounds;
       setState(
         () => _tours = tours.where((t) {
           final lat = t.space['latitude'], lng = t.space['longitude'];
@@ -160,39 +161,59 @@ class _MissionMapScreenState extends State<MissionMapScreen>
     }
   }
 
-  List<Marker> get _tourMarkers => !_showTours
+  List<MapSurfacePoint> get _tourMarkers => !widget.showTours
       ? []
       : [
           for (final t in _tours)
-            Marker(
-              width: 48,
-              height: 48,
-              point: LatLng(
+            MapSurfacePoint(
+              id: 'tour:${t.id}',
+              label: 'Explorar ${t.space['name']}',
+              position: LatLng(
                 (t.space['latitude'] as num).toDouble(),
                 (t.space['longitude'] as num).toDouble(),
               ),
-              child: IconButton.filled(
-                tooltip: 'Explorar ${t.space['name']}',
-                icon: const Icon(Icons.panorama_photosphere_outlined),
-                onPressed: () => context.push('/tours/${t.id}'),
-              ),
+              icon: Icons.panorama_photosphere_outlined,
+              clusterable: false,
+              onTap: () => context.push('/tours/${t.id}'),
             ),
         ];
-  void _onReady() {
+
+  Future<void> _onReady() async {
     _ready = true;
-    _captureViewport();
-    unawaited(_state.search());
-    unawaited(_loadTours());
+    final pending = _pendingLocation;
+    _pendingLocation = null;
+    if (pending != null && pending.gesture == _cameraGestureGeneration) {
+      await _recenter(pending.fix, pending.gesture);
+    }
+    if (!_initialSearchStarted) await _onIdle();
   }
 
-  void _onPositionChanged(MapCamera camera, bool hasGesture) {
-    if (hasGesture) {
-      _cameraGestureGeneration++;
-      _manuallyExplored = true;
-      _cameraAnimation.stop();
-    }
-    _idle?.cancel();
-    _idle = Timer(const Duration(milliseconds: 180), _captureViewport);
+  Future<void> _onIdle() async {
+    final viewport = await _captureViewport(observing: true);
+    if (!mounted || viewport == null || _initialSearchStarted) return;
+    // A newer idle capture may supersede onReady's asynchronous snapshot.
+    // Whichever obtains the first valid viewport owns the initial search.
+    await _refreshArea(viewport);
+  }
+
+  void _onGesture() {
+    ++_cameraGestureGeneration;
+    _manuallyExplored = true;
+  }
+
+  void _selectMission(String id) {
+    FocusScope.of(context).unfocus();
+    _state.select(id);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final area = _map.usableArea;
+      if (!mounted || _state.selected?.id != id || area == null) {
+        return;
+      }
+      final point = _state.selected?.coordinates;
+      if (point != null) {
+        unawaited(_map.reveal(LatLng(point.latitude, point.longitude), area));
+      }
+    });
   }
 
   Future<void> _locate({required bool explicit}) async {
@@ -209,21 +230,15 @@ class _MissionMapScreenState extends State<MissionMapScreen>
       );
       if (!mounted) return;
       setState(() => _position = fix);
-      if (!_ready ||
-          gestureGeneration != _cameraGestureGeneration ||
+      if (gestureGeneration != _cameraGestureGeneration ||
           (!explicit && _manuallyExplored)) {
         return;
       }
-      _animationFrom = _map.camera.center;
-      _animationTo = LatLng(fix.latitude, fix.longitude);
-      _zoomFrom = _map.camera.zoom;
-      await _cameraAnimation.forward(from: 0).orCancel;
-      if (!mounted) return;
-      _captureViewport();
-      await _state.search();
-      await _loadTours();
-    } on TickerCanceled {
-      // A manual gesture owns the camera immediately.
+      if (!_ready) {
+        _pendingLocation = (fix: fix, gesture: gestureGeneration);
+        return;
+      }
+      await _recenter(fix, gestureGeneration);
     } on DeviceLocationFailure catch (failure) {
       if (mounted &&
           explicit &&
@@ -235,27 +250,25 @@ class _MissionMapScreenState extends State<MissionMapScreen>
     }
   }
 
-  void _onTileError() {
-    if (!mounted || _tileError || _tileErrorScheduled) return;
-    _tileErrorScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _tileErrorScheduled = false;
-      if (mounted) setState(() => _tileError = true);
-    });
-    WidgetsBinding.instance.scheduleFrame();
+  Future<void> _recenter(DevicePosition fix, int gesture) async {
+    await _map.move(LatLng(fix.latitude, fix.longitude), zoom: 15);
+    if (!mounted || gesture != _cameraGestureGeneration) return;
+    final viewport = await _captureViewport();
+    if (viewport == null || !mounted || gesture != _cameraGestureGeneration) {
+      return;
+    }
+    await _refreshArea(viewport);
   }
 
   Future<void> _filters() async {
     final value = await showMapFilterSheet(context, _state.filters);
     if (!mounted || value == null) return;
-    _captureViewport();
-    await _state.applyFilters(value);
+    await _queryAtViewport(() => _state.applyFilters(value));
   }
 
-  void _submit(String value) {
+  Future<void> _submit(String value) async {
     FocusScope.of(context).unfocus();
-    _captureViewport();
-    unawaited(_state.submitQuery(value));
+    await _queryAtViewport(() => _state.submitQuery(value));
   }
 
   Future<void> _settings() async {
@@ -278,13 +291,12 @@ class _MissionMapScreenState extends State<MissionMapScreen>
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, size) => AnimatedBuilder(
-      animation: _state,
+      animation: _changes,
       builder: (context, _) {
         final selected = _state.selected;
-        // Scaffold.extendBody publishes the actual dock + safe area height.
+        final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
         final topInset = MediaQuery.paddingOf(context).top;
         final bottomInset = MediaQuery.paddingOf(context).bottom;
-        final previewHeight = math.min(size.maxHeight * .48, 300.0);
         double? distance;
         if (_position != null && selected?.coordinates != null) {
           distance = const Distance().as(
@@ -296,6 +308,10 @@ class _MissionMapScreenState extends State<MissionMapScreen>
             ),
           );
         }
+        final filterCount =
+            (_state.filters.category == null ? 0 : 1) +
+            (_state.filters.radiusKm == null ? 0 : 1) +
+            (_state.filters.date == MissionMapDate.any ? 0 : 1);
         return Stack(
           children: [
             Positioned.fill(
@@ -303,7 +319,10 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                 controller: _map,
                 initialCenter: _initialCenter,
                 onReady: _onReady,
-                onPositionChanged: _onPositionChanged,
+                onIdle: () => unawaited(_onIdle()),
+                onGesture: _onGesture,
+                onClusterTap: () => _state.select(null),
+                ornamentBottom: bottomInset + 12,
                 onMapTap: () {
                   FocusScope.of(context).unfocus();
                   _state.select(null);
@@ -311,38 +330,8 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                 missions: _state.page.missions,
                 tourMarkers: _tourMarkers,
                 selectedId: selected?.id,
-                onMissionTap: (id) {
-                  FocusScope.of(context).unfocus();
-                  _state.select(id);
-                },
+                onMissionTap: _selectMission,
                 position: _position,
-                tiles: widget.tiles,
-                onClusterTap: () => _state.select(null),
-                tileRevision: _tileRevision,
-                onTileError: _onTileError,
-              ),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: size.maxHeight < 700 ? 248 : 292,
-              child: IgnorePointer(
-                child: DecoratedBox(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: [0, .34, .72, 1],
-                      colors: [
-                        Color(0xF5FAF9F6),
-                        Color(0xDFFAF9F6),
-                        Color(0x66FAF9F6),
-                        Color(0x00FAF9F6),
-                      ],
-                    ),
-                  ),
-                ),
               ),
             ),
             Positioned.fill(
@@ -350,218 +339,62 @@ class _MissionMapScreenState extends State<MissionMapScreen>
                 delegate: _MapControlsLayout(
                   topInset: topInset,
                   bottomInset: bottomInset,
-                  desiredPreviewHeight: previewHeight,
                   selected: selected != null,
+                  keyboardOpen: keyboardOpen,
+                  onUsableArea: (area, controls) {
+                    _map.usableArea = area;
+                    _map.controlsArea = controls;
+                  },
                 ),
                 children: [
                   LayoutId(
                     id: _MapControl.header,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (size.maxWidth < 600)
-                            SizedBox(
-                              height: 52,
-                              child: Center(
-                                child: Transform.scale(
-                                  scale: .82,
-                                  child: Transform.translate(
-                                    offset: const Offset(0, -6),
-                                    child: MareaLogo(compact: true),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          MapSearchBar(
-                            controller: _search,
-                            filtersActive: _state.filters.isActive,
-                            onSubmitted: _submit,
-                            onFilters: _filters,
-                          ),
-                          const SizedBox(height: 8),
-                          MapQuickFilters(
-                            filters: _state.filters,
-                            onChanged: (value) {
-                              _captureViewport();
-                              unawaited(_state.applyFilters(value));
-                            },
-                          ),
-                          if (_state.loading)
-                            const Padding(
-                              padding: EdgeInsets.only(top: 6),
-                              child: LinearProgressIndicator(minHeight: 2),
-                            ),
-                          if (_state.needsAreaSearch)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 6),
-                              child: SizedBox(
-                                height: 42,
-                                child: FilledButton.icon(
-                                  onPressed: _state.loading
-                                      ? null
-                                      : () {
-                                          _captureViewport();
-                                          _state.search(force: true);
-                                        },
-                                  icon: const Icon(
-                                    Icons.refresh_rounded,
-                                    size: 18,
-                                  ),
-                                  label: const Text('Buscar en esta zona'),
-                                  style: FilledButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    minimumSize: const Size(0, 42),
-                                    textStyle: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          if (_tileError)
-                            _notice(
-                              'No pudimos cargar el mapa base. Puedes seguir usando los filtros.',
-                              action: 'Reintentar',
-                              onAction: () => setState(() {
-                                _tileError = false;
-                                ++_tileRevision;
-                              }),
-                            ),
-                          if (_state.error != null)
-                            _notice(
-                              _state.error!,
-                              action: 'Reintentar',
-                              onAction: () => _state.search(force: true),
-                            ),
-                          if (_locationFailure != null)
-                            _notice(
-                              _locationFailure!.message,
-                              action:
-                                  _locationFailure!.kind ==
-                                          DeviceLocationFailureKind
-                                              .deniedForever ||
-                                      _locationFailure!.kind ==
-                                          DeviceLocationFailureKind.disabled
-                                  ? 'Ajustes'
-                                  : 'Cerrar',
-                              onAction: () {
-                                if (_locationFailure!.kind ==
-                                        DeviceLocationFailureKind
-                                            .deniedForever ||
-                                    _locationFailure!.kind ==
-                                        DeviceLocationFailureKind.disabled) {
-                                  _settings();
-                                } else {
-                                  setState(() => _locationFailure = null);
-                                }
-                              },
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  LayoutId(
-                    id: _MapControl.location,
-                    child: MareaSurface(
-                      color: AppColors.surface,
-                      radius: 32,
-                      shadows: const [
-                        BoxShadow(
-                          color: Color(0x1A0B255E),
-                          offset: Offset(0, 4),
-                          blurRadius: 12,
-                        ),
-                      ],
-                      child: IconButton(
-                        tooltip: _locating
-                            ? 'Buscando ubicación…'
-                            : 'Centrar en mi ubicación',
-                        onPressed: _locating
-                            ? null
-                            : () => _locate(explicit: true),
-                        icon: const Icon(
-                          Icons.my_location_rounded,
-                          color: AppColors.actionBlue,
-                          size: 28,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (selected != null)
-                    LayoutId(
-                      id: _MapControl.preview,
+                    child: MapOverlay(
                       child: SingleChildScrollView(
-                        child: MissionMapPreview(
-                          key: ValueKey(selected.id),
-                          mission: selected,
-                          arAction: widget.session.tourRepository == null
-                              ? null
-                              : BusinessARAction(
-                                  ownerId: selected.authorId,
-                                  repository: widget.session.tourRepository!,
-                                  onOpen: (target) => context.push(
-                                    Uri(
-                                      path:
-                                          '/tours/${target.tour.id}/business-ar',
-                                      queryParameters: {
-                                        'owner': selected.authorId,
-                                        'point': target.point.id,
-                                      },
-                                    ).toString(),
-                                  ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            MapSearchBar(
+                              controller: _search,
+                              filterCount: filterCount,
+                              onSubmitted: _submit,
+                              onFilters: _filters,
+                            ),
+                            const SizedBox(height: 4),
+                            if (!keyboardOpen &&
+                                !(selected != null && size.maxHeight < 650))
+                              MapQuickFilters(
+                                filters: _state.filters,
+                                onChanged: (value) => _queryAtViewport(
+                                  () => _state.applyFilters(value),
                                 ),
-                          repository: widget.session.communityRepository,
-                          distanceMeters: distance,
-                          onClose: () => _state.select(null),
-                          onOpen: () async {
-                            await context.push('/missions/${selected.id}');
-                            if (mounted) await _state.search(force: true);
-                          },
+                              ),
+                          ],
                         ),
                       ),
                     ),
+                  ),
                   LayoutId(
-                    id: _MapControl.footer,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (_state.hasLoaded && !_state.loading) ...[
-                            _resultCount(),
-                            const SizedBox(height: 8),
-                          ],
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Material(
-                              color: AppColors.surface.withValues(alpha: .95),
-                              borderRadius: BorderRadius.circular(6),
-                              child: InkWell(
-                                onTap: () => launchUrl(
-                                  Uri.parse(widget.tiles.attributionUrl),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 4,
-                                  ),
-                                  child: Text(
-                                    widget.tiles.attribution,
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                    id: _MapControl.controls,
+                    child: keyboardOpen
+                        ? const SizedBox.shrink()
+                        : MapOverlay(
+                            child: MapCameraControls(
+                              controller: _map,
+                              ready: _ready,
+                              locating: _locating,
+                              compact: size.maxHeight < 650,
+                              onLocate: () => _locate(explicit: true),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                  ),
+                  LayoutId(
+                    id: _MapControl.panel,
+                    child: keyboardOpen
+                        ? const SizedBox.shrink()
+                        : MapOverlay(
+                            child: _buildPanel(context, selected, distance),
+                          ),
                   ),
                 ],
               ),
@@ -572,166 +405,216 @@ class _MissionMapScreenState extends State<MissionMapScreen>
     ),
   );
 
+  Widget _buildPanel(
+    BuildContext context,
+    Mission? selected,
+    double? distance,
+  ) {
+    final locationFailure = _locationFailure;
+    final openSettings =
+        locationFailure?.kind == DeviceLocationFailureKind.deniedForever ||
+        locationFailure?.kind == DeviceLocationFailureKind.disabled;
+    final status = <Widget>[
+      if (_state.loading) const LinearProgressIndicator(minHeight: 2),
+      if (_state.needsAreaSearch) ...[
+        TextButton.icon(
+          onPressed: _state.loading ? null : _searchArea,
+          icon: const Icon(Icons.search_rounded, size: 18),
+          label: const Text('Buscar en esta zona'),
+          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+        ),
+        if (_state.page.missions.isNotEmpty)
+          const Text(
+            'Los puntos se mantienen hasta actualizar la búsqueda.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          ),
+      ],
+      if (_state.error case final error?)
+        _notice(error, action: 'Reintentar', onAction: _searchArea),
+      if (locationFailure != null)
+        _notice(
+          locationFailure.message,
+          action: openSettings ? 'Ajustes' : 'Cerrar',
+          onAction: openSettings
+              ? _settings
+              : () => setState(() => _locationFailure = null),
+        ),
+    ];
+    return MareaSurface(
+      color: AppColors.surface,
+      radius: 20,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      shadows: const [
+        BoxShadow(
+          color: Color(0x100B255E),
+          blurRadius: 8,
+          offset: Offset(0, 2),
+        ),
+      ],
+      child: selected == null
+          ? SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ...status,
+                  if (_state.error == null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          _state.hasLoaded
+                              ? _resultText
+                              : _state.loading
+                              ? 'Cargando misiones…'
+                              : 'Descubre misiones en el mapa',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: AppColors.brandNavy,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            )
+          : MissionMapPreview(
+              key: ValueKey(selected.id),
+              mission: selected,
+              status: status,
+              arAction: widget.session.tourRepository == null
+                  ? null
+                  : BusinessARAction(
+                      ownerId: selected.authorId,
+                      repository: widget.session.tourRepository!,
+                      onOpen: (target) => context.push(
+                        Uri(
+                          path: '/tours/${target.tour.id}/business-ar',
+                          queryParameters: {
+                            'owner': selected.authorId,
+                            'point': target.point.id,
+                          },
+                        ).toString(),
+                      ),
+                    ),
+              repository: widget.session.communityRepository,
+              distanceMeters: distance,
+              onClose: () => _state.select(null),
+              onOpen: () async {
+                await context.push('/missions/${selected.id}');
+                if (mounted) await _searchArea();
+              },
+            ),
+    );
+  }
+
+  String get _resultText {
+    final page = _state.page;
+    if (page.total == 0) {
+      return _state.needsAreaSearch
+          ? 'Sin misiones en la última búsqueda'
+          : 'No encontramos misiones por aquí todavía.';
+    }
+    if (page.isTruncated) {
+      return 'Mostrando ${page.missions.length} de ${page.total} · Acerca el mapa';
+    }
+    return '${page.total} ${page.total == 1 ? 'misión' : 'misiones'}${_state.needsAreaSearch ? ' en la última búsqueda' : ' en esta zona'}';
+  }
+
   Widget _notice(
     String message, {
     required String action,
     required VoidCallback onAction,
-  }) => Padding(
-    padding: const EdgeInsets.only(top: 8),
-    child: MareaSurface(
-      color: AppColors.surface,
-      radius: 18,
-      padding: const EdgeInsets.only(left: 12, right: 4),
-      child: Row(
-        children: [
-          Expanded(child: Text(message, style: const TextStyle(fontSize: 12))),
-          TextButton(onPressed: onAction, child: Text(action)),
-        ],
-      ),
-    ),
+  }) => Row(
+    children: [
+      Expanded(child: Text(message, style: const TextStyle(fontSize: 12))),
+      TextButton(onPressed: onAction, child: Text(action)),
+    ],
   );
-  Widget _resultCount() {
-    final page = _state.page;
-    final text = _state.needsAreaSearch
-        ? 'Resultados de la zona anterior'
-        : page.total == 0
-        ? 'No encontramos misiones por aquí todavía.'
-        : page.isTruncated
-        ? 'Mostrando ${page.missions.length} de ${page.total} · Acerca el mapa'
-        : '${page.total} ${page.total == 1 ? 'misión' : 'misiones'} en esta zona';
-    return MareaSurface(
-      color: AppColors.mist,
-      radius: 32,
-      shadows: const [
-        BoxShadow(
-          color: Color(0x1A0B255E),
-          offset: Offset(0, 3),
-          blurRadius: 10,
-        ),
-      ],
-      padding: const EdgeInsets.fromLTRB(14, 11, 18, 11),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.location_on_outlined, color: AppColors.brandNavy),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppColors.brandNavy,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
-enum _MapControl { header, location, preview, footer }
+enum _MapControl { header, controls, panel }
 
-/// Fits overlays between the search tools and the actual responsive dock.
-/// Scrollable header/preview/footer retain access when text or insets grow.
 class _MapControlsLayout extends MultiChildLayoutDelegate {
   _MapControlsLayout({
     required this.topInset,
     required this.bottomInset,
-    required this.desiredPreviewHeight,
     required this.selected,
+    required this.keyboardOpen,
+    required this.onUsableArea,
   });
-  final double topInset, bottomInset, desiredPreviewHeight;
-  final bool selected;
-
+  final double topInset, bottomInset;
+  final bool selected, keyboardOpen;
+  final void Function(Rect, Rect?) onUsableArea;
   @override
   void performLayout(Size size) {
-    const side = 16.0, gap = 12.0;
+    const side = 16.0, gap = 12.0, legalHeight = 32.0;
     final top = topInset + 8;
+    final bottom = math.max(top, size.height - bottomInset - legalHeight - 12);
     final width = math.max(0.0, size.width - side * 2);
-    final bottom = math.max(top, size.height - bottomInset - 12);
-    final location = layoutChild(
-      _MapControl.location,
-      BoxConstraints.loose(Size(width, 48)),
-    );
-    // Reserve usable scrolling windows for search and the preview action before
-    // allocating space to the informational footer at large text scales.
-    const minimumHeaderHeight = 48.0, minimumPreviewHeight = 120.0;
-    final footer = layoutChild(
-      _MapControl.footer,
-      BoxConstraints(
-        maxWidth: width,
-        maxHeight: math.max(
-          0,
-          bottom -
-              top -
-              location.height -
-              minimumHeaderHeight -
-              (selected ? minimumPreviewHeight + gap * 3 : gap * 2),
-        ),
-      ),
-    );
-    final footerTop = bottom - footer.height;
-    positionChild(_MapControl.footer, Offset(side, footerTop));
     final headerWidth = math.min(width, 560.0);
     final header = layoutChild(
       _MapControl.header,
       BoxConstraints(
         minWidth: headerWidth,
         maxWidth: headerWidth,
-        maxHeight: math.max(
-          0,
-          footerTop -
-              top -
-              location.height -
-              gap * 2 -
-              (selected ? minimumPreviewHeight + gap : 0),
-        ),
+        maxHeight: keyboardOpen
+            ? math.max(0, bottom - top)
+            : math.max(0, (bottom - top) * (selected ? .28 : .35)),
       ),
     );
     positionChild(
       _MapControl.header,
       Offset((size.width - header.width) / 2, top),
     );
-    var locationBottom = footerTop - gap;
-    if (selected) {
-      final available = math.max(
-        0.0,
-        footerTop - gap - (top + header.height + gap) - location.height - gap,
-      );
-      final previewWidth = math.min(width, 520.0);
-      final preview = layoutChild(
-        _MapControl.preview,
-        BoxConstraints(
-          minWidth: previewWidth,
-          maxWidth: previewWidth,
-          maxHeight: math.min(desiredPreviewHeight, available),
-        ),
-      );
-      final previewTop = footerTop - gap - preview.height;
-      positionChild(
-        _MapControl.preview,
-        Offset((size.width - preview.width) / 2, previewTop),
-      );
-      locationBottom = previewTop - gap;
-    }
-    positionChild(
-      _MapControl.location,
-      Offset(
-        size.width - side - location.width,
-        locationBottom - location.height,
+    final controls = layoutChild(
+      _MapControl.controls,
+      BoxConstraints.loose(
+        Size(width, math.max(0, bottom - top - header.height - gap)),
       ),
+    );
+    final panelWidth = math.min(width, 520.0);
+    final panel = layoutChild(
+      _MapControl.panel,
+      BoxConstraints(
+        minWidth: panelWidth,
+        maxWidth: panelWidth,
+        maxHeight: math.max(
+          0,
+          math.min(
+            selected ? 320.0 : 220.0,
+            bottom - top - header.height - controls.height - gap * 3,
+          ),
+        ),
+      ),
+    );
+    final panelTop = bottom - panel.height;
+    positionChild(
+      _MapControl.panel,
+      Offset((size.width - panel.width) / 2, panelTop),
+    );
+    final controlsOffset = Offset(
+      size.width - side - controls.width,
+      math.max(top + header.height + gap, panelTop - gap - controls.height),
+    );
+    positionChild(_MapControl.controls, controlsOffset);
+    onUsableArea(
+      Rect.fromLTRB(
+        side + 24,
+        top + header.height + gap + 24,
+        size.width - side - 24,
+        math.max(top + header.height + gap + 24, panelTop - gap - 24),
+      ),
+      controls.isEmpty ? null : controlsOffset & controls,
     );
   }
 
   @override
-  bool shouldRelayout(_MapControlsLayout oldDelegate) =>
-      topInset != oldDelegate.topInset ||
-      bottomInset != oldDelegate.bottomInset ||
-      desiredPreviewHeight != oldDelegate.desiredPreviewHeight ||
-      selected != oldDelegate.selected;
+  bool shouldRelayout(_MapControlsLayout old) =>
+      topInset != old.topInset ||
+      bottomInset != old.bottomInset ||
+      selected != old.selected ||
+      keyboardOpen != old.keyboardOpen;
 }

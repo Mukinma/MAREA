@@ -54,12 +54,12 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      for (final label in ['Inicio', 'Descubrir', 'Mapa', 'Perfil']) {
+      for (final label in ['Inicio', 'Misiones', 'Mapa', 'Perfil']) {
         expect(find.text(label).hitTestable(), findsOneWidget);
       }
       expect(find.byKey(const Key('create-destination')), findsNothing);
       expect(find.byTooltip('Explorar'), findsNothing);
-      expect(find.byTooltip('Misiones'), findsNothing);
+      expect(find.byTooltip('Descubrir'), findsNothing);
       expect(tester.getSize(find.byKey(const Key('mobile-dock'))).width, 358);
     },
   );
@@ -95,7 +95,7 @@ void main() {
         final destinations = width < 600
             ? const {
                 'Inicio': '/home',
-                'Descubrir': '/discover',
+                'Misiones': '/missions',
                 'Mapa': '/map',
                 'Perfil': '/profile',
               }

@@ -1,0 +1,13 @@
+{
+  "inicio_utc": "2026-11-12T00:12:24Z",
+  "duracion_segundos": 5.89,
+  "comando": "flutter test --no-pub --reporter expanded test/features/auth/mobile_intro_test.dart test/features/home_feed/home_feed_experience_test.dart test/features/showcase/showcase_flow_test.dart",
+  "codigo_salida": 1,
+  "alcance": "widgets con repositorios simulados; copia temporal",
+  "resultado": {
+    "aprobadas": 23,
+    "omitidas": 0,
+    "fallidas": 17
+  },
+  "log_sha256": "219c70a2eb6c3d8cf035917d7b5896c8b46ba72bd1f855f0ba59d43f8a0c8703"
+}

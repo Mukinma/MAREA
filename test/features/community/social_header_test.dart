@@ -48,7 +48,7 @@ void main() {
       router.go('/home');
       await tester.pumpAndSettle();
       if (width < 600) {
-        expect(find.bySemanticsLabel('Descubrir'), findsOneWidget);
+        expect(find.bySemanticsLabel('Misiones'), findsOneWidget);
         expect(find.byTooltip('Mensajes'), findsOneWidget);
         router.go('/explore?section=saved');
         await tester.pumpAndSettle();

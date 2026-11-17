@@ -1,0 +1,7 @@
+{
+  "fecha_utc_archivo": "2026-11-12T00:11:01.145461+00:00",
+  "comando": "flutter analyze --no-pub",
+  "codigo_salida": 0,
+  "alcance": "análisis local",
+  "log_sha256": "23e3caaf13a3b97da4d0020af0b188b1a65d54c24b23a133bf201125f1c11fec"
+}

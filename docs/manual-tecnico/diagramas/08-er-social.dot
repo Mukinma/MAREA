@@ -1,0 +1,33 @@
+digraph G {
+  graph [rankdir=TB, bgcolor=transparent, nodesep=.35, ranksep=.46];
+  node [shape=box, style="rounded,filled", color="#BBCADA", fillcolor="#F3F5F7", fontcolor="#14263D", fontname="Helvetica", fontsize=11.5, margin=".14,.10"];
+  edge [color="#64748B", fontcolor="#475569", fontname="Helvetica", fontsize=9.5, arrowsize=.65];
+  profile [label="profiles
+id PK",fillcolor="#14263D",fontcolor=white];
+  story [label="stories
+id · author_id"];
+  chat [label="chat_conversations
+id · requester_id · recipient_id"];
+  notice [label="notifications
+recipient_id obligatorio
+actor_id opcional"];
+  views [label="story_views
+PK (story_id,viewer_id)"];
+  message [label="chat_messages
+id · conversation_id · sender_id"];
+  reports [label="chat_reports
+conversation_id · message_id?
+reporter_id"];
+  {rank=same;story;chat;notice}
+  profile -> story [dir=back,label=" autor 1 : 0..N"];
+  profile -> chat [dir=back,label=" cada participante
+1 : 0..N"];
+  profile -> notice [dir=back,label=" destinatario 1
+actor 0..1"];
+  story -> views [dir=back,label=" 1 : 0..N"];
+  chat -> message [dir=back,label=" 1 : 0..N"];
+  message -> reports [dir=back,label=" 0..1 : 0..N
+SET NULL al borrar"];
+  chat -> reports [dir=back,label=" 1 : 0..N"];
+
+}

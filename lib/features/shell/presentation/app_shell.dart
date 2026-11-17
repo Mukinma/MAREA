@@ -18,12 +18,14 @@ class AppShell extends StatelessWidget {
     required this.child,
     this.onRefresh,
     this.controller,
+    this.returnToMissions = false,
     super.key,
   });
   final AppSessionController? controller;
   final String location;
   final Widget child;
   final RefreshCallback? onRefresh;
+  final bool returnToMissions;
   static const _destinations = [
     _Destination('Inicio', '/home', Icons.home_outlined, Icons.home_rounded),
     _Destination(
@@ -46,10 +48,19 @@ class AppShell extends StatelessWidget {
       Icons.person_rounded,
     ),
   ];
+  void _navigate(BuildContext context, String path) {
+    if (returnToMissions && path == '/missions' && context.canPop()) {
+      context.pop();
+    } else if (location != path) {
+      context.go(path);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, bounds) {
       final desktop = bounds.maxWidth >= 600;
+      final isHome = location == '/home';
       final profileLayout =
           location == '/profile' || location.startsWith('/people/');
       final scaler = MediaQuery.textScalerOf(context);
@@ -111,7 +122,7 @@ class AppShell extends StatelessWidget {
                 destination: destination,
                 selected: location.startsWith(destination.path),
                 showLabel: !compact,
-                onTap: () => context.go(destination.path),
+                onTap: () => _navigate(context, destination.path),
               ),
           ],
         ),
@@ -119,12 +130,13 @@ class AppShell extends StatelessWidget {
       final create = _CreateAction(
         selected: location.startsWith('/create'),
         expanded: desktop && !compact,
+        stacked: !desktop,
         onTap: () async {
           if (controller == null) {
             context.go('/create');
             return;
           }
-          await showCreateMenu(context, controller!);
+          await showCreateMenu(context, controller!, homeOnly: isHome);
         },
       );
       if (desktop) {
@@ -166,7 +178,7 @@ class AppShell extends StatelessWidget {
       }
       return AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
+          statusBarColor: AppColors.profileCanvas,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
         ),
@@ -179,7 +191,9 @@ class AppShell extends StatelessWidget {
               children: [
                 if (location != '/map' && !profileLayout)
                   ColoredBox(
-                    color: AppColors.surface,
+                    color: location == '/missions'
+                        ? AppColors.profileCanvas
+                        : AppColors.surface,
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(
                         16,
@@ -189,7 +203,7 @@ class AppShell extends StatelessWidget {
                       ),
                       child: SizedBox(
                         height: 56,
-                        child: location == '/home'
+                        child: location == '/home' || location == '/missions'
                             ? Stack(
                                 alignment: Alignment.center,
                                 children: [
@@ -218,26 +232,40 @@ class AppShell extends StatelessWidget {
               ],
             ),
           ),
-          bottomNavigationBar: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {},
-            child: MareaPanelAwareDock(
-              child: SafeArea(
-                top: false,
-                minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-                child: MareaMobileNavigation(
-                  location: location,
-                  selectedDestination: MobileDestination.forLocation(location),
-                  navigationChanges: GoRouter.maybeOf(context)?.routerDelegate,
-                  onSelected: (destination) {
-                    if (location != destination.path) {
-                      context.go(destination.path);
-                    }
-                  },
+          bottomNavigationBar:
+              Uri.parse(location).path == '/missions' &&
+                  MediaQuery.viewInsetsOf(context).bottom > 0
+              ? null
+              : GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {},
+                  child: MareaPanelAwareDock(
+                    child: SafeArea(
+                      top: false,
+                      minimum: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: MareaMobileNavigation(
+                              location: location,
+                              selectedDestination:
+                                  MobileDestination.forLocation(location),
+                              navigationChanges: GoRouter.maybeOf(
+                                context,
+                              )?.routerDelegate,
+                              onSelected: (destination) =>
+                                  _navigate(context, destination.path),
+                            ),
+                          ),
+                          if (isHome && controller != null) ...[
+                            const SizedBox(width: 8),
+                            create,
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
       );
     },
@@ -402,9 +430,10 @@ class _CreateAction extends StatefulWidget {
     required this.onTap,
     required this.selected,
     required this.expanded,
+    required this.stacked,
   });
   final Future<void> Function() onTap;
-  final bool selected, expanded;
+  final bool selected, expanded, stacked;
   @override
   State<_CreateAction> createState() => _CreateActionState();
 }
@@ -422,63 +451,82 @@ class _CreateActionState extends State<_CreateAction> {
   }
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    label: 'Crear',
-    button: true,
-    selected: widget.selected,
-    excludeSemantics: true,
-    onTap: _tap,
-    child: Tooltip(
-      message: 'Crear',
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: AppDepth.action,
-        ),
-        child: Material(
-          key: const Key('create-destination'),
-          color: AppColors.actionBlue,
-          borderRadius: BorderRadius.circular(28),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(28),
-            onTap: _tap,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: widget.expanded ? 20 : 16,
-                vertical: 16,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedRotation(
-                    turns: _open ? 0.125 : 0,
-                    duration: MediaQuery.disableAnimationsOf(context)
-                        ? Duration.zero
-                        : const Duration(milliseconds: 180),
-                    child: const Icon(
-                      Icons.add_rounded,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  if (widget.expanded) ...[
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Crear',
-                      style: TextStyle(
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(widget.stacked ? 22 : 28);
+    return Semantics(
+      label: 'Crear',
+      button: true,
+      selected: widget.selected,
+      excludeSemantics: true,
+      onTap: _tap,
+      child: Tooltip(
+        message: 'Crear',
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            boxShadow: AppDepth.action,
+          ),
+          child: Material(
+            key: const Key('create-destination'),
+            color: AppColors.actionBlue,
+            borderRadius: radius,
+            child: InkWell(
+              borderRadius: radius,
+              onTap: _tap,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: widget.stacked ? 6 : (widget.expanded ? 20 : 16),
+                  vertical: widget.stacked ? 8 : 16,
+                ),
+                child: Flex(
+                  direction: widget.stacked ? Axis.vertical : Axis.horizontal,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimatedRotation(
+                      turns: _open ? 0.125 : 0,
+                      duration: MediaQuery.disableAnimationsOf(context)
+                          ? Duration.zero
+                          : const Duration(milliseconds: 180),
+                      child: const Icon(
+                        Icons.add_rounded,
                         color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                        size: 24,
                       ),
                     ),
+                    if (widget.stacked)
+                      const SizedBox(
+                        width: 48,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'Crear',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (widget.expanded) ...[
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Crear',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _Destination {

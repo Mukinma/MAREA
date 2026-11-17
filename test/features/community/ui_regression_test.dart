@@ -57,6 +57,7 @@ class _Repository implements CommunityRepository {
     String query = '',
     String? category,
     bool savedOnly = false,
+    bool discoverOnly = false,
     int offset = 0,
   }) async {
     postRequests++;

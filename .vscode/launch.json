@@ -16,8 +16,13 @@
       "type": "dart",
       "program": "test/manual/business_ar_live_probe.dart",
       "flutterMode": "debug",
-      "env": {"PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"},
-      "toolArgs": ["--dart-define-from-file=config/supabase.production.json"]
+      "env": {
+        "PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"
+      },
+      "toolArgs": [
+        "--dart-define-from-file=config/supabase.production.json",
+        "--dart-define=MAPBOX_ACCESS_TOKEN=${env:MAPBOX_ACCESS_TOKEN}"
+      ]
     },
     {
       "name": "MAREA Desarrollo · piloto con backend",
@@ -26,8 +31,14 @@
       "program": "lib/main.dart",
       "flutterMode": "debug",
       "preLaunchTask": "MAREA: preparar desarrollo",
-      "env": {"PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"},
-      "toolArgs": ["--dart-define-from-file=.dart_tool/ar-pilot/defines.json", "--web-port=7358"]
+      "env": {
+        "PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"
+      },
+      "toolArgs": [
+        "--dart-define-from-file=.dart_tool/ar-pilot/defines.json",
+        "--web-port=7358",
+        "--dart-define=MAPBOX_ACCESS_TOKEN=${env:MAPBOX_ACCESS_TOKEN}"
+      ]
     },
     {
       "name": "MAREA RA local · sin backend",
@@ -38,9 +49,7 @@
       "env": {
         "PATH": "C:\\Program Files\\Git\\cmd;${env:PATH}"
       },
-      "toolArgs": [
-        "--dart-define=MAP_TILE_URL=http://127.0.0.1:38765/tiles/{z}/{x}/{y}.png"
-      ]
+      "toolArgs": []
     },
     {
       "name": "MAREA Web · configuración local",
@@ -50,7 +59,8 @@
       "deviceId": "chrome",
       "toolArgs": [
         "--web-port=7357",
-        "--dart-define-from-file=config/supabase.local.json"
+        "--dart-define-from-file=config/supabase.local.json",
+        "--dart-define=MAPBOX_ACCESS_TOKEN=${env:MAPBOX_ACCESS_TOKEN}"
       ]
     },
     {
@@ -59,7 +69,18 @@
       "type": "dart",
       "program": "lib/main.dart",
       "toolArgs": [
-        "--dart-define-from-file=config/supabase.local.json"
+        "--dart-define-from-file=config/supabase.local.json",
+        "--dart-define=MAPBOX_ACCESS_TOKEN=${env:MAPBOX_ACCESS_TOKEN}"
+      ]
+    },
+    {
+      "name": "MAREA · Mapbox · configuración actual",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "toolArgs": [
+        "--dart-define-from-file=config/supabase.production.json",
+        "--dart-define=MAPBOX_ACCESS_TOKEN=${env:MAPBOX_ACCESS_TOKEN}"
       ]
     }
   ]

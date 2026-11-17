@@ -219,6 +219,7 @@ class _PostComposerScreenState extends State<PostComposerScreen> {
           if (mounted) context.pop(true);
         });
       } else {
+        if (widget.postId == null) widget.controller.refreshHomeFeed();
         context.go('/home');
       }
     } catch (error) {

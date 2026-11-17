@@ -1,6 +1,3 @@
-import 'package:marea/features/community/models/mission_social.dart';
-import 'package:marea/features/home_feed/data/home_feed_repository.dart';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/location/device_location_service.dart';
@@ -9,19 +6,22 @@ import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/models/post_social.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
-import 'package:marea/features/community/presentation/posts_feed.dart';
 import 'package:marea/features/community/presentation/post_location_picker.dart';
+import 'package:marea/features/community/presentation/posts_feed.dart';
+import 'package:marea/features/home_feed/data/home_feed_repository.dart';
 import 'package:marea/features/home_feed/models/home_feed_models.dart';
+import 'package:marea/features/home_feed/presentation/home_feed_controls.dart';
 import 'package:marea/features/home_feed/presentation/stories_rail.dart';
-import 'package:marea/features/home_feed/presentation/mission_feed_card.dart';
 import 'package:marea/features/profile/models/profile.dart';
-import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
+import 'package:marea/shared/widgets/marea_surface.dart';
 
 class HomeFeedScreen extends StatefulWidget {
   const HomeFeedScreen({required this.controller, super.key});
+
   final AppSessionController controller;
+
   @override
   State<HomeFeedScreen> createState() => _HomeFeedScreenState();
 }
@@ -30,28 +30,29 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   final _scroll = ScrollController();
   final _legacyPosts = GlobalKey<PostsFeedState>();
   final _stories = GlobalKey<StoriesRailState>();
-  final _entries = <HomeFeedEntry>[];
+  final _posts = <CommunityPost>[];
   final _authors = <String, CommunityProfile>{};
   final _stats = <String, PostSocialStats>{};
-  final _missionStats = <String, MissionSocialStats>{};
-  Set<String> _saved = {}, _savedMissions = {};
+  Set<String> _saved = {};
   HomeFeedMode _mode = HomeFeedMode.forYou;
-  HomeFeedKind _kind = HomeFeedKind.all;
   String? _category, _error, _locationError;
   String? _viewerId;
   double? _latitude, _longitude;
-  int _radius = 10, _generation = 0, _revision = 0;
+  int _radius = 10, _generation = 0, _revision = 0, _locationRequest = 0;
   bool _loading = false, _locating = false;
   Map<String, dynamic>? _cursor;
-  Timer? _expiry;
+
+  bool get _hasLocation => _latitude != null && _longitude != null;
+
   HomeFeedFilter get _filter => HomeFeedFilter(
     mode: _mode,
-    kind: _kind,
+    kind: HomeFeedKind.post,
     category: _category,
-    latitude: _latitude,
-    longitude: _longitude,
-    radiusKm: _radius,
+    latitude: _mode == HomeFeedMode.nearby ? _latitude : null,
+    longitude: _mode == HomeFeedMode.nearby ? _longitude : null,
+    radiusKm: _mode == HomeFeedMode.nearby ? _radius : 10,
   );
+
   @override
   void initState() {
     super.initState();
@@ -62,39 +63,32 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     widget.controller.addListener(_sessionChanged);
     _scroll.addListener(_onScroll);
     _load(reset: true);
-    _expiry = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted && _entries.any((e) => e.mission?.isExpired == true)) {
-        setState(
-          () => _entries.removeWhere((e) => e.mission?.isExpired == true),
-        );
-      }
-    });
   }
 
   void _sessionChanged() {
-    final viewerId = widget.controller.profile?.id;
-    if (_viewerId != viewerId) {
-      _viewerId = viewerId;
+    final profile = widget.controller.profile;
+    if (_viewerId != profile?.id) {
+      _viewerId = profile?.id;
       _revision = widget.controller.homeFeedRevision;
       ++_generation;
+      ++_locationRequest;
       setState(() {
-        _entries.clear();
+        _posts.clear();
         _authors.clear();
         _stats.clear();
-        _missionStats.clear();
         _saved = {};
-        _savedMissions = {};
         _cursor = null;
         _error = null;
         _locationError = null;
         _loading = false;
+        _locating = false;
         _mode = HomeFeedMode.forYou;
-        _kind = HomeFeedKind.all;
         _category = null;
-        _latitude = widget.controller.profile?.locationLatitude;
-        _longitude = widget.controller.profile?.locationLongitude;
+        _radius = 10;
+        _latitude = profile?.locationLatitude;
+        _longitude = profile?.locationLongitude;
       });
-      if (viewerId != null) _load(reset: true);
+      if (_viewerId != null) _refresh();
       return;
     }
     if (_revision == widget.controller.homeFeedRevision) return;
@@ -105,7 +99,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   @override
   void dispose() {
     widget.controller.removeListener(_sessionChanged);
-    _expiry?.cancel();
     _scroll.dispose();
     super.dispose();
   }
@@ -131,94 +124,105 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   Future<void> _load({bool reset = false}) async {
     if (widget.controller.status == AuthStatus.unauthenticated) return;
     final repo = widget.controller.homeFeedRepository;
-    if (repo == null) return;
-    if (!reset && (_loading || _cursor == null)) return;
-    if (_filter.validate() != null) return;
-    final generation = ++_generation;
+    if (repo == null || (!reset && (_loading || _cursor == null))) return;
     final filter = _filter;
+    if (filter.validate() != null) return;
+
+    final generation = ++_generation;
     setState(() {
       _loading = true;
       _error = null;
+      if (reset) _cursor = null;
     });
     try {
-      final page = await repo.page(filter, cursor: reset ? null : _cursor);
+      final page = await repo.page(filter, cursor: _cursor);
+      if (!mounted || generation != _generation) return;
+      final posts = page.entries.map((entry) => entry.post).nonNulls.toList();
       final community = widget.controller.communityRepository;
-      final postIds = page.entries
-          .where((e) => e.post != null)
-          .map((e) => e.id)
-          .toList();
-      final results = await Future.wait<dynamic>([
-        community?.profiles(
-              ids: page.entries.map((e) => e.authorId).toSet().toList(),
-            ) ??
-            Future.value(<CommunityProfile>[]),
-        widget.controller.socialRepository?.stats(postIds) ??
-            Future.value(<String, PostSocialStats>{}),
-        community?.savedPostIds() ?? Future.value(<String>{}),
-        community?.savedMissionIds() ?? Future.value(<String>{}),
-        widget.controller.missionSocialRepository?.stats(
-              page.entries
-                  .where((e) => e.mission != null)
-                  .map((e) => e.id)
-                  .toList(),
-            ) ??
-            Future.value(<String, MissionSocialStats>{}),
+      final postIds = posts.map((post) => post.id).toSet().toList();
+      final authorIds = posts.map((post) => post.authorId).toSet().toList();
+      final authorsFuture = authorIds.isEmpty
+          ? Future.value(<CommunityProfile>[])
+          : community?.profiles(ids: authorIds) ??
+                Future.value(<CommunityProfile>[]);
+      final statsFuture = postIds.isEmpty
+          ? Future.value(<String, PostSocialStats>{})
+          : widget.controller.socialRepository?.stats(postIds) ??
+                Future.value(<String, PostSocialStats>{});
+      final savedFuture = postIds.isEmpty
+          ? Future.value(_saved)
+          : community?.savedPostIds() ?? Future.value(<String>{});
+      final results = await Future.wait<Object>([
+        authorsFuture,
+        statsFuture,
+        savedFuture,
       ]);
+      final authors = results[0] as List<CommunityProfile>;
+      final stats = results[1] as Map<String, PostSocialStats>;
+      final saved = results[2] as Set<String>;
       if (!mounted || generation != _generation) return;
       setState(() {
         if (reset) {
-          _entries.clear();
+          _posts.clear();
           _authors.clear();
           _stats.clear();
-          _missionStats.clear();
         }
-        final seen = _entries.map((e) => e.key).toSet();
-        _entries.addAll(page.entries.where((e) => seen.add(e.key)));
+        final seen = _posts.map((post) => post.id).toSet();
+        _posts.addAll(posts.where((post) => seen.add(post.id)));
         _authors.addEntries(
-          (results[0] as List<CommunityProfile>).map((p) => MapEntry(p.id, p)),
+          authors.map((profile) => MapEntry(profile.id, profile)),
         );
-        _stats.addAll(results[1] as Map<String, PostSocialStats>);
-        _missionStats.addAll(results[4] as Map<String, MissionSocialStats>);
-        _saved = results[2] as Set<String>;
-        _savedMissions = results[3] as Set<String>;
+        _stats.addAll(stats);
+        _saved = {...saved};
         _cursor = page.cursor;
         _loading = false;
       });
-    } catch (e) {
-      if (mounted && generation == _generation) {
-        setState(() {
-          if (e is HomeFeedCursorExpired) {
-            _cursor = null;
-            _error = e.toString();
-          } else {
-            _error = communityError(e);
-          }
-          _loading = false;
-        });
-      }
+    } catch (error) {
+      if (!mounted || generation != _generation) return;
+      setState(() {
+        if (error is HomeFeedCursorExpired) _cursor = null;
+        _error = error is HomeFeedCursorExpired
+            ? error.toString()
+            : communityError(error);
+        _loading = false;
+      });
     }
   }
 
-  Future<void> _select(HomeFeedMode mode) async {
-    if (mode == _mode) return;
+  Future<void> _changeFeed(
+    VoidCallback update, {
+    bool scrollToTop = true,
+  }) async {
     ++_generation;
     setState(() {
-      _mode = mode;
-      _entries.clear();
+      update();
+      _posts.clear();
       _cursor = null;
       _error = null;
       _loading = false;
     });
-    if (mode == HomeFeedMode.nearby &&
-        (_latitude == null || _longitude == null)) {
-      await _locate();
-    } else {
-      await _load(reset: true);
-    }
+    if (scrollToTop && _scroll.hasClients) _scroll.jumpTo(0);
+    await _load(reset: true);
+  }
+
+  void _select(HomeFeedMode mode) {
+    if (mode == _mode) return;
+    ++_locationRequest;
+    _changeFeed(() {
+      _mode = mode;
+      _locating = false;
+      _locationError = null;
+    });
+  }
+
+  void _applyCategory(String? category) {
+    if (category == _category) return;
+    _changeFeed(() => _category = category);
   }
 
   Future<void> _locate() async {
-    final generation = _generation;
+    final request = ++_locationRequest;
+    bool isCurrent() => mounted && request == _locationRequest;
     setState(() {
       _locating = true;
       _locationError = null;
@@ -226,32 +230,32 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     try {
       final position = await const GeolocatorDeviceLocationService().current(
         requestPermission: true,
-        isCurrent: () => mounted && generation == _generation,
+        isCurrent: isCurrent,
       );
-      if (!mounted || generation != _generation) return;
-      setState(() {
+      if (!isCurrent()) return;
+      await _changeFeed(() {
         _latitude = position.latitude;
         _longitude = position.longitude;
+        _locating = false;
+      }, scrollToTop: false);
+    } catch (error) {
+      if (!isCurrent()) return;
+      setState(() {
+        _locating = false;
+        _locationError = error is DeviceLocationFailure
+            ? error.message
+            : communityError(error);
       });
-      await _load(reset: true);
-    } catch (e) {
-      if (mounted && generation == _generation) {
-        setState(
-          () => _locationError = e is DeviceLocationFailure
-              ? e.message
-              : communityError(e),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _locating = false);
     }
   }
 
   Future<void> _pickLocation() async {
+    final request = ++_locationRequest;
+    if (_locating) setState(() => _locating = false);
     final point = await showCommunityLocationPicker(
       context,
       repository: widget.controller.locationRepository,
-      initial: _latitude == null || _longitude == null
+      initial: !_hasLocation
           ? null
           : PostLocationSelection(
               label: 'Punto elegido',
@@ -262,324 +266,271 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
               ),
             ),
     );
-    if (!mounted || point == null) return;
-    setState(() {
+    if (!mounted || request != _locationRequest || point == null) return;
+    await _changeFeed(() {
       _latitude = point.coordinates.latitude;
       _longitude = point.coordinates.longitude;
       _locationError = null;
-    });
-    if (_mode == HomeFeedMode.nearby) await _load(reset: true);
+    }, scrollToTop: false);
   }
 
   Future<void> _filters() async {
-    var category = _category;
-    var kind = _kind;
-    var radius = _radius;
-    final applied = await showMareaBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, update) => SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Filtrar Inicio',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 16),
-              const Text('Contenido'),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: [
-                  for (final value in HomeFeedKind.values)
-                    ChoiceChip(
-                      label: Text(switch (value) {
-                        HomeFeedKind.all => 'Todo',
-                        HomeFeedKind.post => 'Publicaciones',
-                        HomeFeedKind.mission => 'Misiones',
-                      }),
-                      selected: kind == value,
-                      onSelected: (_) => update(() => kind = value),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Text('Categoría'),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ChoiceChip(
-                    label: const Text('Todas'),
-                    selected: category == null,
-                    onSelected: (_) => update(() => category = null),
-                  ),
-                  for (final entry in communityCategories.entries)
-                    ChoiceChip(
-                      label: Text(entry.value),
-                      selected: category == entry.key,
-                      onSelected: (_) => update(() => category = entry.key),
-                    ),
-                ],
-              ),
-              if (_mode == HomeFeedMode.nearby) ...[
-                const SizedBox(height: 16),
-                const Text('Distancia'),
-                Wrap(
-                  spacing: 8,
-                  children: [
-                    for (final km in [5, 10, 25, 50])
-                      ChoiceChip(
-                        label: Text('$km km'),
-                        selected: radius == km,
-                        onSelected: (_) => update(() => radius = km),
-                      ),
-                  ],
-                ),
-              ],
-              const SizedBox(height: 20),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Aplicar filtros'),
-              ),
-              TextButton(
-                onPressed: () => update(() {
-                  category = null;
-                  kind = HomeFeedKind.all;
-                  radius = 10;
-                }),
-                child: const Text('Restablecer'),
-              ),
-            ],
-          ),
-        ),
-      ),
+    final viewer = _viewerId;
+    final mode = _mode;
+    final filters = await showHomeFeedFilters(
+      context,
+      category: _category,
+      radius: _radius,
+      nearby: mode == HomeFeedMode.nearby,
     );
-    if (!mounted || applied != true) return;
-    ++_generation;
-    setState(() {
-      _category = category;
-      _kind = kind;
-      _radius = radius;
-      _entries.clear();
-      _cursor = null;
-      _loading = false;
+    if (!mounted || filters == null || viewer != _viewerId || mode != _mode) {
+      return;
+    }
+    if (filters.category == _category && filters.radius == _radius) return;
+    await _changeFeed(() {
+      _category = filters.category;
+      _radius = filters.radius;
     });
-    await _load(reset: true);
   }
 
-  Widget _header() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _locationControls() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      StoriesRail(key: _stories, controller: widget.controller),
-      const SizedBox(height: 10),
-      Row(
+      Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 4,
         children: [
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (final mode in HomeFeedMode.values)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: ChoiceChip(
-                        label: Text(switch (mode) {
-                          HomeFeedMode.forYou => 'Para ti',
-                          HomeFeedMode.nearby => 'Cerca',
-                          HomeFeedMode.following => 'Siguiendo',
-                          HomeFeedMode.trending => 'Tendencias',
-                        }),
-                        selected: _mode == mode,
-                        showCheckmark: false,
-                        selectedColor: AppColors.brandNavy,
-                        backgroundColor: const Color(0xFFF0F5FB),
-                        side: BorderSide.none,
-                        shape: const StadiumBorder(),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        labelStyle: TextStyle(
-                          color: _mode == mode
-                              ? Colors.white
-                              : AppColors.textSecondary,
-                          fontSize: 12,
-                        ),
-                        onSelected: (_) => _select(mode),
-                      ),
-                    ),
-                ],
+          if (_hasLocation)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(end: 8),
+              child: Text(
+                'Radio de $_radius km',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
+          TextButton.icon(
+            onPressed: _locating ? null : _locate,
+            icon: const Icon(Icons.my_location_rounded, size: 18),
+            label: Text(_locating ? 'Localizando…' : 'Mi ubicación'),
           ),
-          IconButton(
-            tooltip: 'Filtrar Inicio',
-            onPressed: _filters,
-            icon: Badge(
-              isLabelVisible: _category != null || _kind != HomeFeedKind.all,
-              child: const Icon(Icons.tune_rounded),
-            ),
-          ),
-        ],
-      ),
-      if (_mode == HomeFeedMode.nearby) ...[
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: 8,
-          children: [
-            Text(
-              'A $_radius km',
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-            TextButton.icon(
-              onPressed: _locating ? null : _locate,
-              icon: const Icon(Icons.my_location, size: 18),
-              label: Text(_locating ? 'Localizando…' : 'Mi ubicación'),
-            ),
+          if (_hasLocation)
             TextButton(
               onPressed: _pickLocation,
               child: const Text('Elegir punto'),
             ),
-          ],
-        ),
-        if (_locationError != null) CommunityNotice(message: _locationError!),
-      ],
-      if (widget.controller.profile?.role == ProfileRole.admin)
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton.icon(
-            onPressed: () async {
-              await context.push('/moderation');
-              if (mounted) _refresh();
-            },
-            icon: const Icon(Icons.shield_outlined),
-            label: const Text('Moderación'),
+        ],
+      ),
+      if (_locationError != null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text(
+            _locationError!,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
-      const SizedBox(height: 12),
     ],
   );
-  Widget _entry(HomeFeedEntry entry) {
+
+  Widget _entry(CommunityPost post) {
     final repo = widget.controller.communityRepository;
     if (repo == null) {
       return const CommunityNotice(message: 'La comunidad no está disponible.');
     }
-    if (entry.mission != null) {
-      return MissionFeedCard(
-        key: ValueKey(entry.key),
-        mission: entry.mission!,
-        stats: _missionStats[entry.id],
-        onStats: (value) => _missionStats[entry.id] = value,
-        author: _authors[entry.authorId],
-        controller: widget.controller,
-        saved: _savedMissions.contains(entry.id),
-        onSaved: (value) {
-          if (mounted) {
-            setState(() {
-              if (value) {
-                _savedMissions.add(entry.id);
-              } else {
-                _savedMissions.remove(entry.id);
-              }
-            });
-          }
-        },
-        onChanged: () => _load(reset: true),
-      );
-    }
     return PostCard(
-      key: ValueKey(entry.key),
-      post: entry.post!,
+      key: ValueKey(post.id),
+      post: post,
       homePresentation: true,
       locationRepository: widget.controller.locationRepository,
-      author: _authors[entry.authorId],
+      author: _authors[post.authorId],
       repository: repo,
-      viewerId: widget.controller.profile?.id,
-      saved: _saved.contains(entry.id),
+      viewerId: _viewerId,
+      saved: _saved.contains(post.id),
       socialRepository: widget.controller.socialRepository,
       mediaRepository: widget.controller.mediaRepository,
-      stats: _stats[entry.id],
+      stats: _stats[post.id],
       publicUrl: widget.controller.publicUrl,
       moderator: widget.controller.profile?.role == ProfileRole.admin,
-      onStats: (value) => _stats[entry.id] = value,
+      onHomeCategory: _applyCategory,
+      onStats: (value) => _stats[post.id] = value,
       onChanged: () => _load(reset: true),
       onSaved: (value) {
-        if (mounted) {
-          setState(() {
-            if (value) {
-              _saved.add(entry.id);
-            } else {
-              _saved.remove(entry.id);
-            }
-          });
-        }
+        if (!mounted) return;
+        setState(() {
+          if (value) {
+            _saved.add(post.id);
+          } else {
+            _saved.remove(post.id);
+          }
+        });
       },
     );
   }
 
-  Widget _footer() => Column(
-    children: [
-      if (_loading)
-        const Padding(
-          padding: EdgeInsets.all(24),
-          child: MareaSkeleton(kind: SkeletonKind.post),
-        ),
-      if (_error != null)
-        CommunityNotice(
-          message: _error!,
-          onRetry: () => _load(reset: _entries.isEmpty || _cursor == null),
-        ),
-      if (!_loading && _error == null && _entries.isEmpty)
-        CommunityNotice(
-          message: _mode == HomeFeedMode.following
-              ? 'No hay contenido de personas que sigues. Encuentra personas en Explorar y pulsa Seguir.'
-              : _mode == HomeFeedMode.nearby &&
-                    (_latitude == null || _longitude == null)
-              ? 'Elige tu ubicación para ver qué hay cerca.'
-              : 'No hay contenido con estos filtros. Vuelve más tarde o cambia los filtros.',
-        ),
-      if (!_loading && _cursor != null && _error == null)
-        TextButton(onPressed: _load, child: const Text('Cargar más')),
-    ],
-  );
-  @override
-  Widget build(BuildContext context) {
-    final bottom = MediaQuery.paddingOf(context).bottom;
-    if (widget.controller.homeFeedRepository == null) {
-      return CommunityPage(
-        title: '',
-        maxWidth: 820,
+  Widget _empty() {
+    final (icon, message, action, onAction) = switch ((
+      _mode,
+      _hasLocation,
+      _category,
+    )) {
+      (HomeFeedMode.nearby, false, _) => (
+        Icons.place_outlined,
+        'Elige un punto para ver publicaciones cercanas.',
+        'Elegir punto',
+        _pickLocation,
+      ),
+      (_, _, String()) => (
+        Icons.filter_alt_off_outlined,
+        'No hay publicaciones de esta categoría en esta vista.',
+        'Quitar filtro',
+        () => _applyCategory(null),
+      ),
+      (HomeFeedMode.following, _, _) => (
+        Icons.people_outline_rounded,
+        'Aún no hay publicaciones de perfiles que sigues.',
+        'Explorar perfiles',
+        () => context.push('/explore?section=people'),
+      ),
+      (HomeFeedMode.nearby, _, _) => (
+        Icons.place_outlined,
+        'Aún no hay publicaciones en este radio.',
+        'Elegir punto',
+        _pickLocation,
+      ),
+      (HomeFeedMode.trending, _, _) => (
+        Icons.trending_up_rounded,
+        'Aún no hay publicaciones en tendencias.',
+        'Ver Para ti',
+        () => _select(HomeFeedMode.forYou),
+      ),
+      _ => (
+        Icons.edit_note_rounded,
+        'Aún no hay publicaciones para ti.',
+        null,
+        null,
+      ),
+    };
+    return MareaSurface(
+      color: AppColors.surface,
+      padding: const EdgeInsets.all(20),
+      child: Column(
         children: [
-          _header(),
-          PostsFeed(
-            key: _legacyPosts,
-            controller: widget.controller,
-            showHeading: false,
-            showRefresh: false,
-          ),
+          Icon(icon, color: AppColors.aquaDark, size: 28),
+          const SizedBox(height: 8),
+          Text(message, textAlign: TextAlign.center),
+          if (action != null)
+            TextButton(onPressed: onAction, child: Text(action)),
         ],
+      ),
+    );
+  }
+
+  Widget _footer() {
+    if (_loading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 12),
+        child: MareaSkeleton(kind: SkeletonKind.post),
       );
     }
-    return MareaRefreshIndicator(
-      onRefresh: _refresh,
-      child: ListView.builder(
-        controller: _scroll,
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(6, 4, 6, bottom + 32),
-        itemCount: _entries.length + 2,
-        itemBuilder: (_, index) => Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 680),
-            child: index == 0
-                ? _header()
-                : index == _entries.length + 1
-                ? _footer()
-                : _entry(_entries[index - 1]),
-          ),
+    if (_error != null) {
+      return CommunityNotice(
+        message: _error!,
+        onRetry: () => _load(reset: _cursor == null),
+      );
+    }
+    if (_cursor != null) {
+      return Center(
+        child: TextButton(onPressed: _load, child: const Text('Cargar más')),
+      );
+    }
+    return _posts.isEmpty ? _empty() : const SizedBox.shrink();
+  }
+
+  Widget _inColumn(Widget child) => Center(
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 712),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: SizedBox(width: double.infinity, child: child),
+      ),
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final paginated = widget.controller.homeFeedRepository != null;
+    return ColoredBox(
+      color: AppColors.profileCanvas,
+      child: MareaRefreshIndicator(
+        onRefresh: _refresh,
+        child: CustomScrollView(
+          key: const Key('home-feed-scroll'),
+          controller: _scroll,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            SliverToBoxAdapter(
+              child: _inColumn(
+                StoriesRail(key: _stories, controller: widget.controller),
+              ),
+            ),
+            if (widget.controller.profile?.role == ProfileRole.admin)
+              SliverToBoxAdapter(
+                child: _inColumn(
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: TextButton.icon(
+                      icon: const Icon(Icons.shield_outlined, size: 18),
+                      label: const Text('Moderación'),
+                      onPressed: () async {
+                        await context.push('/moderation');
+                        if (mounted) await _refresh();
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            if (paginated) ...[
+              PinnedHeaderSliver(
+                child: ColoredBox(
+                  color: AppColors.profileCanvas,
+                  child: _inColumn(
+                    HomeFeedControls(
+                      mode: _mode,
+                      category: _category,
+                      hasCustomRadius:
+                          _mode == HomeFeedMode.nearby && _radius != 10,
+                      onMode: _select,
+                      onFilters: _filters,
+                      onClearCategory: () => _applyCategory(null),
+                    ),
+                  ),
+                ),
+              ),
+              if (_mode == HomeFeedMode.nearby)
+                SliverToBoxAdapter(child: _inColumn(_locationControls())),
+              SliverList.builder(
+                itemCount: _posts.length,
+                itemBuilder: (_, index) => _inColumn(_entry(_posts[index])),
+              ),
+              SliverToBoxAdapter(child: _inColumn(_footer())),
+            ] else
+              SliverToBoxAdapter(
+                child: _inColumn(
+                  PostsFeed(
+                    key: _legacyPosts,
+                    controller: widget.controller,
+                    showHeading: false,
+                    showRefresh: false,
+                    homePresentation: true,
+                  ),
+                ),
+              ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: MediaQuery.paddingOf(context).bottom + 24,
+              ),
+            ),
+          ],
         ),
       ),
     );

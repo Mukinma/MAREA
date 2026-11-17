@@ -16,8 +16,6 @@ import 'package:marea/features/tours/models/tour_models.dart';
 import 'business_ar_reference.dart';
 
 const businessARLocalPort = 38765;
-const businessARLocalMapUrl =
-    'http://127.0.0.1:$businessARLocalPort/tiles/{z}/{x}/{y}.png';
 const businessARLocalOwner = 'local-qa-organizer';
 const businessARLocalTour = 'local-qa-tour';
 const businessARLocalPoint = 'local-qa-reference';
@@ -152,6 +150,7 @@ class BusinessARLocalCommunity implements CommunityRepository {
     String query = '',
     String? category,
     bool savedOnly = false,
+    bool discoverOnly = false,
     int offset = 0,
   }) async => [];
   @override
@@ -291,15 +290,13 @@ class BusinessARLocalAssets {
     int port = businessARLocalPort,
   }) async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, port);
-    final reference = businessARReferencePng(), tile = businessARLocalTilePng();
+    final reference = businessARReferencePng();
     server.listen((request) async {
       if (request.method != 'GET' && request.method != 'HEAD') {
         request.response.statusCode = HttpStatus.methodNotAllowed;
       } else {
         final Uint8List? bytes = request.uri.path == '/reference.png'
             ? reference
-            : request.uri.path.startsWith('/tiles/')
-            ? tile
             : null;
         if (bytes == null) {
           request.response.statusCode = HttpStatus.notFound;

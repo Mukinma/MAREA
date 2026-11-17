@@ -4,7 +4,9 @@ El rediseño conserva repositorios, categorías, cuatro perfiles, mapa, moderaci
 
 ## Recorridos
 
-Explorar conserva búsqueda en servidor, filtros y paginación. Guardadas pertenece a Explorar; los borradores privados están en Mis misiones. Mis candidaturas conserva historial, retirada y repostulación. Volver del detalle mantiene filtros y desplazamiento.
+/missions reúne el catálogo y las misiones cercanas. La búsqueda consulta convocatorias en el servidor. Categoría y perfil se aplican al catálogo y a la proximidad. El radio solo afecta la proximidad, que se oculta durante la búsqueda. El catálogo avanza por filas del servidor y oculta los IDs que muestra el carrusel.
+
+Guardadas abre /missions?section=saved y conserva el catálogo al regresar. Mis misiones, Borradores, Mis postulaciones y las convocatorias compatibles se pueden abrir desde Perfil. Mis postulaciones conserva historial, retirada y repostulación.
 
 Crear y editar comparten cuatro pasos: idea; colaboración y compensación; lugar y fecha; revisión. La edición explica los campos bloqueados desde la primera candidatura. Los borradores admiten datos incompletos y texto temporalmente inválido; no aparecen en descubrimiento ni mapa. Salir ofrece guardar, descartar o continuar. Publicar utiliza UUID estable y journal para crear una sola misión; la recuperación explica qué versión se publicó.
 
@@ -27,6 +29,8 @@ RPC nuevos: save_mission_draft, publish_mission_draft, delete_mission_draft, lis
 La campana recibe candidatura, aceptación/rechazo, retirada y cierre/reapertura/cancelación/finalización para participantes activos. Reintentos sin avisos duplicados. Finalistas no notifican; fallar al marcar leído no bloquea navegación. Las rutas específicas verifican sesión, propiedad y estado y sus destinos internos sobreviven autenticación.
 
 No se agregan pagos, chat, push, correos, afinidad, insignias ni plazos ficticios. La fecha de inicio sigue siendo el límite de candidatura.
+
+El orden «Más recientes» usa `list_missions`. «Por fecha de inicio» usa `list_mission_catalog_by_start`, que filtra convocatorias visibles con cupo y ordena por `starts_at` e ID antes de paginar. Aplicar la migración `20261113023442_mission_catalog_order.sql` en el entorno de destino antes de distribuir el cliente.
 
 ## Verificación reproducible
 

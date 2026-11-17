@@ -12,6 +12,7 @@ abstract interface class CommunityRepository {
     String query = '',
     String? category,
     bool savedOnly = false,
+    bool discoverOnly = false,
     int offset = 0,
   });
   Future<CommunityPost?> post(String id);
@@ -29,6 +30,12 @@ abstract interface class CommunityRepository {
     String? category,
     UserType? targetType,
     String scope = 'all',
+    int offset = 0,
+  });
+  Future<List<Mission>> missionCatalogByStart({
+    String query = '',
+    String? category,
+    UserType? targetType,
     int offset = 0,
   });
   Future<Mission?> mission(String id);
@@ -111,9 +118,13 @@ class SupabaseCommunityRepository implements CommunityRepository {
     String query = '',
     String? category,
     bool savedOnly = false,
+    bool discoverOnly = false,
     int offset = 0,
   }) => _run(() async {
     var request = _client.from('posts').select();
+    if (discoverOnly) {
+      request = request.eq('hidden', false).neq('author_id', _userId);
+    }
     if (authorId != null) request = request.eq('author_id', authorId);
     if (category != null) request = request.eq('category', category);
     if (query.trim().isNotEmpty) {
@@ -247,6 +258,27 @@ class SupabaseCommunityRepository implements CommunityRepository {
         'category_filter': category,
         'target_filter': targetType?.databaseValue,
         'scope_filter': scope,
+        'page_offset': max(0, offset),
+      },
+    );
+    return (rows as List)
+        .map((row) => Mission.fromJson(Map<String, dynamic>.from(row as Map)))
+        .toList();
+  });
+
+  @override
+  Future<List<Mission>> missionCatalogByStart({
+    String query = '',
+    String? category,
+    UserType? targetType,
+    int offset = 0,
+  }) => _run(() async {
+    final rows = await _client.rpc(
+      'list_mission_catalog_by_start',
+      params: {
+        'query_text': query.trim(),
+        'category_filter': category,
+        'target_filter': targetType?.databaseValue,
         'page_offset': max(0, offset),
       },
     );

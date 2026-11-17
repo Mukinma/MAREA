@@ -29,6 +29,7 @@ void main() {
 
   for (final path in [
     '/missions',
+    '/missions?section=saved',
     '/missions/new',
     '/missions/m/apply',
     '/missions/m/manage',

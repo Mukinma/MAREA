@@ -66,35 +66,3 @@ Uint8List businessARReferencePng() {
   );
   return Uint8List.fromList(image.encodePng(canvas));
 }
-
-Uint8List businessARLocalTilePng() {
-  final canvas = image.Image(width: 256, height: 256);
-  image.fill(canvas, color: image.ColorRgb8(231, 242, 242));
-  for (var n = 0; n < 256; n += 64) {
-    image.drawLine(
-      canvas,
-      x1: n,
-      y1: 0,
-      x2: n,
-      y2: 255,
-      color: image.ColorRgb8(200, 221, 224),
-    );
-    image.drawLine(
-      canvas,
-      x1: 0,
-      y1: n,
-      x2: 255,
-      y2: n,
-      color: image.ColorRgb8(200, 221, 224),
-    );
-  }
-  image.drawString(
-    canvas,
-    'MAPA LOCAL QA',
-    font: image.arial14,
-    x: 60,
-    y: 115,
-    color: image.ColorRgb8(32, 64, 86),
-  );
-  return Uint8List.fromList(image.encodePng(canvas));
-}

@@ -31,11 +31,31 @@ class CreationChoices extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onSelect,
+    this.homeOnly = false,
   });
   final AppSessionController controller;
   final ValueChanged<String> onSelect;
+  final bool homeOnly;
   @override
   Widget build(BuildContext context) {
+    final story = (
+      title: homeOnly ? 'Historia' : 'Crear historia',
+      description: homeOnly
+          ? 'Una foto visible durante 24 h.'
+          : 'Comparte una foto o texto durante 24 horas.',
+      path: '/stories/new',
+      icon: homeOnly ? Icons.add_a_photo_outlined : Icons.add_circle_outline,
+      color: AppColors.mint,
+    );
+    final post = (
+      title: homeOnly ? 'Publicación' : 'Publicar en Inicio',
+      description: homeOnly
+          ? 'Texto o foto en el feed.'
+          : 'Comparte una idea, una novedad o lo que estás creando.',
+      path: '/posts/new',
+      icon: Icons.dynamic_feed_outlined,
+      color: AppColors.peach,
+    );
     final choices =
         <
           ({
@@ -46,51 +66,44 @@ class CreationChoices extends StatelessWidget {
             Color color,
           })
         >[
-          (
-            title: 'Crear historia',
-            description: 'Comparte una foto o texto durante 24 horas.',
-            path: '/stories/new',
-            icon: Icons.add_circle_outline,
-            color: AppColors.mint,
-          ),
-          (
-            title: 'Crear misión',
-            description: 'Convoca a tu comunidad para hacer algo juntos.',
-            path: '/missions/new',
-            icon: Icons.flag_outlined,
-            color: AppColors.mint,
-          ),
-          (
-            title: 'Publicar en Inicio',
-            description:
-                'Comparte una idea, una novedad o lo que estás creando.',
-            path: '/posts/new',
-            icon: Icons.dynamic_feed_outlined,
-            color: AppColors.peach,
-          ),
-          if (controller.tourRepository != null &&
-              controller.profile?.userType != null &&
-              controller.profile!.userType != UserType.general)
+          if (homeOnly) ...[
+            post,
+            story,
+          ] else ...[
+            story,
             (
-              title: 'Crear recorrido 360°',
-              description: 'Muestra tu local y añade puntos con AR.',
-              path: '/tours/new',
-              icon: Icons.panorama_photosphere_outlined,
+              title: 'Crear misión',
+              description: 'Convoca a tu comunidad para hacer algo juntos.',
+              path: '/missions/new',
+              icon: Icons.flag_outlined,
               color: AppColors.mint,
             ),
-          for (final kind
-              in controller.profile?.userType.showcaseKinds ?? <ShowcaseKind>[])
-            (
-              title: kind.action,
-              description: 'Para tu perfil. Publica o guarda un borrador.',
-              path: '/showcase/new?kind=${kind.name}',
-              icon: kind == ShowcaseKind.project
-                  ? Icons.palette_outlined
-                  : kind == ShowcaseKind.product
-                  ? Icons.inventory_2_outlined
-                  : Icons.design_services_outlined,
-              color: AppColors.lavender,
-            ),
+            post,
+            if (controller.tourRepository != null &&
+                controller.profile?.userType != null &&
+                controller.profile!.userType != UserType.general)
+              (
+                title: 'Crear recorrido 360°',
+                description: 'Muestra tu local y añade puntos con AR.',
+                path: '/tours/new',
+                icon: Icons.panorama_photosphere_outlined,
+                color: AppColors.mint,
+              ),
+            for (final kind
+                in controller.profile?.userType.showcaseKinds ??
+                    <ShowcaseKind>[])
+              (
+                title: kind.action,
+                description: 'Para tu perfil. Publica o guarda un borrador.',
+                path: '/showcase/new?kind=${kind.name}',
+                icon: kind == ShowcaseKind.project
+                    ? Icons.palette_outlined
+                    : kind == ShowcaseKind.product
+                    ? Icons.inventory_2_outlined
+                    : Icons.design_services_outlined,
+                color: AppColors.lavender,
+              ),
+          ],
         ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -167,23 +180,27 @@ class CreationChoices extends StatelessWidget {
 
 Future<void> showCreateMenu(
   BuildContext context,
-  AppSessionController controller,
-) async {
+  AppSessionController controller, {
+  bool homeOnly = false,
+}) async {
   final router = GoRouter.of(context);
   final width = MediaQuery.sizeOf(context).width;
   Widget panel(BuildContext c) => SafeArea(
+    top: !homeOnly,
     child: SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: homeOnly
+          ? const EdgeInsets.fromLTRB(20, 8, 20, 16)
+          : const EdgeInsets.all(24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Pon tu idea en movimiento',
-                  style: TextStyle(
+                  homeOnly ? 'Crear' : 'Pon tu idea en movimiento',
+                  style: const TextStyle(
                     fontSize: 23,
                     fontWeight: FontWeight.w800,
                     color: AppColors.brandNavy,
@@ -197,9 +214,10 @@ Future<void> showCreateMenu(
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: homeOnly ? 12 : 20),
           CreationChoices(
             controller: controller,
+            homeOnly: homeOnly,
             onSelect: (path) => Navigator.pop(c, path),
           ),
         ],

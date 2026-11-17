@@ -1,0 +1,15 @@
+digraph componentes {
+  graph [rankdir=TB, bgcolor=transparent, nodesep=.32, ranksep=.48];
+  node [shape=box, style="rounded,filled", color="#BBCADA", fillcolor="#F3F5F7", fontcolor="#14263D", fontname="Helvetica", fontsize=12, margin=".15,.10"];
+  edge [color="#64748B", arrowsize=.65];
+  main [label="startMarea() / MareaApp", fillcolor="#14263D", fontcolor=white];
+  router [label="GoRouter y shell\nNavegación adaptativa"];
+  session [label="AppSessionController\nSesión, perfil, dependencias"];
+  ui [label="Pantallas por dominio\nEstado local y controladores"];
+  repos [label="Repositorios Supabase\nAuth, datos, medios, RPC", fillcolor="#E8F0FF"];
+  maps [label="MapSurfaceDriver\nCámara, puntos, capas"];
+  native [label="Canales de plataforma\nCaptura, RA y avisos"];
+  {rank=same; router; session}
+  {rank=same; repos; maps; native}
+  main -> router; main -> session; router -> ui; session -> ui; session -> repos; ui -> repos; ui -> maps; ui -> native;
+}

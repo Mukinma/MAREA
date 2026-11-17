@@ -19,10 +19,13 @@ class ExploreScreen extends StatefulWidget {
   const ExploreScreen({
     required this.controller,
     this.initialSection,
+    this.initialCategory,
+    this.discoverOnly = false,
     super.key,
   });
   final AppSessionController controller;
-  final String? initialSection;
+  final String? initialSection, initialCategory;
+  final bool discoverOnly;
   @override
   State<ExploreScreen> createState() => _ExploreScreenState();
 }
@@ -32,19 +35,28 @@ class _ExploreScreenState extends State<ExploreScreen> {
   String _query = '', _section = 'posts', _savedSection = 'posts';
   String? _category;
   ShowcaseKind? _kind;
+
+  String get _initialSection => switch (widget.initialSection) {
+    'people' => 'people',
+    'saved' => 'saved',
+    _ => 'posts',
+  };
+
   @override
   void initState() {
     super.initState();
-    _section = widget.initialSection == 'saved' ? 'saved' : 'posts';
+    _section = _initialSection;
+    _category = widget.initialCategory;
   }
 
   @override
   void didUpdateWidget(ExploreScreen old) {
     super.didUpdateWidget(old);
     if (old.initialSection != widget.initialSection) {
-      setState(
-        () => _section = widget.initialSection == 'saved' ? 'saved' : 'posts',
-      );
+      _section = _initialSection;
+    }
+    if (old.initialCategory != widget.initialCategory) {
+      _category = widget.initialCategory;
     }
   }
 
@@ -154,6 +166,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             query: _query,
             category: _category,
             savedOnly: _section == 'saved',
+            discoverOnly: widget.discoverOnly && _section == 'posts',
             showHeading: false,
           ),
         ],

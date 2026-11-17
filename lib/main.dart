@@ -1,3 +1,4 @@
+import 'package:marea/core/config/mapbox_configuration.dart';
 import 'package:marea/features/location/data/location_repository.dart';
 import 'package:marea/features/community/data/mission_social_repository.dart';
 import 'package:marea/features/home_feed/data/home_feed_repository.dart';
@@ -32,6 +33,7 @@ Future<void> main() => startMarea();
 
 Future<void> startMarea({bool productionPilot = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
+  initializeMareaMapbox();
   usePathUrlStrategy();
 
   final config = AppConfig.fromEnvironment();

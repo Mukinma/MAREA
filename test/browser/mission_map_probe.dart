@@ -1,3 +1,4 @@
+import 'package:marea/core/config/mapbox_configuration.dart';
 // Browser QA fixture only. Never signs in to Supabase or adds production routes.
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -60,6 +61,7 @@ class _MapProbe implements MissionMapRepository {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized().ensureSemantics();
+  initializeMareaMapbox();
   final map = _MapProbe();
   final community = MissionRepositoryFake()..value = map.values.first;
   final session = AppSessionController(

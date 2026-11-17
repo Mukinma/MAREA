@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/theme/category_visuals.dart';
 import 'package:marea/features/community/data/community_repository.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
@@ -36,14 +37,20 @@ class PostsFeed extends StatefulWidget {
     this.query = '',
     this.category,
     this.savedOnly = false,
+    this.discoverOnly = false,
     this.showHeading = true,
     this.showRefresh = true,
+    this.homePresentation = false,
     super.key,
   });
   final AppSessionController controller;
   final String? authorId, category;
   final String query;
-  final bool savedOnly, showHeading, showRefresh;
+  final bool savedOnly,
+      discoverOnly,
+      showHeading,
+      showRefresh,
+      homePresentation;
   @override
   State<PostsFeed> createState() => PostsFeedState();
 }
@@ -70,6 +77,7 @@ class PostsFeedState extends State<PostsFeed> {
         oldWidget.query != widget.query ||
         oldWidget.category != widget.category ||
         oldWidget.savedOnly != widget.savedOnly ||
+        oldWidget.discoverOnly != widget.discoverOnly ||
         oldWidget.controller != widget.controller) {
       _load(reset: true);
     }
@@ -96,6 +104,7 @@ class PostsFeedState extends State<PostsFeed> {
         query: widget.query,
         category: widget.category,
         savedOnly: widget.savedOnly,
+        discoverOnly: widget.discoverOnly,
         offset: reset ? 0 : _posts.length,
       );
       final authors = posts.isEmpty
@@ -166,6 +175,10 @@ class PostsFeedState extends State<PostsFeed> {
         PostCard(
           key: ValueKey(post.id),
           post: post,
+          homePresentation: widget.homePresentation,
+          locationRepository: widget.homePresentation
+              ? widget.controller.locationRepository
+              : null,
           author: _authors[post.authorId],
           repository: _repo!,
           viewerId: widget.controller.profile?.id,
@@ -237,6 +250,7 @@ class PostCard extends StatefulWidget {
     this.stats,
     this.onStats,
     this.homePresentation = false,
+    this.onHomeCategory,
     this.locationRepository,
     this.moderator = false,
     this.publicUrl = 'https://marea-azul.netlify.app/',
@@ -255,6 +269,7 @@ class PostCard extends StatefulWidget {
   final bool saved, moderator, homePresentation;
   final Future<void> Function() onChanged;
   final ValueChanged<bool>? onSaved, onSaveSettled;
+  final ValueChanged<String>? onHomeCategory;
   @override
   State<PostCard> createState() => _PostCardState();
 }
@@ -556,88 +571,208 @@ class _PostCardState extends State<PostCard> {
     if (value != null && mounted) await _option(value);
   }
 
-  Widget _homeActions() {
+  Widget _homeActions({bool vertical = false}) {
     final post = widget.post;
     final enabled = !_busy && !post.hidden && widget.viewerId != null;
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        if (widget.socialRepository != null) ...[
-          ReactionButton(
-            inline: true,
-            selected: _stats?.myReaction,
-            count: _stats?.reactionCount ?? 0,
-            enabled: enabled,
-            onSelected: _react,
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                tooltip: 'Comentarios',
-                onPressed: enabled ? _comments : null,
-                icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
-              ),
-              Text(
-                '${_stats?.commentCount ?? 0}',
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ],
-        IconButton(
-          tooltip: 'Compartir',
-          onPressed: enabled
-              ? () => sharePost(
-                  context,
-                  AppConfig.fromValues(
-                    supabaseUrl: '',
-                    supabaseAnonKey: '',
-                    publicUrl: widget.publicUrl,
-                  ).postUrl(post.id),
-                )
-              : null,
-          icon: const Icon(Icons.shortcut_rounded, size: 22),
+    final commentCount = _stats?.commentCount ?? 0;
+    final actions = <Widget>[
+      if (widget.socialRepository != null) ...[
+        ReactionButton(
+          inline: true,
+          compact: vertical,
+          stackedCount: vertical,
+          selected: _stats?.myReaction,
+          count: _stats?.reactionCount ?? 0,
+          enabled: enabled,
+          onSelected: _react,
         ),
-        IconButton(
-          tooltip: _saved ? 'Quitar guardado' : 'Guardar',
-          onPressed: enabled ? () => _save(!_saved) : null,
-          icon: Icon(
-            _saved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-            size: 20,
+        Semantics(
+          button: true,
+          enabled: enabled,
+          label: 'Comentarios',
+          value: '$commentCount',
+          onTap: enabled ? _comments : null,
+          excludeSemantics: true,
+          child: IconButton(
+            tooltip: 'Comentarios',
+            onPressed: enabled ? _comments : null,
+            icon: Flex(
+              direction: vertical ? Axis.vertical : Axis.horizontal,
+              mainAxisSize: MainAxisSize.min,
+              spacing: vertical ? 3 : 5,
+              children: [
+                const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+                Flexible(
+                  child: Text(
+                    '$commentCount',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: vertical
+                        ? Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontSize: 10,
+                            height: 1.1,
+                          )
+                        : Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
+      IconButton(
+        tooltip: _saved ? 'Quitar guardado' : 'Guardar',
+        onPressed: enabled ? () => _save(!_saved) : null,
+        icon: Icon(
+          _saved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+          size: 22,
+        ),
+      ),
+      IconButton(
+        tooltip: 'Compartir',
+        onPressed: enabled
+            ? () => sharePost(
+                context,
+                AppConfig.fromValues(
+                  supabaseUrl: '',
+                  supabaseAnonKey: '',
+                  publicUrl: widget.publicUrl,
+                ).postUrl(post.id),
+              )
+            : null,
+        icon: const Icon(Icons.shortcut_rounded, size: 22),
+      ),
+    ];
+    if (!vertical) {
+      return Wrap(
+        key: const Key('home-post-action-row'),
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: actions,
+      );
+    }
+
+    final color = _homeCategory.color;
+    return DecoratedBox(
+      key: const Key('home-post-action-rail'),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [color, Color.lerp(color, AppColors.surface, .56)!],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: actions,
+      ),
     );
   }
 
-  Widget _homeContent(double width) {
+  CategoryVisual get _homeCategory =>
+      CategoryVisuals.values[widget.post.category] ??
+      CategoryVisuals.values['otros']!;
+
+  Widget _homeCategoryChip() {
+    final category = widget.post.category;
+    final visual = _homeCategory;
+    final name = communityCategories[category] ?? 'Otros';
+    final label = Text(name);
+    final onCategory = widget.onHomeCategory;
+    if (onCategory == null) {
+      return Chip(
+        avatar: Icon(visual.icon, size: 16),
+        label: label,
+        backgroundColor: visual.color,
+      );
+    }
+    void filterCategory() => onCategory(category);
+    return Semantics(
+      button: true,
+      excludeSemantics: true,
+      label: 'Ver publicaciones de $name',
+      onTap: filterCategory,
+      child: TextButton.icon(
+        style: TextButton.styleFrom(
+          backgroundColor: visual.color,
+          foregroundColor: AppColors.brandNavy,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          minimumSize: const Size(48, 36),
+          tapTargetSize: MaterialTapTargetSize.padded,
+          textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+        ),
+        icon: Icon(visual.icon, size: 16),
+        label: label,
+        onPressed: filterCategory,
+      ),
+    );
+  }
+
+  Widget _homeContent({required bool photo}) {
     final post = widget.post;
-    return Column(
+    final theme = Theme.of(context);
+    final bodyStyle = theme.textTheme.bodyMedium!;
+    final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
       children: [
+        _homeCategoryChip(),
         InkWell(
           onTap: _openHomePost,
+          borderRadius: BorderRadius.circular(8),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48),
             child: Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
                 post.title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  height: 1.12,
+                style: theme.textTheme.titleLarge?.copyWith(
                   color: AppColors.brandNavy,
+                  fontWeight: FontWeight.w900,
+                  height: 1.16,
+                  letterSpacing: -.35,
                 ),
               ),
             ),
           ),
         ),
+        LayoutBuilder(
+          builder: (context, bounds) {
+            final painter = TextPainter(
+              text: TextSpan(text: post.body, style: bodyStyle),
+              textDirection: Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+              maxLines: 3,
+            )..layout(maxWidth: bounds.maxWidth);
+            final truncated = painter.didExceedMaxLines;
+            painter.dispose();
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  post.body,
+                  maxLines: _expanded ? null : 3,
+                  overflow: _expanded
+                      ? TextOverflow.visible
+                      : TextOverflow.ellipsis,
+                  style: bodyStyle,
+                ),
+                if (truncated)
+                  TextButton(
+                    onPressed: () => setState(() => _expanded = !_expanded),
+                    child: Text(_expanded ? 'Ver menos' : 'Ver más'),
+                  ),
+              ],
+            );
+          },
+        ),
+        if (post.price != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              '\$${post.price!.toStringAsFixed(2)} MXN',
+              style: theme.textTheme.titleMedium,
+            ),
+          ),
         if (post.location != null || post.coordinates != null)
           FeedCityLabel(
             contentKind: 'post',
@@ -653,88 +788,20 @@ class _PostCardState extends State<PostCard> {
                     coordinates: post.coordinates!,
                   ),
           ),
-        Text(
-          post.body,
-          maxLines: _expanded ? null : 3,
-          overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 12,
-            height: 1.3,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        if (_homeBodyTruncated(width))
-          TextButton(
-            onPressed: () => setState(() => _expanded = !_expanded),
-            child: Text(_expanded ? 'Ver menos' : 'Ver más'),
-          ),
-        if (post.price != null)
-          Text(
-            '\$${post.price!.toStringAsFixed(2)} MXN',
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-        const SizedBox(height: 5),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: AppColors.mist,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            communityCategories[post.category] ?? 'Otros',
-            style: const TextStyle(fontSize: 10, color: AppColors.brandNavy),
-          ),
-        ),
       ],
     );
-  }
 
-  double _homePhotoHeight(double width) {
-    TextPainter measure(String text, TextStyle style, {int? maxLines}) =>
-        TextPainter(
-          text: TextSpan(text: text, style: style),
-          textDirection: Directionality.of(context),
-          textScaler: MediaQuery.textScalerOf(context),
-          maxLines: maxLines,
-        )..layout(maxWidth: width);
-    final title = measure(
-      widget.post.title,
-      const TextStyle(
-        fontFamily: 'NunitoSans',
-        fontSize: 18,
-        height: 1.12,
-        fontWeight: FontWeight.w800,
+    if (photo) return content;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Color.lerp(AppColors.surface, _homeCategory.color, .27),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 6, 14, 14),
+        child: content,
       ),
     );
-    final body = measure(
-      widget.post.body,
-      const TextStyle(fontFamily: 'NunitoSans', fontSize: 12, height: 1.3),
-      maxLines: _expanded ? null : 3,
-    );
-    return (title.height < 48 ? 48 : title.height) +
-        ((widget.post.location != null || widget.post.coordinates != null)
-            ? 48
-            : 0) +
-        body.height +
-        (_homeBodyTruncated(width) ? 48 : 0) +
-        30;
-  }
-
-  bool _homeBodyTruncated(double width) {
-    final painter = TextPainter(
-      text: TextSpan(
-        text: widget.post.body,
-        style: const TextStyle(
-          fontFamily: 'NunitoSans',
-          fontSize: 12,
-          height: 1.3,
-        ),
-      ),
-      textDirection: Directionality.of(context),
-      textScaler: MediaQuery.textScalerOf(context),
-      maxLines: 3,
-    )..layout(maxWidth: width);
-    return painter.didExceedMaxLines;
   }
 
   Future<void> _openHomePost() async {
@@ -743,176 +810,150 @@ class _PostCardState extends State<PostCard> {
   }
 
   bool _homeImageFailed = false;
-  Widget _homePhoto(String url) => InkWell(
-    onTap: _openHomePost,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(14),
-      child: Image.network(
-        url,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && !_homeImageFailed) {
-              setState(() => _homeImageFailed = true);
-            }
-          });
-          return const SizedBox.shrink();
-        },
+  Widget _homePhoto(String url, Future<String>? request) => Semantics(
+    label: 'Abrir foto de ${widget.post.title}',
+    button: true,
+    child: InkWell(
+      onTap: _openHomePost,
+      borderRadius: BorderRadius.circular(18),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Image.network(
+          url,
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && request == _url && !_homeImageFailed) {
+                setState(() => _homeImageFailed = true);
+              }
+            });
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     ),
   );
 
   Widget _homeCard() {
     final post = widget.post;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => context.push('/people/${post.authorId}'),
-                      borderRadius: BorderRadius.circular(12),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 48),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 36,
-                              height: 36,
-                              child: ClipOval(
-                                child: ProfileImage(
-                                  path: widget.author?.avatarPath,
-                                  repository: widget.mediaRepository,
-                                  fallback: CircleAvatar(
-                                    backgroundColor: AppColors.mint,
-                                    child: Text(widget.author?.initials ?? 'M'),
-                                  ),
+    final theme = Theme.of(context);
+    final request = _url;
+    return MareaCard(
+      margin: const EdgeInsets.only(bottom: 14),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 8, 14, 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () => context.push('/people/${post.authorId}'),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        children: [
+                          SizedBox.square(
+                            dimension: 40,
+                            child: ClipOval(
+                              child: ProfileImage(
+                                path: widget.author?.avatarPath,
+                                repository: widget.mediaRepository,
+                                fallback: CircleAvatar(
+                                  backgroundColor: AppColors.mint,
+                                  child: Text(widget.author?.initials ?? 'M'),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    widget.author?.fullName ??
-                                        'Perfil de MAREA',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 13,
-                                    ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.author?.fullName ?? 'Perfil de MAREA',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: AppColors.brandNavy,
+                                    fontWeight: FontWeight.w800,
                                   ),
-                                  Text(
-                                    '${socialDate(post.createdAt)} · ${post.kind.label}',
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                                Text(
+                                  '${socialDate(post.createdAt)} · ${post.kind.label}',
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  IconButton(
-                    tooltip: 'Acciones',
-                    onPressed: _busy ? null : _options,
-                    icon: const Icon(Icons.more_horiz),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 2),
-              FutureBuilder<String>(
-                future: _url,
-                builder: (_, snapshot) => LayoutBuilder(
-                  builder: (context, bounds) {
-                    final hasPhoto =
-                        post.imagePath != null &&
-                        !_homeImageFailed &&
-                        !snapshot.hasError;
-                    final enlarged =
-                        MediaQuery.textScalerOf(context).scale(12) > 18;
-                    if (!hasPhoto) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _homeContent(bounds.maxWidth),
-                          _homeActions(),
-                        ],
-                      );
-                    }
-                    final photo = snapshot.hasData
-                        ? _homePhoto(snapshot.data!)
-                        : const MareaSkeleton(kind: SkeletonKind.image);
-                    if (enlarged) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          AspectRatio(aspectRatio: 1.93, child: photo),
-                          _homeContent(bounds.maxWidth),
-                          _homeActions(),
-                        ],
-                      );
-                    }
-                    final photoWidth = (bounds.maxWidth - 10) * .56;
-                    final inlineActions =
-                        bounds.maxWidth - photoWidth - 10 >= 270;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: photoWidth,
-                              height:
-                                  _homePhotoHeight(
-                                    bounds.maxWidth - photoWidth - 10,
-                                  ) +
-                                  (inlineActions ? 48 : 0),
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  minHeight: 130,
-                                ),
-                                child: photo,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _homeContent(
-                                    bounds.maxWidth - photoWidth - 10,
-                                  ),
-                                  if (inlineActions) _homeActions(),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (!inlineActions) _homeActions(),
-                      ],
-                    );
-                  },
                 ),
+                IconButton(
+                  tooltip: 'Acciones',
+                  onPressed: _busy ? null : _options,
+                  icon: const Icon(Icons.more_horiz_rounded),
+                ),
+              ],
+            ),
+            if (post.hidden)
+              Text('Oculta por moderación', style: theme.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            FutureBuilder<String>(
+              future: request,
+              builder: (_, snapshot) => LayoutBuilder(
+                builder: (context, bounds) {
+                  final photo =
+                      request != null &&
+                      !_homeImageFailed &&
+                      !snapshot.hasError;
+                  final hasRail =
+                      photo &&
+                      bounds.maxWidth >= 296 &&
+                      MediaQuery.textScalerOf(context).scale(14) <= 18;
+                  final image =
+                      snapshot.connectionState == ConnectionState.done &&
+                          snapshot.hasData
+                      ? _homePhoto(snapshot.data!, request)
+                      : const ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(18)),
+                          child: MareaSkeleton(kind: SkeletonKind.image),
+                        );
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (hasRail)
+                        SizedBox(
+                          height: ((bounds.maxWidth - 68) * .78)
+                              .clamp(208, 376)
+                              .toDouble(),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(child: image),
+                              const SizedBox(width: 8),
+                              SizedBox(
+                                width: 60,
+                                child: _homeActions(vertical: true),
+                              ),
+                            ],
+                          ),
+                        )
+                      else if (photo)
+                        AspectRatio(aspectRatio: 1.5, child: image),
+                      if (photo) const SizedBox(height: 6),
+                      _homeContent(photo: photo),
+                      if (!hasRail) _homeActions(),
+                      if (hasRail) const SizedBox(height: 8),
+                    ],
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,0 +1,7 @@
+{
+  "inicio_utc": "2026-11-12T00:10:59Z",
+  "duracion_segundos": 0.5,
+  "comando": "<REPO>/.venv-tours/bin/python -m unittest discover -s processing/tours/tests -p test_worker.py",
+  "codigo_salida": 0,
+  "alcance": "local; I/O externo simulado"
+}

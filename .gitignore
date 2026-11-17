@@ -67,3 +67,6 @@ app.*.map.json
 
 # Local tour backend Python runtime
 /.venv-tours/
+
+# Public Mapbox token supplied locally at build time
+/config/mapbox.local.json

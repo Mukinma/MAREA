@@ -1,19 +1,37 @@
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:marea/core/maps/map_surface.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/router/app_router.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
 import 'package:marea/features/home_feed/models/home_feed_models.dart';
 import 'package:marea/features/home_feed/models/story.dart';
+import 'package:marea/features/home_feed/presentation/story_camera_screen.dart';
 import 'package:marea/features/home_feed/presentation/story_composer.dart';
 import 'package:marea/features/home_feed/presentation/story_viewer.dart';
 import 'package:marea/features/home_feed/presentation/follow_button.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
+import '../../support/fake_map_surface.dart';
 import '../../support/fakes.dart';
 import '../../support/home_feed_fakes.dart';
 import '../../support/test_app.dart';
+import '../profile/data/profile_image_picker_test.dart' show png;
+
+class _StoryGallery extends ImagePickerPlatform {
+  _StoryGallery(this.image);
+  final XFile image;
+
+  @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions options = const ImagePickerOptions(),
+  }) async => image;
+}
 
 AppSessionController controller(HomeFeedFake feed, {StoriesFake? stories}) =>
     AppSessionController(
@@ -24,10 +42,10 @@ AppSessionController controller(HomeFeedFake feed, {StoriesFake? stories}) =>
       storiesRepository: stories,
     );
 void main() {
-  for (final width in [360.0, 390.0, 600.0, 1440.0]) {
+  for (final width in [320.0, 360.0, 390.0, 600.0, 1440.0]) {
     for (final scale in [1.0, 2.0]) {
       testWidgets(
-        'mixed home and responsive navigation fit $width at $scale',
+        'home shows only posts and fits navigation at $width and $scale',
         (tester) async {
           tester.view.physicalSize = Size(width, 1000);
           tester.view.devicePixelRatio = 1;
@@ -56,14 +74,20 @@ void main() {
             ),
           );
           await tester.pumpAndSettle();
+          expect(feed.requests.single.kind, HomeFeedKind.post);
+          expect(find.text(homeMission().title), findsNothing);
+          expect(find.byTooltip('Crear'), findsOneWidget);
+          expect(find.text('Publicar'), findsNothing);
+          expect(find.text('Tu historia'), findsNothing);
+          expect(find.byKey(const Key('home-stories-surface')), findsNothing);
           expect(find.text('Mariana Torres'), findsWidgets);
           expect(find.byTooltip('Inicio'), findsOneWidget);
-          expect(
-            find.byTooltip(width < 600 ? 'Descubrir' : 'Misiones'),
-            findsOneWidget,
-          );
+          expect(find.byTooltip('Misiones'), findsOneWidget);
           expect(tester.takeException(), isNull);
-          await tester.drag(find.byType(ListView).first, const Offset(0, -600));
+          await tester.drag(
+            find.byKey(const Key('home-feed-scroll')),
+            const Offset(0, -600),
+          );
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
           await tester.pumpWidget(const SizedBox());
@@ -72,6 +96,186 @@ void main() {
       );
     }
   }
+  testWidgets('pagination keeps the post filter and ignores mixed results', (
+    tester,
+  ) async {
+    const next = {'position': 30};
+    final feed = HomeFeedFake()
+      ..onPage = (_, cursor) async => HomeFeedPage(
+        entries: [
+          HomeFeedEntry.mission(homeMission()),
+          HomeFeedEntry.post(homePost()),
+          if (cursor != null)
+            HomeFeedEntry.post(
+              homePost(id: 'page-two', title: 'Otra publicación'),
+            ),
+        ],
+        cursor: cursor == null ? next : null,
+      );
+    final session = controller(feed);
+    addTearDown(session.dispose);
+    await session.initialize();
+    await tester.pumpWidget(
+      testApp(Scaffold(body: HomeScreen(controller: session))),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cargar más'));
+    await tester.pumpAndSettle();
+    expect(feed.requests.map((filter) => filter.kind), [
+      HomeFeedKind.post,
+      HomeFeedKind.post,
+    ]);
+    expect(feed.cursors, [null, next]);
+    expect(find.text(homeMission().title), findsNothing);
+    expect(find.text(homePost().title), findsOneWidget);
+    expect(find.text('Otra publicación'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('a post category filters the current view and can be removed', (
+    tester,
+  ) async {
+    final feed = HomeFeedFake()..entries = [HomeFeedEntry.post(homePost())];
+    final session = controller(feed);
+    addTearDown(session.dispose);
+    await session.initialize();
+    await tester.pumpWidget(
+      testApp(Scaffold(body: HomeScreen(controller: session))),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Siguiendo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Arte'));
+    await tester.pumpAndSettle();
+    expect(feed.requests.last.mode, HomeFeedMode.following);
+    expect(feed.requests.last.category, 'arte');
+    final active = find.byKey(const Key('home-active-category'));
+    expect(active, findsOneWidget);
+    await tester.tap(find.byTooltip('Quitar filtro de categoría'));
+    await tester.pumpAndSettle();
+    expect(feed.requests.last.category, isNull);
+    expect(active, findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('Cerca uses the point and distance selected in Inicio', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final feed = HomeFeedFake();
+    final session = controller(feed);
+    addTearDown(session.dispose);
+    await session.initialize();
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (_, child) =>
+            MapSurfaceScope(builder: fakeMapSurfaceBuilder, child: child!),
+        home: Scaffold(body: HomeScreen(controller: session)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cerca'));
+    await tester.pumpAndSettle();
+    expect(feed.requests, hasLength(1));
+    await tester.tap(find.text('Elegir punto'));
+    await tester.pumpAndSettle();
+    tester
+        .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+        .options
+        .onTap(const LatLng(19.15, -104.31));
+    await tester.pump();
+    await tester.tap(find.text('Usar esta ubicación'));
+    await tester.pumpAndSettle();
+    expect(feed.requests.last.mode, HomeFeedMode.nearby);
+    expect(feed.requests.last.latitude, 19.15);
+    expect(feed.requests.last.longitude, -104.31);
+    await tester.tap(find.byTooltip('Filtrar Inicio'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('25 km'));
+    await tester.tap(find.text('Aplicar filtros'));
+    await tester.pumpAndSettle();
+    expect(feed.requests.last.kind, HomeFeedKind.post);
+    expect(feed.requests.last.radiusKm, 25);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets(
+    'Inicio opens its creation choices and the people tab in Explorar',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final session = controller(HomeFeedFake());
+      addTearDown(session.dispose);
+      await session.initialize();
+      final router = AppRouter.create(session)..go('/home');
+      addTearDown(router.dispose);
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Crear'));
+      await tester.pumpAndSettle();
+      expect(find.text('Historia'), findsOneWidget);
+      expect(find.text('Crear misión'), findsNothing);
+      await tester.tap(find.text('Publicación'));
+      await tester.pumpAndSettle();
+      expect(find.text('Crear publicación'), findsOneWidget);
+      router.pop();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Siguiendo'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Explorar perfiles'));
+      await tester.pumpAndSettle();
+      expect(find.text('Buscar nombre o usuario'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets('Crear opens the story camera with enlarged text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 800);
+    tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    const camera = MethodChannel('plugins.flutter.io/camera');
+    final messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(camera, (_) async => <Object>[]);
+    addTearDown(() => messenger.setMockMethodCallHandler(camera, null));
+    final session = controller(HomeFeedFake(), stories: StoriesFake());
+    addTearDown(session.dispose);
+    await session.initialize();
+    final router = AppRouter.create(session)..go('/home');
+    addTearDown(router.dispose);
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpAndSettle();
+    final create = find.byTooltip('Crear');
+    final dock = find.byKey(const Key('mobile-dock'));
+    expect(
+      tester.getTopLeft(create).dx,
+      greaterThan(tester.getTopRight(dock).dx),
+    );
+    expect(tester.getSize(create).height, greaterThanOrEqualTo(48));
+    await tester.tap(create);
+    await tester.pumpAndSettle();
+    final story = find.widgetWithText(InkWell, 'Historia');
+    await tester.ensureVisible(story);
+    await tester.tap(story);
+    final cameraScreen = find.byType(StoryCameraScreen);
+    for (var frame = 0; frame < 30 && cameraScreen.evaluate().isEmpty; frame++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    expect(cameraScreen, findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byTooltip('Cerrar cámara').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('transparent dock absorbs taps without hitting the content', (
     tester,
   ) async {
@@ -190,42 +394,47 @@ void main() {
       MaterialApp.router(theme: ThemeData(), routerConfig: router),
     );
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('home-stories-surface')), findsOneWidget);
     await tester.tap(find.text('Mariana Torres'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    await tester.tap(find.byTooltip('Pausar historia'));
-    await tester.pumpAndSettle();
-    expect(find.byTooltip('Inicio'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('Mi historia'), findsOneWidget);
+    expect(find.byTooltip('Inicio').hitTestable(), findsNothing);
     await tester.pumpWidget(const SizedBox());
     router.dispose();
     session.dispose();
   });
-  testWidgets('a failed publish retains text and retries the same operation', (
-    tester,
-  ) async {
-    final stories = StoriesFake()..failPublish = true;
-    final session = controller(HomeFeedFake(), stories: stories);
-    await tester.pumpWidget(testApp(StoryComposer(controller: session)));
-    await tester.enterText(find.byType(TextField), 'Mi primera historia');
-    await tester.tap(find.text('Publicar historia'));
-    await tester.pumpAndSettle();
-    expect(
-      tester.widget<TextField>(find.byType(TextField)).controller!.text,
-      'Mi primera historia',
-    );
-    await tester.tap(find.text('Publicar historia'));
-    await tester.pumpAndSettle();
-    expect(stories.published.length, 2);
-    expect(stories.published[0].id, stories.published[1].id);
-    expect(
-      tester.widget<TextField>(find.byType(TextField)).enabled,
-      isFalse,
-      reason: 'ambiguous retries preserve the submitted payload',
-    );
-    await tester.pumpWidget(const SizedBox());
-    session.dispose();
-  });
+  testWidgets(
+    'a failed story publish retains the photo and retries the same operation',
+    (tester) async {
+      final bytes = (await tester.runAsync(() => png(80, 80)))!;
+      final original = ImagePickerPlatform.instance;
+      ImagePickerPlatform.instance = _StoryGallery(
+        XFile.fromData(bytes, name: 'story.png', mimeType: 'image/png'),
+      );
+      addTearDown(() => ImagePickerPlatform.instance = original);
+      final stories = StoriesFake()..failPublish = true;
+      final session = controller(HomeFeedFake(), stories: stories);
+      await tester.pumpWidget(testApp(StoryComposer(controller: session)));
+      await tester.runAsync(() async {
+        await tester.tap(find.byIcon(Icons.photo_library_outlined));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+      final publish = find.byType(FloatingActionButton);
+      await tester.tap(publish);
+      await tester.pumpAndSettle();
+      expect(stories.published, hasLength(1));
+      expect(find.byType(Image), findsOneWidget);
+      await tester.tap(publish);
+      await tester.pumpAndSettle();
+      expect(stories.published.length, 2);
+      expect(stories.published[0].id, stories.published[1].id);
+      expect(stories.published[0].imagePath, stories.published[1].imagePath);
+      await tester.pumpWidget(const SizedBox());
+      session.dispose();
+    },
+  );
   testWidgets(
     'story viewer marks shown content seen and supports pause and next',
     (tester) async {
@@ -264,10 +473,16 @@ void main() {
       );
       await tester.pump();
       expect(stories.viewed, contains('one'));
-      await tester.tap(find.byTooltip('Pausar historia'));
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('Primera')),
+      );
+      await tester.pump(const Duration(milliseconds: 550));
+      final indicator = find.byType(LinearProgressIndicator).first;
+      final progress = tester.widget<LinearProgressIndicator>(indicator).value;
       await tester.pump(const Duration(seconds: 6));
-      expect(find.text('Primera'), findsOneWidget);
-      await tester.tap(find.byTooltip('Historia siguiente'));
+      expect(tester.widget<LinearProgressIndicator>(indicator).value, progress);
+      await gesture.up();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
       await tester.pump();
       expect(stories.viewed, contains('two'));
