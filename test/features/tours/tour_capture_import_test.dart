@@ -9,6 +9,7 @@ import 'package:marea/features/tours/capture/tour_capture_screen.dart';
 import 'package:marea/features/tours/data/tour_local_store.dart';
 import 'package:marea/features/tours/data/tour_repository.dart';
 import 'package:marea/features/tours/models/tour_models.dart';
+import 'package:marea/features/tours/presentation/local_panorama_viewer.dart';
 import '../../support/fakes.dart';
 import '../../support/panorama_fixture.dart';
 
@@ -128,8 +129,9 @@ void preserveExistingPhoto(ImportMemoryStore store) {
 
 Future<ImportRepository> mountCapture(
   WidgetTester tester,
-  ImportMemoryStore store,
-) async {
+  ImportMemoryStore store, {
+  bool allowCaptureUploads = true,
+}) async {
   tester.view.physicalSize = const Size(390, 1000);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
@@ -139,6 +141,7 @@ Future<ImportRepository> mountCapture(
     authRepository: FakeAuthRepository(),
     profileRepository: FakeProfileRepository(),
     tourRepository: repo,
+    allowCaptureUploads: allowCaptureUploads,
   );
   await controller.initialize();
   addTearDown(controller.dispose);
@@ -202,6 +205,58 @@ void main() {
     ImagePickerPlatform.instance = originalGallery;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(motion, null);
+  });
+
+  testWidgets('pilot previews a saved sphere without uploads or local writes', (
+    tester,
+  ) async {
+    final store = ImportMemoryStore();
+    final bytes = panoramaJpegFixture();
+    store.files['/memory/panorama.jpg'] = bytes;
+    store.saved = {
+      'mode': 'import',
+      'frames': [
+        {
+          'id': 'panorama',
+          'local_path': '/memory/panorama.jpg',
+          'width': 256,
+          'height': 128,
+          'target_id': 'import',
+        },
+      ],
+    };
+    final original = copySession(store.saved!);
+    final repo = await mountCapture(tester, store, allowCaptureUploads: false);
+    await waitForImport(
+      tester,
+      () => find.byTooltip('Ver en 360°').evaluate().isNotEmpty,
+    );
+    expect(
+      tester
+          .widget<FilledButton>(
+            find.widgetWithText(FilledButton, 'Subir panorámica'),
+          )
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(find.byTooltip('Ver en 360°'));
+    await tester.pumpAndSettle();
+    expect(find.text('Vista 360°'), findsOneWidget);
+    expect(find.byType(LocalPanoramaViewer), findsOneWidget);
+    expect(
+      tester
+          .widget<LocalPanoramaViewer>(find.byType(LocalPanoramaViewer))
+          .bytes,
+      orderedEquals(bytes),
+    );
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(store.saved, original);
+    expect(store.writes, 0);
+    expect(store.byteWrites, 0);
+    expect(repo.begins, 0);
+    expect(repo.submissions, 0);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets(

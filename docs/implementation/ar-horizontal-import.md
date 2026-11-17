@@ -1,5 +1,15 @@
 # Importación de panorámicas horizontales
 
+## Vista local 360°: 16 de noviembre de 2026
+
+Las esferas importadas y validadas pueden explorarse antes de subirlas: tocar la foto o el icono **Ver en 360°** abre una vista a pantalla completa. El usuario puede arrastrar para mirar alrededor, al techo y al piso. El visor usa los bytes del almacenamiento local, sin URL remota, cámara ni sensores de orientación; volver conserva el archivo y la sesión. Si cambia la cuenta, la vista deja de mostrar el archivo anterior. Las panorámicas horizontales mantienen su desplazamiento lateral y no reciben un visor esférico.
+
+El piloto conserva desactivada la subida. La prueba automática verifica movimiento real del visor en ambos ejes y apertura/regreso sin guardados ni llamadas de subida. Pasaron 227 pruebas de recorridos, marcadores y proximidad, el análisis terminó sin incidencias y la APK debug del piloto compiló.
+
+Se instaló `marea-panorama-local-debug.apk` en el OPPO y se abrió la imagen del restaurante importada por el usuario (4096 × 2048, con GPano). Se comprobó la representación esférica real y el cambio de vista mediante gestos ADB horizontales y verticales, con capturas de pantalla antes/después. La comparación de los 242 archivos locales antes y después de instalar no encontró cambios ni pérdidas. La vista quedó abierta para la revisión del usuario, sin habilitar subidas ni modificar producción. El respaldo y la evidencia privados están indicados por `.dart_tool/ar-live-pilot/latest-local-panorama-update.txt`. Esto comprueba el visor de una imagen ya panorámica, no la unión pendiente de las 36 fotos.
+
+El usuario confirmó después: **«Sí quedó todo ya, me gustó cómo quedó»**, y autorizó subir e integrar los cambios. Esta confirmación corresponde al visor local de la panorámica importada; no acredita una publicación remota ni que las 36 fotos sueltas ya estén unidas.
+
 Cambio local del 13 de noviembre de 2026. Se conserva la captura guiada para recorridos completos con techo y piso; se amplía la entrada existente de galería.
 
 ## Uso

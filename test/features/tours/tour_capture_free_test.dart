@@ -611,6 +611,99 @@ void main() {
   }
 
   testWidgets(
+    'returning sensors still guide turns after a first photo without a pose',
+    (tester) async {
+      final store = FreeMemoryStore();
+      await mountFreeCapture(tester, store, FreeCamera());
+      await startFreeCapture(tester);
+      await tester.tap(find.text('Tomar foto'));
+      await waitForFreeCapture(
+        tester,
+        () =>
+            (store.saved!['frames'] as List).length == 1 &&
+            manualShutterEnabled(tester),
+      );
+      final first = (store.saved!['frames'] as List).single as Map;
+      expect(first['pose_status'], 'unavailable');
+      final target = CaptureCubeGuide.restore(
+        store.saved!['cube_guide'],
+      )!.steps[1].target;
+      for (final yaw in [70.0, normalizeYaw(70 + target.yaw)]) {
+        tester.binding.channelBuffers.push(
+          events.name,
+          codec.encodeSuccessEnvelope({
+            'yaw': yaw,
+            'pitch': target.pitch,
+            'roll': 0.0,
+            'headingReady': true,
+          }),
+          (_) {},
+        );
+        await tester.pump();
+      }
+      expect(find.byKey(const Key('capture-aim-ready')), findsOneWidget);
+      expect(first.containsKey('yaw'), isFalse);
+      expect(manualShutterEnabled(tester), isTrue);
+    },
+  );
+
+  testWidgets(
+    'manual live cue follows the next cube step relative to the first photo',
+    (tester) async {
+      final store = FreeMemoryStore();
+      await mountFreeCapture(tester, store, FreeCamera());
+      await startFreeCapture(tester);
+      void orient(double yaw, double pitch) {
+        tester.binding.channelBuffers.push(
+          events.name,
+          codec.encodeSuccessEnvelope({
+            'yaw': yaw,
+            'pitch': pitch,
+            'roll': 0.0,
+            'headingReady': true,
+          }),
+          (_) {},
+        );
+      }
+
+      orient(137, -40);
+      await tester.pump();
+      expect(find.byKey(const Key('capture-aim-ready')), findsNothing);
+      expect(manualShutterEnabled(tester), isTrue);
+      await tester.tap(find.text('Tomar foto'));
+      await waitForFreeCapture(
+        tester,
+        () =>
+            (store.saved!['frames'] as List).length == 1 &&
+            manualShutterEnabled(tester),
+      );
+      final first = (store.saved!['frames'] as List).single as Map;
+      expect(first['yaw'], 137);
+      expect(first['pitch'], -40);
+      final next = CaptureCubeGuide.restore(
+        store.saved!['cube_guide'],
+      )!.steps[1].target;
+      orient(normalizeYaw(137 + next.yaw), next.pitch);
+      await tester.pump();
+      expect(find.byKey(const Key('capture-aim-ready')), findsOneWidget);
+      expect(
+        find.textContaining('Actual: giro ${next.yaw.round()}°'),
+        findsOneWidget,
+      );
+      expect(manualShutterEnabled(tester), isTrue);
+      // Motion freshness uses wall time, not the widget animation clock.
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 350)),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byKey(const Key('capture-aim-ready')), findsNothing);
+      expect(manualShutterEnabled(tester), isTrue);
+      expect((store.saved!['frames'] as List).length, 1);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'a fresh pose outside the guide saves measured angles without completing a target',
     (tester) async {
       final store = FreeMemoryStore();

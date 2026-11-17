@@ -109,6 +109,22 @@ class CaptureCubeGuide {
     }
     return next;
   }
+
+  /// The first saved view defines "front", even if the phone was turned after
+  /// opening the camera. This changes guidance only, never stored photo poses.
+  double originYaw(List<dynamic> frames, {required double fallback}) {
+    for (final frame in frames) {
+      if (frame is Map &&
+          frame['cube_guide_version'] == version &&
+          frame['cube_guide_step'] == steps.first.target.id &&
+          frame['pose_status'] == 'ready' &&
+          frame['yaw'] is num) {
+        final yaw = (frame['yaw'] as num).toDouble();
+        if (yaw.isFinite) return normalizeYaw(yaw);
+      }
+    }
+    return fallback;
+  }
 }
 
 class CaptureCubeStep {
@@ -157,7 +173,12 @@ class CaptureCubeStep {
         : row == 2
         ? 'Abajo'
         : 'Centro';
-    if (column == 1) return vertical;
+    if (column == 1) {
+      if (localYaw.abs() > 5) {
+        return '$vertical · un poco a la ${localYaw > 0 ? 'derecha' : 'izquierda'}';
+      }
+      return vertical;
+    }
     return '$vertical · ${column == 2 ? 'derecha' : 'izquierda'}';
   }
 

@@ -134,92 +134,134 @@ class CaptureGuidancePanel extends StatelessWidget {
   Widget build(BuildContext context) => Material(
     elevation: 8,
     color: Theme.of(context).colorScheme.surface,
-    child: SafeArea(
-      top: false,
-      minimum: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    child: LayoutBuilder(
+      builder: (context, constraints) => ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: constraints.maxHeight * .6),
+        child: SafeArea(
+          top: false,
+          minimum: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ExcludeSemantics(
-                child: !automatic && cubeGuide != null
-                    ? SizedBox(
-                        width: MediaQuery.textScalerOf(context).scale(1) > 1.5
-                            ? 64
-                            : 92,
-                        height: MediaQuery.textScalerOf(context).scale(1) > 1.5
-                            ? 64
-                            : 92,
-                        child: CaptureCube(
-                          step: _cubeStep,
-                          completed: _cubeStep == null,
+              Flexible(
+                fit: FlexFit.loose,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ExcludeSemantics(
+                            child: !automatic && cubeGuide != null
+                                ? SizedBox(
+                                    width:
+                                        MediaQuery.textScalerOf(
+                                              context,
+                                            ).scale(1) >
+                                            1.5
+                                        ? 64
+                                        : 92,
+                                    height:
+                                        MediaQuery.textScalerOf(
+                                              context,
+                                            ).scale(1) >
+                                            1.5
+                                        ? 64
+                                        : 92,
+                                    child: CaptureCube(
+                                      step: _cubeStep,
+                                      completed: _cubeStep == null,
+                                    ),
+                                  )
+                                : Icon(
+                                    _directionIcon,
+                                    size: 32,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (!automatic && cubeGuide != null) ...[
+                                  Text(
+                                    _cubeStep == null
+                                        ? 'Guía recorrida'
+                                        : '${_cubeStep!.faceLabel} · ${_cubeStep!.zoneLabel}',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleSmall,
+                                  ),
+                                  Text(
+                                    _cubeStep == null
+                                        ? 'Referencia: el centro'
+                                        : 'Paso ${guideIndex + 1} de ${cubeGuide!.steps.length} · desde el centro',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
+                                ] else
+                                  Text(
+                                    instruction,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleSmall,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (!automatic && cubeGuide != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          instruction,
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                      )
-                    : Icon(
-                        _directionIcon,
-                        size: 32,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (!automatic && cubeGuide != null) ...[
-                      Text(
-                        _cubeStep == null
-                            ? 'Guía recorrida'
-                            : '${_cubeStep!.faceLabel} · ${_cubeStep!.zoneLabel}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      Text(
-                        _cubeStep == null
-                            ? 'Referencia: el centro'
-                            : 'Paso ${guideIndex + 1} de ${cubeGuide!.steps.length} · desde el centro',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: 4),
+                      ],
+                      if (showAngles) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          fresh && yaw.isFinite && pitch.isFinite
+                              ? _angleDetails
+                              : 'Giro — · inclinación —',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
                     ],
-                    Text(
-                      instruction,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              FilledButton.icon(
+                onPressed: busy
+                    ? null
+                    : automatic
+                    ? onTogglePause
+                    : onTake,
+                icon: Icon(
+                  automatic
+                      ? paused
+                            ? Icons.play_arrow_rounded
+                            : Icons.pause_rounded
+                      : Icons.camera_alt_outlined,
+                ),
+                label: Text(
+                  automatic
+                      ? paused
+                            ? 'Continuar captura'
+                            : 'Pausar captura'
+                      : 'Tomar foto',
                 ),
               ),
             ],
           ),
-          if (showAngles && fresh && yaw.isFinite && pitch.isFinite) ...[
-            const SizedBox(height: 4),
-            Text(_angleDetails, style: Theme.of(context).textTheme.bodySmall),
-          ],
-          const SizedBox(height: 8),
-          FilledButton.icon(
-            onPressed: busy
-                ? null
-                : automatic
-                ? onTogglePause
-                : onTake,
-            icon: Icon(
-              automatic
-                  ? paused
-                        ? Icons.play_arrow_rounded
-                        : Icons.pause_rounded
-                  : Icons.camera_alt_outlined,
-            ),
-            label: Text(
-              automatic
-                  ? paused
-                        ? 'Continuar captura'
-                        : 'Pausar captura'
-                  : 'Tomar foto',
-            ),
-          ),
-        ],
+        ),
       ),
     ),
   );

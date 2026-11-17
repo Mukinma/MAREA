@@ -19,6 +19,8 @@ class _CaptureCubeState extends State<CaptureCube>
     duration: const Duration(milliseconds: 650),
   );
   double _fromYaw = -.6, _toYaw = -.6, _fromPitch = .5, _toPitch = .5;
+  Offset _fromPointer = Offset.zero, _toPointer = Offset.zero;
+  bool _reduceMotion = false;
   double get _progress => Curves.easeInOutCubic.transform(_animation.value);
 
   @override
@@ -30,16 +32,25 @@ class _CaptureCubeState extends State<CaptureCube>
   void _retarget() {
     _fromYaw = _fromYaw + (_toYaw - _fromYaw) * _progress;
     _fromPitch = _fromPitch + (_toPitch - _fromPitch) * _progress;
+    _fromPointer = Offset.lerp(_fromPointer, _toPointer, _progress)!;
     final step = widget.step;
-    final yaw = -.6 - (step?.faceYaw ?? 0) * math.pi / 180;
+    final yaw =
+        -.6 -
+        ((step?.faceYaw ?? 0) + (step?.localYaw ?? 0) * .45) * math.pi / 180;
     final delta = (yaw - _fromYaw + math.pi) % (2 * math.pi) - math.pi;
     _toYaw = _fromYaw + delta;
     _toPitch = step?.face == CaptureCubeFace.ceiling
         ? 1.3
         : step?.face == CaptureCubeFace.floor
         ? -1.3
-        : .5;
-    if (WidgetsBinding.instance.disableAnimations) {
+        : .5 + (step?.target.pitch ?? 0) * math.pi / 180 * .65;
+    _toPointer = step == null || step.face.index >= 4
+        ? Offset.zero
+        : Offset(
+            (step.localYaw / 45 * .9).clamp(-.9, .9),
+            (step.target.pitch / 60 * .9).clamp(-.9, .9),
+          );
+    if (_reduceMotion || WidgetsBinding.instance.disableAnimations) {
       _animation.value = 1;
     } else {
       _animation.forward(from: 0);
@@ -47,10 +58,23 @@ class _CaptureCubeState extends State<CaptureCube>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduceMotion = MediaQuery.disableAnimationsOf(context);
+    if (_reduceMotion) _animation.value = 1;
+  }
+
+  @override
   void didUpdateWidget(CaptureCube oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.step?.target.id != widget.step?.target.id ||
         oldWidget.completed != widget.completed) {
+      if (oldWidget.step?.face != widget.step?.face) {
+        // A new side begins from its centre; moves within a side continue from
+        // the last pointer instead of flashing back to the centre every time.
+        _fromPointer = Offset.zero;
+        _toPointer = Offset.zero;
+      }
       _retarget();
     }
   }
@@ -76,7 +100,7 @@ class _CaptureCubeState extends State<CaptureCube>
             widget.completed,
             _fromYaw + (_toYaw - _fromYaw) * _progress,
             _fromPitch + (_toPitch - _fromPitch) * _progress,
-            _progress,
+            Offset.lerp(_fromPointer, _toPointer, _progress)!,
           ),
           size: const Size(100, 100),
         ),
@@ -95,10 +119,11 @@ class _CubeFace {
 }
 
 class _CubePainter extends CustomPainter {
-  _CubePainter(this.step, this.completed, this.yaw, this.pitch, this.progress);
+  _CubePainter(this.step, this.completed, this.yaw, this.pitch, this.pointer);
   final CaptureCubeStep? step;
   final bool completed;
-  final double yaw, pitch, progress;
+  final double yaw, pitch;
+  final Offset pointer;
   static const faces = [
     _CubeFace((x: 0, y: 0, z: 1), (x: 1, y: 0, z: 0), (
       x: 0,
@@ -177,8 +202,8 @@ class _CubePainter extends CustomPainter {
           final active =
               !completed &&
               index == (step?.face.index ?? 0) &&
-              row == (progress < .2 ? 1 : step?.row ?? 1) &&
-              col == (progress < .2 ? 1 : step?.column ?? 1);
+              row == (step?.row ?? 1) &&
+              col == (step?.column ?? 1);
           canvas.drawPath(
             path,
             Paint()..color = active ? const Color(0xFFFFCE54) : face.color,
@@ -197,25 +222,19 @@ class _CubePainter extends CustomPainter {
         }
       }
       if (!completed && index == (step?.face.index ?? 0)) {
-        final u = index >= 4
-            ? 0.0
-            : ((step?.localYaw ?? 0) / 45 * .9).clamp(-.9, .9);
-        final v = index >= 4
-            ? 0.0
-            : ((step?.target.pitch ?? 0) / 60 * .9).clamp(-.9, .9);
         final origin = project(onFace(face, 0, 0), size);
-        final pointer = project(onFace(face, u * progress, v * progress), size);
+        final marker = project(onFace(face, pointer.dx, pointer.dy), size);
         canvas.drawLine(
           origin,
-          pointer,
+          marker,
           Paint()
             ..color = const Color(0xFF102147)
             ..strokeWidth = 2
             ..strokeCap = StrokeCap.round,
         );
-        canvas.drawCircle(pointer, 3.5, Paint()..color = Colors.white);
+        canvas.drawCircle(marker, 3.5, Paint()..color = Colors.white);
         canvas.drawCircle(
-          pointer,
+          marker,
           3.5,
           Paint()
             ..color = const Color(0xFF102147)
@@ -232,5 +251,5 @@ class _CubePainter extends CustomPainter {
       old.completed != completed ||
       old.yaw != yaw ||
       old.pitch != pitch ||
-      old.progress != progress;
+      old.pointer != pointer;
 }
