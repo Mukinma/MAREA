@@ -67,7 +67,9 @@ class VisitorMedia implements ProfileMediaRepository {
 }
 
 class VisitorRepository extends MissionRepositoryFake {
-  VisitorRepository(this.type);
+  VisitorRepository(this.type) {
+    value = missionFixture(author: 'visitor-owner');
+  }
   final UserType type;
   @override
   Future<List<CommunityProfile>> profiles({
@@ -106,6 +108,8 @@ void main() {
         expect(router.routeInformationProvider.value.uri.path, '/home');
         router.go('/profile');
         await tester.pumpAndSettle();
+        await tap(tester, find.byTooltip('Menú del perfil'));
+        expect(find.text('Tus herramientas'), findsOneWidget);
         for (final label in [
           'Agregar obra',
           'Agregar producto',
@@ -119,6 +123,7 @@ void main() {
           };
           expect(find.text(label), expected ? findsOneWidget : findsNothing);
         }
+        await tap(tester, find.byTooltip('Cerrar herramientas'));
         router.go('/onboarding');
         await tester.pumpAndSettle();
         expect(router.routeInformationProvider.value.uri.path, '/profile');
@@ -135,17 +140,35 @@ void main() {
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
+        final repo = ShowcaseRepositoryFake()..ownerId = 'visitor-owner';
+        final hasShowcase = type != UserType.general;
+        if (hasShowcase) {
+          await repo.save(
+            ShowcaseInput(
+              kind: type.showcaseKinds.first,
+              title: 'Ficha pública',
+              body: 'Contenido del perfil',
+              category: 'arte',
+              status: ShowcaseStatus.published,
+            ),
+          );
+        }
         await open(
           tester,
-          ShowcaseRepositoryFake(),
+          repo,
           '/people/visitor-owner',
           community: VisitorRepository(type),
         );
         expect(find.text(type.showcaseLabel), findsOneWidget);
-        expect(find.text('Misiones'), findsOneWidget);
-        await tap(tester, find.text('Misiones'));
-        expect(find.text('Pintemos el barrio'), findsOneWidget);
-        await tap(tester, find.text(type.showcaseLabel));
+        await tap(tester, find.text('Ver todas ›'));
+        expect(find.text('Misiones del perfil').hitTestable(), findsOneWidget);
+        expect(find.text('Pintemos el barrio').hitTestable(), findsOneWidget);
+        await tap(tester, find.byTooltip('Cerrar lista'));
+        if (hasShowcase) {
+          await tap(tester, find.text('Ver todo ›'));
+          expect(find.text(type.showcaseLabel).hitTestable(), findsOneWidget);
+          expect(find.text('Ficha pública').hitTestable(), findsOneWidget);
+        }
         expect(find.text('Editar perfil'), findsNothing);
         expect(find.text('Mis postulaciones'), findsNothing);
         for (final label in [
@@ -155,6 +178,7 @@ void main() {
         ]) {
           expect(find.text(label), findsNothing);
         }
+        if (hasShowcase) await tap(tester, find.byTooltip('Cerrar lista'));
         final images = tester
             .widgetList<ProfileImage>(find.byType(ProfileImage))
             .map((v) => v.path);

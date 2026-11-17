@@ -248,6 +248,28 @@ void main() {
     });
   });
 
+  testWidgets('searching a new area also refreshes nearby experiences', (
+    tester,
+  ) async {
+    final tours = MapToursFake();
+    await open(tester, tours: tours, showTours: true);
+    final options = tester
+        .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+        .options;
+    const nextCenter = LatLng(20, -100);
+    await options.controller.move(nextCenter);
+    options.onIdle();
+    await tester.pumpAndSettle();
+    expect(tours.mapQueries, hasLength(1));
+
+    await tester.tap(find.text('Buscar en esta zona'));
+    await tester.pumpAndSettle();
+    expect(tours.mapQueries, hasLength(2));
+    expect(tours.mapQueries.last.latitude, nextCenter.latitude);
+    expect(tours.mapQueries.last.longitude, nextCenter.longitude);
+    expect(find.byTooltip('Explorar Laboratorio local'), findsNothing);
+  });
+
   testWidgets(
     'startup still searches when idle supersedes its pending viewport capture',
     (tester) async {

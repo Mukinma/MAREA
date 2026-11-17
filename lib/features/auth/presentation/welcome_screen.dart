@@ -190,15 +190,15 @@ class WelcomeScreen extends StatelessWidget {
 
                   const SizedBox(width: 12),
 
-                  Text(
-                    isBusy
-                        ? 'Conectando...'
-                        : 'Continuar con Google',
-
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.2,
+                  Flexible(
+                    child: Text(
+                      isBusy ? 'Conectando...' : 'Continuar con Google',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.2,
+                      ),
                     ),
                   ),
                 ],

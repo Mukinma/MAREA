@@ -90,38 +90,47 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
     super.dispose();
   }
 
-  Future<bool> _captureViewport({bool observing = false}) async {
-    if (!mounted || !_ready) return false;
+  Future<MapViewport?> _captureViewport({bool observing = false}) async {
+    if (!mounted || !_ready) return null;
     try {
       final viewport = await (observing ? _map.observe() : _map.capture());
       if (!mounted || viewport == null || !viewport.bounds.isValid) {
-        return false;
+        return null;
       }
       _state.updateViewport(viewport.bounds);
-      return true;
+      return viewport;
     } catch (_) {
       // The surface presents recoverable cartographic errors locally.
-      return false;
+      return null;
     }
   }
 
   Future<void> _queryAtViewport(Future<void> Function() query) async {
-    if (await _captureViewport() && mounted) {
+    if (await _captureViewport() != null && mounted) {
       _initialSearchStarted = true;
       await query();
     }
   }
 
-  Future<void> _searchArea() =>
-      _queryAtViewport(() => _state.search(force: true));
+  Future<void> _searchArea() async {
+    final viewport = await _captureViewport();
+    if (!mounted || viewport == null) return;
+    await _refreshArea(viewport, force: true);
+  }
 
-  Future<void> _loadTours() async {
+  Future<void> _refreshArea(MapViewport viewport, {bool force = false}) async {
+    _initialSearchStarted = true;
+    await Future.wait([
+      _state.search(force: force),
+      _loadTours(viewport),
+    ]);
+  }
+
+  Future<void> _loadTours(MapViewport snapshot) async {
     final repository = widget.session.tourRepository;
-    if (!widget.showTours || !_ready || repository == null) return;
+    if (!widget.showTours || repository == null) return;
     final generation = ++_tourGeneration;
     try {
-      final snapshot = await _map.observe();
-      if (!mounted || snapshot == null || generation != _tourGeneration) return;
       final center = snapshot.center;
       final tours = await repository.list(
         latitude: center.latitude,
@@ -180,13 +189,11 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
   }
 
   Future<void> _onIdle() async {
-    final captured = await _captureViewport(observing: true);
-    if (!mounted || !captured || _initialSearchStarted) return;
+    final viewport = await _captureViewport(observing: true);
+    if (!mounted || viewport == null || _initialSearchStarted) return;
     // A newer idle capture may supersede onReady's asynchronous snapshot.
     // Whichever obtains the first valid viewport owns the initial search.
-    _initialSearchStarted = true;
-    await _state.search();
-    await _loadTours();
+    await _refreshArea(viewport);
   }
 
   void _onGesture() {
@@ -246,11 +253,11 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
   Future<void> _recenter(DevicePosition fix, int gesture) async {
     await _map.move(LatLng(fix.latitude, fix.longitude), zoom: 15);
     if (!mounted || gesture != _cameraGestureGeneration) return;
-    final captured = await _captureViewport();
-    if (!captured || !mounted || gesture != _cameraGestureGeneration) return;
-    _initialSearchStarted = true;
-    await _state.search();
-    await _loadTours();
+    final viewport = await _captureViewport();
+    if (viewport == null || !mounted || gesture != _cameraGestureGeneration) {
+      return;
+    }
+    await _refreshArea(viewport);
   }
 
   Future<void> _filters() async {
