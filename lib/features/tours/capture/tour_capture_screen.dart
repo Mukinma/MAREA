@@ -12,6 +12,7 @@ import '../models/tour_models.dart';
 import '../presentation/tour_widgets.dart';
 import '../presentation/tour_panorama.dart';
 import '../presentation/horizontal_panorama.dart';
+import '../presentation/local_panorama_viewer.dart';
 import 'capture_plan.dart';
 import 'capture_motion_gate.dart';
 import 'capture_guidance_panel.dart';
@@ -20,6 +21,7 @@ import 'capture_resume_photo.dart';
 import 'capture_frames.dart';
 import 'capture_cube_guide.dart';
 import 'capture_history.dart';
+import 'capture_aim_overlay.dart';
 import 'panorama_import.dart';
 
 enum _CaptureAction {
@@ -104,7 +106,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       _roll = 0,
       _yawOffset = 0,
       _upload = 0;
-  double? _lensHfov, _lensVfov;
+  double? _lensHfov, _lensVfov, _guideFallbackYaw;
   String _motionSession = '';
   final _motionGate = CaptureMotionGate();
   bool _motionFresh = false, _motionSteady = false;
@@ -112,7 +114,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   Timer? _poll, _motionReadiness;
   int _cameraGeneration = 0;
   bool _reviewed = false;
-  bool _restoring = true, _showAngles = false, _showReference = false;
+  bool _restoring = true, _showAngles = true, _showReference = false;
   final _shutter = CaptureAutoShutter()..enabled = false;
   bool get _automatic => _shutter.enabled;
   set _automatic(bool value) => _shutter.enabled = value;
@@ -132,6 +134,21 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   CaptureTarget? get _target =>
       _plan?.targets.where((t) => !_coveredTargets.contains(t.id)).firstOrNull;
   bool get _aimed => _motionGate.aimed;
+  CaptureTarget? get _guidanceTarget =>
+      _automatic ? _target : _cubeStep?.target;
+  double _guidanceYaw(double yaw) => _automatic
+      ? yaw
+      : normalizeYaw(
+          yaw -
+              (_cubeGuide?.originYaw(
+                    _frames,
+                    fallback:
+                        _guideFallbackYaw ??
+                        (_reference?['yaw'] as num?)?.toDouble() ??
+                        yaw,
+                  ) ??
+                  yaw),
+        );
   bool get _steady => _motionGate.isSteady(DateTime.now());
   String get _key => 'capture-${widget.sceneId}';
   @override
@@ -255,6 +272,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       _lensHfov = null;
       _lensVfov = null;
       _motionSession = tourId();
+      _guideFallbackYaw = null;
       _rawYaw = 0;
       _headingReady = false;
       _showReference = false;
@@ -326,19 +344,27 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                 event['yaw'] is! num ||
                 event['pitch'] is! num ||
                 event['roll'] is! num) {
-              _resetMotion();
+              setState(_resetMotion);
               return;
             }
             final rawYaw = (event['yaw'] as num).toDouble();
             final p = (event['pitch'] as num).toDouble();
             final r = (event['roll'] as num).toDouble();
             if (!rawYaw.isFinite || !p.isFinite || !r.isFinite) {
-              _resetMotion();
+              setState(_resetMotion);
               return;
             }
             final now = DateTime.now();
             final y = normalizeYaw(rawYaw + _yawOffset);
-            _motionGate.update(yaw: y, pitch: p, target: _target, now: now);
+            // If the first photo had no sensor reading, keep a fixed local
+            // reference once readings return instead of chasing every sample.
+            if (_frames.isNotEmpty) _guideFallbackYaw ??= y;
+            _motionGate.update(
+              yaw: _guidanceYaw(y),
+              pitch: p,
+              target: _guidanceTarget,
+              now: now,
+            );
             setState(() {
               _yaw = y;
               _rawYaw = rawYaw;
@@ -708,6 +734,23 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
     } finally {
       if (_current) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _viewImportedPanorama(Uint8List bytes) async {
+    if (!_current || _horizontalImport || _session['mode'] != 'import') return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: const Text('Vista 360°')),
+          body: ListenableBuilder(
+            listenable: widget.controller,
+            builder: (context, _) => _current
+                ? LocalPanoramaViewer(bytes: bytes)
+                : const Center(child: Text('La sesión cambió.')),
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _send() async {
@@ -1133,10 +1176,13 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       ),
       bottomNavigationBar: c != null && c.value.isInitialized && !resuming
           ? CaptureGuidancePanel(
-              target: _target,
-              yaw: _yaw,
+              target: _guidanceTarget,
+              yaw: _guidanceYaw(_yaw),
               pitch: _pitch,
-              fresh: _headingReady && _motionGate.isFresh(DateTime.now()),
+              fresh:
+                  _aligned &&
+                  _headingReady &&
+                  _motionGate.isFresh(DateTime.now()),
               aimed: _aimed,
               steady: _steady,
               busy: _busy,
@@ -1283,10 +1329,12 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                         alignment: Alignment.center,
                         children: [
                           CameraPreview(c),
-                          const Icon(
-                            Icons.add_circle_outline,
-                            color: Colors.white,
-                            size: 48,
+                          CaptureAimOverlay(
+                            target: _guidanceTarget,
+                            yaw: _guidanceYaw(_yaw),
+                            pitch: _pitch,
+                            roll: _roll,
+                            fresh: _aligned && _headingReady && _motionFresh,
                           ),
                           Positioned(
                             top: 12,
@@ -1358,10 +1406,34 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                                           (_frames.first['width'] as num) /
                                           (_frames.first['height'] as num),
                                     )
-                                  : Image.memory(
-                                      snapshot.data!,
-                                      cacheWidth: 1200,
-                                      fit: BoxFit.contain,
+                                  : Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        InkWell(
+                                          onTap: () => _viewImportedPanorama(
+                                            snapshot.data!,
+                                          ),
+                                          child: Image.memory(
+                                            snapshot.data!,
+                                            cacheWidth: 1200,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 8,
+                                          right: 8,
+                                          child: IconButton.filled(
+                                            tooltip: 'Ver en 360°',
+                                            onPressed: () =>
+                                                _viewImportedPanorama(
+                                                  snapshot.data!,
+                                                ),
+                                            icon: const Icon(
+                                              Icons.threesixty_rounded,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     )
                             : snapshot.hasError
                             ? const TourNotice(

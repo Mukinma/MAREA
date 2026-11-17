@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/features/tours/capture/capture_guidance_panel.dart';
 import 'package:marea/features/tours/capture/capture_plan.dart';
+import 'package:marea/features/tours/capture/capture_cube_guide.dart';
 
 Widget panel({
   CaptureTarget? target = const CaptureTarget('first', 0, 0),
@@ -45,6 +46,47 @@ Widget panel({
 );
 
 void main() {
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('manual angles guide without locking capture at scale $scale', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final guide = CaptureCubeGuide.forPlan(null);
+      var takes = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+            child: Scaffold(
+              bottomNavigationBar: CaptureGuidancePanel(
+                cubeGuide: guide,
+                guideIndex: 1,
+                target: guide.steps[1].target,
+                yaw: -100,
+                pitch: -45,
+                fresh: true,
+                aimed: false,
+                steady: false,
+                busy: false,
+                showAngles: true,
+                onTake: () => takes++,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Actual: giro -100°'), findsOneWidget);
+      expect(find.textContaining('Objetivo: giro 30°'), findsOneWidget);
+      expect(find.text('Tomar foto').hitTestable(), findsOneWidget);
+      await tester.tap(find.text('Tomar foto'));
+      expect(takes, 1);
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final (pitch, place, screenDirection) in [
     (90.0, 'techo', 'abajo'),
     (-90.0, 'piso', 'arriba'),

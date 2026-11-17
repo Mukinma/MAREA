@@ -1,4 +1,6 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/features/tours/capture/capture_cube.dart';
 import 'package:marea/features/tours/capture/capture_cube_guide.dart';
@@ -7,6 +9,83 @@ import 'package:marea/features/tours/capture/capture_guidance_panel.dart';
 import 'package:marea/features/tours/capture/capture_plan.dart';
 
 void main() {
+  test('front follows the first photo without changing its measured pose', () {
+    final guide = CaptureCubeGuide.forPlan(null);
+    final frame = {
+      'cube_guide_version': 1,
+      'cube_guide_step': guide.steps.first.target.id,
+      'pose_status': 'ready',
+      'yaw': 137.0,
+      'pitch': -17.0,
+    };
+    expect(guide.originYaw([], fallback: -40), -40);
+    expect(guide.originYaw([frame], fallback: 0), 137);
+    expect(frame['yaw'], 137);
+    expect(frame['pitch'], -17);
+    expect(
+      guide.originYaw([
+        {...frame, 'pose_status': 'needs_reference'},
+      ], fallback: -40),
+      -40,
+    );
+  });
+
+  testWidgets('next square highlights immediately without flashing centre', (
+    tester,
+  ) async {
+    final guide = CaptureCubeGuide.forPlan(null);
+    const key = Key('cube-render');
+    Widget cube(int index) => MaterialApp(
+      home: Center(
+        child: SizedBox(
+          width: 200,
+          height: 200,
+          child: RepaintBoundary(
+            key: key,
+            child: CaptureCube(step: guide.steps[index]),
+          ),
+        ),
+      ),
+    );
+    Future<double> yellowCentre() async {
+      final boundary = tester.renderObject<RenderRepaintBoundary>(
+        find.byKey(key),
+      );
+      final image = await boundary.toImage();
+      final data = (await image.toByteData(
+        format: ui.ImageByteFormat.rawRgba,
+      ))!;
+      var total = 0.0, count = 0;
+      for (var y = 0; y < image.height; y++) {
+        for (var x = 0; x < image.width; x++) {
+          final p = (y * image.width + x) * 4;
+          if (data.getUint8(p) > 220 &&
+              data.getUint8(p + 1) > 170 &&
+              data.getUint8(p + 2) < 120 &&
+              data.getUint8(p + 3) > 200) {
+            total += x;
+            count++;
+          }
+        }
+      }
+      image.dispose();
+      expect(count, greaterThan(0));
+      return total / count;
+    }
+
+    await tester.pumpWidget(cube(0));
+    await tester.pumpAndSettle();
+    final centre = await tester.runAsync(yellowCentre);
+    await tester.pumpWidget(cube(1));
+    // No animation time has elapsed: the destination must already be visible.
+    final right = await tester.runAsync(yellowCentre);
+    expect(right!, greaterThan(centre! + 12));
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pumpWidget(cube(2));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
   test(
     'calibrated guide starts at the centre of every side and keeps all measured-plan targets',
     () {

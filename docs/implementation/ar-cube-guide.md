@@ -1,5 +1,17 @@
 # Guía visual de captura con cubo 3 × 3
 
+## Revisión del 16 de noviembre de 2026
+
+- Se conserva el cubo y el plan de hasta 40 sugerencias. La animación continúa desde el indicador anterior al pasar a otro cuadro de la misma cara; el siguiente cuadro se ilumina desde el inicio, sin volver a parpadear en el centro. El cubo también se inclina para distinguir las zonas altas y bajas. Se respeta la preferencia de reducir animaciones.
+- La orientación vuelve a estar visible por defecto: giro e inclinación actuales y sugeridos. En captura manual, la primera foto guardada define el frente; girar el teléfono después de abrir la cámara ya no desplaza toda la guía. Esto sólo transforma la presentación, sin reescribir las poses de las fotos.
+- La cámara muestra un aro, una línea de nivel y un punto que señala el movimiento hacia el objetivo. El aro se pone verde con una lectura reciente a menos de 6° del objetivo. No muestra un texto «aquí puedes tomar foto». La falta de sensor, la pérdida de seguimiento o un encuadre diferente dejan la guía neutra y mantienen disponible el disparador manual.
+- El contenido de ayuda puede desplazarse con texto ampliado; el botón de captura permanece fuera de ese desplazamiento. Se conserva una única acción principal y el menú para ocultar los grados si se desea.
+- La guía sigue siendo orientativa. Una foto libre avanza la sugerencia sólo después de guardarse; ni el contador ni el aro verde acreditan la cobertura del panorama. La captura automática opcional conserva sus condiciones anteriores. Las fotos de las sesiones existentes y las reglas de procesamiento/publicación no se alteran.
+- Verificación de esta revisión: 225 pruebas de recorridos, marcadores y proximidad aprobadas; análisis sin incidencias y APK debug del piloto compilada. Las pruebas incluyen el cambio inmediato de cuadro del cubo, el frente elegido en la primera foto, la vuelta del sensor tras una foto sin orientación, la retirada de la señal verde al caducar una lectura y el disparador libre con texto ampliado. Las vistas de `build/ar-live-pilot/cube-angles-*.png` usan una cámara de prueba y no acreditan una captura física.
+- La APK `marea-cubo-angulos-debug.apk` se instaló en el OPPO por Wi-Fi, conservando la captura activa de 36 fotos. Se compararon los 239 archivos originales de recorridos y marcadores antes y después: ninguno cambió ni desapareció. El respaldo y resultado privados están indicados por `.dart_tool/ar-live-pilot/latest-cube-angles-update.txt`. Falta la confirmación física del usuario sobre la guía nueva; para recorrerla desde el principio se puede usar **Más opciones → Empezar otra captura**, que archiva las 36 fotos actuales.
+
+Los apartados siguientes registran la primera versión de la guía y sus pruebas anteriores.
+
 Revisión local del 13 de noviembre de 2026. Complementa la [captura libre](ar-free-capture.md); no vuelve a bloquear el disparador por orientación, estabilidad o falta de sensores.
 
 ## Uso
