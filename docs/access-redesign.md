@@ -35,7 +35,7 @@ La primera apertura en iOS y Android muestra cuatro escenas con la mascota, nave
 
 ## Contrato de servidor
 
-Para usar el selector nativo de Google en Android, compila con `--dart-define=GOOGLE_WEB_CLIENT_ID=<ID OAuth web>`. Registra en Google Cloud un cliente Android con el paquete y la huella SHA-1 de la variante instalada. El cliente OAuth web debe estar configurado en el proveedor Google de Supabase. Si falta el ID o Android no dispone del selector, el navegador abre Google solicitando la selección explícita de cuenta. Cerrar el selector devuelve a Marea sin iniciar sesión.
+Para usar el selector nativo de Google en Android, compila con `--dart-define=GOOGLE_WEB_CLIENT_ID=<ID OAuth web>`. Copia el ID completo del cliente web configurado en el proveedor Google de Supabase. El ID ya trae el sufijo `.apps.googleusercontent.com`. Registra en Google Cloud un cliente Android con el paquete y la huella SHA-1 de la variante instalada. Si el ID falta, tiene un formato inválido o Android no dispone del selector, el navegador abre Google solicitando la selección explícita de cuenta. Cerrar el selector devuelve a MAREA sin iniciar sesión.
 
 Aplicar **`supabase/migrations/007_minimal_registration.sql`** después de 001–006, antes de publicar este cliente.
 

@@ -94,6 +94,9 @@ class SupabaseAuthRepository implements AuthRepository, AuthSecurityRepository {
   }) : _googleWebClientId = googleWebClientId.trim();
 
   static const _googleAccountChannel = MethodChannel('marea/google-sign-in');
+  static final _googleWebClientIdPattern = RegExp(
+    r'^[a-zA-Z0-9-]+\.apps\.googleusercontent\.com$',
+  );
   final SupabaseClient _client;
   final bool allowGoogleOAuth;
   final String _googleWebClientId;
@@ -175,7 +178,7 @@ class SupabaseAuthRepository implements AuthRepository, AuthSecurityRepository {
     try {
       if (!kIsWeb &&
           defaultTargetPlatform == TargetPlatform.android &&
-          _googleWebClientId.isNotEmpty &&
+          _googleWebClientIdPattern.hasMatch(_googleWebClientId) &&
           await _signInWithAndroidGoogle()) {
         return;
       }

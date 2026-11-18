@@ -68,6 +68,23 @@ void main() {
     );
   });
 
+  test('a duplicated client ID suffix uses browser OAuth', () async {
+    var pickerCalls = 0;
+    binding.defaultBinaryMessenger.setMockMethodCallHandler(picker, (_) async {
+      pickerCalls++;
+      throw PlatformException(code: 'google_picker_failed');
+    });
+    await SupabaseAuthRepository(
+      client,
+      googleWebClientId: '$clientId.apps.googleusercontent.com',
+    ).signInWithGoogle(redirectTo: callback);
+    expect(pickerCalls, 0);
+    expect(
+      launched.single.queryParameters,
+      containsPair('redirect_to', callback),
+    );
+  });
+
   test(
     'dismissing the native picker leaves the user on the same screen',
     () async {
