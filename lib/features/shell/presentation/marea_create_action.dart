@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -90,14 +91,14 @@ class _MareaCreateActionState extends State<MareaCreateAction> {
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(widget.stacked ? 22 : 28);
     return Semantics(
-      label: 'Crear',
+      label: AppLocalizations.tr('Crear'),
       button: true,
       enabled: widget.enabled,
       selected: widget.selected,
       excludeSemantics: true,
       onTap: widget.enabled ? _tap : null,
       child: Tooltip(
-        message: 'Crear',
+        message: AppLocalizations.tr('Crear'),
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: radius,
@@ -133,12 +134,12 @@ class _MareaCreateActionState extends State<MareaCreateAction> {
                       ),
                     ),
                     if (widget.stacked)
-                      const SizedBox(
+                      SizedBox(
                         width: 48,
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
-                            'Crear',
+                            AppLocalizations.tr('Crear'),
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 11,
@@ -149,8 +150,8 @@ class _MareaCreateActionState extends State<MareaCreateAction> {
                       ),
                     if (widget.expanded) ...[
                       const SizedBox(width: 8),
-                      const Text(
-                        'Crear',
+                      Text(
+                        AppLocalizations.tr('Crear'),
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,

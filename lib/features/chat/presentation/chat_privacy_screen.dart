@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -98,7 +99,9 @@ class _ChatPrivacyScreenState extends State<ChatPrivacyScreen> {
         setState(() {
           _error = error is AppFailure
               ? error.message
-              : 'No pudimos actualizar tu privacidad. Inténtalo nuevamente.';
+              : AppLocalizations.tr(
+                  'No pudimos actualizar tu privacidad. Inténtalo nuevamente.',
+                );
         });
       }
     } finally {
@@ -113,7 +116,7 @@ class _ChatPrivacyScreenState extends State<ChatPrivacyScreen> {
       final available = _repository != null && _sameAccount;
       final settings = available ? _settings : null;
       return ProfilePage(
-        title: 'Privacidad y bloqueos',
+        title: AppLocalizations.tr('Privacidad y bloqueos'),
         fallback: '/settings',
         busy: available && _busy,
         body: RefreshIndicator(
@@ -127,8 +130,10 @@ class _ChatPrivacyScreenState extends State<ChatPrivacyScreen> {
                   spacing: AppSpacing.lg,
                   children: [
                     if (!available)
-                      const Text(
-                        'Los ajustes de privacidad de chat no están disponibles.',
+                      Text(
+                        AppLocalizations.tr(
+                          'Los ajustes de privacidad de chat no están disponibles.',
+                        ),
                       )
                     else if (settings != null) ...[
                       _audienceOptions(settings.requestAudience),
@@ -145,7 +150,7 @@ class _ChatPrivacyScreenState extends State<ChatPrivacyScreen> {
                       if (settings == null)
                         OutlinedButton(
                           onPressed: _busy ? null : _load,
-                          child: const Text('Reintentar'),
+                          child: Text(AppLocalizations.tr('Reintentar')),
                         ),
                     ],
                   ],
@@ -164,13 +169,15 @@ class _ChatPrivacyScreenState extends State<ChatPrivacyScreen> {
     groupValue: selection,
     onChanged: _changeAudience,
     child: ProfileMenuSection(
-      title: 'Solicitudes de chat',
+      title: AppLocalizations.tr('Solicitudes de chat'),
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.all(AppSpacing.md),
           child: Text(
-            'Elige quién puede iniciar una conversación contigo. '
-            'Las conversaciones aceptadas y las solicitudes pendientes se conservan.',
+            AppLocalizations.tr(
+              'Elige quién puede iniciar una conversación contigo. '
+              'Las conversaciones aceptadas y las solicitudes pendientes se conservan.',
+            ),
           ),
         ),
         for (final audience in ChatRequestAudience.values)
@@ -178,7 +185,7 @@ class _ChatPrivacyScreenState extends State<ChatPrivacyScreen> {
             value: audience,
             enabled: !_busy,
             minTileHeight: 56,
-            title: Text(audience.label),
+            title: Text(AppLocalizations.tr(audience.label)),
           ),
       ],
     ),
@@ -187,12 +194,14 @@ class _ChatPrivacyScreenState extends State<ChatPrivacyScreen> {
   Widget _blockList(
     List<BlockedChatAccount> blockedAccounts,
   ) => ProfileMenuSection(
-    title: 'Cuentas bloqueadas',
+    title: AppLocalizations.tr('Cuentas bloqueadas'),
     children: [
       if (blockedAccounts.isEmpty)
-        const Padding(
+        Padding(
           padding: EdgeInsets.all(AppSpacing.md),
-          child: Text('Tu lista de cuentas bloqueadas está vacía.'),
+          child: Text(
+            AppLocalizations.tr('Tu lista de cuentas bloqueadas está vacía.'),
+          ),
         ),
       for (final blocked in blockedAccounts)
         Padding(
@@ -201,7 +210,9 @@ class _ChatPrivacyScreenState extends State<ChatPrivacyScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(blocked.fullName ?? 'Cuenta no disponible'),
+              Text(
+                blocked.fullName ?? AppLocalizations.tr('Cuenta no disponible'),
+              ),
               if (blocked.username case final username?)
                 Text(
                   '@$username',
@@ -209,10 +220,10 @@ class _ChatPrivacyScreenState extends State<ChatPrivacyScreen> {
                 ),
               Tooltip(
                 message:
-                    'Desbloquear a ${blocked.fullName ?? blocked.username ?? 'esta cuenta'}',
+                    'Desbloquear a ${blocked.fullName ?? blocked.username ?? AppLocalizations.tr('esta cuenta')}',
                 child: TextButton(
                   onPressed: _busy ? null : () => _unblock(blocked),
-                  child: const Text('Desbloquear'),
+                  child: Text(AppLocalizations.tr('Desbloquear')),
                 ),
               ),
             ],

@@ -572,7 +572,7 @@ class _FeedNotice extends StatelessWidget {
         Semantics(
           liveRegion: true,
           child: Text(
-            message,
+            AppLocalizations.tr(message),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.brandNavy,
@@ -581,7 +581,10 @@ class _FeedNotice extends StatelessWidget {
           ),
         ),
         if (action case final label?)
-          TextButton(onPressed: onAction, child: Text(label)),
+          TextButton(
+            onPressed: onAction,
+            child: Text(AppLocalizations.tr(label)),
+          ),
       ],
     ),
   );

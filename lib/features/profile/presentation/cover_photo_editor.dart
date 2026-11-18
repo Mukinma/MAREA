@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/theme/app_radius.dart';
@@ -64,8 +65,9 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
     } catch (_) {
       if (mounted) {
         setState(
-          () => _error =
-              'No pudimos abrir esta imagen. Prueba con otra fotografía.',
+          () => _error = AppLocalizations.tr(
+            'No pudimos abrir esta imagen. Prueba con otra fotografía.',
+          ),
         );
       }
     }
@@ -120,7 +122,9 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
         setState(
           () => _error = error is AppFailure
               ? error.message
-              : 'No pudimos preparar tu portada. Prueba otra fotografía.',
+              : AppLocalizations.tr(
+                  'No pudimos preparar tu portada. Prueba otra fotografía.',
+                ),
         );
       }
     } finally {
@@ -132,10 +136,12 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
 
   @override
   Widget build(BuildContext context) => ProfileSheetContent(
-    title: 'Ajustar foto de portada',
+    title: AppLocalizations.tr('Ajustar foto de portada'),
     children: [
-      const Text(
-        'Arrastra la foto para encuadrarla. Pellizca o usa los botones para acercarla.',
+      Text(
+        AppLocalizations.tr(
+          'Arrastra la foto para encuadrarla. Pellizca o usa los botones para acercarla.',
+        ),
       ),
       if (_image == null && _error == null)
         const Center(child: CircularProgressIndicator()),
@@ -204,7 +210,7 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           IconButton(
-            tooltip: 'Alejar foto',
+            tooltip: AppLocalizations.tr('Alejar foto'),
             onPressed: _image == null || _exporting || _zoom <= 1
                 ? null
                 : () => setState(() => _zoom = (_zoom - .25).clamp(1.0, 4.0)),
@@ -217,10 +223,10 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
                     _zoom = 1;
                     _position = const Offset(.5, .5);
                   }),
-            child: const Text('Restablecer encuadre'),
+            child: Text(AppLocalizations.tr('Restablecer encuadre')),
           ),
           IconButton(
-            tooltip: 'Acercar foto',
+            tooltip: AppLocalizations.tr('Acercar foto'),
             onPressed: _image == null || _exporting || _zoom >= 4
                 ? null
                 : () => setState(() => _zoom = (_zoom + .25).clamp(1.0, 4.0)),
@@ -238,11 +244,15 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
         ),
       FilledButton(
         onPressed: _image == null || _exporting ? null : _usePhoto,
-        child: Text(_exporting ? 'Preparando foto…' : 'Usar foto'),
+        child: Text(
+          _exporting
+              ? AppLocalizations.tr('Preparando foto…')
+              : AppLocalizations.tr('Usar foto'),
+        ),
       ),
       TextButton(
         onPressed: _exporting ? null : () => Navigator.pop(context),
-        child: const Text('Cancelar'),
+        child: Text(AppLocalizations.tr('Cancelar')),
       ),
     ],
   );

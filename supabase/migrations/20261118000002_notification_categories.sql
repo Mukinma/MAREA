@@ -19,12 +19,23 @@ alter table public.notification_devices
 create index notification_devices_session on public.notification_devices(session_id)
   where session_id is not null;
 
--- A legacy installation cannot be safely matched to one of the account's
--- sessions. Either app version will establish that association at registration.
-update public.notification_devices set enabled = false where session_id is null;
-update private.push_queue
-set status = 'canceled', lease_id = null, lease_until = null, lease_token = null
-where status in ('pending', 'processing');
+-- Existing installations and queued deliveries keep their state until the
+-- device registers again. On revocation, suspend unattributed installations
+-- for the affected account, because their original session is unknowable.
+create function private.disable_unbound_push_after_session_delete()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  update public.notification_devices
+  set enabled = false
+  where user_id = old.user_id and session_id is null and enabled;
+  return old;
+end;
+$$;
+revoke all on function private.disable_unbound_push_after_session_delete()
+  from public, anon, authenticated;
+create trigger disable_unbound_push_after_session_delete
+after delete on auth.sessions for each row
+execute function private.disable_unbound_push_after_session_delete();
 
 create function private.push_category(event_kind text, event_key text) returns text
 language sql immutable set search_path = '' as $$
@@ -59,8 +70,10 @@ create function private.push_session_has_access(account uuid, session uuid) retu
 language sql stable set search_path = '' as $$
   select exists (
     select 1 from auth.sessions s
-    where s.id = session and s.user_id = account
-      and (s.aal::text = 'aal2' or not exists (
+    where s.user_id = account
+      and (s.not_after is null or s.not_after > statement_timestamp())
+      and (session is null or s.id = session)
+      and ((session is not null and s.aal::text = 'aal2') or not exists (
         select 1 from auth.mfa_factors f
         where f.user_id = account and f.status::text = 'verified'
       ))
@@ -183,7 +196,7 @@ declare
   account uuid := public.community_active_account();
   current_session uuid := nullif(auth.jwt()->>'session_id', '')::uuid;
 begin
-  if not private.push_session_has_access(account, current_session) then
+  if current_session is null or not private.push_session_has_access(account, current_session) then
     raise exception 'session_invalid';
   end if;
   if installation is null or fcm_token is null or length(fcm_token) not between 20 and 4096 then

@@ -109,6 +109,287 @@ class AppLocalizations {
   }
 
   static const _englishCatalog = <String, String>{
+    'Cualquier cuenta': 'Anyone',
+    'Solo las cuentas que sigo': 'Only accounts I follow',
+    'Nadie': 'Nobody',
+    'Colaboraciones': 'Collaborations',
+    'Reacciones': 'Reactions',
+    'Autenticador disponible': 'Available authenticator',
+    'Créditos de ubicación': 'Location credits',
+    '3 a 24 caracteres. Puedes usar letras, números, punto y guion bajo.':
+        '3 to 24 characters. Use letters, numbers, periods, or underscores.',
+    'Abre los avisos desde tu sesión.': 'Sign in to manage nearby alerts.',
+    'Abrir ajustes de Android': 'Open Android settings',
+    'Abrir permisos del teléfono': 'Open phone permissions',
+    'Activar avisos': 'Turn on alerts',
+    'Activar verificación': 'Turn on verification',
+    'Agregar autenticador de respaldo': 'Add backup authenticator',
+    'Al activar este autenticador se cerrarán las sesiones en otros dispositivos.':
+        'Turning on this authenticator will sign you out on other devices.',
+    'Al activar los avisos, MAREA usa la ubicación precisa incluso con la app cerrada para avisarte si te acercas a una misión o un marcador de RA. Los lugares con ubicación aproximada quedan fuera de ese cálculo.':
+        'With alerts on, MAREA uses precise location even when the app is closed to notify you near a mission or AR marker. Places with approximate locations are excluded.',
+    'Al quitar el último autenticador se desactivará la verificación en dos pasos.':
+        'Removing your last authenticator turns off two-step verification.',
+    'Aquí puedes administrar el correo y la contraseña que usas para entrar a MAREA. Tu correo es privado.':
+        'Manage the email and password you use to sign in to MAREA. Your email address is private.',
+    'Así te verán y podrán encontrarte en Marea.':
+        'This is how people will see and find you on MAREA.',
+    'Avisos a 20 metros': 'Alerts within 20 meters',
+    'Avisos del teléfono': 'Phone alerts',
+    'Ayuda y reportes': 'Help and reports',
+    'Aún no has enviado reportes.': 'You have not submitted any reports yet.',
+    'Buscando…': 'Searching…',
+    'Cargando documento…': 'Loading document…',
+    'Cargando…': 'Loading…',
+    'Cargar más reportes de cuentas': 'Load more account reports',
+    'Cerrar otras sesiones': 'Sign out other devices',
+    'Cerrarás el acceso en los demás dispositivos. La sesión en este dispositivo seguirá abierta.':
+        'This signs you out on your other devices. You will stay signed in on this device.',
+    'Colores de tu portada': 'Cover colors',
+    'Comentarios en tus publicaciones y misiones':
+        'Comments on your posts and missions',
+    'Comprobando usuario…': 'Checking username…',
+    'Conecta con talento local': 'Connect with local talent',
+    'Conectando con Google…': 'Connecting to Google…',
+    'Configurar autenticador': 'Set up authenticator',
+    'Confirma el cambio en tu correo actual y en el nuevo.':
+        'Confirm the change from both your current and new email addresses.',
+    'Confirma la acción con el código de un autenticador activo.':
+        'Confirm using a code from an active authenticator.',
+    'Confirma tu correo para entrar a Marea.':
+        'Confirm your email to sign in to MAREA.',
+    'Confirmando perfil…': 'Confirming profile…',
+    'Confirmar retiro': 'Confirm removal',
+    'Conoce a artistas, emprendedores y negocios con quienes puedes colaborar.':
+        'Meet artists, entrepreneurs, and businesses you can work with.',
+    'Consulta los reportes que enviaste': 'View the reports you submitted',
+    'Contacta a soporte y consulta tus reportes':
+        'Contact support and track your reports',
+    'Contactar a soporte': 'Contact support',
+    'Contenido no disponible': 'Content unavailable',
+    'Contraseña actualizada': 'Password updated',
+    'Convoca a tu comunidad para colaborar.':
+        'Invite your community to collaborate.',
+    'Copiar clave': 'Copy key',
+    'Copiar correo': 'Copy email address',
+    'Correo de soporte no disponible': 'Support email unavailable',
+    'Correo electrónico': 'Email address',
+    'Correo y contraseña': 'Email and password',
+    'Creando cuenta…': 'Creating account…',
+    'Crear marcador RA': 'Create AR marker',
+    'Cuentas bloqueadas': 'Blocked accounts',
+    'Código QR para configurar tu autenticador':
+        'QR code to set up your authenticator',
+    'Código de autenticación': 'Authentication code',
+    'Descubre a las personas y los proyectos que le dan vida a tu comunidad.':
+        'Discover the people and projects that bring your community to life.',
+    'Descubre nuevos lugares': 'Discover new places',
+    'Detener avisos': 'Turn off alerts',
+    'El registro está pausado. Intenta más tarde.':
+        'Registration is paused. Try again later.',
+    'El seguimiento está detenido. Revisa los permisos y reactívalo.':
+        'Tracking has stopped. Check your permissions and turn it back on.',
+    'Elige cómo quieres participar en Marea. El tipo de perfil queda fijo al confirmar.':
+        'Choose how you want to take part in MAREA. Your profile type is final once you confirm.',
+    'Elige cómo quieres participar. Tu tipo de perfil quedará fijo al crear la cuenta.':
+        'Choose how you want to take part. Your profile type is final once you create your account.',
+    'Elige los intereses que quieres mostrar en tu perfil.':
+        'Choose the interests to show on your profile.',
+    'Elige quién puede iniciar una conversación contigo. Las conversaciones aceptadas y las solicitudes pendientes se conservan.':
+        'Choose who can start a conversation with you. Accepted conversations and pending requests remain available.',
+    'Elige qué avisos llegan a tu teléfono. Puedes consultar toda tu actividad en la bandeja de MAREA.':
+        'Choose which alerts reach your phone. You can find all of your activity in the MAREA inbox.',
+    'Elige qué avisos llegan al teléfono':
+        'Choose which alerts reach your phone',
+    'Elige un tipo de perfil para continuar.':
+        'Choose a profile type to continue.',
+    'Elige una imagen que la cámara pueda reconocer.':
+        'Choose an image the camera can recognize.',
+    'Eliminar cuenta': 'Delete account',
+    'Eliminar definitivamente': 'Delete permanently',
+    'En Ajustes permite ubicación precisa «Todo el tiempo» y las notificaciones. Después vuelve y activa los avisos.':
+        'In Android settings, allow precise location all the time and enable notifications. Then return and turn on alerts.',
+    'En este dispositivo': 'On this device',
+    'Encuentra cafeterías, restaurantes y espacios culturales cerca de ti.':
+        'Find nearby cafés, restaurants, and cultural spaces.',
+    'Encuentra tu próxima misión': 'Find your next mission',
+    'Entrar a Marea': 'Open MAREA',
+    'Enviando código…': 'Sending code…',
+    'Escanea el QR con tu app autenticadora o agrega la clave manual. Después escribe el código de seis dígitos.':
+        'Scan the QR code with your authenticator app or enter the setup key manually. Then enter the six-digit code.',
+    'Escribe ELIMINAR': 'Type ELIMINAR',
+    'Escribe el código del correo. Si no lo encuentras, revisa spam.':
+        'Enter the code from your email. Check your spam folder if you cannot find it.',
+    'Esta acción es permanente': 'This action is permanent',
+    'Este documento aún no está disponible.':
+        'This document is not available yet.',
+    'Explora oportunidades para crear, aprender o participar en tu ciudad.':
+        'Explore opportunities to create, learn, or take part in your city.',
+    'Foto, portada y datos públicos':
+        'Profile photo, cover, and public information',
+    'Galería o estilos de MAREA': 'Photo library or MAREA styles',
+    'Gestión de cuenta': 'Account management',
+    'Guardando aceptación…': 'Saving your acceptance…',
+    'Guardando contraseña…': 'Saving password…',
+    'Ideas y recordatorios ocasionales de la comunidad':
+        'Occasional ideas and community reminders',
+    'Información de cuenta': 'Account information',
+    'Ingresa el código que aparece en tu app autenticadora.':
+        'Enter the code from your authenticator app.',
+    'Iniciando sesión…': 'Signing in…',
+    'Interés en colaborar en tus publicaciones':
+        'Requests to collaborate on your posts',
+    'Ir a Mis datos personales': 'Go to Personal information',
+    'La cuenta reportada ya no está disponible.':
+        'The reported account is no longer available.',
+    'Las notificaciones no están disponibles.':
+        'Notifications are unavailable.',
+    'Los ajustes de privacidad de chat no están disponibles.':
+        'Chat privacy settings are unavailable.',
+    'Los avisos con la app cerrada están disponibles en Android.':
+        'Alerts with the app closed are available on Android.',
+    'Los avisos en este dispositivo aún no están disponibles':
+        'Phone alerts are not yet available on this device',
+    'Los controles de seguridad no están disponibles.':
+        'Security settings are unavailable.',
+    'Los reportes no están disponibles.': 'Reports are unavailable.',
+    'MAREA usa tu ubicación para centrar el mapa o buscar lugares cercanos cuando tú lo solicitas.':
+        'MAREA uses your location to center the map or find nearby places when you ask.',
+    'Marcar revisado': 'Mark as reviewed',
+    'Mensajes nuevos y cambios en tus solicitudes':
+        'New messages and updates to your requests',
+    'Mensajes y solicitudes de chat': 'Messages and chat requests',
+    'Mis datos personales': 'Personal information',
+    'Mis reportes': 'My reports',
+    'Mostrar clave manual': 'Show setup key',
+    'Muestra tu local y añade puntos con RA.':
+        'Show your space and add AR points.',
+    'No encontramos un autenticador para esta cuenta.':
+        'We could not find an authenticator for this account.',
+    'No hay opciones de creación disponibles.':
+        'There are no creation options available.',
+    'No pudimos abrir los permisos del teléfono.':
+        'We could not open your phone permissions.',
+    'No pudimos abrir tu app de correo.': 'We could not open your email app.',
+    'No pudimos activar los avisos. Revisa los permisos y vuelve a intentarlo.':
+        'We could not turn on alerts. Check your permissions and try again.',
+    'No pudimos actualizar los documentos de MAREA.':
+        'We could not refresh the MAREA documents.',
+    'No pudimos actualizar tu privacidad. Inténtalo nuevamente.':
+        'We could not update your privacy settings. Try again.',
+    'No pudimos cargar los documentos de Marea.':
+        'We could not load the MAREA documents.',
+    'No pudimos cargar tu perfil. Regresa para reintentar.':
+        'We could not load your profile. Go back to try again.',
+    'No pudimos comprobar el usuario. Intenta de nuevo.':
+        'We could not check that username. Try again.',
+    'No pudimos comprobar tu sesión. Vuelve a intentarlo.':
+        'We could not verify your session. Try again.',
+    'No pudimos consultar los avisos.': 'We could not check your alerts.',
+    'No pudimos consultar tus autenticadores.':
+        'We could not load your authenticators.',
+    'No pudimos detener los avisos. Reintenta.':
+        'We could not turn off alerts. Try again.',
+    'No pudimos guardar la contraseña. Inténtalo de nuevo.':
+        'We could not save your password. Try again.',
+    'No pudimos solicitar el código. Inténtalo de nuevo en unos minutos.':
+        'We could not request a code. Try again in a few minutes.',
+    'No pudimos verificar el código. Revisa el correo y vuelve a intentarlo.':
+        'We could not verify the code. Check your email and try again.',
+    'Ocultar clave': 'Hide setup key',
+    'Perdí acceso a mi autenticador': 'I lost access to my authenticator',
+    'Permiso de notificaciones': 'Notification permission',
+    'Permisos y alertas por proximidad':
+        'Location permissions and proximity alerts',
+    'Postulaciones y cambios en las convocatorias':
+        'Applications and updates to open calls',
+    'Privacidad y bloqueos': 'Privacy and blocks',
+    'Protege tu cuenta con un código de tu app autenticadora al iniciar sesión.':
+        'Protect your account with a code from your authenticator app when you sign in.',
+    'Publica en tu perfil o guarda un borrador.':
+        'Publish to your profile or save a draft.',
+    'Puedes eliminar tu cuenta desde Configuración → Mis datos personales → Eliminar cuenta. Se borrarán tu acceso, perfil, preferencias e imágenes. Es una acción permanente.':
+        'To delete your account, go to Settings → Personal information → Delete account. Your access, profile, preferences, and images will be permanently deleted.',
+    'Puedes pegar el código completo.': 'You can paste the entire code.',
+    'Quitar autenticador': 'Remove authenticator',
+    'Qué buscas en MAREA': 'What you are looking for on MAREA',
+    'Reacciones a tus publicaciones y misiones':
+        'Reactions to your posts and missions',
+    'Reactivar avisos': 'Turn alerts back on',
+    'Recordatorios de MAREA': 'MAREA reminders',
+    'Reenviando código…': 'Resending code…',
+    'Reporte revisado.': 'Report reviewed.',
+    'Reportes de cuentas': 'Account reports',
+    'Revisa los documentos vigentes. Puedes cerrar sesión o gestionar tu cuenta si prefieres no aceptarlos.':
+        'Review the latest documents. You can sign out or manage your account if you choose not to accept them.',
+    'Revoca el acceso de los demás dispositivos donde tengas una sesión abierta.':
+        'Revoke access for other devices where you are signed in.',
+    'Se eliminarán permanentemente tu acceso, perfil, preferencias e imágenes. Si la eliminación se interrumpe, vuelve aquí para completarla.':
+        'Your access, profile, preferences, and images will be permanently deleted. If deletion is interrupted, return here to complete it.',
+    'Seguridad y sesiones': 'Security and sessions',
+    'Sesiones en otros dispositivos': 'Sessions on other devices',
+    'Si el correo corresponde a tu cuenta, recibirás el código.':
+        'If the email matches your account, you will receive a code.',
+    'Si sales ahora, perderás los cambios de esta edición.':
+        'Leaving now will discard your changes.',
+    'Sin correo disponible': 'No email available',
+    'Solicitudes de chat': 'Chat requests',
+    'Solicitudes de chat y cuentas bloqueadas':
+        'Chat requests and blocked accounts',
+    'Texto o foto en Inicio.': 'Share text or a photo in Home.',
+    'Tu acceso': 'Your sign-in details',
+    'Tu ciudad\ntambién crea': 'Your city\ncreates too',
+    'Tu configuración se aplica a los dispositivos Android donde tienes activados los avisos de MAREA.':
+        'Your settings apply to Android devices with MAREA alerts enabled.',
+    'Tu información pública': 'Your public information',
+    'Tu lista de cuentas bloqueadas está vacía.':
+        'You have no blocked accounts.',
+    'Ubicación en el mapa': 'Location on the map',
+    'Ubicación y avisos cercanos': 'Location and nearby alerts',
+    'Un momento…': 'Just a moment…',
+    'Una foto visible durante 24 h.':
+        'A photo that stays visible for 24 hours.',
+    'Usa 09:00-18:00. Escribe «cerrado» para un día sin atención o déjalo vacío para ocultarlo.':
+        'Use 09:00–18:00. Enter «cerrado» for a closed day or leave it blank to hide it.',
+    'Usa la clave manual para configurar el autenticador.':
+        'Use the setup key to configure your authenticator.',
+    'Usarás este correo para verificar tu cuenta e iniciar sesión.':
+        'You will use this email address to verify your account and sign in.',
+    'Ver perfil reportado': 'View reported profile',
+    'Verificación en dos pasos': 'Two-step verification',
+    'Verificación en dos pasos y otros dispositivos':
+        'Two-step verification and other devices',
+    'Verificando código…': 'Verifying code…',
+    'Verificar y activar': 'Verify and activate',
+    'contraseña actual': 'current password',
+    'contraseña nueva': 'new password',
+    'esta cuenta': 'this account',
+    '¿Cerrar otras sesiones?': 'Sign out other devices?',
+    '¿Eliminar tu cuenta?': 'Delete your account?',
+    '¿Qué buscas en MAREA?': 'What are you looking for on MAREA?',
+    '¿Ya tienes cuenta?': 'Already have an account?',
+    'Activada': 'On',
+    'Desactivada': 'Off',
+    'Verificar': 'Verify',
+    'Recibido': 'Received',
+    'Desbloquear': 'Unblock',
+    'Preferencias': 'Preferences',
+    'Objetivos': 'Goals',
+    'Cuenta': 'Account',
+    'No pudimos guardar tus cambios.': 'We could not save your changes.',
+    'Código incorrecto.': 'Incorrect code.',
+    'Elige un método': 'Choose a method',
+    'No especificado': 'Not specified',
+    'Autenticador principal': 'Primary authenticator',
+    'Autenticador de respaldo': 'Backup authenticator',
+    'App autenticadora': 'Authenticator app',
+    'Explora y conecta con tu comunidad.':
+        'Explore and connect with your community.',
+    'Comparte tu trabajo y colabora.': 'Share your work and collaborate.',
+    'Da a conocer tu marca y lo que ofreces.':
+        'Show people your brand and what you offer.',
+    'Muestra tus servicios y dónde encontrarte.':
+        'Show your services and where to find you.',
     'No se pudo iniciar la conexión con el servidor.':
         'Could not connect to the server.',
     'El servicio de MAREA necesita actualizarse para guardar estos cambios. Tus datos siguen aquí; vuelve a intentarlo cuando esté disponible.':

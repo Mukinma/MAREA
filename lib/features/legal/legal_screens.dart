@@ -112,8 +112,10 @@ class ConsentFields extends StatelessWidget {
           shape: shape,
           value: terms,
           onChanged: enabled ? (value) => onTermsChanged(value ?? false) : null,
-          title: const Text(
-            'Acepto los términos y he leído el aviso de privacidad.',
+          title: Text(
+            AppLocalizations.tr(
+              'Acepto los términos y he leído el aviso de privacidad.',
+            ),
           ),
         ),
         CheckboxListTile(
@@ -124,7 +126,7 @@ class ConsentFields extends StatelessWidget {
           shape: shape,
           value: adult,
           onChanged: enabled ? (value) => onAdultChanged(value ?? false) : null,
-          title: const Text('Tengo 18 años o más.'),
+          title: Text(AppLocalizations.tr('Tengo 18 años o más.')),
         ),
       ],
     );
@@ -162,12 +164,12 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
           widget.controller.isLoadingLegal;
       return ProfilePage(
         title: deletion
-            ? 'Eliminar mi cuenta'
+            ? AppLocalizations.tr('Eliminar mi cuenta')
             : available
             ? doc.title
             : terms
-            ? 'Términos y condiciones'
-            : 'Aviso de privacidad',
+            ? AppLocalizations.tr('Términos y condiciones')
+            : AppLocalizations.tr('Aviso de privacidad'),
         fallback: authenticated ? '/settings' : '/welcome',
         busy: !deletion && loading,
         body: SingleChildScrollView(
@@ -190,16 +192,18 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
                 ] else if (loading)
                   Semantics(
                     liveRegion: true,
-                    child: const Text('Cargando documento…'),
+                    child: Text(AppLocalizations.tr('Cargando documento…')),
                   )
                 else
                   AccessFeedback(
                     message:
                         widget.controller.legalError ??
-                        'Este documento aún no está disponible.',
+                        AppLocalizations.tr(
+                          'Este documento aún no está disponible.',
+                        ),
                     action: TextButton(
                       onPressed: widget.controller.reloadLegal,
-                      child: const Text('Volver a cargar'),
+                      child: Text(AppLocalizations.tr('Volver a cargar')),
                     ),
                   ),
               ],
@@ -216,20 +220,22 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          'Puedes eliminar tu cuenta desde Configuración → Mis datos personales → Eliminar cuenta. Se borrarán tu acceso, perfil, preferencias e imágenes. Es una acción permanente.',
+        Text(
+          AppLocalizations.tr(
+            'Puedes eliminar tu cuenta desde Configuración → Mis datos personales → Eliminar cuenta. Se borrarán tu acceso, perfil, preferencias e imágenes. Es una acción permanente.',
+          ),
         ),
         const SizedBox(height: 24),
         PrimaryButton(
           label: authenticated
-              ? 'Ir a Mis datos personales'
-              : 'Iniciar sesión para eliminar mi cuenta',
+              ? AppLocalizations.tr('Ir a Mis datos personales')
+              : AppLocalizations.tr('Iniciar sesión para eliminar mi cuenta'),
           onPressed: () =>
               context.go(authenticated ? '/settings/personal' : '/login'),
         ),
         TextButton(
           onPressed: () => context.go('/recover-password'),
-          child: const Text('No puedo acceder a mi cuenta'),
+          child: Text(AppLocalizations.tr('No puedo acceder a mi cuenta')),
         ),
         if (controller.legalPolicy.supportEmail case final email?)
           TextButton(
@@ -239,7 +245,9 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
                   scheme: 'mailto',
                   path: email,
                   queryParameters: {
-                    'subject': 'Solicitud de eliminación de cuenta MAREA',
+                    'subject': AppLocalizations.tr(
+                      'Solicitud de eliminación de cuenta MAREA',
+                    ),
                   },
                 ),
               );
@@ -303,18 +311,25 @@ class _AcceptLegalScreenState extends State<AcceptLegalScreen> {
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: widget.controller,
     builder: (context, _) => AccessLayout(
-      title: 'Antes de continuar',
-      description:
-          'Revisa los documentos vigentes. Puedes cerrar sesión o gestionar tu cuenta si prefieres no aceptarlos.',
+      title: AppLocalizations.tr('Antes de continuar'),
+      description: AppLocalizations.tr(
+        'Revisa los documentos vigentes. Puedes cerrar sesión o gestionar tu cuenta si prefieres no aceptarlos.',
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (!_consent.hasDocuments) ...[
             AccessFeedback(
-              message: 'No pudimos cargar los documentos de Marea.',
+              message: AppLocalizations.tr(
+                'No pudimos cargar los documentos de Marea.',
+              ),
               action: TextButton(
                 onPressed: _busy ? null : _reload,
-                child: Text(_reloading ? 'Cargando…' : 'Reintentar'),
+                child: Text(
+                  _reloading
+                      ? AppLocalizations.tr('Cargando…')
+                      : AppLocalizations.tr('Reintentar'),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -332,19 +347,19 @@ class _AcceptLegalScreenState extends State<AcceptLegalScreen> {
           ],
           const SizedBox(height: 24),
           PrimaryButton(
-            label: 'Aceptar y continuar',
-            loadingLabel: 'Guardando aceptación…',
+            label: AppLocalizations.tr('Aceptar y continuar'),
+            loadingLabel: AppLocalizations.tr('Guardando aceptación…'),
             isLoading: widget.controller.isBusy,
             onPressed: !_busy && _consent.isComplete ? _accept : null,
           ),
           const SizedBox(height: 8),
           TextButton(
             onPressed: _busy ? null : widget.controller.signOut,
-            child: const Text('Cerrar sesión'),
+            child: Text(AppLocalizations.tr('Cerrar sesión')),
           ),
           TextButton(
             onPressed: _busy ? null : () => context.go('/settings'),
-            child: const Text('Gestionar o eliminar mi cuenta'),
+            child: Text(AppLocalizations.tr('Gestionar o eliminar mi cuenta')),
           ),
         ],
       ),

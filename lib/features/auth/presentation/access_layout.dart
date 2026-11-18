@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/app_radius.dart';
@@ -130,7 +131,7 @@ class AccessLayout extends StatelessWidget {
                       AccessHeader(
                         start: showBack || onBack != null
                             ? IconButton.outlined(
-                                tooltip: 'Atrás',
+                                tooltip: AppLocalizations.tr('Atrás'),
                                 onPressed: onBack,
                                 icon: const Icon(Icons.arrow_back_rounded),
                                 style: IconButton.styleFrom(
@@ -373,7 +374,9 @@ class AccessGoogleButton extends StatelessWidget {
         const SizedBox(width: 12),
         Flexible(
           child: Text(
-            isLoading ? 'Conectando con Google…' : 'Continuar con Google',
+            isLoading
+                ? AppLocalizations.tr('Conectando con Google…')
+                : AppLocalizations.tr('Continuar con Google'),
             textAlign: TextAlign.center,
           ),
         ),

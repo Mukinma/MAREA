@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -86,7 +87,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
         final failure = widget.controller.failure;
         _recoveryError = failure?.kind == AppFailureKind.weakPassword
             ? failure!.message
-            : 'No pudimos guardar la contraseña. Inténtalo de nuevo.';
+            : AppLocalizations.tr(
+                'No pudimos guardar la contraseña. Inténtalo de nuevo.',
+              );
       }
     });
   }
@@ -96,7 +99,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
     builder: (context, _) {
       final busy = _savingRecovery || widget.controller.isBusy;
       return AccessLayout(
-        title: 'Nueva contraseña',
+        title: AppLocalizations.tr('Nueva contraseña'),
         step: 3,
         totalSteps: 3,
         child: AutofillGroup(
@@ -110,8 +113,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 AccessTextField(
                   key: const Key('recovery-password'),
                   controller: _new,
-                  label: 'Contraseña',
-                  helperText: 'Usa al menos 8 caracteres.',
+                  label: AppLocalizations.tr('Contraseña'),
+                  helperText: AppLocalizations.tr('Usa al menos 8 caracteres.'),
                   enabled: !busy,
                   obscureText: _obscure,
                   keyboardType: TextInputType.visiblePassword,
@@ -126,8 +129,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   },
                   suffixIcon: IconButton(
                     tooltip: _obscure
-                        ? 'Mostrar contraseña'
-                        : 'Ocultar contraseña',
+                        ? AppLocalizations.tr('Mostrar contraseña')
+                        : AppLocalizations.tr('Ocultar contraseña'),
                     onPressed: busy
                         ? null
                         : () => setState(() => _obscure = !_obscure),
@@ -144,8 +147,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 ],
                 const SizedBox(height: AppSpacing.xl),
                 PrimaryButton(
-                  label: 'Guardar contraseña',
-                  loadingLabel: 'Guardando contraseña…',
+                  label: AppLocalizations.tr('Guardar contraseña'),
+                  loadingLabel: AppLocalizations.tr('Guardando contraseña…'),
                   isLoading: _savingRecovery,
                   onPressed: busy ? null : _saveRecovery,
                 ),
@@ -194,8 +197,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
             final busy = widget.controller.isBusy;
             return ProfilePage(
               title: widget.changeEmail
-                  ? 'Cambiar correo'
-                  : 'Cambiar contraseña',
+                  ? AppLocalizations.tr('Cambiar correo')
+                  : AppLocalizations.tr('Cambiar contraseña'),
               fallback: '/settings/personal',
               busy: busy,
               body: SingleChildScrollView(
@@ -210,22 +213,28 @@ class _SecurityScreenState extends State<SecurityScreen> {
                         children: [
                           Text(
                             widget.changeEmail
-                                ? 'Confirma el cambio en tu correo actual y en el nuevo.'
-                                : 'Usa una contraseña única de al menos 8 caracteres.',
+                                ? AppLocalizations.tr(
+                                    'Confirma el cambio en tu correo actual y en el nuevo.',
+                                  )
+                                : AppLocalizations.tr(
+                                    'Usa una contraseña única de al menos 8 caracteres.',
+                                  ),
                           ),
                           MareaTextField(
                             controller: _current,
-                            label: 'Contraseña actual',
+                            label: AppLocalizations.tr('Contraseña actual'),
                             enabled: !busy,
                             obscureText: _obscureCurrent,
                             autofillHints: const [AutofillHints.password],
                             textInputAction: TextInputAction.next,
                             validator: (value) => value == null || value.isEmpty
-                                ? 'Escribe tu contraseña actual.'
+                                ? AppLocalizations.tr(
+                                    'Escribe tu contraseña actual.',
+                                  )
                                 : null,
                             suffixIcon: _visibilityToggle(
                               obscured: _obscureCurrent,
-                              field: 'contraseña actual',
+                              field: AppLocalizations.tr('contraseña actual'),
                               onPressed: () => setState(
                                 () => _obscureCurrent = !_obscureCurrent,
                               ),
@@ -235,8 +244,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           MareaTextField(
                             controller: _new,
                             label: widget.changeEmail
-                                ? 'Nuevo correo'
-                                : 'Nueva contraseña',
+                                ? AppLocalizations.tr('Nuevo correo')
+                                : AppLocalizations.tr('Nueva contraseña'),
                             enabled: !busy,
                             obscureText: !widget.changeEmail && _obscure,
                             keyboardType: widget.changeEmail
@@ -257,7 +266,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                 ? null
                                 : _visibilityToggle(
                                     obscured: _obscure,
-                                    field: 'contraseña nueva',
+                                    field: AppLocalizations.tr(
+                                      'contraseña nueva',
+                                    ),
                                     onPressed: () =>
                                         setState(() => _obscure = !_obscure),
                                     busy: busy,
@@ -266,7 +277,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           if (!widget.changeEmail) ...[
                             MareaTextField(
                               controller: _confirm,
-                              label: 'Confirmar nueva contraseña',
+                              label: AppLocalizations.tr(
+                                'Confirmar nueva contraseña',
+                              ),
                               enabled: !busy,
                               obscureText: _obscure,
                               validator: (value) =>
@@ -278,8 +291,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
                             const Divider(height: 1, color: AppColors.border),
                             MareaTextField(
                               controller: _nonce,
-                              label: 'Código de seguridad',
-                              helperText: 'Solo si se solicita.',
+                              label: AppLocalizations.tr('Código de seguridad'),
+                              helperText: AppLocalizations.tr(
+                                'Solo si se solicita.',
+                              ),
                               enabled: !busy,
                               keyboardType: TextInputType.number,
                               autofillHints: const [AutofillHints.oneTimeCode],
@@ -288,7 +303,11 @@ class _SecurityScreenState extends State<SecurityScreen> {
                               alignment: Alignment.centerLeft,
                               child: TextButton(
                                 onPressed: busy ? null : _requestCode,
-                                child: const Text('Enviar código por correo'),
+                                child: Text(
+                                  AppLocalizations.tr(
+                                    'Enviar código por correo',
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -307,10 +326,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 onPressed: busy ? null : _save,
                 child: Text(
                   busy
-                      ? 'Un momento…'
+                      ? AppLocalizations.tr('Un momento…')
                       : widget.changeEmail
-                      ? 'Solicitar cambio de correo'
-                      : 'Guardar contraseña',
+                      ? AppLocalizations.tr('Solicitar cambio de correo')
+                      : AppLocalizations.tr('Guardar contraseña'),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -326,7 +345,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AccessLayout(
-    title: 'Contraseña actualizada',
+    title: AppLocalizations.tr('Contraseña actualizada'),
     leading: const CircleAvatar(
       radius: 28,
       backgroundColor: AppColors.mint,
@@ -334,7 +353,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
       child: Icon(Icons.check_rounded, size: 28),
     ),
     child: PrimaryButton(
-      label: 'Entrar a Marea',
+      label: AppLocalizations.tr('Entrar a Marea'),
       onPressed: onContinue ?? () => context.go('/home'),
     ),
   );

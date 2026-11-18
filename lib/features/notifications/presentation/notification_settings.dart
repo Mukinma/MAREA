@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -48,16 +49,20 @@ class NotificationSettings extends StatelessWidget {
       children: [
         if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android)
           ProfileMenuSection(
-            title: 'En este dispositivo',
+            title: AppLocalizations.tr('En este dispositivo'),
             children: [
               ProfileMenuRow(
                 icon: Icons.notifications_outlined,
-                title: 'Permiso de notificaciones',
+                title: AppLocalizations.tr('Permiso de notificaciones'),
                 subtitle: !controller.configured
-                    ? 'Los avisos en este dispositivo aún no están disponibles'
+                    ? AppLocalizations.tr(
+                        'Los avisos en este dispositivo aún no están disponibles',
+                      )
                     : controller.permissionStatus == PushPermission.granted
-                    ? 'Permitidas por Android'
-                    : 'Activa el permiso de notificaciones en Android',
+                    ? AppLocalizations.tr('Permitidas por Android')
+                    : AppLocalizations.tr(
+                        'Activa el permiso de notificaciones en Android',
+                      ),
                 onTap: null,
               ),
               if (controller.configured &&
@@ -70,7 +75,9 @@ class NotificationSettings extends StatelessWidget {
                       onPressed: controller.busy
                           ? null
                           : controller.gateway.openSettings,
-                      child: const Text('Abrir ajustes de Android'),
+                      child: Text(
+                        AppLocalizations.tr('Abrir ajustes de Android'),
+                      ),
                     ),
                   ),
                 ),
@@ -80,17 +87,21 @@ class NotificationSettings extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: AppSpacing.sm,
           children: [
-            const Text(
-              'Elige qué avisos llegan a tu teléfono. Puedes consultar toda '
-              'tu actividad en la bandeja de MAREA.',
+            Text(
+              AppLocalizations.tr(
+                'Elige qué avisos llegan a tu teléfono. Puedes consultar toda '
+                'tu actividad en la bandeja de MAREA.',
+              ),
             ),
             if (kIsWeb || defaultTargetPlatform != TargetPlatform.android)
-              const Text(
-                'Tu configuración se aplica a los dispositivos Android '
-                'donde tienes activados los avisos de MAREA.',
+              Text(
+                AppLocalizations.tr(
+                  'Tu configuración se aplica a los dispositivos Android '
+                  'donde tienes activados los avisos de MAREA.',
+                ),
               ),
             ProfileMenuSection(
-              title: 'Avisos del teléfono',
+              title: AppLocalizations.tr('Avisos del teléfono'),
               children: [
                 for (final MapEntry(key: category, value: (title, description))
                     in _choices.entries)
@@ -99,8 +110,8 @@ class NotificationSettings extends StatelessWidget {
                       horizontal: 16,
                       vertical: 8,
                     ),
-                    title: Text(title),
-                    subtitle: Text(description),
+                    title: Text(AppLocalizations.tr(title)),
+                    subtitle: Text(AppLocalizations.tr(description)),
                     value: controller.preferences.isEnabled(category),
                     onChanged: controller.busy || !controller.preferencesLoaded
                         ? null
@@ -128,7 +139,7 @@ class NotificationSettings extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: controller.busy ? null : controller.refresh,
-                      child: const Text('Reintentar'),
+                      child: Text(AppLocalizations.tr('Reintentar')),
                     ),
                   ],
                 ),

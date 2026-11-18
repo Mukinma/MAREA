@@ -2,7 +2,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_language_id/google_mlkit_language_id.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
-import 'package:marea/core/localization/content_translation_service.dart';
 import 'web_local_translation_stub.dart'
     if (dart.library.js_interop) 'web_local_translation_web.dart'
     as web_local_translation;
@@ -39,53 +38,6 @@ abstract interface class PostContentTranslator {
     required String body,
     required String targetLanguage,
   });
-}
-
-class CrossPlatformPostContentTranslator implements PostContentTranslator {
-  const CrossPlatformPostContentTranslator({
-    required this.onDevice,
-    required this.cloud,
-  });
-
-  final PostContentTranslator onDevice;
-  final ContentTranslationService cloud;
-
-  @override
-  bool get isSupported => true;
-
-  @override
-  Future<TranslatedPostContent> translate({
-    required String title,
-    required String body,
-    required String targetLanguage,
-  }) async {
-    if (onDevice.isSupported) {
-      return onDevice.translate(
-        title: title,
-        body: body,
-        targetLanguage: targetLanguage,
-      );
-    }
-
-    try {
-      final translated = await Future.wait([
-        cloud.translate(text: title, targetLanguage: targetLanguage),
-        body.isEmpty
-            ? Future<String>.value(body)
-            : cloud.translate(text: body, targetLanguage: targetLanguage),
-      ]);
-      return TranslatedPostContent(
-        title: translated[0],
-        body: translated[1],
-        alreadyInTargetLanguage:
-            translated[0] == title && translated[1] == body,
-      );
-    } on StateError {
-      throw const PostTranslationException(
-        PostTranslationFailure.modelUnavailable,
-      );
-    }
-  }
 }
 
 class MlKitPostContentTranslator implements PostContentTranslator {
@@ -195,11 +147,14 @@ class MlKitPostContentTranslator implements PostContentTranslator {
 }
 
 class LocalPostContentTranslator implements PostContentTranslator {
+  static final shared = LocalPostContentTranslator();
+
   final _mobileTranslator = MlKitPostContentTranslator();
 
   @override
-  bool get isSupported =>
-      kIsWeb ? web_local_translation.isSupported : _mobileTranslator.isSupported;
+  bool get isSupported => kIsWeb
+      ? web_local_translation.isSupported
+      : _mobileTranslator.isSupported;
 
   @override
   Future<TranslatedPostContent> translate({
@@ -239,13 +194,11 @@ class LocalPostContentTranslator implements PostContentTranslator {
         targetLanguage: targetLanguage,
       );
     } on StateError catch (error) {
-      throw PostTranslationException(
-        switch (error.message) {
-          'language_undetermined' => PostTranslationFailure.languageUndetermined,
-          'unsupported_language' => PostTranslationFailure.unsupportedLanguage,
-          _ => PostTranslationFailure.modelUnavailable,
-        },
-      );
+      throw PostTranslationException(switch (error.message) {
+        'language_undetermined' => PostTranslationFailure.languageUndetermined,
+        'unsupported_language' => PostTranslationFailure.unsupportedLanguage,
+        _ => PostTranslationFailure.modelUnavailable,
+      });
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -102,19 +103,21 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('¿Cerrar otras sesiones?'),
+        title: Text(AppLocalizations.tr('¿Cerrar otras sesiones?')),
         scrollable: true,
-        content: const Text(
-          'Cerrarás el acceso en los demás dispositivos. La sesión en este dispositivo seguirá abierta.',
+        content: Text(
+          AppLocalizations.tr(
+            'Cerrarás el acceso en los demás dispositivos. La sesión en este dispositivo seguirá abierta.',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.tr('Cancelar')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Cerrar otras sesiones'),
+            child: Text(AppLocalizations.tr('Cerrar otras sesiones')),
           ),
         ],
       ),
@@ -131,7 +134,7 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
       final available = widget.controller.supportsAccountSecurity;
       final busy = _operating || _loading || widget.controller.isBusy;
       return ProfilePage(
-        title: 'Seguridad y sesiones',
+        title: AppLocalizations.tr('Seguridad y sesiones'),
         fallback: '/settings',
         busy: _loading || widget.controller.isBusy,
         body: SingleChildScrollView(
@@ -141,29 +144,39 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
               spacing: AppSpacing.lg,
               children: [
                 if (!available)
-                  const ProfileFormSection(
+                  ProfileFormSection(
                     children: [
-                      Text('Los controles de seguridad no están disponibles.'),
+                      Text(
+                        AppLocalizations.tr(
+                          'Los controles de seguridad no están disponibles.',
+                        ),
+                      ),
                     ],
                   )
                 else ...[
                   ProfileFormSection(
-                    title: 'Verificación en dos pasos',
+                    title: AppLocalizations.tr('Verificación en dos pasos'),
                     icon: Icons.verified_user_outlined,
                     children: [
-                      const Text(
-                        'Protege tu cuenta con un código de tu app autenticadora al iniciar sesión.',
+                      Text(
+                        AppLocalizations.tr(
+                          'Protege tu cuenta con un código de tu app autenticadora al iniciar sesión.',
+                        ),
                       ),
                       if (_loaded) ...[
                         Text(
-                          _factors.isEmpty ? 'Desactivada' : 'Activada',
+                          _factors.isEmpty
+                              ? AppLocalizations.tr('Desactivada')
+                              : AppLocalizations.tr('Activada'),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         for (final factor in _factors)
                           ProfileMenuRow(
                             icon: Icons.phonelink_lock_outlined,
-                            title: factor.name,
-                            subtitle: 'Quitar autenticador',
+                            title: AppLocalizations.tr(factor.name),
+                            subtitle: AppLocalizations.tr(
+                              'Quitar autenticador',
+                            ),
                             onTap: busy ? null : () => _remove(factor),
                           ),
                         if (_factors.length < 2)
@@ -171,30 +184,42 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                             onPressed: busy ? null : _enroll,
                             child: Text(
                               _factors.isEmpty
-                                  ? 'Activar verificación'
-                                  : 'Agregar autenticador de respaldo',
+                                  ? AppLocalizations.tr('Activar verificación')
+                                  : AppLocalizations.tr(
+                                      'Agregar autenticador de respaldo',
+                                    ),
                               textAlign: TextAlign.center,
                             ),
                           ),
                       ] else if (!_loading) ...[
-                        const Text('No pudimos consultar tus autenticadores.'),
+                        Text(
+                          AppLocalizations.tr(
+                            'No pudimos consultar tus autenticadores.',
+                          ),
+                        ),
                         OutlinedButton(
                           onPressed: busy ? null : _loadFactors,
-                          child: const Text('Reintentar'),
+                          child: Text(AppLocalizations.tr('Reintentar')),
                         ),
                       ],
                     ],
                   ),
                   ProfileFormSection(
-                    title: 'Sesiones en otros dispositivos',
+                    title: AppLocalizations.tr(
+                      'Sesiones en otros dispositivos',
+                    ),
                     icon: Icons.devices_outlined,
                     children: [
-                      const Text(
-                        'Revoca el acceso de los demás dispositivos donde tengas una sesión abierta.',
+                      Text(
+                        AppLocalizations.tr(
+                          'Revoca el acceso de los demás dispositivos donde tengas una sesión abierta.',
+                        ),
                       ),
                       OutlinedButton(
                         onPressed: busy ? null : _closeOthers,
-                        child: const Text('Cerrar otras sesiones'),
+                        child: Text(
+                          AppLocalizations.tr('Cerrar otras sesiones'),
+                        ),
                       ),
                     ],
                   ),
@@ -251,12 +276,18 @@ class _MfaChallengeScreenState extends State<MfaChallengeScreen> {
         _factors = factors;
         _selected = factors.firstOrNull?.id;
         if (factors.isEmpty) {
-          _error = 'No encontramos un autenticador para esta cuenta.';
+          _error = AppLocalizations.tr(
+            'No encontramos un autenticador para esta cuenta.',
+          );
         }
       });
     } catch (_) {
       if (mounted) {
-        setState(() => _error = 'No pudimos consultar tus autenticadores.');
+        setState(
+          () => _error = AppLocalizations.tr(
+            'No pudimos consultar tus autenticadores.',
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -301,7 +332,7 @@ class _MfaChallengeScreenState extends State<MfaChallengeScreen> {
       final busy = _loading || controller.isBusy;
       final email = controller.legalPolicy.supportEmail?.trim() ?? '';
       return ProfilePage(
-        title: 'Verificación en dos pasos',
+        title: AppLocalizations.tr('Verificación en dos pasos'),
         onBack: () {
           if (!busy) controller.signOut();
         },
@@ -311,16 +342,20 @@ class _MfaChallengeScreenState extends State<MfaChallengeScreen> {
             child: ProfileFormSection(
               children: [
                 if (retrySession) ...[
-                  const Text(
-                    'No pudimos comprobar tu sesión. Vuelve a intentarlo.',
+                  Text(
+                    AppLocalizations.tr(
+                      'No pudimos comprobar tu sesión. Vuelve a intentarlo.',
+                    ),
                   ),
                   FilledButton(
                     onPressed: busy ? null : _retryCheck,
-                    child: const Text('Reintentar'),
+                    child: Text(AppLocalizations.tr('Reintentar')),
                   ),
                 ] else ...[
-                  const Text(
-                    'Ingresa el código que aparece en tu app autenticadora.',
+                  Text(
+                    AppLocalizations.tr(
+                      'Ingresa el código que aparece en tu app autenticadora.',
+                    ),
                   ),
                   if (_error case final error?) ...[
                     Semantics(
@@ -332,7 +367,7 @@ class _MfaChallengeScreenState extends State<MfaChallengeScreen> {
                     ),
                     OutlinedButton(
                       onPressed: busy ? null : _loadFactors,
-                      child: const Text('Reintentar'),
+                      child: Text(AppLocalizations.tr('Reintentar')),
                     ),
                   ],
                   if (_factors.length > 1)
@@ -355,11 +390,13 @@ class _MfaChallengeScreenState extends State<MfaChallengeScreen> {
                 if (email.isNotEmpty)
                   TextButton(
                     onPressed: () => _support(email),
-                    child: const Text('Perdí acceso a mi autenticador'),
+                    child: Text(
+                      AppLocalizations.tr('Perdí acceso a mi autenticador'),
+                    ),
                   ),
                 TextButton(
                   onPressed: busy ? null : controller.signOut,
-                  child: const Text('Cerrar sesión'),
+                  child: Text(AppLocalizations.tr('Cerrar sesión')),
                 ),
               ],
             ),
@@ -369,7 +406,7 @@ class _MfaChallengeScreenState extends State<MfaChallengeScreen> {
             ? null
             : FilledButton(
                 onPressed: busy || _code.text.length != 6 ? null : _verify,
-                child: const Text('Verificar'),
+                child: Text(AppLocalizations.tr('Verificar')),
               ),
       );
     },
@@ -432,15 +469,19 @@ class _AuthenticatorSheetState extends State<_AuthenticatorSheet> {
           ),
           child: ProfileSheetContent(
             title: enrollment == null
-                ? 'Quitar autenticador'
-                : 'Configurar autenticador',
+                ? AppLocalizations.tr('Quitar autenticador')
+                : AppLocalizations.tr('Configurar autenticador'),
             children: [
               if (enrollment != null) ...[
-                const Text(
-                  'Escanea el QR con tu app autenticadora o agrega la clave manual. Después escribe el código de seis dígitos.',
+                Text(
+                  AppLocalizations.tr(
+                    'Escanea el QR con tu app autenticadora o agrega la clave manual. Después escribe el código de seis dígitos.',
+                  ),
                 ),
-                const Text(
-                  'Al activar este autenticador se cerrarán las sesiones en otros dispositivos.',
+                Text(
+                  AppLocalizations.tr(
+                    'Al activar este autenticador se cerrarán las sesiones en otros dispositivos.',
+                  ),
                 ),
                 Center(child: _EnrollmentQr(uri: enrollment.uri)),
                 if (_revealSecret)
@@ -457,8 +498,8 @@ class _AuthenticatorSheetState extends State<_AuthenticatorSheet> {
                           setState(() => _revealSecret = !_revealSecret),
                       child: Text(
                         _revealSecret
-                            ? 'Ocultar clave'
-                            : 'Mostrar clave manual',
+                            ? AppLocalizations.tr('Ocultar clave')
+                            : AppLocalizations.tr('Mostrar clave manual'),
                       ),
                     ),
                     TextButton.icon(
@@ -466,15 +507,19 @@ class _AuthenticatorSheetState extends State<_AuthenticatorSheet> {
                         ClipboardData(text: enrollment.secret),
                       ),
                       icon: const Icon(Icons.copy_outlined),
-                      label: const Text('Copiar clave'),
+                      label: Text(AppLocalizations.tr('Copiar clave')),
                     ),
                   ],
                 ),
               ] else ...[
                 Text(
                   widget.factors.length == 1
-                      ? 'Al quitar el último autenticador se desactivará la verificación en dos pasos.'
-                      : 'Confirma la acción con el código de un autenticador activo.',
+                      ? AppLocalizations.tr(
+                          'Al quitar el último autenticador se desactivará la verificación en dos pasos.',
+                        )
+                      : AppLocalizations.tr(
+                          'Confirma la acción con el código de un autenticador activo.',
+                        ),
                 ),
                 if (widget.factors.length > 1)
                   _FactorChoices(
@@ -496,13 +541,13 @@ class _AuthenticatorSheetState extends State<_AuthenticatorSheet> {
                 onPressed: busy || _code.text.length != 6 ? null : _submit,
                 child: Text(
                   enrollment == null
-                      ? 'Confirmar retiro'
-                      : 'Verificar y activar',
+                      ? AppLocalizations.tr('Confirmar retiro')
+                      : AppLocalizations.tr('Verificar y activar'),
                 ),
               ),
               TextButton(
                 onPressed: busy ? null : () => Navigator.pop(context),
-                child: const Text('Cancelar'),
+                child: Text(AppLocalizations.tr('Cancelar')),
               ),
             ],
           ),
@@ -537,7 +582,9 @@ class _AuthenticatorCodeField extends StatelessWidget {
     ],
     onChanged: (_) => onChanged(),
     onSubmitted: (_) => onSubmitted(),
-    decoration: const InputDecoration(labelText: 'Código de autenticación'),
+    decoration: InputDecoration(
+      labelText: AppLocalizations.tr('Código de autenticación'),
+    ),
   );
 }
 
@@ -559,7 +606,7 @@ class _FactorChoices extends StatelessWidget {
     children: [
       for (final factor in factors)
         ChoiceChip(
-          label: Text(factor.name),
+          label: Text(AppLocalizations.tr(factor.name)),
           selected: selected == factor.id,
           onSelected: onSelect == null ? null : (_) => onSelect!(factor.id),
         ),
@@ -580,14 +627,18 @@ class _EnrollmentQr extends StatelessWidget {
       );
       return Semantics(
         image: true,
-        label: 'Código QR para configurar tu autenticador',
+        label: AppLocalizations.tr('Código QR para configurar tu autenticador'),
         child: CustomPaint(
           size: const Size.square(176),
           painter: _QrPainter(qr),
         ),
       );
     } catch (_) {
-      return const Text('Usa la clave manual para configurar el autenticador.');
+      return Text(
+        AppLocalizations.tr(
+          'Usa la clave manual para configurar el autenticador.',
+        ),
+      );
     }
   }
 }

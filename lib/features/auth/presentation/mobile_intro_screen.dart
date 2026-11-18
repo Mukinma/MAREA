@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -145,7 +146,11 @@ class _MobileIntroScreenState extends State<MobileIntroScreen>
                                       mainAxisSize: MainAxisSize.min,
                                       spacing: 8,
                                       children: [
-                                        Flexible(child: Text(nextLabel)),
+                                        Flexible(
+                                          child: Text(
+                                            AppLocalizations.tr(nextLabel),
+                                          ),
+                                        ),
                                         arrow,
                                       ],
                                     ),
@@ -155,7 +160,7 @@ class _MobileIntroScreenState extends State<MobileIntroScreen>
                             else
                               IconButton.filled(
                                 key: nextKey,
-                                tooltip: nextLabel,
+                                tooltip: AppLocalizations.tr(nextLabel),
                                 onPressed: next,
                                 icon: arrow,
                               ),
@@ -363,13 +368,13 @@ class _IntroPageState extends State<_IntroPage> with TickerProviderStateMixin {
             Semantics(
               header: true,
               child: Text(
-                slide.title,
+                AppLocalizations.tr(slide.title),
                 style: theme.textTheme.headlineMedium?.copyWith(fontSize: 34),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              slide.description,
+              AppLocalizations.tr(slide.description),
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: AppColors.textSecondary,
               ),

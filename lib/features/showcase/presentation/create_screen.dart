@@ -8,8 +8,6 @@ import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
-import 'package:marea/l10n/app_localizations.dart' as gen;
-import 'package:marea/l10n/app_localizations_es.dart' as gen;
 
 import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 
@@ -20,7 +18,7 @@ class CreateScreen extends StatelessWidget {
   Widget build(BuildContext context) => ColoredBox(
     color: AppColors.canvas,
     child: CommunityPage(
-      title: 'Crear',
+      title: core_l10n.AppLocalizations.tr('Crear'),
       children: [
         CreationChoices(
           controller: controller,
@@ -53,24 +51,28 @@ List<_CreationChoice> _choicesFor(AppSessionController controller) {
   return [
     if (controller.communityRepository != null)
       (
-        title: 'Publicación',
-        description: 'Texto o foto en Inicio.',
+        title: core_l10n.AppLocalizations.tr('Publicación'),
+        description: core_l10n.AppLocalizations.tr('Texto o foto en Inicio.'),
         path: '/posts/new',
         icon: Icons.dynamic_feed_outlined,
         color: AppColors.peach,
       ),
     if (controller.storiesRepository != null)
       (
-        title: 'Historia',
-        description: 'Una foto visible durante 24 h.',
+        title: core_l10n.AppLocalizations.tr('Historia'),
+        description: core_l10n.AppLocalizations.tr(
+          'Una foto visible durante 24 h.',
+        ),
         path: '/stories/new',
         icon: Icons.add_a_photo_outlined,
         color: AppColors.mint,
       ),
     if (controller.communityRepository != null)
       (
-        title: 'Crear misión',
-        description: 'Convoca a tu comunidad para colaborar.',
+        title: core_l10n.AppLocalizations.tr('Crear misión'),
+        description: core_l10n.AppLocalizations.tr(
+          'Convoca a tu comunidad para colaborar.',
+        ),
         path: '/missions/new',
         icon: Icons.flag_outlined,
         color: AppColors.mint,
@@ -78,8 +80,10 @@ List<_CreationChoice> _choicesFor(AppSessionController controller) {
     if (controller.showcaseRepository != null)
       for (final kind in type.showcaseKinds)
         (
-          title: kind.label,
-          description: 'Publica en tu perfil o guarda un borrador.',
+          title: core_l10n.AppLocalizations.tr(kind.label),
+          description: core_l10n.AppLocalizations.tr(
+            'Publica en tu perfil o guarda un borrador.',
+          ),
           path: '/showcase/new?kind=${kind.name}',
           icon: switch (kind) {
             ShowcaseKind.project => Icons.palette_outlined,
@@ -90,16 +94,20 @@ List<_CreationChoice> _choicesFor(AppSessionController controller) {
         ),
     if (controller.tourRepository != null && type != UserType.general)
       (
-        title: 'Crear recorrido 360°',
-        description: 'Muestra tu local y añade puntos con RA.',
+        title: core_l10n.AppLocalizations.tr('Crear recorrido 360°'),
+        description: core_l10n.AppLocalizations.tr(
+          'Muestra tu local y añade puntos con RA.',
+        ),
         path: '/tours/new',
         icon: Icons.panorama_photosphere_outlined,
         color: AppColors.mint,
       ),
     if (controller.markerRepository != null)
       (
-        title: 'Crear marcador RA',
-        description: 'Elige una imagen que la cámara pueda reconocer.',
+        title: core_l10n.AppLocalizations.tr('Crear marcador RA'),
+        description: core_l10n.AppLocalizations.tr(
+          'Elige una imagen que la cámara pueda reconocer.',
+        ),
         path: '/ar-markers/new',
         icon: Icons.image_search_outlined,
         color: AppColors.lavender,
@@ -141,7 +149,11 @@ class CreationChoices extends StatelessWidget {
     builder: (context, _) {
       final choices = _choicesFor(controller);
       if (choices.isEmpty) {
-        return const Text('No hay opciones de creación disponibles.');
+        return Text(
+          core_l10n.AppLocalizations.tr(
+            'No hay opciones de creación disponibles.',
+          ),
+        );
       }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -224,7 +236,6 @@ Future<void> showCreateMenu(
   if (!canOpenCreateMenu(controller)) return;
   final owner = controller.profile?.id;
   final width = MediaQuery.sizeOf(context).width;
-  final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
   Widget panel(BuildContext c) => SafeArea(
     top: false,
     child: Padding(
@@ -237,7 +248,7 @@ Future<void> showCreateMenu(
             children: [
               Expanded(
                 child: Text(
-                  'Crear',
+                  core_l10n.AppLocalizations.tr('Crear'),
                   style: const TextStyle(
                     fontSize: 23,
                     fontWeight: FontWeight.w800,
@@ -246,7 +257,9 @@ Future<void> showCreateMenu(
                 ),
               ),
               IconButton(
-                tooltip: core_l10n.AppLocalizations.tr(l10n.cerrarMenu),
+                tooltip: core_l10n.AppLocalizations.tr(
+                  'Cerrar menú de creación',
+                ),
                 onPressed: () => Navigator.pop(c),
                 icon: const Icon(Icons.close),
               ),

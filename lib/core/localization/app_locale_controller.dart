@@ -15,14 +15,10 @@ class AppLocaleController extends ChangeNotifier {
 
   Locale get locale => _locale;
 
-  static AppLocaleController of(BuildContext context) {
-    final scope = context.dependOnInheritedWidgetOfExactType<AppLocaleScope>();
-    assert(
-      scope != null,
-      'AppLocaleController is not available in this context',
-    );
-    return scope!.controller;
-  }
+  static AppLocaleController? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<AppLocaleScope>()?.controller;
+
+  static AppLocaleController of(BuildContext context) => maybeOf(context)!;
 
   Future<void> load() async {
     _preferences ??= await SharedPreferences.getInstance();
@@ -30,7 +26,10 @@ class AppLocaleController extends ChangeNotifier {
     if (savedLocale == null) return;
 
     final locale = _localeFromValue(savedLocale);
-    if (locale != null) _locale = locale;
+    if (locale != null && locale != _locale) {
+      _locale = locale;
+      notifyListeners();
+    }
   }
 
   Future<void> setLocale(Locale locale) async {

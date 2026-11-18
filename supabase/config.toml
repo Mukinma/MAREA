@@ -24,6 +24,3 @@ verify_jwt = false
 
 [functions.geocoding]
 verify_jwt = false
-
-[functions.translate-content]
-verify_jwt = true

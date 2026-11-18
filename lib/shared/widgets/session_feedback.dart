@@ -11,16 +11,14 @@ class SessionFeedback extends StatelessWidget {
     animation: controller,
     builder: (_, _) {
       final error = controller.failure?.message;
-      final message = error == null
-          ? controller.successMessage
-          : AppLocalizations.tr(error);
+      final message = error ?? controller.successMessage;
       if (message == null) return const SizedBox.shrink();
       return Semantics(
         liveRegion: true,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(
-            message,
+            AppLocalizations.tr(message),
             style: TextStyle(
               color: error == null ? AppColors.success : AppColors.error,
             ),

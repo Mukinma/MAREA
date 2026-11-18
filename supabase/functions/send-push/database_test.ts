@@ -12,7 +12,7 @@ create role anon; create role authenticated; create role service_role;
 create schema auth;
 create function auth.uid() returns uuid language sql as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
 create function auth.jwt() returns jsonb language sql as $$select nullif(current_setting('request.jwt.claims',true),'')::jsonb$$;
-create table auth.sessions(id uuid primary key,user_id uuid not null,aal text);
+create table auth.sessions(id uuid primary key,user_id uuid not null,aal text,not_after timestamptz);
 create table auth.mfa_factors(user_id uuid not null,status text not null);
 create table public.profiles(id uuid primary key,full_name text);
 create table public.posts(id uuid primary key);
@@ -27,7 +27,7 @@ create table public.notifications(id uuid primary key default gen_random_uuid(),
  constraint notifications_one_target check(num_nonnulls(post_id,mission_id)=1),check(recipient_id<>actor_id));
 insert into public.profiles values('${user}','Receptor'),('${actor}','Creador');
 insert into public.posts values('${post}');
-insert into auth.sessions values('${session}','${user}','aal1'),('${otherSession}','${actor}','aal1');
+insert into auth.sessions(id,user_id,aal) values('${session}','${user}','aal1'),('${otherSession}','${actor}','aal1');
 select set_config('request.jwt.claim.sub','${user}',false);
 select set_config('request.jwt.claims','{"session_id":"${session}"}',false);`;
 
@@ -303,12 +303,25 @@ Deno.test("the last expired lease becomes a terminal failure", async () => {
   }
 });
 
-Deno.test("migration preserves legacy preferences and pauses unattributed devices", async () => {
+Deno.test("migration preserves legacy preferences and queued delivery until the device rebinds", async () => {
   const db = await database({ legacy: true });
   try {
     await ready(db);
-    await db.exec("select public.set_notification_preferences(false,true)");
+    await db.exec(
+      `insert into public.notifications(recipient_id,actor_id,post_id,kind,event_key,post_title)
+      values('${user}','${actor}','${post}','comment','comment:legacy','Pieza');`,
+    );
+    const previous = await scalar(db, "select public.claim_push_jobs() as value") as {
+      queue_id: string;
+      lease_id: string;
+    }[];
+    assertEquals(previous.length, 1);
     await migrateCategories(db);
+    assertEquals(
+      await scalar(db, `select public.push_job_is_current('${previous[0].queue_id}','${previous[0].lease_id}') as value`),
+      true,
+    );
+    await db.exec("select public.set_notification_preferences(false,true)");
     assertEquals(
       await scalar(
         db,
@@ -321,7 +334,7 @@ Deno.test("migration preserves legacy preferences and pauses unattributed device
         db,
         "select enabled as value from public.notification_devices",
       ),
-      false,
+      true,
     );
     await ready(db);
     assertEquals(
@@ -330,6 +343,23 @@ Deno.test("migration preserves legacy preferences and pauses unattributed device
         "select session_id as value from public.notification_devices",
       ),
       session,
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+Deno.test("revoking a session suspends only the affected account's unbound installations", async () => {
+  const db = await database({ legacy: true });
+  try {
+    await ready(db);
+    await migrateCategories(db);
+    await db.exec(`delete from auth.sessions where id='${otherSession}';`);
+    assertEquals(await scalar(db, "select enabled as value from public.notification_devices"), true);
+    await db.exec(`delete from auth.sessions where id='${session}';`);
+    assertEquals(await scalar(db, "select enabled as value from public.notification_devices"), false);
+    await assertRejects(() =>
+      db.exec(`select public.register_notification_device('${device}','valid-length-token-1234',true)`)
     );
   } finally {
     await db.close();

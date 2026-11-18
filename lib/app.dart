@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:marea/features/notifications/models/notification_destination.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
@@ -49,7 +50,7 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     widget.controller.addListener(_sessionChanged);
     widget.controller.push?.addListener(_pushChanged);
     _localeController.addListener(_localeChanged);
-    unawaited(_localeController.load());
+    if (widget.localeController == null) unawaited(_localeController.load());
     WidgetsBinding.instance.addObserver(this);
     if (widget.controller.markerRepository != null) {
       _proximityOpened = NativeProximityBridge.instance.opened.listen(
@@ -266,7 +267,7 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     widget.controller.removeListener(_sessionChanged);
     widget.controller.push?.removeListener(_pushChanged);
     _localeController.removeListener(_localeChanged);
-    _localeController.dispose();
+    if (widget.localeController == null) _localeController.dispose();
     _router.dispose();
     widget.controller.dispose();
     super.dispose();
@@ -279,7 +280,6 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      key: ValueKey(_localeController.locale.toLanguageTag()),
       title: widget.productionPilot
           ? 'MAREA · Prueba RA'
           : widget.development
@@ -289,7 +289,9 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
       supportedLocales: AppLocaleController.supportedLocales,
       localizationsDelegates: [
         AppLocalizations.delegate,
-        ...generated_l10n.AppLocalizations.localizationsDelegates,
+        if (_localeController.locale.languageCode == 'es')
+          generated_l10n.AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
       ],
       localeResolutionCallback: (locale, supportedLocales) {
         if (locale == null) return const Locale('es', 'MX');

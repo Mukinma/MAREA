@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/location/device_location_service.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -63,7 +64,7 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
     } catch (_) {
       if (_current) {
         setState(() {
-          _error = 'No pudimos consultar los avisos.';
+          _error = AppLocalizations.tr('No pudimos consultar los avisos.');
           _busy = false;
         });
       }
@@ -91,8 +92,9 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
           status['notifications'] != true) {
         setState(() {
           _status = status;
-          _error =
-              'En Ajustes permite ubicación precisa «Todo el tiempo» y las notificaciones. Después vuelve y activa los avisos.';
+          _error = AppLocalizations.tr(
+            'En Ajustes permite ubicación precisa «Todo el tiempo» y las notificaciones. Después vuelve y activa los avisos.',
+          );
         });
         return;
       }
@@ -113,7 +115,9 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
         setState(
           () => _error = e is DeviceLocationFailure
               ? e.message
-              : 'No pudimos activar los avisos. Revisa los permisos y vuelve a intentarlo.',
+              : AppLocalizations.tr(
+                  'No pudimos activar los avisos. Revisa los permisos y vuelve a intentarlo.',
+                ),
         );
       }
     } finally {
@@ -139,7 +143,11 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
       if (_current) await _refresh();
     } catch (_) {
       if (_current) {
-        setState(() => _error = 'No pudimos detener los avisos. Reintenta.');
+        setState(
+          () => _error = AppLocalizations.tr(
+            'No pudimos detener los avisos. Reintenta.',
+          ),
+        );
       }
     } finally {
       if (_current) setState(() => _busy = false);
@@ -151,7 +159,11 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
       await _bridge.openSettings();
     } catch (_) {
       if (_current) {
-        setState(() => _error = 'No pudimos abrir los permisos del teléfono.');
+        setState(
+          () => _error = AppLocalizations.tr(
+            'No pudimos abrir los permisos del teléfono.',
+          ),
+        );
       }
     }
   }
@@ -162,32 +174,36 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
     final enabled = _status['enabled'] == true;
     final running = _status['running'] == true;
     return ProfilePage(
-      title: 'Ubicación y avisos cercanos',
+      title: AppLocalizations.tr('Ubicación y avisos cercanos'),
       fallback: '/settings',
       busy: _current && _busy,
       body: SingleChildScrollView(
         child: ProfilePageFrame(
           child: !_current
-              ? const Text('Abre los avisos desde tu sesión.')
+              ? Text(AppLocalizations.tr('Abre los avisos desde tu sesión.'))
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   spacing: AppSpacing.lg,
                   children: [
-                    const ProfileFormSection(
-                      title: 'Ubicación en el mapa',
+                    ProfileFormSection(
+                      title: AppLocalizations.tr('Ubicación en el mapa'),
                       icon: Icons.map_outlined,
                       children: [
                         Text(
-                          'MAREA usa tu ubicación para centrar el mapa o buscar lugares cercanos cuando tú lo solicitas.',
+                          AppLocalizations.tr(
+                            'MAREA usa tu ubicación para centrar el mapa o buscar lugares cercanos cuando tú lo solicitas.',
+                          ),
                         ),
                       ],
                     ),
                     ProfileFormSection(
-                      title: 'Avisos a 20 metros',
+                      title: AppLocalizations.tr('Avisos a 20 metros'),
                       icon: Icons.notifications_active_outlined,
                       children: [
-                        const Text(
-                          'Al activar los avisos, MAREA usa la ubicación precisa incluso con la app cerrada para avisarte si te acercas a una misión o un marcador de RA. Los lugares con ubicación aproximada quedan fuera de ese cálculo.',
+                        Text(
+                          AppLocalizations.tr(
+                            'Al activar los avisos, MAREA usa la ubicación precisa incluso con la app cerrada para avisarte si te acercas a una misión o un marcador de RA. Los lugares con ubicación aproximada quedan fuera de ese cálculo.',
+                          ),
                         ),
                         if (_error case final error?) ...[
                           Semantics(
@@ -200,35 +216,45 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
                           if (_status.isEmpty)
                             OutlinedButton(
                               onPressed: _busy ? null : _refresh,
-                              child: const Text('Reintentar'),
+                              child: Text(AppLocalizations.tr('Reintentar')),
                             ),
                         ],
                         if (_status['supported'] == false)
-                          const Text(
-                            'Los avisos con la app cerrada están disponibles en Android.',
+                          Text(
+                            AppLocalizations.tr(
+                              'Los avisos con la app cerrada están disponibles en Android.',
+                            ),
                           ),
                         if (enabled)
                           Text(
                             running
                                 ? 'Avisos activos para ${_status['count'] ?? 0} lugares cargados.'
-                                : 'El seguimiento está detenido. Revisa los permisos y reactívalo.',
+                                : AppLocalizations.tr(
+                                    'El seguimiento está detenido. Revisa los permisos y reactívalo.',
+                                  ),
                           ),
                         if (supported && !running)
                           FilledButton(
                             onPressed: _busy ? null : _activate,
                             child: Text(
-                              enabled ? 'Reactivar avisos' : 'Activar avisos',
+                              enabled
+                                  ? AppLocalizations.tr('Reactivar avisos')
+                                  : AppLocalizations.tr('Activar avisos'),
                             ),
                           ),
                         if (supported && enabled)
                           OutlinedButton(
                             onPressed: _busy ? null : _stop,
-                            child: const Text('Detener avisos'),
+                            child: Text(AppLocalizations.tr('Detener avisos')),
                           ),
                         if (supported)
                           TextButton(
                             onPressed: _busy ? null : _openPermissions,
-                            child: const Text('Abrir permisos del teléfono'),
+                            child: Text(
+                              AppLocalizations.tr(
+                                'Abrir permisos del teléfono',
+                              ),
+                            ),
                           ),
                       ],
                     ),

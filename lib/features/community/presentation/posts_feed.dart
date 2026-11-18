@@ -285,14 +285,13 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
-  static final _onDeviceTranslator = MlKitPostContentTranslator();
-
   PostContentTranslator get _translator =>
-      widget.contentTranslator ?? _onDeviceTranslator;
+      widget.contentTranslator ?? LocalPostContentTranslator.shared;
 
   bool _busy = false, _expanded = false, _panel = false;
   bool _translating = false, _sameLanguage = false;
-  String? _translatedLocale, _translationError;
+  String? _targetLanguage, _translationError;
+  int _translationGeneration = 0;
   TranslatedPostContent? _translatedContent;
   late bool _saved = widget.saved;
   late PostSocialStats? _stats = widget.stats;
@@ -306,12 +305,16 @@ class _PostCardState extends State<PostCard> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final locale = Localizations.localeOf(context).languageCode;
-    if (_translatedLocale != null && _translatedLocale != locale) {
-      _translatedContent = null;
-      _translatedLocale = null;
-      _sameLanguage = false;
-      _translationError = null;
-    }
+    if (_targetLanguage != locale) _resetTranslation();
+    _targetLanguage = locale;
+  }
+
+  void _resetTranslation() {
+    _translationGeneration++;
+    _translatedContent = null;
+    _sameLanguage = false;
+    _translationError = null;
+    _translating = false;
   }
 
   @override
@@ -347,12 +350,10 @@ class _PostCardState extends State<PostCard> {
     }
     if (old.stats != widget.stats && !_reacting) _stats = widget.stats;
     if (old.post.imagePath != widget.post.imagePath) _loadImage();
-    if (old.post.title != widget.post.title ||
+    if (old.post.id != widget.post.id ||
+        old.post.title != widget.post.title ||
         old.post.body != widget.post.body) {
-      _translatedContent = null;
-      _translatedLocale = null;
-      _sameLanguage = false;
-      _translationError = null;
+      _resetTranslation();
     }
   }
 
@@ -360,16 +361,12 @@ class _PostCardState extends State<PostCard> {
     final translator = _translator;
     if (!translator.isSupported || _translating) return;
     if (_translatedContent != null || _sameLanguage) {
-      setState(() {
-        _translatedContent = null;
-        _translatedLocale = null;
-        _sameLanguage = false;
-        _translationError = null;
-      });
+      setState(_resetTranslation);
       return;
     }
 
-    final targetLanguage = Localizations.localeOf(context).languageCode;
+    final targetLanguage = _targetLanguage!;
+    final generation = ++_translationGeneration;
     setState(() {
       _translating = true;
       _translationError = null;
@@ -381,14 +378,13 @@ class _PostCardState extends State<PostCard> {
         body: widget.post.body,
         targetLanguage: targetLanguage,
       );
-      if (!mounted) return;
+      if (!mounted || generation != _translationGeneration) return;
       setState(() {
         _translatedContent = result.alreadyInTargetLanguage ? null : result;
-        _translatedLocale = targetLanguage;
         _sameLanguage = result.alreadyInTargetLanguage;
       });
     } on PostTranslationException catch (error) {
-      if (!mounted) return;
+      if (!mounted || generation != _translationGeneration) return;
       setState(
         () => _translationError = AppLocalizations.tr(switch (error.failure) {
           PostTranslationFailure.languageUndetermined =>
@@ -400,14 +396,16 @@ class _PostCardState extends State<PostCard> {
         }),
       );
     } on Exception {
-      if (!mounted) return;
+      if (!mounted || generation != _translationGeneration) return;
       setState(
         () => _translationError = AppLocalizations.tr(
           'No se pudo traducir la publicación. Revisa tu conexión e inténtalo de nuevo.',
         ),
       );
     } finally {
-      if (mounted) setState(() => _translating = false);
+      if (mounted && generation == _translationGeneration) {
+        setState(() => _translating = false);
+      }
     }
   }
 

@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     key: const Key('login-email'),
                     enabled: !_busy,
                     controller: _emailController,
-                    label: 'Correo',
+                    label: core_l10n.AppLocalizations.tr('Correo'),
                     hint: 'tu@correo.com',
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
@@ -154,19 +154,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     key: const Key('login-password'),
                     enabled: !_busy,
                     controller: _passwordController,
-                    label: 'Contraseña',
+                    label: core_l10n.AppLocalizations.tr('Contraseña'),
                     obscureText: _obscurePassword,
                     textInputAction: TextInputAction.done,
                     autofillHints: const [AutofillHints.password],
                     validator: (value) => (value ?? '').isEmpty
-                        ? 'Escribe una contraseña.'
+                        ? core_l10n.AppLocalizations.tr(
+                            'Escribe una contraseña.',
+                          )
                         : null,
                     onChanged: (_) => _clearPasswordFailure(),
                     onFieldSubmitted: (_) => _submit(),
                     suffixIcon: IconButton(
                       tooltip: _obscurePassword
-                          ? 'Mostrar contraseña'
-                          : 'Ocultar contraseña',
+                          ? core_l10n.AppLocalizations.tr('Mostrar contraseña')
+                          : core_l10n.AppLocalizations.tr('Ocultar contraseña'),
                       onPressed: _busy
                           ? null
                           : () => setState(
@@ -188,12 +190,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               '/recover-password',
                               email: _emailController.text.trim(),
                             ),
-                      child: const Text('Olvidé mi contraseña'),
+                      child: Text(
+                        core_l10n.AppLocalizations.tr('Olvidé mi contraseña'),
+                      ),
                     ),
                   ),
                   if (_passwordFailure != null) ...[
                     AccessFeedback(
-                      message: 'Confirma tu correo para entrar a Marea.',
+                      message: core_l10n.AppLocalizations.tr(
+                        'Confirma tu correo para entrar a Marea.',
+                      ),
                       error: false,
                       action: TextButton(
                         onPressed: _busy
@@ -202,14 +208,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                 '/check-email',
                                 email: _emailController.text.trim(),
                               ),
-                        child: const Text('Confirmar mi correo'),
+                        child: Text(
+                          core_l10n.AppLocalizations.tr('Confirmar mi correo'),
+                        ),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                   ],
                   PrimaryButton(
                     label: 'Entrar',
-                    loadingLabel: 'Iniciando sesión…',
+                    loadingLabel: core_l10n.AppLocalizations.tr(
+                      'Iniciando sesión…',
+                    ),
                     isLoading: _pending == _SignInMethod.password,
                     onPressed: _busy ? null : _submit,
                   ),
@@ -239,10 +249,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: WrapAlignment.center,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      const Text('¿No tienes cuenta?'),
+                      Text(core_l10n.AppLocalizations.tr('¿No tienes cuenta?')),
                       TextButton(
                         onPressed: _busy ? null : () => _go('/register'),
-                        child: const Text('Crear cuenta'),
+                        child: Text(
+                          core_l10n.AppLocalizations.tr('Crear cuenta'),
+                        ),
                       ),
                     ],
                   ),

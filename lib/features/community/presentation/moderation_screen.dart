@@ -105,9 +105,10 @@ class _ModerationScreenState extends State<ModerationScreen> {
             ),
           )
         : CommunityPage(
-            title: 'Reportes de la comunidad',
-            subtitle:
-                'Revisa el contenido antes de ocultarlo. Los reportes revisados se conservan para poder restaurarlo.',
+            title: AppLocalizations.tr('Reportes de la comunidad'),
+            subtitle: AppLocalizations.tr(
+              'Revisa el contenido antes de ocultarlo. Los reportes revisados se conservan para poder restaurarlo.',
+            ),
             onRefresh: _loading || _loadingAccounts ? null : _refresh,
             children: [
               if (widget.controller.storiesRepository != null)
@@ -129,7 +130,7 @@ class _ModerationScreenState extends State<ModerationScreen> {
 
               if (_accounts.isNotEmpty || _accountError != null)
                 Text(
-                  'Reportes de cuentas',
+                  AppLocalizations.tr('Reportes de cuentas'),
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               for (final account in _accounts)
@@ -151,7 +152,9 @@ class _ModerationScreenState extends State<ModerationScreen> {
               if (_moreAccounts && !_loadingAccounts && _accountError == null)
                 TextButton(
                   onPressed: _loadAccounts,
-                  child: const Text('Cargar más reportes de cuentas'),
+                  child: Text(
+                    AppLocalizations.tr('Cargar más reportes de cuentas'),
+                  ),
                 ),
               if (_reports.isEmpty &&
                   _accounts.isEmpty &&
@@ -159,7 +162,9 @@ class _ModerationScreenState extends State<ModerationScreen> {
                   !_loadingAccounts &&
                   _error == null &&
                   _accountError == null)
-                const CommunityNotice(message: 'No hay reportes para revisar.'),
+                CommunityNotice(
+                  message: AppLocalizations.tr('No hay reportes para revisar.'),
+                ),
               for (final report in _reports)
                 _ReportCard(
                   key: ValueKey(report.id),
@@ -209,7 +214,7 @@ class _AccountReportCardState extends State<_AccountReportCard> {
           widget.report.id,
           account: true,
         ),
-        success: 'Reporte revisado.',
+        success: AppLocalizations.tr('Reporte revisado.'),
       );
       if (ok && mounted) await widget.onChanged();
     } finally {
@@ -226,21 +231,25 @@ class _AccountReportCardState extends State<_AccountReportCard> {
         spacing: 8,
         children: [
           Text(
-            widget.report.reviewed ? 'Revisado' : 'Pendiente de revisión',
+            widget.report.reviewed
+                ? 'Revisado'
+                : AppLocalizations.tr('Pendiente de revisión'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
           SelectableText(widget.report.reason),
           if (widget.report.targetId case final id?)
             TextButton(
               onPressed: () => context.push('/people/$id'),
-              child: const Text('Ver perfil reportado'),
+              child: Text(AppLocalizations.tr('Ver perfil reportado')),
             )
           else
-            const Text('La cuenta reportada ya no está disponible.'),
+            Text(
+              AppLocalizations.tr('La cuenta reportada ya no está disponible.'),
+            ),
           if (!widget.report.reviewed)
             OutlinedButton(
               onPressed: _busy ? null : _review,
-              child: const Text('Marcar revisado'),
+              child: Text(AppLocalizations.tr('Marcar revisado')),
             ),
         ],
       ),
@@ -295,14 +304,14 @@ class _ReportCardState extends State<_ReportCard> {
                             context,
                             () => (repo as CommunityReportsRepository)
                                 .markReportReviewed(report.id, account: false),
-                            success: 'Reporte revisado.',
+                            success: AppLocalizations.tr('Reporte revisado.'),
                           );
                           if (ok && mounted) await widget.onChanged();
                         } finally {
                           if (mounted) setState(() => _busy = false);
                         }
                       },
-                child: const Text('Marcar revisado'),
+                child: Text(AppLocalizations.tr('Marcar revisado')),
               ),
             const Divider(height: 32),
             CommunityLoad<Object?>(

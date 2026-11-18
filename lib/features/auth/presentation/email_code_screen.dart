@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marea/core/errors/app_failure.dart';
@@ -110,7 +111,9 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
         _requestAccepted = true;
       } else {
         _sendError = _failureMessage(
-          'No pudimos solicitar el código. Inténtalo de nuevo en unos minutos.',
+          AppLocalizations.tr(
+            'No pudimos solicitar el código. Inténtalo de nuevo en unos minutos.',
+          ),
         );
       }
     });
@@ -176,7 +179,9 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
       _pending = null;
       if (!ok) {
         _verifyError = _failureMessage(
-          'No pudimos verificar el código. Revisa el correo y vuelve a intentarlo.',
+          AppLocalizations.tr(
+            'No pudimos verificar el código. Revisa el correo y vuelve a intentarlo.',
+          ),
         );
       }
     });
@@ -192,14 +197,18 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
         return AccessLayout(
           title: widget.recovery
               ? destination == null
-                    ? 'Recupera tu acceso'
-                    : 'Verifica el código'
-              : 'Verifica tu correo',
+                    ? AppLocalizations.tr('Recupera tu acceso')
+                    : AppLocalizations.tr('Verifica el código')
+              : AppLocalizations.tr('Verifica tu correo'),
           description: destination != null
-              ? 'Escribe el código del correo. Si no lo encuentras, revisa spam.'
+              ? AppLocalizations.tr(
+                  'Escribe el código del correo. Si no lo encuentras, revisa spam.',
+                )
               : widget.recovery
-              ? 'Recibirás un código si hay una cuenta con ese correo.'
-              : 'Usa el correo con el que te registraste.',
+              ? AppLocalizations.tr(
+                  'Recibirás un código si hay una cuenta con ese correo.',
+                )
+              : AppLocalizations.tr('Usa el correo con el que te registraste.'),
           showBack: true,
           onBack: _busy ? null : _back,
           step: destination == null ? 1 : 2,
@@ -226,7 +235,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
             key: const Key('code-destination'),
             enabled: !_busy,
             controller: _email,
-            label: 'Correo',
+            label: AppLocalizations.tr('Correo'),
             hint: 'tu@correo.com',
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
@@ -243,14 +252,14 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
           PrimaryButton(
             label: cooldown > 0
                 ? 'Solicitar de nuevo en ${cooldown}s'
-                : 'Enviar código',
-            loadingLabel: 'Enviando código…',
+                : AppLocalizations.tr('Enviar código'),
+            loadingLabel: AppLocalizations.tr('Enviando código…'),
             isLoading: _pending == _CodeAction.send,
             onPressed: _busy || cooldown > 0 ? null : _send,
           ),
           TextButton(
             onPressed: _busy ? null : _enterCode,
-            child: const Text('Ya tengo un código'),
+            child: Text(AppLocalizations.tr('Ya tengo un código')),
           ),
         ],
       ),
@@ -266,7 +275,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Correo',
+            AppLocalizations.tr('Correo'),
             style: textTheme.labelLarge?.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -277,13 +286,14 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
             alignment: Alignment.centerLeft,
             child: TextButton(
               onPressed: _busy ? null : _changeEmail,
-              child: const Text('Usar otro correo'),
+              child: Text(AppLocalizations.tr('Usar otro correo')),
             ),
           ),
           if (_requestAccepted) ...[
-            const AccessFeedback(
-              message:
-                  'Si el correo corresponde a tu cuenta, recibirás el código.',
+            AccessFeedback(
+              message: AppLocalizations.tr(
+                'Si el correo corresponde a tu cuenta, recibirás el código.',
+              ),
               error: false,
             ),
             const SizedBox(height: AppSpacing.md),
@@ -292,8 +302,8 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
             key: const Key('email-code'),
             enabled: !_busy,
             controller: _code,
-            label: 'Código',
-            helperText: 'Puedes pegar el código completo.',
+            label: AppLocalizations.tr('Código'),
+            helperText: AppLocalizations.tr('Puedes pegar el código completo.'),
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             autofillHints: const [AutofillHints.oneTimeCode],
@@ -301,7 +311,9 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
             onFieldSubmitted: (_) => _verify(),
             validator: (value) => RegExp(r'^\d{6,10}$').hasMatch(value ?? '')
                 ? null
-                : 'Escribe el código del correo (6 a 10 dígitos).',
+                : AppLocalizations.tr(
+                    'Escribe el código del correo (6 a 10 dígitos).',
+                  ),
             onChanged: (_) {
               if (_verifyError == null) return;
               setState(() => _verifyError = null);
@@ -314,8 +326,8 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
           ],
           const SizedBox(height: AppSpacing.xl),
           PrimaryButton(
-            label: 'Verificar código',
-            loadingLabel: 'Verificando código…',
+            label: AppLocalizations.tr('Verificar código'),
+            loadingLabel: AppLocalizations.tr('Verificando código…'),
             isLoading: _pending == _CodeAction.verify,
             onPressed: _busy ? null : _verify,
           ),
@@ -327,10 +339,10 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
             onPressed: _busy || cooldown > 0 ? null : _send,
             child: Text(
               _pending == _CodeAction.send
-                  ? 'Reenviando código…'
+                  ? AppLocalizations.tr('Reenviando código…')
                   : cooldown > 0
                   ? 'Reenviar en ${cooldown}s'
-                  : 'Reenviar código',
+                  : AppLocalizations.tr('Reenviar código'),
             ),
           ),
         ],

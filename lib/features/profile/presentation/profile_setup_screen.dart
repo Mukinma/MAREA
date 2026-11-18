@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -86,18 +87,18 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   bool get _preferences => _type == UserType.general && _step == 1;
   bool get _last => _step == _type.setupSteps - 1;
   String get _title => _preferences
-      ? 'Tus intereses'
+      ? AppLocalizations.tr('Tus intereses')
       : _step == 0
       ? (_type == UserType.general || _type == UserType.creator
-            ? 'Tu imagen'
-            : 'Tu marca')
+            ? AppLocalizations.tr('Tu imagen')
+            : AppLocalizations.tr('Tu marca'))
       : _type == UserType.business && _step == 2
-      ? 'Dónde y cuándo'
+      ? AppLocalizations.tr('Dónde y cuándo')
       : _last
-      ? 'Tu primera ficha'
+      ? AppLocalizations.tr('Tu primera ficha')
       : _type == UserType.creator
-      ? 'Tu trabajo'
-      : 'Tu contacto';
+      ? AppLocalizations.tr('Tu trabajo')
+      : AppLocalizations.tr('Tu contacto');
   ProfileMediaRepository get _media =>
       widget.controller.mediaRepository ?? SupabaseProfileMediaRepository();
   @override
@@ -250,12 +251,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             TextButton.icon(
               onPressed: _busy ? null : _pick,
               icon: const Icon(Icons.add_a_photo_outlined),
-              label: const Text('Elegir foto'),
+              label: Text(AppLocalizations.tr('Elegir foto')),
             ),
             if (_photo != null)
               TextButton(
                 onPressed: _busy ? null : () => setState(() => _photo = null),
-                child: const Text('Descartar foto'),
+                child: Text(AppLocalizations.tr('Descartar foto')),
               ),
           ],
         ),
@@ -304,7 +305,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         CheckboxListTile(
           contentPadding: EdgeInsets.zero,
           controlAffinity: ListTileControlAffinity.leading,
-          title: const Text('Disponible para colaborar'),
+          title: Text(AppLocalizations.tr('Disponible para colaborar')),
           value: _collaboration,
           onChanged: _busy
               ? null
@@ -320,12 +321,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         radius: 16,
         child: ListTile(
           leading: const Icon(Icons.location_on_outlined),
-          title: const Text('Ubicación'),
+          title: Text(AppLocalizations.tr('Ubicación')),
           subtitle: Text(_location ?? 'Opcional'),
           trailing: _location == null
               ? const Icon(Icons.chevron_right)
               : IconButton(
-                  tooltip: 'Quitar ubicación',
+                  tooltip: AppLocalizations.tr('Quitar ubicación'),
                   onPressed: _busy
                       ? null
                       : () => setState(() {
@@ -361,8 +362,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       const SizedBox(height: 20),
       const Text('Horarios', style: TextStyle(fontWeight: FontWeight.w800)),
       const SizedBox(height: 4),
-      const Text(
-        'Hora local · vacío para omitir',
+      Text(
+        AppLocalizations.tr('Hora local · vacío para omitir'),
         style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
       ),
       const SizedBox(height: 16),
@@ -372,7 +373,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           child: MareaTextField(
             controller: _hours[day.key]!,
             label: day.value,
-            hint: '09:00-18:00 o cerrado',
+            hint: AppLocalizations.tr('09:00-18:00 o cerrado'),
             enabled: !_busy,
             validator: (v) =>
                 v == null ||
@@ -398,7 +399,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         }),
       ),
       const SizedBox(height: 24),
-      const Text('¿Qué buscas?', style: TextStyle(fontWeight: FontWeight.w800)),
+      Text(
+        AppLocalizations.tr('¿Qué buscas?'),
+        style: TextStyle(fontWeight: FontWeight.w800),
+      ),
       const SizedBox(height: 12),
       _goalChoices(),
     ],
@@ -430,14 +434,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   Widget _goalsPage() => PopScope(
     canPop: !_busy,
     child: ProfilePage(
-      title: 'Objetivos',
+      title: AppLocalizations.tr('Objetivos'),
       fallback: '/settings',
       onBack: _busy ? () {} : null,
       busy: _busy,
       body: SingleChildScrollView(
         child: ProfilePageFrame(
           child: ProfileFormSection(
-            title: '¿Qué buscas en MAREA?',
+            title: AppLocalizations.tr('¿Qué buscas en MAREA?'),
             children: [
               _goalChoices(),
               SessionFeedback(controller: widget.controller),
@@ -447,7 +451,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       ),
       action: PrimaryButton(
         key: const Key('setup-save'),
-        label: 'Guardar cambios',
+        label: AppLocalizations.tr('Guardar cambios'),
         isLoading: _saving,
         onPressed: _busy ? null : _saveGoals,
       ),
@@ -460,10 +464,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         ? 'product'
         : 'service';
     final title = _type == UserType.creator
-        ? 'Crear mi primera obra'
+        ? AppLocalizations.tr('Crear mi primera obra')
         : _type == UserType.entrepreneur
-        ? 'Crear mi primera ficha'
-        : 'Crear mi primer servicio';
+        ? AppLocalizations.tr('Crear mi primera ficha')
+        : AppLocalizations.tr('Crear mi primer servicio');
     return Column(
       children: [
         ProfileTypeIcon(type: _type),
@@ -499,7 +503,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               Row(
                 children: [
                   IconButton(
-                    tooltip: 'Atrás',
+                    tooltip: AppLocalizations.tr('Atrás'),
                     onPressed: _busy
                         ? null
                         : () {
@@ -559,14 +563,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 24),
               PrimaryButton(
                 key: const Key('setup-save'),
-                label: _last ? 'Terminar' : 'Guardar y continuar',
+                label: _last
+                    ? 'Terminar'
+                    : AppLocalizations.tr('Guardar y continuar'),
                 isLoading: _busy,
                 onPressed: _busy ? null : _save,
               ),
               TextButton(
                 key: const Key('setup-skip'),
                 onPressed: _busy ? null : () => context.go('/profile'),
-                child: const Text('Ahora no'),
+                child: Text(AppLocalizations.tr('Ahora no')),
               ),
             ],
           ),

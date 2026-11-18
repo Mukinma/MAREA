@@ -57,6 +57,19 @@ try {
   await rpc('set_chat_block', cora, true);
   await db.exec('reset role');
   await db.exec(await readFile(new URL('20261118000003_chat_privacy.sql', migrations), 'utf8'));
+  // Hosted installations can retain the older check and actorless chat rows.
+  await db.exec(`
+    alter table public.notifications drop constraint notifications_one_target;
+    update public.notifications set actor_id=null where kind='marea_message';
+    alter table public.notifications add constraint notifications_one_target check (
+      (kind='marea_message' and actor_id is null and num_nonnulls(post_id,mission_id)=0)
+      or (kind<>'marea_message' and actor_id is not null and num_nonnulls(post_id,mission_id)=1)
+    );
+  `);
+  await login(cora);
+  await assert.rejects(rpc('request_chat', beto), /notifications_one_target/);
+  await db.exec('reset role');
+  await db.exec(await readFile(new URL('20261118092135_chat_notification_actor_compatibility.sql', migrations), 'utf8'));
   await login(ana);
   assert.deepEqual(await rpc('get_chat_privacy'), {
     request_audience: 'everyone',
@@ -75,7 +88,15 @@ try {
   await rpc('accept_chat', existing);
   await login(ana);
   assert.equal(await rpc('request_chat', beto), existing);
+  await db.exec('reset role; drop function public.chat_censor_message(text)');
+  await login(ana);
+  await assert.rejects(rpc('send_chat_message', existing, 'Hola'), /chat_censor_message/);
+  await db.exec('reset role');
+  await db.exec(await readFile(new URL('20261118092528_restore_chat_censor_helper.sql', migrations), 'utf8'));
+  await login(ana);
   assert.ok(await rpc('send_chat_message', existing, 'Hola'));
+  const censored = await rpc('send_chat_message', existing, 'eres idiota');
+  assert.equal(await scalar('select body from public.chat_messages where id=$1', [censored]), '#### ######');
 
   await login(cora);
   await assert.rejects(rpc('request_chat', beto), /chat_request_not_allowed/);
@@ -108,6 +129,16 @@ try {
   await rpc('set_chat_block', cora, false);
   await rpc('accept_chat', pending);
   assert.deepEqual((await rpc('get_chat_privacy')).blocked_accounts.map((row) => row.id), [ana]);
+
+  await login(ana);
+  await rpc('set_chat_block', cora, false);
+  await login(cora);
+  const rejected = await rpc('request_chat', ana);
+  await login(ana);
+  await rpc('reject_chat', rejected);
+  await db.exec('reset role');
+  assert.equal(await scalar('select actor_id from public.notifications where event_key=$1', ['chat_rejected:' + rejected]), ana);
+  assert.equal(await scalar('select actor_id from public.notifications where event_key=$1', ['chat_request:' + existing]), null);
 
   await db.exec('reset role; set role anon');
   await assert.rejects(rpc('get_chat_privacy'), /permission denied/);

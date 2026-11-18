@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -25,9 +26,11 @@ class SupportSettingsScreen extends StatelessWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('No pudimos abrir tu app de correo.'),
+        content: Text(
+          AppLocalizations.tr('No pudimos abrir tu app de correo.'),
+        ),
         action: SnackBarAction(
-          label: 'Copiar correo',
+          label: AppLocalizations.tr('Copiar correo'),
           onPressed: () => Clipboard.setData(ClipboardData(text: email)),
         ),
       ),
@@ -40,7 +43,7 @@ class SupportSettingsScreen extends StatelessWidget {
     builder: (context, _) {
       final email = controller.legalPolicy.supportEmail?.trim() ?? '';
       return ProfilePage(
-        title: 'Ayuda y reportes',
+        title: AppLocalizations.tr('Ayuda y reportes'),
         fallback: '/settings',
         body: SingleChildScrollView(
           child: ProfilePageFrame(
@@ -48,16 +51,18 @@ class SupportSettingsScreen extends StatelessWidget {
               children: [
                 ProfileMenuRow(
                   icon: Icons.mail_outline_rounded,
-                  title: 'Contactar a soporte',
+                  title: AppLocalizations.tr('Contactar a soporte'),
                   subtitle: email.isEmpty
-                      ? 'Correo de soporte no disponible'
+                      ? AppLocalizations.tr('Correo de soporte no disponible')
                       : email,
                   onTap: email.isEmpty ? null : () => _contact(context, email),
                 ),
                 ProfileMenuRow(
                   icon: Icons.flag_outlined,
-                  title: 'Mis reportes',
-                  subtitle: 'Consulta los reportes que enviaste',
+                  title: AppLocalizations.tr('Mis reportes'),
+                  subtitle: AppLocalizations.tr(
+                    'Consulta los reportes que enviaste',
+                  ),
                   onTap: () => context.push('/settings/support/reports'),
                 ),
               ],
@@ -94,7 +99,7 @@ class _UserReportsScreenState extends State<UserReportsScreen> {
     if (_busy) return;
     final repository = widget.controller.communityRepository;
     if (repository is! CommunityReportsRepository) {
-      _error = 'Los reportes no están disponibles.';
+      _error = AppLocalizations.tr('Los reportes no están disponibles.');
       return;
     }
     setState(() {
@@ -120,7 +125,7 @@ class _UserReportsScreenState extends State<UserReportsScreen> {
 
   @override
   Widget build(BuildContext context) => ProfilePage(
-    title: 'Mis reportes',
+    title: AppLocalizations.tr('Mis reportes'),
     fallback: '/settings/support',
     busy: _busy,
     body: MareaRefreshIndicator(
@@ -138,22 +143,26 @@ class _UserReportsScreenState extends State<UserReportsScreen> {
                     for (final receipt in _receipts)
                       ProfileMenuRow(
                         icon: Icons.flag_outlined,
-                        title: receipt.target.label,
+                        title: AppLocalizations.tr(receipt.target.label),
                         subtitle: [
                           MaterialLocalizations.of(
                             context,
                           ).formatMediumDate(receipt.createdAt.toLocal()),
-                          receipt.reviewed ? 'Revisado' : 'Recibido',
+                          receipt.reviewed
+                              ? 'Revisado'
+                              : AppLocalizations.tr('Recibido'),
                           if (receipt.targetUnavailable)
-                            'Contenido no disponible',
+                            AppLocalizations.tr('Contenido no disponible'),
                         ].join(' · '),
                         onTap: null,
                       ),
                   ],
                 ),
               if (_receipts.isEmpty && !_busy && _error == null)
-                const ProfileFormSection(
-                  children: [Text('Aún no has enviado reportes.')],
+                ProfileFormSection(
+                  children: [
+                    Text(AppLocalizations.tr('Aún no has enviado reportes.')),
+                  ],
                 ),
               if (_error case final error?)
                 ProfileFormSection(
@@ -167,14 +176,14 @@ class _UserReportsScreenState extends State<UserReportsScreen> {
                     ),
                     OutlinedButton(
                       onPressed: () => _load(reset: _receipts.isEmpty),
-                      child: const Text('Reintentar'),
+                      child: Text(AppLocalizations.tr('Reintentar')),
                     ),
                   ],
                 ),
               if (_more && _error == null)
                 OutlinedButton(
                   onPressed: _busy ? null : () => _load(reset: false),
-                  child: const Text('Cargar más reportes'),
+                  child: Text(AppLocalizations.tr('Cargar más reportes')),
                 ),
             ],
           ),

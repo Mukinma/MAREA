@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/errors/app_failure.dart';
@@ -83,7 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (_type == null) {
         showAccessAlert(
           _messengerKey.currentState!,
-          'Elige un tipo de perfil para continuar.',
+          AppLocalizations.tr('Elige un tipo de perfil para continuar.'),
         );
         return;
       }
@@ -106,12 +107,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (available) {
         _showStep(2);
       } else {
-        _setUsernameError('Este usuario ya está ocupado.');
+        _setUsernameError(AppLocalizations.tr('Este usuario ya está ocupado.'));
       }
     } catch (_) {
       if (mounted) {
         _setUsernameError(
-          'No pudimos comprobar el usuario. Intenta de nuevo.',
+          AppLocalizations.tr(
+            'No pudimos comprobar el usuario. Intenta de nuevo.',
+          ),
           retry: true,
         );
       }
@@ -208,11 +211,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
             onBack: _busy ? null : _back,
             step: _step + 1,
             totalSteps: 3,
-            title: const ['Tipo de perfil', 'Tu perfil', 'Tu acceso'][_step],
-            description: const [
-              'Elige cómo quieres participar. Tu tipo de perfil quedará fijo al crear la cuenta.',
-              'Así te verán y podrán encontrarte en Marea.',
-              'Usarás este correo para verificar tu cuenta e iniciar sesión.',
+            title: [
+              AppLocalizations.tr('Tipo de perfil'),
+              AppLocalizations.tr('Tu perfil'),
+              AppLocalizations.tr('Tu acceso'),
+            ][_step],
+            description: [
+              AppLocalizations.tr(
+                'Elige cómo quieres participar. Tu tipo de perfil quedará fijo al crear la cuenta.',
+              ),
+              AppLocalizations.tr(
+                'Así te verán y podrán encontrarte en Marea.',
+              ),
+              AppLocalizations.tr(
+                'Usarás este correo para verificar tu cuenta e iniciar sesión.',
+              ),
             ][_step],
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -232,12 +245,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 24),
                 PrimaryButton(
                   key: const Key('register-continue'),
-                  label: _step == 2 ? 'Crear cuenta' : 'Continuar',
+                  label: _step == 2
+                      ? AppLocalizations.tr('Crear cuenta')
+                      : AppLocalizations.tr('Continuar'),
                   isLoading: _checking || widget.controller.isBusy,
                   loadingLabel: _checking
-                      ? 'Comprobando usuario…'
+                      ? AppLocalizations.tr('Comprobando usuario…')
                       : _step == 2
-                      ? 'Creando cuenta…'
+                      ? AppLocalizations.tr('Creando cuenta…')
                       : null,
                   onPressed: canContinue
                       ? (_step == 2 ? _submit : _next)
@@ -248,12 +263,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     alignment: WrapAlignment.center,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      const Text('¿Ya tienes cuenta?'),
+                      Text(AppLocalizations.tr('¿Ya tienes cuenta?')),
                       TextButton(
                         onPressed: _busy
                             ? null
                             : () => _navigateToAccess('/login'),
-                        child: const Text('Iniciar sesión'),
+                        child: Text(AppLocalizations.tr('Iniciar sesión')),
                       ),
                     ],
                   ),
@@ -276,7 +291,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           AccessTextField(
             key: const Key('register-name'),
             controller: _name,
-            label: _type!.nameLabel,
+            label: AppLocalizations.tr(_type!.nameLabel),
             enabled: !_busy,
             autofillHints: const [AutofillHints.name],
             textInputAction: TextInputAction.next,
@@ -287,8 +302,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             controller: _username,
             label: 'Usuario',
             prefixText: '@',
-            helperText:
-                '3 a 24 caracteres. Puedes usar letras, números, punto y guion bajo.',
+            helperText: AppLocalizations.tr(
+              '3 a 24 caracteres. Puedes usar letras, números, punto y guion bajo.',
+            ),
             enabled: !_busy,
             autofillHints: const [AutofillHints.username],
             textInputAction: TextInputAction.done,
@@ -323,7 +339,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               AccessTextField(
                 key: const Key('register-email'),
                 controller: _email,
-                label: 'Correo',
+                label: AppLocalizations.tr('Correo'),
                 enabled: !_busy,
                 keyboardType: TextInputType.emailAddress,
                 autofillHints: const [AutofillHints.email],
@@ -343,13 +359,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onPressed: _busy
                           ? null
                           : () => _navigateToAccess('/login'),
-                      child: const Text('Iniciar sesión'),
+                      child: Text(AppLocalizations.tr('Iniciar sesión')),
                     ),
                     TextButton(
                       onPressed: _busy
                           ? null
                           : () => _navigateToAccess('/recover-password'),
-                      child: const Text('Recuperar contraseña'),
+                      child: Text(AppLocalizations.tr('Recuperar contraseña')),
                     ),
                   ],
                 ),
@@ -358,8 +374,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           AccessTextField(
             key: const Key('register-password'),
             controller: _password,
-            label: 'Contraseña',
-            helperText: 'Usa al menos 8 caracteres.',
+            label: AppLocalizations.tr('Contraseña'),
+            helperText: AppLocalizations.tr('Usa al menos 8 caracteres.'),
             enabled: !_busy,
             obscureText: _obscure,
             autofillHints: const [AutofillHints.newPassword],
@@ -372,7 +388,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             },
             onFieldSubmitted: (_) => _submit(),
             suffixIcon: IconButton(
-              tooltip: _obscure ? 'Mostrar contraseña' : 'Ocultar contraseña',
+              tooltip: _obscure
+                  ? AppLocalizations.tr('Mostrar contraseña')
+                  : AppLocalizations.tr('Ocultar contraseña'),
               onPressed: _busy
                   ? null
                   : () => setState(() => _obscure = !_obscure),
@@ -386,11 +404,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
           if (!canRegister)
             AccessFeedback(
               message: _consent.hasDocuments
-                  ? 'El registro está pausado. Intenta más tarde.'
-                  : 'No pudimos cargar los documentos de Marea.',
+                  ? AppLocalizations.tr(
+                      'El registro está pausado. Intenta más tarde.',
+                    )
+                  : AppLocalizations.tr(
+                      'No pudimos cargar los documentos de Marea.',
+                    ),
               action: TextButton(
                 onPressed: _busy ? null : _reloadLegal,
-                child: Text(_reloadingLegal ? 'Cargando…' : 'Reintentar'),
+                child: Text(
+                  _reloadingLegal
+                      ? AppLocalizations.tr('Cargando…')
+                      : AppLocalizations.tr('Reintentar'),
+                ),
               ),
             ),
           Material(
@@ -437,7 +463,7 @@ class _ProfileSummary extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            type.label,
+            AppLocalizations.tr(type.label),
             style: const TextStyle(
               color: AppColors.brandNavy,
               fontWeight: FontWeight.w800,
@@ -459,7 +485,7 @@ class _ProfileSummary extends StatelessWidget {
               builder: (context, constraints) {
                 final change = TextButton(
                   onPressed: changeEnabled ? onChange : null,
-                  child: const Text('Cambiar'),
+                  child: Text(AppLocalizations.tr('Cambiar')),
                 );
                 final compact =
                     constraints.maxWidth < 252 ||

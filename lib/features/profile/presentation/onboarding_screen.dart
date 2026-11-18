@@ -70,9 +70,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: widget.controller,
     builder: (context, _) => AccessLayout(
-      title: 'Elige tu perfil',
-      description:
-          'Elige cómo quieres participar en Marea. El tipo de perfil queda fijo al confirmar.',
+      title: AppLocalizations.tr('Elige tu perfil'),
+      description: AppLocalizations.tr(
+        'Elige cómo quieres participar en Marea. El tipo de perfil queda fijo al confirmar.',
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -87,8 +88,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ],
           const SizedBox(height: 24),
           PrimaryButton(
-            label: 'Confirmar y entrar',
-            loadingLabel: 'Confirmando perfil…',
+            label: AppLocalizations.tr('Confirmar y entrar'),
+            loadingLabel: AppLocalizations.tr('Confirmando perfil…'),
             isLoading: widget.controller.isBusy,
             onPressed: _type == null || widget.controller.isBusy
                 ? null

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/profile/presentation/profile_waves.dart';
 import 'package:marea/features/profile/presentation/wave_color_editor.dart';
 import 'package:marea/features/profile/presentation/cover_photo_editor.dart';
@@ -167,9 +168,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           scrollable: true,
           backgroundColor: AppColors.surface,
           surfaceTintColor: Colors.transparent,
-          title: const Text('¿Descartar tus cambios?'),
-          content: const Text(
-            'Si sales ahora, perderás los cambios de esta edición.',
+          title: Text(AppLocalizations.tr('¿Descartar tus cambios?')),
+          content: Text(
+            AppLocalizations.tr(
+              'Si sales ahora, perderás los cambios de esta edición.',
+            ),
           ),
           actions: [
             TextButton(
@@ -178,7 +181,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Seguir editando'),
+              child: Text(AppLocalizations.tr('Seguir editando')),
             ),
           ],
         ),
@@ -202,24 +205,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context: context,
       isScrollControlled: true,
       builder: (ctx) => ProfileSheetContent(
-        title: 'Cambiar foto de portada',
+        title: AppLocalizations.tr('Cambiar foto de portada'),
         children: [
           ProfileMenuSection(
             children: [
               ProfileMenuRow(
                 icon: Icons.photo_library_outlined,
-                title: 'Galería',
+                title: AppLocalizations.tr('Galería'),
                 onTap: () => Navigator.pop(ctx, _CoverChoice.gallery),
               ),
               ProfileMenuRow(
                 icon: Icons.landscape_outlined,
-                title: 'Estilos de MAREA',
+                title: AppLocalizations.tr('Estilos de MAREA'),
                 onTap: () => Navigator.pop(ctx, _CoverChoice.styles),
               ),
               if (_coverPath != null || _coverBytes != null)
                 ProfileMenuRow(
                   icon: Icons.delete_outline_rounded,
-                  title: 'Quitar portada',
+                  title: AppLocalizations.tr('Quitar portada'),
                   destructive: true,
                   chevron: false,
                   onTap: () => Navigator.pop(ctx, _CoverChoice.remove),
@@ -228,7 +231,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.tr('Cancelar')),
           ),
         ],
       ),
@@ -283,7 +286,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         setState(
           () => _error = e is AppFailure
               ? e.message
-              : 'No pudimos abrir tus fotos. Inténtalo nuevamente.',
+              : AppLocalizations.tr(
+                  'No pudimos abrir tus fotos. Inténtalo nuevamente.',
+                ),
         );
         _revealFeedback();
       }
@@ -363,7 +368,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         setState(
           () => _error = e is AppFailure
               ? e.message
-              : 'No pudimos guardar las imágenes. Tus cambios siguen aquí para reintentar.',
+              : AppLocalizations.tr(
+                  'No pudimos guardar las imágenes. Tus cambios siguen aquí para reintentar.',
+                ),
         );
         _revealFeedback();
       }
@@ -455,7 +462,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             key: const Key('edit-avatar-action'),
             onPressed: _busy ? null : () => _pick(true),
             icon: const Icon(Icons.photo_camera_outlined, size: 19),
-            label: const Text('Cambiar foto de perfil'),
+            label: Text(AppLocalizations.tr('Cambiar foto de perfil')),
           ),
           if (_avatarPath != null || _avatarBytes != null)
             TextButton(
@@ -465,7 +472,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _avatarPath = null;
                       _avatarBytes = null;
                     }),
-              child: const Text('Quitar foto'),
+              child: Text(AppLocalizations.tr('Quitar foto')),
             ),
         ],
       ),
@@ -474,14 +481,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ProfileMenuRow(
             key: const Key('edit-cover-action'),
             icon: Icons.add_photo_alternate_outlined,
-            title: 'Cambiar foto de portada',
-            subtitle: 'Galería o estilos de MAREA',
+            title: AppLocalizations.tr('Cambiar foto de portada'),
+            subtitle: AppLocalizations.tr('Galería o estilos de MAREA'),
             onTap: _busy ? null : _chooseCoverPhoto,
           ),
           ProfileMenuRow(
             icon: Icons.waves_rounded,
-            title: 'Personalizar olitas',
-            subtitle: 'Colores de tu portada',
+            title: AppLocalizations.tr('Personalizar olitas'),
+            subtitle: AppLocalizations.tr('Colores de tu portada'),
             onTap: _busy ? null : _customizeWaves,
           ),
         ],
@@ -504,9 +511,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, update) => ProfileSheetContent(
-          title: 'Me mueve',
+          title: AppLocalizations.tr('Me mueve'),
           children: [
-            const Text('Elige los intereses que quieres mostrar en tu perfil.'),
+            Text(
+              AppLocalizations.tr(
+                'Elige los intereses que quieres mostrar en tu perfil.',
+              ),
+            ),
             PreferenceChips(
               catalog: ProfilePreferences.interests,
               selected: selected,
@@ -514,11 +525,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, selected),
-              child: const Text('Listo'),
+              child: Text(AppLocalizations.tr('Listo')),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancelar'),
+              child: Text(AppLocalizations.tr('Cancelar')),
             ),
           ],
         ),
@@ -554,7 +565,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context: context,
       isScrollControlled: true,
       builder: (ctx) => ProfileSheetContent(
-        title: 'Estilos de MAREA',
+        title: AppLocalizations.tr('Estilos de MAREA'),
         children: [
           ProfileMenuSection(
             children: [
@@ -587,7 +598,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.tr('Cancelar')),
           ),
         ],
       ),
@@ -622,10 +633,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _interestsSection() => ProfileFormSection(
-    title: 'Me mueve',
+    title: AppLocalizations.tr('Me mueve'),
     children: [
       if (_interests.isEmpty)
-        const Text('Elige los intereses que quieres mostrar en tu perfil.')
+        Text(
+          AppLocalizations.tr(
+            'Elige los intereses que quieres mostrar en tu perfil.',
+          ),
+        )
       else
         Wrap(
           spacing: AppSpacing.xs,
@@ -639,7 +654,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: TextButton.icon(
           onPressed: _busy ? null : _editInterests,
           icon: const Icon(Icons.edit_outlined, size: 19),
-          label: const Text('Editar intereses'),
+          label: Text(AppLocalizations.tr('Editar intereses')),
         ),
       ),
     ],
@@ -664,19 +679,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _mediaEditor(),
       ProfileFormSection(
         key: const Key('edit-identity'),
-        title: 'Tu información pública',
+        title: AppLocalizations.tr('Tu información pública'),
         children: [
           MareaTextField(
             key: const ValueKey('edit-field-Nombre completo'),
             controller: _name,
-            label: 'Nombre completo',
+            label: AppLocalizations.tr('Nombre completo'),
             textInputAction: TextInputAction.next,
             validator: FormValidators.fullName,
           ),
           MareaTextField(
             key: const ValueKey('edit-field-Nombre de usuario'),
             controller: _username,
-            label: 'Nombre de usuario',
+            label: AppLocalizations.tr('Nombre de usuario'),
             prefixText: '@',
             textInputAction: TextInputAction.next,
             validator: FormValidators.username,
@@ -684,8 +699,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           MareaTextField(
             key: const ValueKey('edit-field-Sobre mí'),
             controller: _bio,
-            label: 'Sobre mí',
-            hint: '¿Qué haces y qué te mueve?',
+            label: AppLocalizations.tr('Sobre mí'),
+            hint: AppLocalizations.tr('¿Qué haces y qué te mueve?'),
             maxLength: 160,
             maxLines: 3,
             validator: FormValidators.bio,
@@ -693,7 +708,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           MareaTextField(
             key: const ValueKey('edit-field-Sitio web'),
             controller: _website,
-            label: 'Sitio web',
+            label: AppLocalizations.tr('Sitio web'),
             hint: 'https://tusitio.com',
             keyboardType: TextInputType.url,
             validator: ProfilePreferences.websiteError,
@@ -702,15 +717,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               ProfileMenuRow(
                 icon: Icons.badge_outlined,
-                title: 'Tipo de perfil',
+                title: AppLocalizations.tr('Tipo de perfil'),
                 subtitle: _profile.userType.databaseValue,
                 onTap: null,
               ),
               if (_profile.userType != UserType.business)
                 ProfileMenuRow(
                   icon: Icons.location_on_outlined,
-                  title: 'Ubicación',
-                  subtitle: _location ?? 'Añadir ubicación',
+                  title: AppLocalizations.tr('Ubicación'),
+                  subtitle:
+                      _location ?? AppLocalizations.tr('Añadir ubicación'),
                   onTap: _busy ? null : _chooseLocation,
                 ),
             ],
@@ -723,20 +739,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _professionalFields() => ProfileFormSection(
     key: const Key('edit-professional'),
-    title: 'Información profesional',
+    title: AppLocalizations.tr('Información profesional'),
     children: [
       MareaTextField(
         key: const ValueKey('edit-field-Enlace de contacto'),
         controller: _contact,
-        label: 'Enlace de contacto',
-        hint: 'https://wa.me/... o tu página de contacto',
+        label: AppLocalizations.tr('Enlace de contacto'),
+        hint: AppLocalizations.tr('https://wa.me/... o tu página de contacto'),
         keyboardType: TextInputType.url,
         validator: ProfilePreferences.websiteError,
       ),
       if (_profile.userType == UserType.creator)
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text('Disponible para colaborar'),
+          title: Text(AppLocalizations.tr('Disponible para colaborar')),
           value: _collaboration,
           onChanged: _busy
               ? null
@@ -745,8 +761,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (_profile.userType == UserType.business) ...[
         ProfileMenuRow(
           icon: Icons.location_on_outlined,
-          title: 'Ubicación del negocio',
-          subtitle: _location ?? 'Añadir ubicación',
+          title: AppLocalizations.tr('Ubicación del negocio'),
+          subtitle: _location ?? AppLocalizations.tr('Añadir ubicación'),
           onTap: _busy ? null : _chooseLocation,
         ),
         if (_location != null)
@@ -760,19 +776,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _coordinates = null;
                     }),
               icon: const Icon(Icons.close_rounded),
-              label: const Text('Quitar ubicación'),
+              label: Text(AppLocalizations.tr('Quitar ubicación')),
             ),
           ),
-        const Text('Horarios semanales · hora local del negocio'),
-        const Text(
-          'Usa 09:00-18:00. Escribe «cerrado» para un día sin atención o déjalo vacío para ocultarlo.',
+        Text(
+          AppLocalizations.tr('Horarios semanales · hora local del negocio'),
+        ),
+        Text(
+          AppLocalizations.tr(
+            'Usa 09:00-18:00. Escribe «cerrado» para un día sin atención o déjalo vacío para ocultarlo.',
+          ),
         ),
         for (final day in ProfilePreferences.weekdays.entries)
           MareaTextField(
             key: ValueKey('edit-field-${day.value}'),
             controller: _hours[day.key]!,
             label: day.value,
-            hint: '09:00-18:00 o cerrado',
+            hint: AppLocalizations.tr('09:00-18:00 o cerrado'),
             validator: (value) => ProfilePreferences.hoursError({
               day.key: value?.trim().isEmpty ?? true
                   ? null
@@ -812,9 +832,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         if (_profile.userType != UserType.general)
           MareaTabs(
-            options: const {
-              'identity': 'Identidad',
-              'professional': 'Profesional',
+            options: {
+              'identity': AppLocalizations.tr('Identidad'),
+              'professional': AppLocalizations.tr('Profesional'),
             },
             value: _section,
             onChanged: (value) {
@@ -840,11 +860,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations.of(context);
     if (_original == null) {
-      return const ProfilePage(
-        title: 'Editar perfil',
+      return ProfilePage(
+        title: AppLocalizations.tr('Editar perfil'),
         body: ProfilePageFrame(
-          child: Text('No pudimos cargar tu perfil. Regresa para reintentar.'),
+          child: Text(
+            AppLocalizations.tr(
+              'No pudimos cargar tu perfil. Regresa para reintentar.',
+            ),
+          ),
         ),
       );
     }
@@ -856,7 +881,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           if (!didPop) _leave();
         },
         child: ProfilePage(
-          title: 'Editar perfil',
+          title: AppLocalizations.tr('Editar perfil'),
           onBack: _leave,
           body: AbsorbPointer(
             absorbing: _busy,
@@ -869,7 +894,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             onPressed: _dirty && !_busy ? _save : null,
             icon: const Icon(Icons.check_rounded, size: 20),
             label: Text(
-              _busy ? 'Guardando…' : 'Guardar cambios',
+              _busy
+                  ? AppLocalizations.tr('Guardando…')
+                  : AppLocalizations.tr('Guardar cambios'),
               textAlign: TextAlign.center,
             ),
           ),

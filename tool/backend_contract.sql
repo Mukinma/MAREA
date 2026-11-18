@@ -93,6 +93,7 @@ select
     from unnest(array['public.require_app_session()','public.get_chat_privacy()',
       'public.set_chat_request_audience(text)','public.set_notification_category(text,boolean)',
       'public.report_profile(uuid,text)','public.mark_report_reviewed(uuid,boolean)']) signature)
+    and to_regprocedure('public.chat_censor_message(text)') is not null
     and (select count(*)=3 from pg_class where oid=any(array[
       to_regclass('public.chat_request_preferences'),to_regclass('public.profile_reports'),
       to_regclass('public.report_receipts')]) and relrowsecurity)
@@ -100,5 +101,9 @@ select
       and entry='pgrst.db_pre_request=marea_access.enforce_app_session')
     and exists(select 1 from pg_policies where schemaname='storage' and tablename='objects'
       and policyname='App sessions protect private media' and permissive='RESTRICTIVE')
+    and exists(select 1 from pg_constraint where conrelid='public.notifications'::regclass
+      and conname='notifications_one_target'
+      and pg_get_constraintdef(oid) like '%chat_request%'
+      and pg_get_constraintdef(oid) like '%chat_rejected%')
     and exists(select 1 from information_schema.columns where table_schema='public'
       and table_name='notification_devices' and column_name='session_id') as settings_contract_ready;
