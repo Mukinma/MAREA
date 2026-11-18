@@ -16,6 +16,7 @@ import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/features/community/presentation/mission_application_screen.dart';
 import 'package:marea/features/community/presentation/mission_management_screen.dart';
 import 'package:marea/features/community/presentation/post_detail_screen.dart';
+import 'package:marea/features/community/presentation/post_search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/features/profile/presentation/profile_setup_screen.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
@@ -468,17 +469,24 @@ abstract final class AppRouter {
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
+          path: '/search/posts',
+          builder: (_, state) => PostSearchScreen(
+            key: ValueKey((controller.profile?.id, state.uri)),
+            controller: controller,
+            initialCategory: _routeCategory(state.uri),
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
           path: '/posts/:id',
-          builder: withCreate(
-            (_, state) => PostDetailScreen(
-              key: ValueKey(state.uri.toString()),
-              controller: controller,
-              postId: state.pathParameters['id']!,
-              panel: state.uri.queryParameters['panel'],
-              commentId: state.uri.queryParameters['comment'],
-              interestId: state.uri.queryParameters['interest'],
-              notificationId: state.uri.queryParameters['notification'],
-            ),
+          builder: (_, state) => PostDetailScreen(
+            key: ValueKey((controller.profile?.id, state.uri)),
+            controller: controller,
+            postId: state.pathParameters['id']!,
+            panel: state.uri.queryParameters['panel'],
+            commentId: state.uri.queryParameters['comment'],
+            interestId: state.uri.queryParameters['interest'],
+            notificationId: state.uri.queryParameters['notification'],
           ),
         ),
         GoRoute(
@@ -775,7 +783,7 @@ class AppRouteGuard {
         uri.hasScheme ||
         uri.hasAuthority ||
         !RegExp(
-          r'^/(discover|settings(?:/(?:personal|notifications|privacy|security|support(?:/reports)?))?|profile/edit|tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|ar-markers(?:/new|/[A-Za-z0-9_-]+/(?:edit|scan))?|nearby-alerts|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
+          r'^/(discover|settings(?:/(?:personal|notifications|privacy|security|support(?:/reports)?))?|profile/edit|tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|ar-markers(?:/new|/[A-Za-z0-9_-]+/(?:edit|scan))?|nearby-alerts|search/posts|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
         ).hasMatch(uri.path)) {
       return null;
     }

@@ -456,6 +456,21 @@ class AppLocalizations {
         'We could not take the photo. Please try again.',
     'No pudimos abrir esa foto. Inténtalo nuevamente.':
         'We could not open that photo. Please try again.',
+    'Buscar publicaciones': 'Search posts',
+    'Título o texto': 'Title or text',
+    'Borrar búsqueda': 'Clear search',
+    'Explora por categoría': 'Browse by category',
+    'Escribe al menos dos caracteres.': 'Enter at least two characters.',
+    'No se pudo completar la búsqueda.': 'Could not complete the search.',
+    'No encontramos publicaciones. Prueba otras palabras o cambia de categoría.':
+        'No posts found. Try different words or change the category.',
+    'Leer publicación': 'Read post',
+    'Abrir publicación': 'Open post',
+    'Ampliar foto': 'View full photo',
+    'Acercar': 'Zoom in',
+    'Restablecer zoom': 'Reset zoom',
+    'Escribir comentario': 'Write a comment',
+    'Ver publicaciones de {category}': 'See posts in {category}',
     'Traducir publicación': 'Translate post',
     'Ver original': 'Show original',
     'No pudimos identificar el idioma de esta publicación.':

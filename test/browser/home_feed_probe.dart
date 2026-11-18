@@ -61,6 +61,13 @@ void main() async {
       HomeFeedEntry.post(
         homePost(id: 'text-only', title: 'Ideas que conectan a nuestra ciudad'),
       ),
+      HomeFeedEntry.post(
+        homePost(
+          id: 'wide-photo',
+          title: 'Un lugar para reunirnos',
+          imagePath: 'brava.webp',
+        ),
+      ),
     ];
   final stories = StoriesFake()
     ..values.addAll([
@@ -84,7 +91,9 @@ void main() async {
     profileRepository: FakeProfileRepository(),
     homeFeedRepository: feed,
     storiesRepository: stories,
-    communityRepository: _Community(),
+    communityRepository: _Community(
+      feed.entries.map((entry) => entry.post).nonNulls.toList(),
+    ),
     socialRepository: _Social(),
     missionSocialRepository: _MissionSocial(),
     mediaRepository: _Media(),
@@ -150,7 +159,40 @@ String _fixtureImage(String path) {
 }
 
 class _Community extends HomeCommunityFake {
+  _Community(this.entries);
+
+  final List<CommunityPost> entries;
   final _savedPosts = <String>{};
+
+  @override
+  Future<CommunityPost?> post(String id) async =>
+      entries.where((post) => post.id == id).firstOrNull;
+
+  @override
+  Future<List<CommunityPost>> posts({
+    String? authorId,
+    String query = '',
+    String? category,
+    bool savedOnly = false,
+    bool discoverOnly = false,
+    bool visibleOnly = false,
+    int offset = 0,
+  }) async {
+    final term = query.toLowerCase();
+    return entries
+        .where(
+          (post) =>
+              (authorId == null || post.authorId == authorId) &&
+              (category == null || post.category == category) &&
+              (!savedOnly || _savedPosts.contains(post.id)) &&
+              (!(discoverOnly || visibleOnly) || !post.hidden) &&
+              (post.title.toLowerCase().contains(term) ||
+                  post.body.toLowerCase().contains(term)),
+        )
+        .skip(offset)
+        .take(30)
+        .toList();
+  }
 
   @override
   Future<Set<String>> savedPostIds() async => {..._savedPosts};
@@ -187,7 +229,7 @@ class _Community extends HomeCommunityFake {
       userType: UserType.business,
       avatarPath: 'Hero3.webp',
     ),
-  ];
+  ].where((profile) => ids == null || ids.contains(profile.id)).toList();
 }
 
 class _Media implements ProfileMediaRepository {

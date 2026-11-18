@@ -20,6 +20,17 @@ class PendingPhoto extends HomeCommunityFake {
   Future<String> imageUrl(String path) => Completer<String>().future;
 }
 
+class RetryPhoto extends HomeCommunityFake {
+  int imageRequests = 0;
+  final retry = Completer<String>();
+
+  @override
+  Future<String> imageUrl(String path) {
+    imageRequests++;
+    return imageRequests == 1 ? super.imageUrl(path) : retry.future;
+  }
+}
+
 void main() {
   testWidgets('mission save Undo is harmless after its card is removed', (
     tester,
@@ -66,7 +77,7 @@ void main() {
     expect(repo.missionSaves, contains('mission'));
   });
 
-  testWidgets('Home photo column lays out while its URL is loading', (
+  testWidgets('Home photo keeps its horizontal actions while loading', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -94,7 +105,8 @@ void main() {
     await tester.pump();
     expect(tester.takeException(), isNull);
     expect(find.text('Creamos juntos'), findsOneWidget);
-    expect(find.byKey(const Key('home-post-action-rail')), findsOneWidget);
+    expect(find.byKey(const Key('home-post-action-rail')), findsNothing);
+    expect(find.byKey(const Key('home-post-action-row')), findsOneWidget);
   });
 
   testWidgets('Home posts suppress collaboration while full detail keeps it', (
@@ -148,6 +160,39 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Me interesa colaborar'), findsOneWidget);
+  });
+
+  testWidgets('a broken Home photo retries without moving the actions', (
+    tester,
+  ) async {
+    final repo = RetryPhoto();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: PostCard(
+              post: homePost(imagePath: 'photo'),
+              repository: repo,
+              viewerId: 'viewer',
+              saved: false,
+              homePresentation: true,
+              onChanged: () async {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final actions = find.byKey(const Key('home-post-action-row'));
+    final initialPosition = tester.getTopLeft(actions);
+    expect(find.text('La fotografía no está disponible.'), findsOneWidget);
+    await tester.tap(find.text('Reintentar'));
+    await tester.pump();
+    expect(repo.imageRequests, 2);
+    expect(find.text('La fotografía no está disponible.'), findsNothing);
+    expect(tester.getTopLeft(actions), initialPosition);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets(

@@ -63,6 +63,20 @@ void main() {
       expect(queries.single['offset'], '30');
       expect(queries.single['limit'], '30');
 
+      await repo.posts(
+        visibleOnly: true,
+        category: 'arte',
+        query: '100%, (obra)_ "azul"',
+        offset: 30,
+      );
+      expect(queries.last['hidden'], 'eq.false');
+      expect(queries.last, isNot(contains('author_id')));
+      expect(queries.last['category'], 'eq.arte');
+      expect(queries.last['or'], contains('title.ilike.'));
+      expect(queries.last['or'], contains('body.ilike.'));
+      expect(queries.last['or'], contains(r'100\%, (obra)\_ \"azul\"'));
+      expect(queries.last['offset'], '30');
+
       await repo.posts(authorId: userId);
       expect(queries.last, isNot(contains('hidden')));
       expect(queries.last['author_id'], 'eq.$userId');

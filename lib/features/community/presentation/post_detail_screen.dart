@@ -3,6 +3,7 @@ import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/session/app_session_controller.dart';
+import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/models/post_social.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
@@ -34,6 +35,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   bool _loading = true, _saved = false, _opened = false;
   String? _error;
   final _draft = CommentDraft();
+  final _article = GlobalKey<PostCardState>();
+  final _comments = GlobalKey();
   @override
   void initState() {
     super.initState();
@@ -52,7 +55,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       _error = null;
     });
     try {
-      final repo = widget.controller.communityRepository!;
+      final repo = widget.controller.communityRepository;
+      if (repo == null) {
+        throw StateError('Community repository unavailable');
+      }
       final post = await repo.post(widget.postId);
       if (post == null || post.hidden) {
         if (mounted) {
@@ -157,22 +163,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             ),
           ),
         );
-      } else if (widget.panel == 'comments' && social != null) {
-        if (!mounted) return;
-        await showSocialPanel(
-          context,
-          CommentsPanel(
-            post: _post!,
-            repository: social,
-            community: widget.controller.communityRepository!,
-            viewerId: widget.controller.profile?.id,
-            moderator: widget.controller.profile?.role == ProfileRole.admin,
-            draft: _draft,
-            commentId: widget.commentId,
-            onReady: _markRead,
-            onChanged: _refreshStats,
-          ),
-        );
+      } else if (widget.panel == 'comments') {
+        _goToComments(animate: false);
       } else {
         await _markRead();
       }
@@ -181,60 +173,107 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     }
   }
 
+  void _goToComments({bool animate = true}) {
+    final target = _comments.currentContext;
+    if (target == null) return;
+    final duration = animate && !MediaQuery.disableAnimationsOf(context)
+        ? const Duration(milliseconds: 260)
+        : Duration.zero;
+    Scrollable.ensureVisible(target, duration: duration, alignment: .05);
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: IconButton(
-        tooltip: AppLocalizations.tr('Volver'),
-        onPressed: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.go('/home');
-          }
-        },
-        icon: const Icon(Icons.arrow_back_rounded),
-      ),
-      title: Text(AppLocalizations.tr('Publicación')),
-    ),
-    body: CommunityPage(
-      title: '',
-      maxWidth: 820,
-      children: [
-        if (_loading && _post == null)
-          const Center(child: MareaSkeleton(kind: SkeletonKind.detail))
-        else if (_post == null && _error == null)
-          CommunityNotice(
-            message: AppLocalizations.tr(
-              'Esta publicación fue retirada o ya no está disponible.',
+  Widget build(BuildContext context) {
+    final post = _post;
+    final session = widget.controller;
+    final social = session.socialRepository;
+    final moderator = session.profile?.role == ProfileRole.admin;
+    return Scaffold(
+      backgroundColor: AppColors.surface,
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        leading: IconButton(
+          tooltip: AppLocalizations.tr('Volver'),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+          icon: const Icon(Icons.arrow_back_rounded),
+        ),
+        title: Text(AppLocalizations.tr('Publicación')),
+        actions: [
+          if (post != null)
+            IconButton(
+              tooltip: AppLocalizations.tr('Acciones'),
+              onPressed: () => _article.currentState?.showOptions(),
+              icon: const Icon(Icons.more_horiz_rounded),
             ),
-          ),
-        if (_error != null)
-          CommunityNotice(
-            message: _error!,
-            onRetry: () {
-              _opened = false;
-              _load();
-            },
-          ),
-        if (_post != null)
-          PostCard(
-            post: _post!,
-            author: _author,
-            repository: widget.controller.communityRepository!,
-            socialRepository: widget.controller.socialRepository,
-            mediaRepository: widget.controller.mediaRepository,
-            viewerId: widget.controller.profile?.id,
-            moderator: widget.controller.profile?.role == ProfileRole.admin,
-            saved: _saved,
-            stats: _stats,
-            publicUrl: widget.controller.publicUrl,
-            contentTranslator: widget.controller.postContentTranslator,
-            onStats: (stats) => _stats = stats,
-            onChanged: _load,
-            onSaved: (saved) => _saved = saved,
-          ),
-      ],
-    ),
-  );
+        ],
+      ),
+      body: CommunityPage(
+        title: '',
+        maxWidth: 640,
+        children: [
+          if (_loading && post == null)
+            const Center(child: MareaSkeleton(kind: SkeletonKind.detail))
+          else if (post == null && _error == null)
+            CommunityNotice(
+              message: AppLocalizations.tr(
+                'Esta publicación fue retirada o ya no está disponible.',
+              ),
+            ),
+          if (_error != null)
+            CommunityNotice(
+              message: _error!,
+              onRetry: () {
+                _opened = false;
+                _load();
+              },
+            ),
+          if (post != null) ...[
+            PostCard(
+              key: _article,
+              post: post,
+              detailPresentation: true,
+              author: _author,
+              repository: session.communityRepository!,
+              socialRepository: social,
+              mediaRepository: session.mediaRepository,
+              locationRepository: session.locationRepository,
+              viewerId: session.profile?.id,
+              moderator: moderator,
+              saved: _saved,
+              stats: _stats,
+              publicUrl: session.publicUrl,
+              contentTranslator: session.postContentTranslator,
+              onComments: _goToComments,
+              onStats: (stats) => _stats = stats,
+              onChanged: _load,
+              onSaved: (saved) => _saved = saved,
+            ),
+            if (social != null) ...[
+              const Divider(height: 1, color: AppColors.border),
+              const SizedBox(height: 20),
+              CommentsPanel(
+                key: _comments,
+                inline: true,
+                post: post,
+                repository: social,
+                community: session.communityRepository!,
+                viewerId: session.profile?.id,
+                moderator: moderator,
+                draft: _draft,
+                commentId: widget.panel == 'comments' ? widget.commentId : null,
+                onReady: widget.panel == 'comments' ? _markRead : null,
+                onChanged: _refreshStats,
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
 }
