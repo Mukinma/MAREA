@@ -379,6 +379,13 @@ class _PostCardState extends State<PostCard> {
             'No se pudo descargar el modelo de traducción. Conéctate a internet e inténtalo de nuevo.',
         }),
       );
+    } on Exception {
+      if (!mounted) return;
+      setState(
+        () => _translationError = AppLocalizations.tr(
+          'No se pudo traducir la publicación. Revisa tu conexión e inténtalo de nuevo.',
+        ),
+      );
     } finally {
       if (mounted) setState(() => _translating = false);
     }

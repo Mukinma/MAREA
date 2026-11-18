@@ -11,6 +11,8 @@ import 'package:marea/features/home_feed/presentation/story_composer.dart';
 import 'package:marea/features/home_feed/presentation/story_viewer.dart';
 import 'package:marea/features/home_feed/presentation/follow_button.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
+import 'package:marea/features/community/models/community_models.dart';
+import 'package:marea/features/profile/models/profile.dart';
 import '../../support/fakes.dart';
 import '../../support/home_feed_fakes.dart';
 import '../../support/test_app.dart';
@@ -201,6 +203,62 @@ void main() {
     router.dispose();
     session.dispose();
   });
+  for (final width in [390.0, 1440.0]) {
+    testWidgets('story image layout keeps overlays visible at $width', (
+      tester,
+    ) async {
+      const height = 844.0;
+      tester.view.physicalSize = Size(width, height);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final now = DateTime.now();
+      final story = Story(
+        id: 'photo-story',
+        authorId: 'other',
+        imagePath: 'photo',
+        text: 'Una historia con imagen.',
+        createdAt: now,
+        expiresAt: now.add(const Duration(hours: 24)),
+      );
+      final batch = StoryBatch(stories: [story], serverTime: now);
+      final repository = StoriesFake()..values.add(story);
+      final session = controller(HomeFeedFake(), stories: repository);
+      await tester.pumpWidget(
+        testApp(
+          StoryViewer(
+            stories: batch.stories,
+            batch: batch,
+            repository: repository,
+            profiles: const {
+              'other': CommunityProfile(
+                id: 'other',
+                fullName: 'Mariana Torres',
+                username: 'mariana',
+                userType: UserType.creator,
+              ),
+            },
+            controller: session,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final frame = tester.getRect(find.byKey(const Key('story-viewer-frame')));
+      final username = tester.getRect(find.text('Mariana Torres'));
+      final progress = tester.getRect(find.byType(LinearProgressIndicator));
+      expect(frame.width, width < 640 ? width : 640);
+      expect(frame.height, height);
+      expect(username.bottom, lessThan(progress.top));
+      expect(progress.bottom, lessThan(height / 2));
+      expect(find.text('Una historia con imagen.'), findsOneWidget);
+      expect(find.byType(AppBar), findsNothing);
+      expect(tester.takeException(), isNull);
+
+      await tester.pumpWidget(const SizedBox());
+      session.dispose();
+    });
+  }
   testWidgets('a failed publish retains text and retries the same operation', (
     tester,
   ) async {

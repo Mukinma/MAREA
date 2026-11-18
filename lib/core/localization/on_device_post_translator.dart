@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_language_id/google_mlkit_language_id.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
+import 'package:marea/core/localization/content_translation_service.dart';
 
 class TranslatedPostContent {
   const TranslatedPostContent({
@@ -35,6 +36,53 @@ abstract interface class PostContentTranslator {
     required String body,
     required String targetLanguage,
   });
+}
+
+class CrossPlatformPostContentTranslator implements PostContentTranslator {
+  const CrossPlatformPostContentTranslator({
+    required this.onDevice,
+    required this.cloud,
+  });
+
+  final PostContentTranslator onDevice;
+  final ContentTranslationService cloud;
+
+  @override
+  bool get isSupported => true;
+
+  @override
+  Future<TranslatedPostContent> translate({
+    required String title,
+    required String body,
+    required String targetLanguage,
+  }) async {
+    if (onDevice.isSupported) {
+      return onDevice.translate(
+        title: title,
+        body: body,
+        targetLanguage: targetLanguage,
+      );
+    }
+
+    try {
+      final translated = await Future.wait([
+        cloud.translate(text: title, targetLanguage: targetLanguage),
+        body.isEmpty
+            ? Future<String>.value(body)
+            : cloud.translate(text: body, targetLanguage: targetLanguage),
+      ]);
+      return TranslatedPostContent(
+        title: translated[0],
+        body: translated[1],
+        alreadyInTargetLanguage:
+            translated[0] == title && translated[1] == body,
+      );
+    } on StateError {
+      throw const PostTranslationException(
+        PostTranslationFailure.modelUnavailable,
+      );
+    }
+  }
 }
 
 class MlKitPostContentTranslator implements PostContentTranslator {

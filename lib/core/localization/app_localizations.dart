@@ -185,6 +185,15 @@ class AppLocalizations {
         'Could not download the translation model. Connect to the internet and try again.',
     'Esta publicación ya está en el idioma seleccionado.':
         'This post is already in your selected language.',
+    'Traducir misión': 'Translate mission',
+    'No pudimos identificar el idioma de esta misión.':
+        'We could not identify the language of this mission.',
+    'Todavía no podemos traducir misiones en este idioma.':
+        'Missions in this language cannot be translated yet.',
+    'Esta misión ya está en el idioma seleccionado.':
+        'This mission is already in your selected language.',
+    'No se pudo traducir la misión. Revisa tu conexión e inténtalo de nuevo.':
+        'Could not translate this mission. Check your connection and try again.',
     'Ir a iniciar sesión': 'Go to sign in',
     'Código': 'Code',
     'Fotografía': 'Photo',

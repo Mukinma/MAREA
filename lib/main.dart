@@ -88,6 +88,7 @@ class _StartupAppState extends State<_StartupApp> {
     final client = Supabase.instance.client;
     final localeController = AppLocaleController();
     await localeController.load();
+    final translationService = ContentTranslationService(client);
     return MareaApp(
       development: config.isDevelopment,
       productionPilot: widget.productionPilot,
@@ -119,8 +120,11 @@ class _StartupAppState extends State<_StartupApp> {
         mediaRepository: SupabaseProfileMediaRepository(),
         profileRepository: SupabaseProfileRepository(client),
         chatRepository: SupabaseChatRepository(client),
-        translationService: ContentTranslationService(client),
-        postContentTranslator: MlKitPostContentTranslator(),
+        translationService: translationService,
+        postContentTranslator: CrossPlatformPostContentTranslator(
+          onDevice: MlKitPostContentTranslator(),
+          cloud: translationService,
+        ),
         legalRepository: SupabaseLegalRepository(client),
       ),
     );

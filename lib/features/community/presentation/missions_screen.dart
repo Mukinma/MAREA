@@ -677,6 +677,8 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
   int _generation = 0;
   String? _error;
   Mission? _mission;
+  Map<String, String>? _translatedMission;
+  String? _translationLanguage;
   MissionSocialStats? _socialStats;
   final _commentDraft = CommentDraft();
   bool _destinationOpened = false;
@@ -698,8 +700,19 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
         oldWidget.notificationId != widget.notificationId) {
       _destinationOpened = false;
       _socialStats = null;
+      _translatedMission = null;
       _load();
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final language = Localizations.localeOf(context).languageCode;
+    if (_translationLanguage != null && _translationLanguage != language) {
+      _translatedMission = null;
+    }
+    _translationLanguage = language;
   }
 
   @override
@@ -788,6 +801,13 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
           : await widget.controller.missionSocialRepository?.stats([missionId]);
       if (!mounted || generation != _generation) return;
       setState(() {
+        if (_mission?.id != mission?.id ||
+            _mission?.title != mission?.title ||
+            _mission?.body != mission?.body ||
+            _mission?.requirements != mission?.requirements ||
+            _mission?.conditions != mission?.conditions) {
+          _translatedMission = null;
+        }
         _saved = saved.contains(missionId);
         _mission = mission;
         _socialStats = socialStats?[missionId];
@@ -862,6 +882,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final mission = _mission;
+    final translated = _translatedMission ?? const <String, String>{};
     final viewer = widget.controller.profile;
     final owner = mission?.authorId == viewer?.id;
     final own = _applications
@@ -887,6 +908,15 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
     final canApply =
         restriction == null && (own == null || own.status == 'withdrawn');
     final organizer = mission == null ? null : _profiles[mission.authorId];
+    final translationContent = mission == null
+        ? const <String, String>{}
+        : {
+            'title': mission.title,
+            'body': mission.body,
+            if (mission.requirements != null)
+              'requirements': mission.requirements!,
+            if (mission.conditions != null) 'conditions': mission.conditions!,
+          };
     return Scaffold(
       backgroundColor: AppColors.canvas,
       appBar: AppBar(
@@ -965,12 +995,17 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            mission.title,
+                            translated['title'] ?? mission.title,
                             style: Theme.of(context).textTheme.headlineMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.w800,
                                   height: 1.1,
                                 ),
+                          ),
+                          MissionTranslationAction(
+                            content: translationContent,
+                            onChanged: (value) =>
+                                setState(() => _translatedMission = value),
                           ),
                           const SizedBox(height: 10),
                           Row(
@@ -1108,13 +1143,14 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                           _section(
                             context,
                             AppLocalizations.tr('La misión'),
-                            mission.body,
+                            translated['body'] ?? mission.body,
                           ),
                           if (mission.requirements != null)
                             _section(
                               context,
                               AppLocalizations.tr('Lo que necesitas'),
-                              mission.requirements!,
+                              translated['requirements'] ??
+                                  mission.requirements!,
                             ),
                           if (mission.conditions != null)
                             _section(
@@ -1122,7 +1158,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                               AppLocalizations.tr(
                                 'Qué ofrecemos y condiciones',
                               ),
-                              mission.conditions!,
+                              translated['conditions'] ?? mission.conditions!,
                             ),
                           if (mission.coordinates != null)
                             Padding(
