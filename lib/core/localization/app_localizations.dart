@@ -179,6 +179,12 @@ class AppLocalizations {
     'Ver original': 'Show original',
     'No pudimos identificar el idioma de esta publicación.':
         'We could not identify the language of this post.',
+    'La traducción no está disponible en este dispositivo.':
+        'Translation is not available on this device.',
+    'La traducción local requiere Android/iOS o Chrome compatible en computadora.':
+        'Local translation requires Android/iOS or a compatible desktop Chrome browser.',
+    'La primera traducción descarga un modelo; después funciona sin conexión.':
+        'The first translation downloads a model; after that, it works offline.',
     'Todavía no podemos traducir publicaciones en este idioma.':
         'Posts in this language cannot be translated yet.',
     'No se pudo descargar el modelo de traducción. Conéctate a internet e inténtalo de nuevo.':

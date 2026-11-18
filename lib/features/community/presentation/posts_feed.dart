@@ -285,6 +285,11 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
+  static final _onDeviceTranslator = MlKitPostContentTranslator();
+
+  PostContentTranslator get _translator =>
+      widget.contentTranslator ?? _onDeviceTranslator;
+
   bool _busy = false, _expanded = false, _panel = false;
   bool _translating = false, _sameLanguage = false;
   String? _translatedLocale, _translationError;
@@ -352,8 +357,8 @@ class _PostCardState extends State<PostCard> {
   }
 
   Future<void> _translateContent() async {
-    final translator = widget.contentTranslator;
-    if (translator == null || !translator.isSupported || _translating) return;
+    final translator = _translator;
+    if (!translator.isSupported || _translating) return;
     if (_translatedContent != null || _sameLanguage) {
       setState(() {
         _translatedContent = null;
@@ -407,21 +412,23 @@ class _PostCardState extends State<PostCard> {
   }
 
   Widget _translationControl() {
-    final translator = widget.contentTranslator;
-    if (translator == null || !translator.isSupported) {
-      return const SizedBox.shrink();
-    }
+    final available = _translator.isSupported;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextButton.icon(
-          onPressed: _translating ? null : _translateContent,
+        OutlinedButton.icon(
+          onPressed: _translating || !available ? null : _translateContent,
           icon: _translating
               ? const SizedBox.square(
                   dimension: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Icon(Icons.translate_rounded, size: 18),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.brandNavy,
+            side: const BorderSide(color: AppColors.border),
+            minimumSize: const Size(48, 44),
+          ),
           label: Text(
             AppLocalizations.tr(
               _translatedContent != null
@@ -430,6 +437,16 @@ class _PostCardState extends State<PostCard> {
             ),
           ),
         ),
+        if (!available)
+          Text(
+            AppLocalizations.tr(
+              'La traducción no está disponible en este dispositivo.',
+            ),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
+          ),
         if (_sameLanguage)
           Text(
             AppLocalizations.tr(
@@ -901,7 +918,6 @@ class _PostCardState extends State<PostCard> {
                       AppLocalizations.tr(_expanded ? 'Ver menos' : 'Ver más'),
                     ),
                   ),
-                _translationControl(),
               ],
             );
           },
@@ -1052,6 +1068,10 @@ class _PostCardState extends State<PostCard> {
             ),
             if (post.hidden)
               Text('Oculta por moderación', style: theme.textTheme.bodySmall),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: _translationControl(),
+            ),
             const SizedBox(height: 8),
             FutureBuilder<String>(
               future: request,

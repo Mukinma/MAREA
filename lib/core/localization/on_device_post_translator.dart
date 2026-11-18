@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_language_id/google_mlkit_language_id.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 import 'package:marea/core/localization/content_translation_service.dart';
+import 'web_local_translation_stub.dart'
+    if (dart.library.js_interop) 'web_local_translation_web.dart'
+    as web_local_translation;
 
 class TranslatedPostContent {
   const TranslatedPostContent({
@@ -187,6 +190,62 @@ class MlKitPostContentTranslator implements PostContentTranslator {
       );
     } finally {
       await translator.close();
+    }
+  }
+}
+
+class LocalPostContentTranslator implements PostContentTranslator {
+  final _mobileTranslator = MlKitPostContentTranslator();
+
+  @override
+  bool get isSupported =>
+      kIsWeb ? web_local_translation.isSupported : _mobileTranslator.isSupported;
+
+  @override
+  Future<TranslatedPostContent> translate({
+    required String title,
+    required String body,
+    required String targetLanguage,
+  }) async {
+    if (!kIsWeb) {
+      return _mobileTranslator.translate(
+        title: title,
+        body: body,
+        targetLanguage: targetLanguage,
+      );
+    }
+    if (!isSupported) {
+      throw UnsupportedError('Local translation is not supported here.');
+    }
+
+    final translatedTitle = title.isEmpty
+        ? title
+        : await _translateOnWeb(title, targetLanguage);
+    final translatedBody = body.isEmpty
+        ? body
+        : await _translateOnWeb(body, targetLanguage);
+    return TranslatedPostContent(
+      title: translatedTitle,
+      body: translatedBody,
+      alreadyInTargetLanguage:
+          translatedTitle == title && translatedBody == body,
+    );
+  }
+
+  Future<String> _translateOnWeb(String text, String targetLanguage) async {
+    try {
+      return await web_local_translation.translate(
+        text: text,
+        targetLanguage: targetLanguage,
+      );
+    } on StateError catch (error) {
+      throw PostTranslationException(
+        switch (error.message) {
+          'language_undetermined' => PostTranslationFailure.languageUndetermined,
+          'unsupported_language' => PostTranslationFailure.unsupportedLanguage,
+          _ => PostTranslationFailure.modelUnavailable,
+        },
+      );
     }
   }
 }

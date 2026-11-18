@@ -65,7 +65,7 @@ class MissionTranslationAction extends StatefulWidget {
 }
 
 class _MissionTranslationActionState extends State<MissionTranslationAction> {
-  static final _onDeviceTranslator = MlKitPostContentTranslator();
+  static final _onDeviceTranslator = LocalPostContentTranslator();
 
   PostContentTranslator get _translator =>
       widget.translator ?? _onDeviceTranslator;
@@ -173,25 +173,50 @@ class _MissionTranslationActionState extends State<MissionTranslationAction> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_translator.isSupported) return const SizedBox.shrink();
+    final available = _translator.isSupported;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        TextButton.icon(
-          onPressed: _translating ? null : _toggleTranslation,
+        OutlinedButton.icon(
+          onPressed: _translating || !available ? null : _toggleTranslation,
           icon: _translating
               ? const SizedBox.square(
                   dimension: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Icon(Icons.translate_rounded, size: 18),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.brandNavy,
+            side: const BorderSide(color: AppColors.border),
+            minimumSize: const Size(48, 44),
+          ),
           label: Text(
             AppLocalizations.tr(
               _translatedContent != null ? 'Ver original' : 'Traducir misión',
             ),
           ),
         ),
+        if (!available)
+          Text(
+            AppLocalizations.tr(
+              'La traducción local requiere Android/iOS o Chrome compatible en computadora.',
+            ),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
+          ),
+        if (available)
+          Text(
+            AppLocalizations.tr(
+              'La primera traducción descarga un modelo; después funciona sin conexión.',
+            ),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
+          ),
         if (_sameLanguage)
           Text(
             AppLocalizations.tr(
@@ -463,9 +488,7 @@ class _MissionSummaryState extends State<MissionSummary> {
                 AppLocalizations.tr('Requisitos'),
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
-              Text(
-                translated['requirements'] ?? mission.requirements!,
-              ),
+              Text(translated['requirements'] ?? mission.requirements!),
             ],
             if (mission.conditions != null) ...[
               const SizedBox(height: 12),
@@ -495,6 +518,7 @@ class _MissionSummaryState extends State<MissionSummary> {
       ),
     );
   }
+
   Widget _badge(String text, Color color) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
     decoration: BoxDecoration(

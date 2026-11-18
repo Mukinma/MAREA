@@ -55,7 +55,7 @@ void main() {
     },
   );
 
-  testWidgets('mission translation control stays hidden when unsupported', (
+  testWidgets('mission translation control explains unsupported devices', (
     tester,
   ) async {
     final translator = _MissionTranslator(supported: false);
@@ -77,7 +77,16 @@ void main() {
     );
 
     expect(find.text('Convocatoria'), findsOneWidget);
-    expect(find.text('Traducir misión'), findsNothing);
+    final button = tester.widget<OutlinedButton>(
+      find.widgetWithText(OutlinedButton, 'Traducir misión'),
+    );
+    expect(button.onPressed, isNull);
+    expect(
+      find.text(
+        'La traducción local requiere Android/iOS o Chrome compatible en computadora.',
+      ),
+      findsOneWidget,
+    );
     expect(translator.translated, isEmpty);
   });
 }

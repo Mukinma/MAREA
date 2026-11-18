@@ -150,7 +150,7 @@ void main() {
 
     expect(find.text('Pieza'), findsOneWidget);
     expect(find.text('Descripción'), findsOneWidget);
-    expect(find.text('Ver ubicación'), findsOneWidget);
+    expect(find.text('View location'), findsOneWidget);
     expect(find.text('Translate post'), findsOneWidget);
     expect(translator.calls, 0);
 
@@ -168,7 +168,24 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Pieza'), findsOneWidget);
     expect(find.text('Descripción'), findsOneWidget);
-    expect(find.text('Ver ubicación'), findsOneWidget);
+    expect(find.text('View location'), findsOneWidget);
+  });
+
+  testWidgets('post translation button stays visible when unsupported', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      card(Social(), contentTranslator: _UnsupportedPostContentTranslator()),
+    );
+
+    final button = tester.widget<OutlinedButton>(
+      find.widgetWithText(OutlinedButton, 'Traducir publicación'),
+    );
+    expect(button.onPressed, isNull);
+    expect(
+      find.text('La traducción no está disponible en este dispositivo.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('compact reaction count stays visible with enlarged text', (
