@@ -10,6 +10,8 @@ import 'package:marea/core/theme/app_spacing.dart';
 import 'package:marea/shared/widgets/session_feedback.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
 import 'package:marea/features/legal/legal_screens.dart';
+import 'package:marea/core/localization/app_locale_controller.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({required this.controller, super.key});
@@ -33,12 +35,13 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AnimatedBuilder(
       animation: controller,
       builder: (_, _) => Scaffold(
         appBar: AppBar(
           leading: const ProfileBackButton(),
-          title: const Text('Configuración'),
+          title: Text(l10n.settings),
         ),
         body: SafeArea(
           child: Column(
@@ -58,21 +61,19 @@ class SettingsScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             _SettingsCard(
-                              title: 'Cuenta',
+                              title: l10n.account,
                               children: [
                                 ListTile(
                                   leading: const _SettingsIcon(
                                     Icons.mail_outline_rounded,
                                   ),
-                                  title: Text(
-                                    controller.email ?? 'Sin correo disponible',
-                                  ),
+                                  title: Text(controller.email ?? l10n.noEmail),
                                 ),
                                 ListTile(
                                   leading: const _SettingsIcon(
                                     Icons.alternate_email_rounded,
                                   ),
-                                  title: const Text('Cambiar correo'),
+                                  title: Text(l10n.changeEmail),
                                   trailing: const Icon(
                                     Icons.chevron_right_rounded,
                                   ),
@@ -85,7 +86,7 @@ class SettingsScreen extends StatelessWidget {
                                   leading: const _SettingsIcon(
                                     Icons.lock_outline_rounded,
                                   ),
-                                  title: const Text('Cambiar contraseña'),
+                                  title: Text(l10n.changePassword),
                                   trailing: const Icon(
                                     Icons.chevron_right_rounded,
                                   ),
@@ -98,13 +99,13 @@ class SettingsScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: AppSpacing.lg),
                             _SettingsCard(
-                              title: 'Perfil',
+                              title: l10n.profile,
                               children: [
                                 ListTile(
                                   leading: const _SettingsIcon(
                                     Icons.edit_outlined,
                                   ),
-                                  title: const Text('Editar perfil'),
+                                  title: Text(l10n.editProfile),
                                   trailing: const Icon(
                                     Icons.chevron_right_rounded,
                                   ),
@@ -114,7 +115,7 @@ class SettingsScreen extends StatelessWidget {
                                   leading: const _SettingsIcon(
                                     Icons.tune_rounded,
                                   ),
-                                  title: const Text('Intereses y objetivos'),
+                                  title: Text(l10n.interests),
                                   trailing: const Icon(
                                     Icons.chevron_right_rounded,
                                   ),
@@ -124,9 +125,30 @@ class SettingsScreen extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: AppSpacing.lg),
+                            _SettingsCard(
+                              title: l10n.preferences,
+                              children: [
+                                ListTile(
+                                  leading: const _SettingsIcon(
+                                    Icons.language_rounded,
+                                  ),
+                                  title: Text(l10n.language),
+                                  subtitle: Text(
+                                    _languageName(
+                                      AppLocaleController.of(context).locale,
+                                    ),
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.chevron_right_rounded,
+                                  ),
+                                  onTap: () => _showLanguagePicker(context),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
                             if (controller.push != null) ...[
                               _SettingsCard(
-                                title: 'Notificaciones',
+                                title: l10n.notifications,
                                 children: [
                                   NotificationSettings(
                                     controller: controller.push!,
@@ -137,13 +159,13 @@ class SettingsScreen extends StatelessWidget {
                             ],
                             SessionFeedback(controller: controller),
                             _SettingsCard(
-                              title: 'Sesión',
+                              title: l10n.session,
                               children: [
                                 ListTile(
                                   leading: const _SettingsIcon(
                                     Icons.logout_rounded,
                                   ),
-                                  title: const Text('Cerrar sesión'),
+                                  title: Text(l10n.signOut),
                                   trailing: const Icon(
                                     Icons.chevron_right_rounded,
                                   ),
@@ -165,16 +187,14 @@ class SettingsScreen extends StatelessWidget {
                                     Icons.delete_outline_rounded,
                                     color: AppColors.error,
                                   ),
-                                  title: const Text(
-                                    'Eliminar cuenta',
+                                  title: Text(
+                                    l10n.deleteAccount,
                                     style: TextStyle(
                                       color: AppColors.error,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
-                                  subtitle: const Text(
-                                    'Esta acción es permanente.',
-                                  ),
+                                  subtitle: Text(l10n.permanentAction),
                                   trailing: const Icon(
                                     Icons.chevron_right_rounded,
                                     color: AppColors.error,
@@ -200,6 +220,49 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _showLanguagePicker(BuildContext context) async {
+    final localeController = AppLocaleController.of(context);
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(
+                localeController.locale.languageCode == 'es'
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+              ),
+              title: Text(AppLocalizations.of(context).spanish),
+              onTap: () {
+                localeController.setLocale(const Locale('es', 'MX'));
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                localeController.locale.languageCode == 'en'
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+              ),
+              title: Text(AppLocalizations.of(context).english),
+              onTap: () {
+                localeController.setLocale(const Locale('en', 'US'));
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _languageName(Locale locale) =>
+      locale.languageCode == 'en' ? 'English' : 'Español';
 }
 
 class _SettingsCard extends StatelessWidget {
@@ -249,30 +312,29 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: const Text('¿Eliminar tu cuenta?'),
+      title: Text(l10n.deleteQuestion),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Se eliminarán permanentemente tu acceso, perfil, preferencias e imágenes. Esta acción no se puede deshacer. Si se interrumpe, vuelve aquí para completar la eliminación.',
-            ),
+            Text(l10n.deleteWarning),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
-              'Escribe ELIMINAR para confirmar.',
+            Text(
+              l10n.typeDelete,
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: AppSpacing.sm),
             TextField(
-              key: const Key('delete-confirmation'),
+              key: const Key(')delete-confirmation'),
               controller: _confirmation,
               autofocus: true,
               autocorrect: false,
               onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(hintText: 'ELIMINAR'),
+              decoration: InputDecoration(hintText: l10n.deleteConfirmation),
             ),
           ],
         ),
@@ -280,15 +342,15 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancelar'),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
           key: const Key('confirm-delete-account'),
           style: FilledButton.styleFrom(backgroundColor: AppColors.error),
-          onPressed: _confirmation.text == 'ELIMINAR'
+          onPressed: _confirmation.text == l10n.deleteConfirmation
               ? () => Navigator.of(context).pop(true)
               : null,
-          child: const Text('Eliminar definitivamente'),
+          child: Text(l10n.deletePermanently),
         ),
       ],
     );

@@ -22,7 +22,8 @@ class HomeFeedFilter {
     if (![5, 10, 25, 50].contains(radiusKm)) {
       return 'Selecciona un radio válido.';
     }
-    if (mode == HomeFeedMode.nearby && (latitude == null || longitude == null)) {
+    if (mode == HomeFeedMode.nearby &&
+        (latitude == null || longitude == null)) {
       return 'Elige tu ubicación para ver contenido cercano.';
     }
     if (latitude != null && (!latitude!.isFinite || latitude!.abs() > 90) ||

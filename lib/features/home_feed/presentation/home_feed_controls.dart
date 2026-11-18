@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/category_visuals.dart';
@@ -62,9 +63,11 @@ class HomeFeedControls extends StatelessWidget {
                   ),
                   IconButton(
                     tooltip: switch (count) {
-                      0 => 'Filtrar Inicio',
-                      1 => 'Filtrar Inicio (1 activo)',
-                      _ => 'Filtrar Inicio ($count activos)',
+                      0 => AppLocalizations.tr('Filtrar Inicio'),
+                      1 => AppLocalizations.tr('Filtrar Inicio (1 activo)'),
+                      _ => AppLocalizations.tr(
+                        'Filtrar Inicio ($count activos)',
+                      ),
                     },
                     onPressed: onFilters,
                     icon: ExcludeSemantics(
@@ -121,10 +124,10 @@ class _FeedModeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = switch (mode) {
-      HomeFeedMode.forYou => 'Para ti',
-      HomeFeedMode.nearby => 'Cerca',
-      HomeFeedMode.following => 'Siguiendo',
-      HomeFeedMode.trending => 'Tendencias',
+      HomeFeedMode.forYou => AppLocalizations.tr('Para ti'),
+      HomeFeedMode.nearby => AppLocalizations.tr('Cerca'),
+      HomeFeedMode.following => AppLocalizations.tr('Siguiendo'),
+      HomeFeedMode.trending => AppLocalizations.tr('Tendencias'),
     };
     return Semantics(
       selected: selected,
@@ -194,20 +197,23 @@ Future<({String? category, int radius})?> showHomeFeedFilters(
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Filtros de Inicio',
+                      AppLocalizations.tr('Filtrar Inicio'),
                       style: theme.textTheme.titleLarge,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-              Text('Categoría', style: theme.textTheme.titleMedium),
+              Text(
+                AppLocalizations.tr('Categoría'),
+                style: theme.textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 children: [
                   ChoiceChip(
-                    label: const Text('Todas'),
+                    label: Text(AppLocalizations.tr('Todas')),
                     selected: selectedCategory == null,
                     onSelected: (_) => update(() => selectedCategory = null),
                   ),
@@ -217,7 +223,7 @@ Future<({String? category, int radius})?> showHomeFeedFilters(
                         CategoryVisuals.values[entry.key]?.icon,
                         size: 18,
                       ),
-                      label: Text(entry.value),
+                      label: Text(AppLocalizations.tr(entry.value)),
                       backgroundColor: CategoryVisuals.values[entry.key]?.color,
                       selectedColor: AppColors.navigationAqua,
                       selected: selectedCategory == entry.key,
@@ -229,7 +235,10 @@ Future<({String? category, int radius})?> showHomeFeedFilters(
               ),
               if (nearby) ...[
                 const SizedBox(height: 16),
-                Text('Distancia', style: theme.textTheme.titleMedium),
+                Text(
+                  AppLocalizations.tr('Distancia'),
+                  style: theme.textTheme.titleMedium,
+                ),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
@@ -249,14 +258,14 @@ Future<({String? category, int radius})?> showHomeFeedFilters(
                   category: selectedCategory,
                   radius: selectedRadius,
                 )),
-                child: const Text('Aplicar filtros'),
+                child: Text(AppLocalizations.tr('Aplicar filtros')),
               ),
               TextButton(
                 onPressed: () => update(() {
                   selectedCategory = null;
                   if (nearby) selectedRadius = 10;
                 }),
-                child: const Text('Limpiar filtros'),
+                child: Text(AppLocalizations.tr('Limpiar filtros')),
               ),
             ],
           ),

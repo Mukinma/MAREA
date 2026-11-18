@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/features/home_feed/data/stories_repository.dart';
 import 'package:marea/features/home_feed/models/story.dart';
@@ -38,12 +39,12 @@ class _StoryModerationState extends State<StoryModeration> {
         children: [
           Expanded(
             child: Text(
-              'Historias reportadas',
+              AppLocalizations.tr('Historias reportadas'),
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
           IconButton(
-            tooltip: 'Actualizar historias reportadas',
+            tooltip: AppLocalizations.tr('Actualizar historias reportadas'),
             onPressed: _reload,
             icon: const Icon(Icons.refresh),
           ),
@@ -61,9 +62,9 @@ class _StoryModerationState extends State<StoryModeration> {
           }
           if (!snapshot.hasData) return const LinearProgressIndicator();
           if (snapshot.data!.isEmpty) {
-            return const Padding(
+            return Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
-              child: Text('No hay historias reportadas.'),
+              child: Text(AppLocalizations.tr('No hay historias reportadas.')),
             );
           }
           return Column(
@@ -83,18 +84,28 @@ class _StoryModerationState extends State<StoryModeration> {
                                     image.data!,
                                     height: 160,
                                     fit: BoxFit.contain,
-                                    errorBuilder: (_, _, _) => const Text(
-                                      'La foto no está disponible.',
+                                    errorBuilder: (_, _, _) => Text(
+                                      AppLocalizations.tr(
+                                        'La foto no está disponible.',
+                                      ),
                                     ),
                                   )
                                 : image.hasError
-                                ? const Text('La foto no está disponible.')
+                                ? Text(
+                                    AppLocalizations.tr(
+                                      'La foto no está disponible.',
+                                    ),
+                                  )
                                 : const LinearProgressIndicator(),
                           ),
                         Text(story.text),
                         const SizedBox(height: 8),
                         for (final reason in story.reportReasons)
-                          Text('Motivo: $reason'),
+                          Text(
+                            AppLocalizations.trTemplate('Motivo: {reason}', {
+                              'reason': reason,
+                            }),
+                          ),
                         Text(
                           story.hidden ? 'Oculta por moderación' : 'Visible',
                         ),

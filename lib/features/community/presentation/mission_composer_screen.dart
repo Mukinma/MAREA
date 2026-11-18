@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/location/models/location_models.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'dart:typed_data';
@@ -156,8 +157,10 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       if (mounted) {
         _error = error is StateError
             ? (_editing
-                  ? 'Esta misión no está disponible para editar.'
-                  : 'Este borrador no está disponible.')
+                  ? AppLocalizations.tr(
+                      'Esta misión no está disponible para editar.',
+                    )
+                  : AppLocalizations.tr('Este borrador no está disponible.'))
             : communityError(error);
       }
     } finally {
@@ -248,26 +251,32 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       context: context,
       builder: (c) => AlertDialog(
         title: Text(
-          _editing ? '¿Salir sin guardar?' : '¿Qué hacemos con tu idea?',
+          _editing
+              ? AppLocalizations.tr('¿Salir sin guardar?')
+              : AppLocalizations.tr('¿Qué hacemos con tu idea?'),
         ),
         content: Text(
           _editing
-              ? 'Tienes cambios que todavía no has guardado.'
-              : 'Puedes guardar lo que llevas y continuar después.',
+              ? AppLocalizations.tr(
+                  'Tienes cambios que todavía no has guardado.',
+                )
+              : AppLocalizations.tr(
+                  'Puedes guardar lo que llevas y continuar después.',
+                ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c),
-            child: const Text('Seguir editando'),
+            child: Text(AppLocalizations.tr('Seguir editando')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(c, 'discard'),
-            child: const Text('Descartar cambios'),
+            child: Text(AppLocalizations.tr('Descartar cambios')),
           ),
           if (!_editing)
             FilledButton(
               onPressed: () => Navigator.pop(c, 'save'),
-              child: const Text('Guardar borrador'),
+              child: Text(AppLocalizations.tr('Guardar borrador')),
             ),
         ],
       ),
@@ -360,8 +369,8 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       initialDate: _date == null || _date!.isBefore(today) ? today : _date!,
       firstDate: today,
       lastDate: DateTime(today.year + 10),
-      helpText: 'Fecha de la misión',
-      locale: const Locale('es', 'MX'),
+      helpText: AppLocalizations.tr('Fecha de la misión'),
+      locale: AppLocalizations.of(context).locale,
     );
     if (!mounted || d == null) return;
     setState(() {
@@ -376,7 +385,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
     final t = await showTimePicker(
       context: context,
       initialTime: _time ?? const TimeOfDay(hour: 10, minute: 0),
-      helpText: 'Hora de inicio',
+      helpText: AppLocalizations.tr('Hora de inicio'),
     );
     if (!mounted || t == null) return;
     setState(() {
@@ -441,7 +450,11 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
     if (_busy || _editing) return false;
     final repo = widget.controller.communityRepository;
     if (repo == null) {
-      setState(() => _error = 'No pudimos conectar. Inténtalo de nuevo.');
+      setState(
+        () => _error = AppLocalizations.tr(
+          'No pudimos conectar. Inténtalo de nuevo.',
+        ),
+      );
       return false;
     }
     FocusScope.of(context).unfocus();
@@ -459,8 +472,12 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       if (!mounted) return true;
       setState(() => _dirty = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Borrador guardado. Puedes retomarlo en Mis misiones.'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.tr(
+              'Borrador guardado. Puedes retomarlo en Mis misiones.',
+            ),
+          ),
         ),
       );
       return true;
@@ -477,8 +494,12 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       _publishedId = draft.publishedMissionId;
       if (_publishedId == null) _dirty = false;
       _error = _publishedId == null
-          ? 'Esta misión ya fue publicada y ya no está disponible.'
-          : 'Tu misión ya fue publicada. Los cambios posteriores no se publicaron.';
+          ? AppLocalizations.tr(
+              'Esta misión ya fue publicada y ya no está disponible.',
+            )
+          : AppLocalizations.tr(
+              'Tu misión ya fue publicada. Los cambios posteriores no se publicaron.',
+            );
     });
   }
 
@@ -516,10 +537,10 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
   String? _invalidStep(int step) {
     if (step == 0) {
       if (_title.text.trim().length < 3 || _title.text.trim().length > 100) {
-        return 'Revisa el título de la misión.';
+        return AppLocalizations.tr('Revisa el título de la misión.');
       }
       if (_body.text.trim().isEmpty || _body.text.trim().length > 3000) {
-        return 'Completa la descripción de la misión.';
+        return AppLocalizations.tr('Completa la descripción de la misión.');
       }
     } else if (step == 1) {
       final capacity = int.tryParse(_capacity.text);
@@ -527,11 +548,11 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
           capacity < 1 ||
           capacity > 100 ||
           (_locked && capacity < _original!.capacity)) {
-        return 'Revisa el cupo de la misión.';
+        return AppLocalizations.tr('Revisa el cupo de la misión.');
       }
       if (_requirements.text.trim().length > 3000 ||
           _conditions.text.trim().length > 3000) {
-        return 'Revisa los requisitos y condiciones.';
+        return AppLocalizations.tr('Revisa los requisitos y condiciones.');
       }
       if ((!_editing && _compensation == null) ||
           validateMissionCompensation(
@@ -539,19 +560,21 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                 _compensation == 'paid' ? _amountCents : null,
               ) !=
               null) {
-        return 'Revisa la compensación de la misión.';
+        return AppLocalizations.tr('Revisa la compensación de la misión.');
       }
     } else if (step == 2) {
       if (_location.text.trim().isEmpty || _location.text.trim().length > 180) {
-        return 'Completa el lugar de la misión.';
+        return AppLocalizations.tr('Completa el lugar de la misión.');
       }
-      if (_start == null) return 'Selecciona la fecha y la hora.';
+      if (_start == null) {
+        return AppLocalizations.tr('Selecciona la fecha y la hora.');
+      }
       if ((_original == null || _start != _original!.startsAt.toLocal()) &&
           !_start!.isAfter(DateTime.now())) {
-        return 'Elige una fecha y hora futuras.';
+        return AppLocalizations.tr('Elige una fecha y hora futuras.');
       }
       if (_coordinates != null && !_coordinates!.isValid) {
-        return 'La ubicación seleccionada no es válida.';
+        return AppLocalizations.tr('La ubicación seleccionada no es válida.');
       }
     }
     return null;
@@ -616,7 +639,11 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
     }
     final repo = widget.controller.communityRepository;
     if (repo == null) {
-      setState(() => _error = 'No pudimos conectar. Inténtalo de nuevo.');
+      setState(
+        () => _error = AppLocalizations.tr(
+          'No pudimos conectar. Inténtalo de nuevo.',
+        ),
+      );
       return;
     }
     FocusScope.of(context).unfocus();
@@ -689,17 +716,17 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         backgroundColor: AppColors.canvas,
         centerTitle: true,
         leading: IconButton(
-          tooltip: 'Volver a misiones',
+          tooltip: AppLocalizations.tr('Volver a misiones'),
           onPressed: _busy ? null : _leave,
           icon: const Icon(Icons.arrow_back_rounded),
         ),
         title: Text(
-          _editing ? 'Editar misión' : 'Nueva misión',
+          AppLocalizations.tr(_editing ? 'Editar misión' : 'Nueva misión'),
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         actions: [
           IconButton(
-            tooltip: 'Cerrar',
+            tooltip: AppLocalizations.tr('Cerrar'),
             onPressed: _busy ? null : _leave,
             icon: const Icon(Icons.close_rounded),
           ),
@@ -710,7 +737,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
           : _unavailable
           ? Center(
               child: CommunityNotice(
-                message: _error ?? 'Misión no disponible',
+                message: _error ?? AppLocalizations.tr('Misión no disponible'),
                 onRetry: _load,
               ),
             )
@@ -725,7 +752,13 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Semantics(
-                        label: 'Paso ${_step + 1} de 4: ${_names[_step]}',
+                        label: AppLocalizations.trTemplate(
+                          'Paso {step} de 4: {section}',
+                          {
+                            'step': '${_step + 1}',
+                            'section': AppLocalizations.tr(_names[_step]),
+                          },
+                        ),
                         child: Row(
                           children: [
                             for (var i = 0; i < 4; i++)
@@ -746,7 +779,15 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                       ),
                       const SizedBox(height: 22),
                       Text(
-                        'PASO ${_step + 1} DE 4 · ${_names[_step].toUpperCase()}',
+                        AppLocalizations.trTemplate(
+                          'PASO {step} DE 4 · {section}',
+                          {
+                            'step': '${_step + 1}',
+                            'section': AppLocalizations.tr(
+                              _names[_step],
+                            ).toUpperCase(),
+                          },
+                        ),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -755,7 +796,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        _titles[_step],
+                        AppLocalizations.tr(_titles[_step]),
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
                               fontWeight: FontWeight.w800,
@@ -764,7 +805,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        _subtitles[_step],
+                        AppLocalizations.tr(_subtitles[_step]),
                         style: const TextStyle(color: AppColors.textSecondary),
                       ),
                       const SizedBox(height: 24),
@@ -774,11 +815,12 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                           child: CommunityNotice(message: _error!),
                         ),
                       if (_locked && (_step == 1 || _step == 2))
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.only(bottom: 16),
                           child: CommunityNotice(
-                            message:
-                                'Ya recibiste candidaturas: el perfil, la fecha, el lugar y la compensación quedan fijos. Puedes corregir los textos y aumentar el cupo.',
+                            message: AppLocalizations.tr(
+                              'Ya recibiste candidaturas: el perfil, la fecha, el lugar y la compensación quedan fijos. Puedes corregir los textos y aumentar el cupo.',
+                            ),
                             icon: Icons.lock_outline,
                           ),
                         ),
@@ -820,7 +862,10 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         decoration: _decoration('Categoría'),
         items: [
           for (final e in communityCategories.entries)
-            DropdownMenuItem(value: e.key, child: Text(e.value)),
+            DropdownMenuItem(
+              value: e.key,
+              child: Text(missionCategoryLabel(e.key)),
+            ),
         ],
         onChanged: _busy
             ? null
@@ -839,8 +884,8 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         lines: 5,
       ),
       const SizedBox(height: 16),
-      const Text(
-        'Imagen de portada',
+      Text(
+        AppLocalizations.tr('Imagen de portada'),
         style: TextStyle(
           fontWeight: FontWeight.w800,
           color: AppColors.brandNavy,
@@ -868,8 +913,8 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                   icon: const Icon(Icons.add_photo_alternate_outlined),
                   label: Text(
                     _image == null && _imagePath == null
-                        ? 'Agregar fotografía'
-                        : 'Cambiar fotografía',
+                        ? AppLocalizations.tr('Agregar fotografía')
+                        : AppLocalizations.tr('Cambiar fotografía'),
                   ),
                 ),
                 if (_image != null || _imagePath != null)
@@ -881,13 +926,13 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                             _imagePath = null;
                             _dirty = true;
                           }),
-                    child: const Text('Quitar'),
+                    child: Text(AppLocalizations.tr('Quitar')),
                   ),
               ],
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Opcional · JPG, PNG o WebP · hasta 10 MB',
+            Text(
+              AppLocalizations.tr('Opcional · JPG, PNG o WebP · hasta 10 MB'),
               style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
@@ -904,12 +949,12 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         isExpanded: true,
         decoration: _decoration('Perfil participante'),
         items: [
-          const DropdownMenuItem<UserType?>(
+          DropdownMenuItem<UserType?>(
             value: null,
-            child: Text('Todos los perfiles'),
+            child: Text(AppLocalizations.tr('Todos los perfiles')),
           ),
           for (final t in UserType.values)
-            DropdownMenuItem(value: t, child: Text(t.databaseValue)),
+            DropdownMenuItem(value: t, child: Text(missionTargetLabel(t))),
         ],
         onChanged: _busy || _locked
             ? null
@@ -928,17 +973,20 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         validator: (v) {
           final n = int.tryParse(v ?? '');
           if (n == null || n < 1 || n > 100) {
-            return 'Elige entre 1 y 100 personas.';
+            return AppLocalizations.tr('Elige entre 1 y 100 personas.');
           }
           if (_locked && n < _original!.capacity) {
-            return 'El cupo solo puede aumentar (mínimo ${_original!.capacity}).';
+            return AppLocalizations.trTemplate(
+              'El cupo solo puede aumentar (mínimo {capacity}).',
+              {'capacity': '${_original!.capacity}'},
+            );
           }
           return null;
         },
       ),
       const SizedBox(height: 16),
-      const Text(
-        'Compensación',
+      Text(
+        AppLocalizations.tr('Compensación'),
         style: TextStyle(
           fontWeight: FontWeight.w800,
           color: AppColors.brandNavy,
@@ -948,7 +996,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       FormField<String>(
         initialValue: _compensation,
         validator: (_) => !_editing && _compensation == null
-            ? 'Elige una compensación.'
+            ? AppLocalizations.tr('Elige una compensación.')
             : null,
         builder: (state) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -969,7 +1017,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                       fontWeight: FontWeight.w700,
                       color: AppColors.brandNavy,
                     ),
-                    label: Text(e.value),
+                    label: Text(AppLocalizations.tr(e.value)),
                     selected: _compensation == e.key,
                     onSelected: _busy || _locked
                         ? null
@@ -982,10 +1030,12 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
               ],
             ),
             if (_compensation == null && _editing)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 8),
                 child: Text(
-                  'Compensación no indicada en la misión original.',
+                  AppLocalizations.tr(
+                    'Compensación no indicada en la misión original.',
+                  ),
                   style: TextStyle(color: AppColors.textSecondary),
                 ),
               ),
@@ -1013,7 +1063,9 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
             if (_amountCents == null ||
                 _amountCents! <= 0 ||
                 _amountCents! > 9999999900) {
-              return 'Introduce un importe positivo con hasta dos decimales.';
+              return AppLocalizations.tr(
+                'Introduce un importe positivo con hasta dos decimales.',
+              );
             }
             return null;
           },
@@ -1061,8 +1113,10 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
               : 'Cambiar punto del mapa',
         ),
       ),
-      const Text(
-        'Puedes escribir el lugar sin usar el mapa ni compartir tu ubicación.',
+      Text(
+        AppLocalizations.tr(
+          'Puedes escribir el lugar sin usar el mapa ni compartir tu ubicación.',
+        ),
         style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
       ),
       if (_coordinates != null)
@@ -1070,14 +1124,14 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             _coordinates!.isApproximate
-                ? 'Punto aproximado guardado'
-                : 'Punto del mapa guardado',
+                ? AppLocalizations.tr('Punto aproximado guardado')
+                : AppLocalizations.tr('Punto del mapa guardado'),
             style: const TextStyle(color: AppColors.aquaDark),
           ),
         ),
       const SizedBox(height: 24),
-      const Text(
-        'Fecha y hora',
+      Text(
+        AppLocalizations.tr('Fecha y hora'),
         style: TextStyle(
           fontWeight: FontWeight.w800,
           color: AppColors.brandNavy,
@@ -1087,10 +1141,12 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       FormField<DateTime>(
         key: _dateKey,
         validator: (_) {
-          if (_start == null) return 'Selecciona la fecha y la hora.';
+          if (_start == null) {
+            return AppLocalizations.tr('Selecciona la fecha y la hora.');
+          }
           if ((_original == null || _start != _original!.startsAt.toLocal()) &&
               !_start!.isAfter(DateTime.now())) {
-            return 'Elige una fecha y hora futuras.';
+            return AppLocalizations.tr('Elige una fecha y hora futuras.');
           }
           return null;
         },
@@ -1106,7 +1162,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                   icon: const Icon(Icons.calendar_today_outlined),
                   label: Text(
                     _date == null
-                        ? 'Seleccionar fecha'
+                        ? AppLocalizations.tr('Seleccionar fecha')
                         : '${_date!.day}/${_date!.month}/${_date!.year}',
                   ),
                 ),
@@ -1114,7 +1170,9 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                   onPressed: _busy || _locked ? null : _pickTime,
                   icon: const Icon(Icons.schedule),
                   label: Text(
-                    _time == null ? 'Seleccionar hora' : _time!.format(context),
+                    _time == null
+                        ? AppLocalizations.tr('Seleccionar hora')
+                        : _time!.format(context),
                   ),
                 ),
               ],
@@ -1132,14 +1190,16 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       ),
       const SizedBox(height: 20),
       _card(
-        const Row(
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(Icons.info_outline, color: AppColors.aquaDark),
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Las personas podrán enviar su candidatura hasta el inicio de la misión.',
+                AppLocalizations.tr(
+                  'Las personas podrán enviar su candidatura hasta el inicio de la misión.',
+                ),
               ),
             ),
           ],
@@ -1161,9 +1221,9 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         ),
         const SizedBox(height: 16),
       ],
-      _reviewSection('La idea', 0, [
+      _reviewSection(AppLocalizations.tr('La idea'), 0, [
         Text(
-          communityCategories[_category] ?? _category,
+          missionCategoryLabel(_category),
           style: const TextStyle(
             color: AppColors.aquaDark,
             fontWeight: FontWeight.w800,
@@ -1180,61 +1240,70 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         const SizedBox(height: 8),
         Text(_body.text.trim()),
       ]),
-      _reviewSection('La colaboración', 1, [
+      _reviewSection(AppLocalizations.tr('La colaboración'), 1, [
         _summaryRow(
           Icons.people_outline,
-          '${_target?.databaseValue ?? 'Todos los perfiles'} · ${_capacity.text} lugares',
+          AppLocalizations.trTemplate(
+            _capacity.text == '1'
+                ? '{target} · {count} lugar'
+                : '{target} · {count} lugares',
+            {'target': missionTargetLabel(_target), 'count': _capacity.text},
+          ),
         ),
         _summaryRow(
           Icons.payments_outlined,
-          missionCompensationLabel(
-            _compensation,
-            _compensation == 'paid' ? _amountCents : null,
-          ),
+          missionCompensationLocalizedLabel(_compensation, _amountCents),
         ),
         const SizedBox(height: 12),
-        const Text('Requisitos', style: TextStyle(fontWeight: FontWeight.w800)),
+        Text(
+          AppLocalizations.tr('Requisitos'),
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
         const SizedBox(height: 4),
         Text(
           _requirements.text.trim().isEmpty
-              ? 'Sin requisitos adicionales.'
+              ? AppLocalizations.tr('Sin requisitos adicionales.')
               : _requirements.text.trim(),
         ),
         const SizedBox(height: 12),
-        const Text(
-          'Condiciones',
+        Text(
+          AppLocalizations.tr('Condiciones'),
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 4),
         Text(
           _conditions.text.trim().isEmpty
-              ? 'Sin condiciones adicionales.'
+              ? AppLocalizations.tr('Sin condiciones adicionales.')
               : _conditions.text.trim(),
         ),
       ]),
-      _reviewSection('Lugar y fecha', 2, [
+      _reviewSection(AppLocalizations.tr('Lugar y fecha'), 2, [
         _summaryRow(Icons.location_on_outlined, _location.text.trim()),
         if (_coordinates != null)
           Text(
             _coordinates!.isApproximate
-                ? 'Ubicación aproximada en el mapa'
-                : 'Punto del mapa incluido',
+                ? AppLocalizations.tr('Ubicación aproximada en el mapa')
+                : AppLocalizations.tr('Punto del mapa incluido'),
             style: const TextStyle(color: AppColors.textSecondary),
           ),
         _summaryRow(
           Icons.calendar_today_outlined,
-          _start == null ? 'Fecha y hora por definir' : missionDate(_start!),
+          _start == null
+              ? AppLocalizations.tr('Fecha y hora por definir')
+              : missionDate(_start!),
         ),
       ]),
       _card(
-        const Row(
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(Icons.shield_outlined, color: AppColors.aquaDark),
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Las candidaturas son privadas. Podrás revisarlas y elegir a las personas participantes desde la gestión de tu misión.',
+                AppLocalizations.tr(
+                  'Las candidaturas son privadas. Podrás revisarlas y elegir a las personas participantes desde la gestión de tu misión.',
+                ),
               ),
             ),
           ],
@@ -1267,7 +1336,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      title,
+                      AppLocalizations.tr(title),
                       style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         color: AppColors.brandNavy,
@@ -1276,7 +1345,13 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                   ),
                   TextButton(
                     onPressed: _busy ? null : () => _jump(step),
-                    child: Text('Editar ${_names[step].toLowerCase()}'),
+                    child: Text(
+                      AppLocalizations.trTemplate('Editar {section}', {
+                        'section': AppLocalizations.tr(
+                          _names[step],
+                        ).toLowerCase(),
+                      }),
+                    ),
                   ),
                 ],
               ),
@@ -1316,7 +1391,9 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
         shape: const StadiumBorder(),
       ),
       child: Text(
-        _step == 0 ? (_editing ? 'Cancelar' : 'Guardar borrador') : 'Atrás',
+        AppLocalizations.tr(
+          _step == 0 ? (_editing ? 'Cancelar' : 'Guardar borrador') : 'Atrás',
+        ),
         textAlign: TextAlign.center,
       ),
     );
@@ -1335,12 +1412,14 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       icon: const Icon(Icons.arrow_forward_rounded, size: 20),
       label: Text(
         _busy
-            ? 'Guardando…'
+            ? AppLocalizations.tr('Guardando…')
             : _publishedId != null
-            ? 'Ver misión publicada'
+            ? AppLocalizations.tr('Ver misión publicada')
             : _step == 3
-            ? (_editing ? 'Guardar cambios' : 'Publicar misión')
-            : 'Continuar',
+            ? AppLocalizations.tr(
+                _editing ? 'Guardar cambios' : 'Publicar misión',
+              )
+            : AppLocalizations.tr('Continuar'),
         textAlign: TextAlign.center,
       ),
     );
@@ -1391,7 +1470,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
                               : () {
                                   _saveDraft();
                                 },
-                          child: const Text('Guardar borrador'),
+                          child: Text(AppLocalizations.tr('Guardar borrador')),
                         ),
                     ],
                   );
@@ -1405,8 +1484,8 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
   }
 
   InputDecoration _decoration(String label, [String? hint]) => InputDecoration(
-    labelText: label,
-    hintText: hint,
+    labelText: AppLocalizations.tr(label),
+    hintText: hint == null ? null : AppLocalizations.tr(hint),
     filled: true,
     fillColor: Colors.white,
     alignLabelWithHint: true,
@@ -1455,10 +1534,17 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
           final n = v?.trim().length ?? 0;
           if (n < min) {
             return min == 1
-                ? 'Completa este campo.'
-                : 'Escribe al menos $min caracteres.';
+                ? AppLocalizations.tr('Completa este campo.')
+                : AppLocalizations.trTemplate(
+                    'Escribe al menos {min} caracteres.',
+                    {'min': '$min'},
+                  );
           }
-          if (n > max) return 'Usa hasta $max caracteres.';
+          if (n > max) {
+            return AppLocalizations.trTemplate('Usa hasta {max} caracteres.', {
+              'max': '$max',
+            });
+          }
           return null;
         },
   );

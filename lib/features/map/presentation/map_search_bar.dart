@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/category_visuals.dart';
@@ -53,64 +54,64 @@ class _MapSearchBarState extends State<MapSearchBar> {
               padding: const EdgeInsets.only(left: 2, right: 4),
               child: Row(
                 children: [
-              IconButton(
-                tooltip: 'Buscar en el mapa',
-                onPressed: () => widget.onSubmitted(widget.controller.text),
-                constraints: const BoxConstraints.tightFor(
-                  width: 48,
-                  height: 48,
-                ),
-                icon: const Icon(
-                  Icons.search_rounded,
-                  color: AppColors.brandNavy,
-                  size: 23,
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: widget.controller,
-                  focusNode: _focus,
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: widget.onSubmitted,
-                  decoration: const InputDecoration(
-                    hintText: 'Buscar misiones',
-                    filled: false,
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(vertical: 12),
-                  ),
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ),
-              Tooltip(
-                message: 'Filtros del mapa',
-                child: TextButton.icon(
-                  onPressed: widget.onFilters,
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size(48, 48),
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    foregroundColor: AppColors.brandNavy,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                  IconButton(
+                    tooltip: 'Buscar en el mapa',
+                    onPressed: () => widget.onSubmitted(widget.controller.text),
+                    constraints: const BoxConstraints.tightFor(
+                      width: 48,
+                      height: 48,
+                    ),
+                    icon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.brandNavy,
+                      size: 23,
                     ),
                   ),
-                  icon: const Icon(Icons.tune_rounded, size: 19),
-                  label: Text(
-                    widget.filterCount > 0
-                        ? 'Filtros ${widget.filterCount}'
-                        : 'Filtros',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
+                  Expanded(
+                    child: TextField(
+                      controller: widget.controller,
+                      focusNode: _focus,
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: widget.onSubmitted,
+                      decoration: const InputDecoration(
+                        hintText: 'Buscar misiones',
+                        filled: false,
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
-                ),
-              ),
+                  Tooltip(
+                    message: 'Filtros del mapa',
+                    child: TextButton.icon(
+                      onPressed: widget.onFilters,
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(48, 48),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        foregroundColor: AppColors.brandNavy,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      icon: const Icon(Icons.tune_rounded, size: 19),
+                      label: Text(
+                        widget.filterCount > 0
+                            ? 'Filtros ${widget.filterCount}'
+                            : 'Filtros',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -156,7 +157,7 @@ class _MapQuickFiltersState extends State<MapQuickFilters> {
         ? null
         : CategoryVisuals.forCategory(widget.filters.category!);
     final categoryButton = _chip(
-      'Categorías',
+      AppLocalizations.tr('Categorías'),
       false,
       () => setState(() => _expanded = true),
       icon: Icons.category_outlined,
@@ -165,13 +166,20 @@ class _MapQuickFiltersState extends State<MapQuickFilters> {
     final activeCategoryButton = activeCategory == null
         ? null
         : _activeCategoryButton(
-            communityCategories[widget.filters.category] ?? 'Categoría',
+            AppLocalizations.tr(
+              communityCategories[widget.filters.category] ?? 'Categoría',
+            ),
             activeCategory,
           );
     final commonChips = [
+      _chip(
+        AppLocalizations.tr('Todas'),
+        widget.filters.category == null,
+        () => widget.onChanged(widget.filters.withCategory(null)),
+      ),
       for (final entry in communityCategories.entries)
         _chip(
-          entry.value,
+          AppLocalizations.tr(entry.value),
           widget.filters.category == entry.key,
           () => widget.onChanged(
             widget.filters.withCategory(
@@ -184,7 +192,7 @@ class _MapQuickFiltersState extends State<MapQuickFilters> {
           alwaysColored: true,
         ),
       _chip(
-        'Hoy',
+        AppLocalizations.tr('Hoy'),
         widget.filters.date == MissionMapDate.today,
         () => widget.onChanged(
           widget.filters.withDate(
@@ -209,7 +217,7 @@ class _MapQuickFiltersState extends State<MapQuickFilters> {
           children: [
             categoryButton,
             ?activeCategoryButton,
-            ...commonChips.skip(communityCategories.length),
+            ...commonChips.skip(communityCategories.length + 1),
           ],
         ),
       );
@@ -219,7 +227,7 @@ class _MapQuickFiltersState extends State<MapQuickFilters> {
         Padding(
           padding: const EdgeInsets.only(right: 4),
           child: IconButton(
-            tooltip: 'Ocultar categorías',
+            tooltip: AppLocalizations.tr('Ocultar categorías'),
             onPressed: () => setState(() => _expanded = false),
             constraints: const BoxConstraints.tightFor(width: 44, height: 44),
             padding: EdgeInsets.zero,
@@ -252,9 +260,7 @@ class _MapQuickFiltersState extends State<MapQuickFilters> {
         selected: true,
         label: label,
         child: IconButton(
-          onPressed: () => widget.onChanged(
-            widget.filters.withCategory(null),
-          ),
+          onPressed: () => widget.onChanged(widget.filters.withCategory(null)),
           constraints: const BoxConstraints.tightFor(width: 48, height: 48),
           padding: EdgeInsets.zero,
           icon: Icon(visual.icon, size: 22, color: visual.iconColor),
@@ -294,10 +300,10 @@ class _MapQuickFiltersState extends State<MapQuickFilters> {
                   ),
             onPressed: action,
             backgroundColor: alwaysColored && color != null
-              ? color.withValues(alpha: selected ? 1 : .28)
-              : selected
-              ? color ?? AppColors.navigationAqua
-              : AppColors.surface,
+                ? color.withValues(alpha: selected ? 1 : .28)
+                : selected
+                ? color ?? AppColors.navigationAqua
+                : AppColors.surface,
             labelStyle: const TextStyle(
               color: AppColors.brandNavy,
               fontWeight: FontWeight.w700,

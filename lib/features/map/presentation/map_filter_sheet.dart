@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -168,7 +169,7 @@ class _MapFilterSheetState extends State<MapFilterSheet> {
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(48),
                     ),
-                    child: const Text('Aplicar filtros'),
+                    child: Text(AppLocalizations.tr('Aplicar filtros')),
                   ),
                 ),
                 Align(
@@ -176,7 +177,7 @@ class _MapFilterSheetState extends State<MapFilterSheet> {
                   child: TextButton(
                     onPressed: () =>
                         Navigator.pop(context, const MissionMapFilters()),
-                    child: const Text('Limpiar filtros'),
+                    child: Text(AppLocalizations.tr('Limpiar filtros')),
                   ),
                 ),
               ],

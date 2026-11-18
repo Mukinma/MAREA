@@ -101,10 +101,9 @@ class OfflineRepo extends EditorialRepo {
 }
 
 Future<void> chooseEditorStep(WidgetTester tester, String label) async {
-  await tester.ensureVisible(find.byType(DropdownButtonFormField<int>));
-  await tester.tap(find.byType(DropdownButtonFormField<int>));
-  await tester.pumpAndSettle();
-  await tester.tap(find.text(label).last);
+  final step = find.widgetWithText(ChoiceChip, label);
+  await tester.ensureVisible(step);
+  await tester.tap(step);
   await tester.pumpAndSettle();
 }
 
@@ -249,7 +248,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Editar recorrido 360°'), findsOneWidget);
-    expect(find.byType(ChoiceChip), findsNothing);
+    expect(find.byType(ChoiceChip), findsNWidgets(6));
     await chooseEditorStep(tester, 'Puntos y AR');
     await tester.ensureVisible(find.text('Añadir imagen RA'));
     expect(find.text('Editar texto'), findsNothing);
@@ -327,15 +326,29 @@ void main() {
         'Recorrido corregido',
       );
       await tester.scrollUntilVisible(
-        find.text('Guardar y continuar'),
+        find.text('Continuar'),
         300,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.tap(find.text('Guardar y continuar'));
+      await tester.tap(find.text('Continuar'));
+      await tester.pumpAndSettle();
+      await tester.drag(find.byType(ListView), const Offset(0, 1000));
+      await tester.pumpAndSettle();
+      final steps = tester
+          .widgetList<ChoiceChip>(find.byType(ChoiceChip))
+          .toList();
+      expect(steps.indexWhere((step) => step.selected), 1);
+      await tester.scrollUntilVisible(
+        find.text('Guardar borrador'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.text('Guardar borrador'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Guardar borrador'));
       await tester.pumpAndSettle();
       expect(repo.saves, 1);
       expect(repo.data['title'], 'Recorrido corregido');
-      expect(find.text('Paso 2 de 6'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       c.dispose();

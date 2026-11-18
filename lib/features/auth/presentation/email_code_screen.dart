@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
@@ -8,6 +10,7 @@ import 'package:marea/shared/widgets/marea_text_field.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
 import 'package:marea/shared/widgets/session_feedback.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class EmailCodeScreen extends StatefulWidget {
   const EmailCodeScreen({
     required this.controller,
@@ -111,7 +114,8 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
   Widget build(BuildContext context) => AuthLayout(
     child: AnimatedBuilder(
       animation: widget.controller,
-      builder: (_, _) {
+      builder: (context, _) {
+        final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
         final cooldown = widget.controller.emailCooldown(
           _destination ?? _email.text,
           recovery: widget.recovery,
@@ -131,26 +135,26 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                           context.go('/login');
                         },
                   icon: const Icon(Icons.arrow_back_rounded),
-                  label: const Text('Iniciar sesión'),
+                  label: Text(core_l10n.AppLocalizations.tr(l10n.iniciarSesion)),
                 ),
               ),
               Text(
                 _codeStep
                     ? (widget.recovery
-                          ? 'Verifica el código'
-                          : 'Verifica tu correo')
+                          ? core_l10n.AppLocalizations.tr(l10n.verificaCodigo)
+                          : core_l10n.AppLocalizations.tr(l10n.verificaCorreo))
                     : widget.recovery
-                    ? 'Recupera tu acceso'
-                    : 'Verifica tu correo',
+                    ? core_l10n.AppLocalizations.tr(l10n.recuperaTuAcceso)
+                    : core_l10n.AppLocalizations.tr(l10n.verificaCorreo),
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 16),
               Text(
                 _codeStep
-                    ? 'Escribe el código que recibiste.'
+                    ? core_l10n.AppLocalizations.tr(l10n.escribeCodigoRecibiste)
                     : widget.recovery
-                    ? 'Escribe el correo de tu cuenta.'
-                    : 'Usa el correo con el que te registraste.',
+                    ? core_l10n.AppLocalizations.tr(l10n.escribeCorreoCuenta)
+                    : core_l10n.AppLocalizations.tr(l10n.usaCorreoRegistro),
               ),
               const SizedBox(height: 24),
               if (!_codeStep)
@@ -158,7 +162,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                   key: const Key('code-destination'),
                   enabled: !widget.controller.isBusy,
                   controller: _email,
-                  label: 'Correo',
+                  label: core_l10n.AppLocalizations.tr(l10n.correo),
                   keyboardType: TextInputType.emailAddress,
                   validator: FormValidators.email,
                   onChanged: (_) {
@@ -167,7 +171,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                   },
                 ),
               if (_codeStep) ...[
-                Text('Correo', style: Theme.of(context).textTheme.labelLarge),
+                Text(core_l10n.AppLocalizations.tr(l10n.correo), style: Theme.of(context).textTheme.labelLarge),
                 const SizedBox(height: 4),
                 Text(
                   _destination!,
@@ -177,7 +181,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                   alignment: Alignment.centerLeft,
                   child: TextButton(
                     onPressed: widget.controller.isBusy ? null : _changeEmail,
-                    child: const Text('Usar otro correo'),
+                    child: Text(core_l10n.AppLocalizations.tr(l10n.usarOtroCorreo)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -185,7 +189,7 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                   key: const Key('email-code'),
                   enabled: !widget.controller.isBusy,
                   controller: _code,
-                  label: 'Código',
+                  label: core_l10n.AppLocalizations.tr(l10n.codigo),
                   keyboardType: TextInputType.number,
                   autofillHints: const [AutofillHints.oneTimeCode],
                   textInputAction: TextInputAction.done,
@@ -193,21 +197,23 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                   validator: (value) =>
                       RegExp(r'^\d{6,10}$').hasMatch(value?.trim() ?? '')
                       ? null
-                      : 'Escribe el código del correo (6 a 10 dígitos).',
+                      : core_l10n.AppLocalizations.tr(l10n.errorCodigoCorreo),
                 ),
               ],
               SessionFeedback(controller: widget.controller),
               if (_requestAccepted && widget.controller.failure == null) ...[
                 const SizedBox(height: 16),
-                const Text('Revisa tu correo y spam.'),
+                Text(core_l10n.AppLocalizations.tr(l10n.revisaTuCorreo)),
               ],
               const SizedBox(height: 24),
               PrimaryButton(
                 label: _codeStep
-                    ? 'Verificar código'
+                    ? core_l10n.AppLocalizations.tr(l10n.verificarCodigo)
                     : cooldown > 0
-                    ? 'Solicitar de nuevo en ${cooldown}s'
-                    : 'Enviar código',
+                    ? core_l10n.AppLocalizations.tr(
+                        l10n.solicitarCodigoEn(cooldown),
+                      )
+                    : core_l10n.AppLocalizations.tr(l10n.enviarCodigo),
                 isLoading: widget.controller.isBusy,
                 onPressed: _codeStep
                     ? _verify
@@ -222,8 +228,8 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                       : null,
                   child: Text(
                     cooldown > 0
-                        ? 'Reenviar en ${cooldown}s'
-                        : 'Reenviar código',
+                        ? core_l10n.AppLocalizations.tr(l10n.reenviarEn(cooldown))
+                        : core_l10n.AppLocalizations.tr(l10n.reenviarCodigo),
                   ),
                 ),
               if (!_codeStep)
@@ -238,15 +244,13 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
                             _codeStep = true;
                           });
                         },
-                  child: const Text('Ya tengo un código'),
+                  child: Text(core_l10n.AppLocalizations.tr(l10n.yaTengoCodigo)),
                 ),
               const SizedBox(height: 12),
               Text(
                 _codeStep
-                    ? '¿No llegó? Revisa spam o reenvía el código.'
-                    : widget.recovery
-                    ? 'Recibirás un código si hay una cuenta con ese correo.'
-                    : 'Recibirás un código si hay una cuenta con ese correo.',
+                    ? core_l10n.AppLocalizations.tr(l10n.codigoNoLlego)
+                    : core_l10n.AppLocalizations.tr(l10n.recibirasCodigo),
               ),
             ],
           ),

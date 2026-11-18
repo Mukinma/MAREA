@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:marea/features/notifications/models/notification_destination.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
+import 'package:marea/core/localization/app_locale_controller.dart';
+import 'package:marea/core/localization/app_localizations.dart';
+import 'package:marea/l10n/app_localizations.dart' as generated_l10n;
 import 'package:marea/core/location/device_location_service.dart';
 import 'package:marea/features/proximity/data/app_proximity_targets.dart';
 import 'package:marea/features/proximity/data/native_proximity_bridge.dart';
@@ -14,11 +16,13 @@ import 'package:marea/features/proximity/models/proximity_models.dart';
 class MareaApp extends StatefulWidget {
   const MareaApp({
     required this.controller,
+    this.localeController,
     this.development = false,
     this.productionPilot = false,
     super.key,
   });
   final AppSessionController controller;
+  final AppLocaleController? localeController;
   final bool development;
   final bool productionPilot;
 
@@ -27,6 +31,8 @@ class MareaApp extends StatefulWidget {
 }
 
 class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
+  late final AppLocaleController _localeController =
+      widget.localeController ?? AppLocaleController();
   late final _router = AppRouter.create(widget.controller);
   StreamSubscription<String>? _proximityOpened;
   Timer? _proximityTimer;
@@ -39,6 +45,8 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     super.initState();
     widget.controller.addListener(_sessionChanged);
     widget.controller.push?.addListener(_pushChanged);
+    _localeController.addListener(_localeChanged);
+    unawaited(_localeController.load());
     if (widget.controller.markerRepository != null) {
       WidgetsBinding.instance.addObserver(this);
       _proximityOpened = NativeProximityBridge.instance.opened.listen(
@@ -213,8 +221,10 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
           final context = _router.routerDelegate.navigatorKey.currentContext;
           if (context != null && context.mounted) {
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-              const SnackBar(
-                content: Text('Esta notificación ya no está disponible.'),
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context).notificationUnavailable,
+                ),
               ),
             );
           }
@@ -245,29 +255,54 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     _router.routeInformationProvider.removeListener(_refreshProximity);
     widget.controller.removeListener(_sessionChanged);
     widget.controller.push?.removeListener(_pushChanged);
+    _localeController.removeListener(_localeChanged);
+    _localeController.dispose();
     _router.dispose();
     widget.controller.dispose();
     super.dispose();
   }
 
+  void _localeChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: widget.development ? 'MAREA Desarrollo' : 'MAREA',
-      locale: const Locale('es', 'MX'),
-      supportedLocales: const [Locale('es', 'MX')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      key: ValueKey(_localeController.locale.toLanguageTag()),
+      title: widget.productionPilot
+          ? 'MAREA · Prueba RA'
+          : widget.development
+          ? 'MAREA Desarrollo'
+          : 'MAREA',
+      locale: _localeController.locale,
+      supportedLocales: AppLocaleController.supportedLocales,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        ...generated_l10n.AppLocalizations.localizationsDelegates,
+      ],
+      localeResolutionCallback: (locale, supportedLocales) {
+        if (locale == null) return const Locale('es', 'MX');
+        for (final supported in supportedLocales) {
+          if (supported.languageCode == locale.languageCode) return supported;
+        }
+        return const Locale('es', 'MX');
+      },
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       routerConfig: _router,
-      builder: widget.development
-          ? (context, child) => Banner(
-              message: 'DESARROLLO',
-              location: BannerLocation.topEnd,
-              color: Colors.deepOrange,
-              child: child ?? const SizedBox.shrink(),
-            )
-          : null,
+      builder: (context, child) {
+        Widget content = child ?? const SizedBox.shrink();
+        if (widget.development || widget.productionPilot) {
+          content = Banner(
+            message: widget.productionPilot ? 'PRUEBA RA' : 'DESARROLLO',
+            location: BannerLocation.topEnd,
+            color: Colors.deepOrange,
+            child: content,
+          );
+        }
+        return AppLocaleScope(controller: _localeController, child: content);
+      },
     );
   }
 }

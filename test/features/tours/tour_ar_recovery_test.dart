@@ -220,6 +220,10 @@ void main() {
   testWidgets('changing stop cancels a held reference download', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(800, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     final repo = ARRepo(),
         controller = await session(repo),
         download = Completer<Uint8List>();
@@ -323,7 +327,6 @@ void main() {
             (tester.widget<AndroidView>(find.byType(AndroidView)).creationParams
                 as Map)['sessionId'];
         expect(find.byType(FilledButton), findsOneWidget);
-        expect(find.text('Volver a la lista'), findsNothing);
         expect(find.text('Saltar parada'), findsNothing);
 
         await tester.tap(find.byTooltip('Más opciones'));

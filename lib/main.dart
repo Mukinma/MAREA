@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/config/mapbox_configuration.dart';
 import 'package:marea/features/location/data/location_repository.dart';
 import 'package:marea/features/community/data/mission_social_repository.dart';
@@ -20,7 +21,10 @@ import 'package:marea/features/community/data/community_repository.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:marea/app.dart';
 import 'package:marea/core/config/app_config.dart';
+import 'package:marea/core/localization/app_locale_controller.dart';
 import 'package:marea/core/session/app_session_controller.dart';
+import 'package:marea/core/localization/content_translation_service.dart';
+import 'package:marea/core/localization/on_device_post_translator.dart';
 import 'package:marea/features/auth/data/auth_repository.dart';
 import 'package:marea/features/auth/presentation/configuration_screen.dart';
 import 'package:marea/features/profile/data/profile_repository.dart';
@@ -86,6 +90,9 @@ class _StartupAppState extends State<_StartupApp> {
           : const FlutterAuthClientOptions(),
     );
     final client = Supabase.instance.client;
+    final localeController = AppLocaleController();
+    await localeController.load();
+    final translationService = ContentTranslationService(client);
     late final AppSessionController controller;
     controller = AppSessionController(
       allowCaptureUploads: !widget.productionPilot,
@@ -121,11 +128,17 @@ class _StartupAppState extends State<_StartupApp> {
       mediaRepository: SupabaseProfileMediaRepository(),
       profileRepository: SupabaseProfileRepository(client),
       chatRepository: SupabaseChatRepository(client),
+      translationService: translationService,
+      postContentTranslator: CrossPlatformPostContentTranslator(
+        onDevice: MlKitPostContentTranslator(),
+        cloud: translationService,
+      ),
       legalRepository: SupabaseLegalRepository(client),
     );
     return MareaApp(
       development: config.isDevelopment,
       productionPilot: widget.productionPilot,
+      localeController: localeController,
       controller: controller,
     );
   }
@@ -137,7 +150,9 @@ class _StartupAppState extends State<_StartupApp> {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return ConfigurationScreen(
-            message: 'No se pudo iniciar la conexión con el servidor.',
+            message: AppLocalizations.tr(
+              'No se pudo iniciar la conexión con el servidor.',
+            ),
           );
         }
         if (!snapshot.hasData) {

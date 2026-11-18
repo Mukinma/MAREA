@@ -1,3 +1,8 @@
+import 'dart:async';
+
+import 'package:marea/core/localization/app_localizations.dart';
+import 'package:marea/shared/widgets/marea_panel.dart';
+import 'package:marea/shared/widgets/marea_tabs.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
@@ -27,12 +32,13 @@ void _backToMissions(BuildContext context) {
   }
 }
 
-String _applicationStatus(String status) => switch (status) {
-  'accepted' => 'Aceptada',
-  'rejected' => 'No seleccionada',
-  'withdrawn' => 'Retirada',
-  _ => 'Pendiente',
-};
+String _applicationStatus(String status) =>
+    AppLocalizations.tr(switch (status) {
+      'accepted' => 'Aceptada',
+      'rejected' => 'No seleccionada',
+      'withdrawn' => 'Retirada',
+      _ => 'Pendiente',
+    });
 
 class PersonalMissionsScreen extends StatefulWidget {
   const PersonalMissionsScreen({
@@ -47,17 +53,25 @@ class PersonalMissionsScreen extends StatefulWidget {
 }
 
 class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
+  late int _tab = widget.initialSection == 'applications' ? 2 : 1;
   int _offset = 0, _generation = 0;
+  UserType? _target;
+  String? _category;
   String? _applicationFilter;
-  bool _history = false;
+  bool _history = false, _savedOnly = false;
+  String _query = '';
+  final _search = TextEditingController();
+  Timer? _debounce;
   late bool _draftView = widget.initialSection == 'drafts';
-  bool get _showApplications => widget.initialSection == 'applications';
+  bool get _showApplications => _tab == 2;
   final _scroll = ScrollController();
   List<MissionDraft> _drafts = [];
 
   @override
   void dispose() {
     _scroll.dispose();
+    _search.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -79,7 +93,7 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
     if (repo == null || viewer == null) {
       setState(() {
         _loading = false;
-        _error = 'Las misiones aún no están disponibles.';
+        _error = AppLocalizations.tr('Las misiones aún no están disponibles.');
       });
       return;
     }
@@ -91,7 +105,27 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
       }
     });
     try {
-      if (_draftView) {
+      if (_tab == 0) {
+        final page = _savedOnly
+            ? await repo.savedMissions(
+                query: _query,
+                category: _category,
+                targetType: _target,
+                offset: _offset,
+              )
+            : await repo.missions(
+                query: _query,
+                category: _category,
+                targetType: _target,
+                offset: _offset,
+              );
+        if (!mounted || generation != _generation) return;
+        setState(() {
+          _offset += page.length;
+          _missions = append ? [..._missions, ...page] : page;
+          _more = page.length == 30;
+        });
+      } else if (_tab == 1 && _draftView) {
         final drafts = await repo.missionDrafts();
         if (!mounted || generation != _generation) return;
         setState(() {
@@ -130,7 +164,9 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
         setState(
           () => _error = error is AppFailure
               ? error.message
-              : 'No pudimos cargar las misiones. Inténtalo de nuevo.',
+              : AppLocalizations.tr(
+                  'No pudimos cargar las misiones. Inténtalo de nuevo.',
+                ),
         );
       }
     } finally {
@@ -147,27 +183,80 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
     final ok = await runCommunityAction(
       context,
       () => repo.withdraw(application.id),
-      success: 'Postulación retirada.',
+      success: AppLocalizations.tr('Postulación retirada.'),
     );
     if (!mounted) return;
     setState(() => _withdrawing = false);
     if (ok) await _load();
   }
 
+  Future<void> _filters() async {
+    var target = _target;
+    final result = await showMareaBottomSheet<Map<String, UserType?>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (c) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: StatefulBuilder(
+            builder: (c, setSheet) => Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  AppLocalizations.tr('Filtrar misiones'),
+                  style: Theme.of(c).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 20),
+                DropdownButtonFormField<UserType?>(
+                  initialValue: target,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.tr('Perfil buscado'),
+                  ),
+                  items: [
+                    DropdownMenuItem<UserType?>(
+                      value: null,
+                      child: Text(AppLocalizations.tr('Cualquier perfil')),
+                    ),
+                    for (final t in UserType.values)
+                      DropdownMenuItem(
+                        value: t,
+                        child: Text(AppLocalizations.tr(t.databaseValue)),
+                      ),
+                  ],
+                  onChanged: (v) => setSheet(() => target = v),
+                ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: () => Navigator.pop(c, {'target': target}),
+                  child: Text(AppLocalizations.tr('Aplicar filtros')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (!mounted || result == null) return;
+    setState(() => _target = result['target']);
+    await _load();
+  }
+
   Future<void> _deleteDraft(MissionDraft draft) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('¿Eliminar borrador?'),
+        title: Text(AppLocalizations.tr('¿Eliminar borrador?')),
         content: Text(draft.title),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Volver'),
+            child: Text(AppLocalizations.tr('Volver')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Eliminar borrador'),
+            child: Text(AppLocalizations.tr('Eliminar borrador')),
           ),
         ],
       ),
@@ -176,7 +265,7 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
     final ok = await runCommunityAction(
       context,
       () => widget.controller.communityRepository!.deleteMissionDraft(draft.id),
-      success: 'Borrador eliminado.',
+      success: AppLocalizations.tr('Borrador eliminado.'),
     );
     if (mounted && ok) await _load();
   }
@@ -204,7 +293,9 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
         color: AppColors.canvas,
         child: CommunityPage(
           scrollController: _scroll,
-          title: _showApplications ? 'Mis postulaciones' : 'Mis misiones',
+          title: AppLocalizations.tr(
+            _tab == 2 ? 'Mis candidaturas' : 'Misiones',
+          ),
           onRefresh: () => _load(),
           action: FilledButton.icon(
             onPressed: () async {
@@ -216,25 +307,146 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
               if (mounted) await _load();
             },
             icon: const Icon(Icons.add),
-            label: const Text('Crear misión'),
+            label: Text(AppLocalizations.tr('Crear misión')),
           ),
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                onPressed: () => _backToMissions(context),
-                icon: const Icon(Icons.arrow_back_rounded),
-                label: const Text('Volver a misiones'),
-              ),
+            MareaTabs(
+              options: {
+                '0': AppLocalizations.tr('Explorar'),
+                '1': AppLocalizations.tr('Mis misiones'),
+                '2': AppLocalizations.tr('Mis candidaturas'),
+              },
+              value: '$_tab',
+              onChanged: (value) {
+                final tab = int.parse(value);
+                if (_tab == tab) return;
+                setState(() {
+                  _tab = tab;
+                  _missions = [];
+                  _applications = [];
+                  _drafts = [];
+                });
+                _load();
+              },
             ),
-            const SizedBox(height: 12),
-            if (!_showApplications) ...[
+            const SizedBox(height: 20),
+            if (_tab == 0) ...[
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ChoiceChip(
+                    label: Text(AppLocalizations.tr('Todas')),
+                    selected: _target == null,
+                    onSelected: (_) {
+                      setState(() => _target = null);
+                      _load();
+                    },
+                  ),
+                  if (viewer != null)
+                    ChoiceChip(
+                      avatar: const Icon(Icons.person_outline, size: 18),
+                      label: Text(AppLocalizations.tr('Para mi perfil')),
+                      selected: _target == viewer.userType,
+                      onSelected: (_) {
+                        setState(() => _target = viewer.userType);
+                        _load();
+                      },
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: FilterChip(
+                  avatar: const Icon(Icons.bookmark_border, size: 18),
+                  label: Text(AppLocalizations.tr('Guardadas')),
+                  selected: _savedOnly,
+                  onSelected: (v) {
+                    setState(() => _savedOnly = v);
+                    _load();
+                  },
+                ),
+              ),
+              if (_target == viewer?.userType && viewer != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    AppLocalizations.trTemplate(
+                      'Para {profile} y convocatorias para todos.',
+                      {
+                        'profile': AppLocalizations.tr(
+                          viewer.userType.databaseValue,
+                        ),
+                      },
+                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _search,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.tr('Buscar misiones'),
+                  prefixIcon: Icon(Icons.search),
+                ),
+                onChanged: (value) {
+                  _query = value;
+                  _debounce?.cancel();
+                  _debounce = Timer(
+                    const Duration(milliseconds: 350),
+                    () => _load(),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String?>(
+                      initialValue: _category,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.tr('Categoría'),
+                      ),
+                      items: [
+                        DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text(
+                            AppLocalizations.tr('Todas las categorías'),
+                          ),
+                        ),
+                        for (final e in communityCategories.entries)
+                          DropdownMenuItem(value: e.key, child: Text(e.value)),
+                      ],
+                      onChanged: (v) {
+                        setState(() => _category = v);
+                        _load();
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton.filledTonal(
+                    tooltip: AppLocalizations.tr('Más filtros'),
+                    onPressed: _filters,
+                    icon: const Icon(Icons.tune),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+            if (_tab == 1) ...[
               Wrap(
                 spacing: 8,
                 children: [
                   for (final h in [false, true])
                     ChoiceChip(
-                      label: Text(h ? 'Historial' : 'Convocatorias activas'),
+                      label: Text(
+                        AppLocalizations.tr(
+                          h ? 'Historial' : 'Convocatorias activas',
+                        ),
+                      ),
                       selected: !_draftView && _history == h,
                       onSelected: (_) {
                         setState(() {
@@ -250,7 +462,7 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: ChoiceChip(
-                  label: const Text('Borradores'),
+                  label: Text(AppLocalizations.tr('Borradores')),
                   selected: _draftView,
                   onSelected: (_) {
                     setState(() => _draftView = true);
@@ -275,7 +487,7 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
                     'withdrawn': 'Retiradas',
                   }.entries)
                     ChoiceChip(
-                      label: Text(entry.value),
+                      label: Text(AppLocalizations.tr(entry.value)),
                       selected: _applicationFilter == entry.key,
                       onSelected: (_) =>
                           setState(() => _applicationFilter = entry.key),
@@ -293,10 +505,22 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
                       ListTile(
                         title: Text(
                           _appliedMissions[application.missionId]?.title ??
-                              'Misión no disponible',
+                              AppLocalizations.tr('Misión no disponible'),
                         ),
                         subtitle: Text(
-                          'Postulación ${_applicationStatus(application.status).toLowerCase()} · ${_appliedMissions[application.missionId]?.statusLabel ?? 'Misión no disponible'}',
+                          AppLocalizations.trTemplate(
+                            'Postulación {status} · {missionStatus}',
+                            {
+                              'status': _applicationStatus(
+                                application.status,
+                              ).toLowerCase(),
+                              'missionStatus': AppLocalizations.tr(
+                                _appliedMissions[application.missionId]
+                                        ?.statusLabel ??
+                                    'Misión no disponible',
+                              ),
+                            },
+                          ),
                         ),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => context
@@ -324,7 +548,9 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
                                   ? null
                                   : () => _withdraw(application),
                               icon: const Icon(Icons.close),
-                              label: const Text('Retirar postulación'),
+                              label: Text(
+                                AppLocalizations.tr('Retirar postulación'),
+                              ),
                             ),
                           ),
                         ),
@@ -345,14 +571,16 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
                       ),
                       title: Text(draft.title),
                       subtitle: Text(
-                        'Borrador · ${missionDate(draft.updatedAt)}',
+                        AppLocalizations.trTemplate('Borrador · {date}', {
+                          'date': missionDate(draft.updatedAt),
+                        }),
                       ),
                       onTap: () async {
                         await context.push('/missions/drafts/${draft.id}/edit');
                         if (mounted) _load();
                       },
                       trailing: IconButton(
-                        tooltip: 'Eliminar borrador',
+                        tooltip: AppLocalizations.tr('Eliminar borrador'),
                         onPressed: () => _deleteDraft(draft),
                         icon: const Icon(Icons.delete_outline),
                       ),
@@ -368,9 +596,13 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
                     viewerType: viewer?.userType,
                     viewerId: viewer?.id,
                     repository: widget.controller.communityRepository,
-                    owner: true,
+                    owner: _tab == 1,
                     onTap: () async {
-                      await context.push('/missions/${mission.id}/manage');
+                      await context.push(
+                        _tab == 1
+                            ? '/missions/${mission.id}/manage'
+                            : '/missions/${mission.id}',
+                      );
                       if (mounted) _load();
                     },
                   ),
@@ -383,13 +615,30 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
                     ? _drafts.isEmpty
                     : visible.isEmpty))
               CommunityNotice(
-                message: _showApplications
-                    ? _applicationFilter == null
-                          ? 'Tus postulaciones y sus respuestas aparecerán aquí.'
-                          : 'No tienes postulaciones en este estado.'
-                    : _draftView
-                    ? 'Tus ideas guardadas aparecerán aquí.'
-                    : 'Aún no has creado misiones. Invita a la comunidad a colaborar.',
+                message: switch (_tab) {
+                  1 =>
+                    _draftView
+                        ? AppLocalizations.tr(
+                            'Tus ideas guardadas aparecerán aquí.',
+                          )
+                        : AppLocalizations.tr(
+                            'Aún no has creado misiones. Invita a la comunidad a colaborar.',
+                          ),
+                  2 =>
+                    _applicationFilter == null
+                        ? AppLocalizations.tr(
+                            'Tus postulaciones y sus respuestas aparecerán aquí.',
+                          )
+                        : AppLocalizations.tr(
+                            'No tienes postulaciones en este estado.',
+                          ),
+                  _ =>
+                    _savedOnly
+                        ? AppLocalizations.tr('Aún no has guardado misiones.')
+                        : AppLocalizations.tr(
+                            'No hay misiones abiertas en esta página. Vuelve pronto o crea la primera.',
+                          ),
+                },
                 icon: Icons.explore_outlined,
               ),
             if (_loading &&
@@ -405,7 +654,7 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
             if (_more && !_loading)
               TextButton(
                 onPressed: () => _load(append: true),
-                child: const Text('Cargar más misiones'),
+                child: Text(AppLocalizations.tr('Cargar más misiones')),
               ),
           ],
         ),
@@ -435,6 +684,8 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
   int _generation = 0;
   String? _error;
   Mission? _mission;
+  Map<String, String>? _translatedMission;
+  String? _translationLanguage;
   MissionSocialStats? _socialStats;
   final _commentDraft = CommentDraft();
   bool _destinationOpened = false;
@@ -456,8 +707,19 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
         oldWidget.notificationId != widget.notificationId) {
       _destinationOpened = false;
       _socialStats = null;
+      _translatedMission = null;
       _load();
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final language = Localizations.localeOf(context).languageCode;
+    if (_translationLanguage != null && _translationLanguage != language) {
+      _translatedMission = null;
+    }
+    _translationLanguage = language;
   }
 
   @override
@@ -518,7 +780,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
     if (repo == null) {
       setState(() {
         _loading = false;
-        _error = 'Las misiones aún no están disponibles.';
+        _error = AppLocalizations.tr('Las misiones aún no están disponibles.');
       });
       return;
     }
@@ -546,6 +808,13 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
           : await widget.controller.missionSocialRepository?.stats([missionId]);
       if (!mounted || generation != _generation) return;
       setState(() {
+        if (_mission?.id != mission?.id ||
+            _mission?.title != mission?.title ||
+            _mission?.body != mission?.body ||
+            _mission?.requirements != mission?.requirements ||
+            _mission?.conditions != mission?.conditions) {
+          _translatedMission = null;
+        }
         _saved = saved.contains(missionId);
         _mission = mission;
         _socialStats = socialStats?[missionId];
@@ -563,7 +832,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
         setState(
           () => _error = error is AppFailure
               ? error.message
-              : 'No pudimos cargar esta misión.',
+              : AppLocalizations.tr('No pudimos cargar esta misión.'),
         );
       }
     } finally {
@@ -595,15 +864,17 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
         widget.missionId,
         next,
       ),
-      next ? 'Misión guardada.' : 'Misión retirada de guardadas.',
+      AppLocalizations.tr(
+        next ? 'Misión guardada.' : 'Misión retirada de guardadas.',
+      ),
     );
   }
 
   Future<void> _report() async {
     final reason = await askCommunityText(
       context,
-      title: 'Reportar misión',
-      label: 'Motivo del reporte',
+      title: AppLocalizations.tr('Reportar misión'),
+      label: AppLocalizations.tr('Motivo del reporte'),
       maxLength: 500,
     );
     if (!mounted || !context.mounted || reason == null) return;
@@ -612,46 +883,69 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
         missionId: widget.missionId,
         reason: reason,
       );
-    }, 'Recibimos tu reporte.');
+    }, AppLocalizations.tr('Recibimos tu reporte.'));
   }
 
   @override
   Widget build(BuildContext context) {
     final mission = _mission;
+    final translated = _translatedMission ?? const <String, String>{};
     final viewer = widget.controller.profile;
     final owner = mission?.authorId == viewer?.id;
     final own = _applications
         .where((a) => a.applicantId == viewer?.id)
         .firstOrNull;
     final restriction = mission == null || viewer == null
-        ? 'Inicia sesión para postularte.'
+        ? AppLocalizations.tr('Inicia sesión para postularte.')
         : mission.applicationRestriction(
             viewerId: viewer.id,
             viewerType: viewer.userType,
           );
+    final localizedRestriction = restriction == null
+        ? null
+        : restriction.startsWith('Esta misión busca ')
+        ? AppLocalizations.trTemplate(
+            'Esta misión busca {target}. Tu perfil es {profile}.',
+            {
+              'target': missionTargetLabel(mission?.targetType),
+              'profile': missionTargetLabel(viewer?.userType),
+            },
+          )
+        : AppLocalizations.tr(restriction);
     final canApply =
         restriction == null && (own == null || own.status == 'withdrawn');
     final organizer = mission == null ? null : _profiles[mission.authorId];
+    final translationContent = mission == null
+        ? const <String, String>{}
+        : {
+            'title': mission.title,
+            'body': mission.body,
+            if (mission.requirements != null)
+              'requirements': mission.requirements!,
+            if (mission.conditions != null) 'conditions': mission.conditions!,
+          };
     return Scaffold(
       backgroundColor: AppColors.canvas,
       appBar: AppBar(
         backgroundColor: AppColors.canvas,
-        title: const Text('Misión'),
+        title: Text(AppLocalizations.tr('Misión')),
         leading: IconButton(
-          tooltip: 'Volver a misiones',
+          tooltip: AppLocalizations.tr('Volver a misiones'),
           icon: const Icon(Icons.arrow_back),
           onPressed: () => _backToMissions(context),
         ),
         actions: [
           if (mission != null)
             IconButton(
-              tooltip: _saved ? 'Quitar de guardadas' : 'Guardar misión',
+              tooltip: AppLocalizations.tr(
+                _saved ? 'Quitar de guardadas' : 'Guardar misión',
+              ),
               onPressed: _busy ? null : _toggleSaved,
               icon: Icon(_saved ? Icons.bookmark : Icons.bookmark_border),
             ),
           if (mission != null && !owner)
             IconButton(
-              tooltip: 'Reportar misión',
+              tooltip: AppLocalizations.tr('Reportar misión'),
               onPressed: _busy ? null : _report,
               icon: const Icon(Icons.more_horiz),
             ),
@@ -662,7 +956,9 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
           : mission == null
           ? Center(
               child: CommunityNotice(
-                message: _error ?? 'Esta misión ya no está disponible.',
+                message:
+                    _error ??
+                    AppLocalizations.tr('Esta misión ya no está disponible.'),
                 onRetry: _error == null ? null : _load,
               ),
             )
@@ -695,21 +991,28 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                             runSpacing: 8,
                             children: [
                               _badge(
-                                communityCategories[mission.category] ??
-                                    'Otros',
+                                missionCategoryLabel(mission.category),
                                 AppColors.mint,
                               ),
-                              _badge(mission.statusLabel, AppColors.mist),
+                              _badge(
+                                AppLocalizations.tr(mission.statusLabel),
+                                AppColors.mist,
+                              ),
                             ],
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            mission.title,
+                            translated['title'] ?? mission.title,
                             style: Theme.of(context).textTheme.headlineMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.w800,
                                   height: 1.1,
                                 ),
+                          ),
+                          MissionTranslationAction(
+                            content: translationContent,
+                            onChanged: (value) =>
+                                setState(() => _translatedMission = value),
                           ),
                           const SizedBox(height: 10),
                           Row(
@@ -758,15 +1061,23 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                               title: Text(
                                 organizer?.fullName ??
                                     mission.organizerName ??
-                                    'Ver organizador',
+                                    AppLocalizations.tr('Ver organizador'),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
                               subtitle: Text(
                                 organizer == null
-                                    ? 'Organizador'
-                                    : '@${organizer.username} · ${organizer.userType.databaseValue}',
+                                    ? AppLocalizations.tr('Organizador')
+                                    : AppLocalizations.trTemplate(
+                                        '@{username} · {profile}',
+                                        {
+                                          'username': organizer.username,
+                                          'profile': AppLocalizations.tr(
+                                            organizer.userType.databaseValue,
+                                          ),
+                                        },
+                                      ),
                               ),
                               trailing: const Icon(Icons.chevron_right),
                               onTap: () =>
@@ -780,27 +1091,35 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                               children: [
                                 _fact(
                                   Icons.event_outlined,
-                                  'Fecha y hora',
+                                  AppLocalizations.tr('Fecha y hora'),
                                   missionDate(mission.startsAt),
                                 ),
                                 const Divider(height: 24),
                                 _fact(
                                   Icons.payments_outlined,
-                                  'Compensación',
-                                  mission.compensationLabel,
+                                  AppLocalizations.tr('Compensación'),
+                                  missionCompensationLocalizedLabel(
+                                    mission.compensationType,
+                                    mission.compensationAmountCents,
+                                  ),
                                 ),
                                 const Divider(height: 24),
                                 _fact(
                                   Icons.people_outline,
-                                  'Participantes',
-                                  '${mission.availableSeats} de ${mission.capacity} lugares disponibles',
+                                  AppLocalizations.tr('Participantes'),
+                                  AppLocalizations.trTemplate(
+                                    '{available} de {capacity} lugares disponibles',
+                                    {
+                                      'available': '${mission.availableSeats}',
+                                      'capacity': '${mission.capacity}',
+                                    },
+                                  ),
                                 ),
                                 const Divider(height: 24),
                                 _fact(
                                   Icons.account_circle_outlined,
-                                  'Perfil solicitado',
-                                  mission.targetType?.databaseValue ??
-                                      'Todos los perfiles',
+                                  AppLocalizations.tr('Perfil solicitado'),
+                                  missionTargetLabel(mission.targetType),
                                 ),
                               ],
                             ),
@@ -828,18 +1147,25 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                     setState(() => _socialStats = stats),
                               ),
                             ),
-                          _section(context, 'La misión', mission.body),
+                          _section(
+                            context,
+                            AppLocalizations.tr('La misión'),
+                            translated['body'] ?? mission.body,
+                          ),
                           if (mission.requirements != null)
                             _section(
                               context,
-                              'Lo que necesitas',
-                              mission.requirements!,
+                              AppLocalizations.tr('Lo que necesitas'),
+                              translated['requirements'] ??
+                                  mission.requirements!,
                             ),
                           if (mission.conditions != null)
                             _section(
                               context,
-                              'Qué ofrecemos y condiciones',
-                              mission.conditions!,
+                              AppLocalizations.tr(
+                                'Qué ofrecemos y condiciones',
+                              ),
+                              translated['conditions'] ?? mission.conditions!,
                             ),
                           if (mission.coordinates != null)
                             Padding(
@@ -851,15 +1177,19 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                   coordinates: mission.coordinates!,
                                 ),
                                 icon: const Icon(Icons.map_outlined),
-                                label: const Text('Ver ubicación'),
+                                label: Text(
+                                  AppLocalizations.tr('Ver ubicación'),
+                                ),
                               ),
                             ),
                           if (mission.cancellationReason != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 20),
                               child: CommunityNotice(
-                                message:
-                                    'Motivo de cancelación: ${mission.cancellationReason}',
+                                message: AppLocalizations.trTemplate(
+                                  'Motivo de cancelación: {reason}',
+                                  {'reason': mission.cancellationReason!},
+                                ),
                               ),
                             ),
                           if (!owner && own != null) ...[
@@ -870,7 +1200,14 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Tu postulación: ${_applicationStatus(own.status).toLowerCase()}.',
+                                    AppLocalizations.trTemplate(
+                                      'Tu postulación: {status}.',
+                                      {
+                                        'status': _applicationStatus(
+                                          own.status,
+                                        ).toLowerCase(),
+                                      },
+                                    ),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -878,9 +1215,13 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                   const SizedBox(height: 8),
                                   Text(own.message),
                                   if (own.availabilityConfirmed == true)
-                                    const Padding(
+                                    Padding(
                                       padding: EdgeInsets.only(top: 8),
-                                      child: Text('Disponibilidad confirmada'),
+                                      child: Text(
+                                        AppLocalizations.tr(
+                                          'Disponibilidad confirmada',
+                                        ),
+                                      ),
                                     ),
                                   if ((own.status == 'pending' ||
                                           own.status == 'accepted') &&
@@ -894,10 +1235,16 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                                   .controller
                                                   .communityRepository!
                                                   .withdraw(own.id),
-                                              'Postulación retirada.',
+                                              AppLocalizations.tr(
+                                                'Postulación retirada.',
+                                              ),
                                             ),
                                       icon: const Icon(Icons.close),
-                                      label: const Text('Retirar postulación'),
+                                      label: Text(
+                                        AppLocalizations.tr(
+                                          'Retirar postulación',
+                                        ),
+                                      ),
                                     ),
                                 ],
                               ),
@@ -906,10 +1253,12 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                           if (!owner &&
                               !canApply &&
                               (own == null || own.status == 'withdrawn') &&
-                              restriction != null)
+                              localizedRestriction != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 24),
-                              child: CommunityNotice(message: restriction),
+                              child: CommunityNotice(
+                                message: localizedRestriction,
+                              ),
                             ),
                           const SizedBox(height: 20),
                         ],
@@ -956,12 +1305,21 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                         ),
                         label: Text(
                           owner
-                              ? 'Gestionar misión'
+                              ? AppLocalizations.tr('Gestionar misión')
                               : canApply
-                              ? 'Quiero participar'
+                              ? AppLocalizations.tr('Quiero participar')
                               : own != null && own.status != 'withdrawn'
-                              ? 'Candidatura ${_applicationStatus(own.status).toLowerCase()}'
-                              : 'Participación no disponible',
+                              ? AppLocalizations.trTemplate(
+                                  'Candidatura {status}',
+                                  {
+                                    'status': _applicationStatus(
+                                      own.status,
+                                    ).toLowerCase(),
+                                  },
+                                )
+                              : AppLocalizations.tr(
+                                  'Participación no disponible',
+                                ),
                         ),
                       ),
                     ),

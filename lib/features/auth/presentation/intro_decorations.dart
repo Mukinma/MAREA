@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 const _navy = Color(0xFF0B3045);
@@ -63,7 +64,7 @@ class IntroDecorations extends StatelessWidget {
           y: 82,
           width: 192,
           order: 0,
-          child: const _PlaceCard(
+          child: _PlaceCard(
             image: 'brava',
             name: 'Brava',
             rating: '4.8',
@@ -84,11 +85,11 @@ class IntroDecorations extends StatelessWidget {
           y: 366,
           width: 174,
           order: 4,
-          child: const _PlaceCard(
+          child: _PlaceCard(
             image: 'chopdeli',
             name: 'ChopDeli',
             rating: '4.6',
-            category: 'Comida',
+            category: AppLocalizations.tr('Comida'),
           ),
         ),
         _pin(166, 440, 5),
@@ -99,8 +100,8 @@ class IntroDecorations extends StatelessWidget {
           y: 92,
           width: 112,
           order: 0,
-          child: const _CategoryChip(
-            label: 'Pintura',
+          child: _CategoryChip(
+            label: AppLocalizations.tr('Pintura'),
             icon: Icons.palette_outlined,
             color: Color(0xFFEEE5F8),
           ),
@@ -111,8 +112,8 @@ class IntroDecorations extends StatelessWidget {
           y: 62,
           width: 138,
           order: 2,
-          child: const _CategoryChip(
-            label: 'Fotografía',
+          child: _CategoryChip(
+            label: AppLocalizations.tr('Fotografía'),
             icon: Icons.camera_alt_outlined,
             color: Color(0xFFE6F6F4),
           ),
@@ -122,8 +123,8 @@ class IntroDecorations extends StatelessWidget {
           y: 268,
           width: 102,
           order: 3,
-          child: const _CategoryChip(
-            label: 'Moda',
+          child: _CategoryChip(
+            label: AppLocalizations.tr('Moda'),
             icon: Icons.checkroom_outlined,
             color: Color(0xFFF9E1EC),
           ),
@@ -133,8 +134,8 @@ class IntroDecorations extends StatelessWidget {
           y: 412,
           width: 114,
           order: 4,
-          child: const _CategoryChip(
-            label: 'Comida',
+          child: _CategoryChip(
+            label: AppLocalizations.tr('Comida'),
             icon: Icons.restaurant_outlined,
             color: Color(0xFFE6F6F4),
           ),
@@ -388,7 +389,7 @@ class _TerraceCard extends StatelessWidget {
   Widget build(BuildContext context) => _Card(
     color: const Color(0xFFDEEBFC),
     padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 14),
-    child: const Row(
+    child: Row(
       children: [
         Icon(Icons.calendar_month_outlined, color: _navy, size: 24),
         SizedBox(width: 10),
@@ -398,7 +399,7 @@ class _TerraceCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Terraza 6–10 pm',
+                AppLocalizations.tr('Terraza 6–10 pm'),
                 style: TextStyle(
                   color: _navy,
                   fontSize: 12,
@@ -486,13 +487,13 @@ class _EventCard extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 14),
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Sesión en vivo',
+                AppLocalizations.tr('Sesión en vivo'),
                 style: TextStyle(
                   color: _navy,
                   fontSize: 19,
@@ -501,7 +502,7 @@ class _EventCard extends StatelessWidget {
               ),
               SizedBox(height: 7),
               Text(
-                'Sáb, 18 oct • 7:00 pm',
+                AppLocalizations.tr('Sáb, 18 oct • 7:00 pm'),
                 style: TextStyle(color: _muted, fontSize: 12),
               ),
               SizedBox(height: 6),

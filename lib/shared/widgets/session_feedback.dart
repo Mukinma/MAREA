@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
 
@@ -10,7 +11,9 @@ class SessionFeedback extends StatelessWidget {
     animation: controller,
     builder: (_, _) {
       final error = controller.failure?.message;
-      final message = error ?? controller.successMessage;
+      final message = error == null
+          ? controller.successMessage
+          : AppLocalizations.tr(error);
       if (message == null) return const SizedBox.shrink();
       return Semantics(
         liveRegion: true,

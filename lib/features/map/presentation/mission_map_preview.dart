@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/category_visuals.dart';
@@ -54,7 +55,10 @@ class MissionMapPreview extends StatelessWidget {
                               vertical: 4,
                             ),
                             child: Text(
-                              communityCategories[mission.category] ?? 'Otros',
+                              AppLocalizations.tr(
+                                communityCategories[mission.category] ??
+                                    'Otros',
+                              ),
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,

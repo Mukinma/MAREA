@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:marea/core/location/device_location_service.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import '../models/tour_models.dart';
 import 'tour_widgets.dart';
+
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 
 class TourDiscoveryScreen extends StatefulWidget {
   const TourDiscoveryScreen({
@@ -105,8 +109,11 @@ class _TourDiscoveryScreenState extends State<TourDiscoveryScreen> {
               e.kind == DeviceLocationFailureKind.cancelled)) {
         setState(
           () => _error = e is DeviceLocationFailure
-              ? e.message
-              : 'No pudimos obtener tu ubicación. Puedes explorar la lista de locales.',
+              ? core_l10n.AppLocalizations.tr(e.message)
+              : core_l10n.AppLocalizations.tr(
+                  (AppLocalizations.of(context) ?? AppLocalizationsEs())
+                      .errorUbicacion,
+                ),
         );
       }
     } finally {
@@ -115,98 +122,109 @@ class _TourDiscoveryScreenState extends State<TourDiscoveryScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: const TourBackButton(fallback: '/map'),
-      title: const Text('Explorar locales'),
-      actions: [
-        IconButton(
-          tooltip: 'Ver mapa',
-          icon: const Icon(Icons.map_outlined),
-          onPressed: () {
-            _locationGeneration++;
-            setState(() => _locating = false);
-            context.push('/map?experiences=1');
-          },
-        ),
-        if (_position != null)
-          PopupMenuButton<String>(
-            tooltip: 'Más opciones',
-            onSelected: (value) {
-              if (value != 'all') return;
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return Scaffold(
+      appBar: AppBar(
+        leading: const TourBackButton(fallback: '/map'),
+        title: Text(core_l10n.AppLocalizations.tr(l10n.explorarLocales)),
+        actions: [
+          IconButton(
+            tooltip: core_l10n.AppLocalizations.tr('Ver mapa'),
+            icon: const Icon(Icons.map_outlined),
+            onPressed: () {
               _locationGeneration++;
-              setState(() {
-                _locating = false;
-                _position = null;
-                _error = null;
-                _items = _fetch();
-              });
+              setState(() => _locating = false);
+              context.push('/map?experiences=1');
             },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'all', child: Text('Ver todos los locales')),
-            ],
           ),
-      ],
-    ),
-    body: ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        const Text(
-          'Conoce espacios en 360° y descubre sus paradas con cámara cuando estés ahí.',
-        ),
-        FilledButton.icon(
-          onPressed: _locating ? null : _nearby,
-          icon: const Icon(Icons.near_me_outlined),
-          label: Text(
-            _locating
-                ? 'Buscando tu ubicación…'
-                : _position == null
-                ? 'Descubrir cerca de mí'
-                : 'Actualizar cerca de mí',
-          ),
-        ),
-        if (_error != null) TourNotice(_error!),
-        if (_position != null)
-          const Text(
-            'Cerca de ti · distancias aproximadas. Abre un local para explorar sus imágenes.',
-          ),
-        FutureBuilder<List<TourRecord>>(
-          future: _items,
-          builder: (c, s) {
-            if (s.hasError) {
-              return TourNotice(tourError(s.error!), onRetry: _reload);
-            }
-            if (!s.hasData) return const LinearProgressIndicator();
-            if (s.data!.isEmpty) {
-              return const TourNotice(
-                'Todavía no hay recorridos disponibles aquí.',
-              );
-            }
-            final tours = [...s.data!];
-            if (_position != null) {
-              tours.sort((a, b) {
-                final first = _distance(a), second = _distance(b);
-                if (first == null) return second == null ? 0 : 1;
-                return second == null ? -1 : first.compareTo(second);
-              });
-            }
-            return Column(
-              children: [
-                for (final t in tours)
-                  Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.panorama_photosphere_outlined),
-                      title: Text(t.title),
-                      subtitle: Text(_locationLabel(t)),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => context.push('/tours/${t.id}'),
-                    ),
+          if (_position != null)
+            PopupMenuButton<String>(
+              tooltip: core_l10n.AppLocalizations.tr('Más opciones'),
+              onSelected: (value) {
+                if (value != 'all') return;
+                _locationGeneration++;
+                setState(() {
+                  _locating = false;
+                  _position = null;
+                  _error = null;
+                  _items = _fetch();
+                });
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: 'all',
+                  child: Text(
+                    core_l10n.AppLocalizations.tr('Ver todos los locales'),
                   ),
+                ),
               ],
-            );
-          },
-        ),
-      ],
-    ),
-  );
+            ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(core_l10n.AppLocalizations.tr(l10n.conoceEspacios360)),
+          FilledButton.icon(
+            onPressed: _locating ? null : _nearby,
+            icon: const Icon(Icons.near_me_outlined),
+            label: Text(
+              _locating
+                  ? core_l10n.AppLocalizations.tr(l10n.buscandoUbicacion)
+                  : core_l10n.AppLocalizations.tr(l10n.descubrirCerca),
+            ),
+          ),
+          if (_error != null) TourNotice(_error!),
+          if (_position != null)
+            Text(
+              core_l10n.AppLocalizations.tr(
+                'Cerca de ti · distancias aproximadas. Abre un local para explorar sus imágenes.',
+              ),
+            ),
+          FutureBuilder<List<TourRecord>>(
+            future: _items,
+            builder: (c, s) {
+              if (s.hasError) {
+                return TourNotice(
+                  tourError(s.error!, l10n: l10n),
+                  onRetry: _reload,
+                );
+              }
+              if (!s.hasData) return const LinearProgressIndicator();
+              if (s.data!.isEmpty) {
+                return TourNotice(
+                  core_l10n.AppLocalizations.tr(l10n.sinRecorridosDisponibles),
+                );
+              }
+              final tours = [...s.data!];
+              if (_position != null) {
+                tours.sort((a, b) {
+                  final first = _distance(a), second = _distance(b);
+                  if (first == null) return second == null ? 0 : 1;
+                  return second == null ? -1 : first.compareTo(second);
+                });
+              }
+              return Column(
+                children: [
+                  for (final t in tours)
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.panorama_photosphere_outlined,
+                        ),
+                        title: Text(t.title),
+                        subtitle: Text(_locationLabel(t)),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => context.push('/tours/${t.id}'),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }

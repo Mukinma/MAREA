@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:file_selector/file_selector.dart' as files;
@@ -54,9 +55,9 @@ abstract final class ProfileImagePicker {
     try {
       file = source == ProfilePhotoSource.files
           ? await files.openFile(
-              acceptedTypeGroups: const [
+              acceptedTypeGroups: [
                 files.XTypeGroup(
-                  label: 'Imágenes',
+                  label: AppLocalizations.tr('Imágenes'),
                   extensions: ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'],
                   mimeTypes: [
                     'image/jpeg',

@@ -120,7 +120,8 @@ class ShowcaseInput {
     if (!communityCategories.containsKey(category)) {
       return 'Elige una categoría válida.';
     }
-    if (imagePaths.length > 6 || imagePaths.toSet().length != imagePaths.length) {
+    if (imagePaths.length > 6 ||
+        imagePaths.toSet().length != imagePaths.length) {
       return 'Elige hasta seis fotografías distintas.';
     }
     if (status == ShowcaseStatus.published &&

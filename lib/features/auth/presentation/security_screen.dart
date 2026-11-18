@@ -1,3 +1,5 @@
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/shared/widgets/auth_layout.dart';
@@ -8,6 +10,7 @@ import 'package:marea/shared/widgets/marea_text_field.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
 import 'package:marea/shared/widgets/session_feedback.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class SecurityScreen extends StatefulWidget {
   const SecurityScreen({
     required this.controller,
@@ -57,65 +60,70 @@ class _SecurityScreenState extends State<SecurityScreen> {
   Widget _recoveryForm() => AuthLayout(
     child: AnimatedBuilder(
       animation: widget.controller,
-      builder: (context, _) => AutofillGroup(
-        child: Form(
-          key: _form,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Nueva contraseña',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 28),
-              MareaTextField(
-                key: const Key('recovery-password'),
-                controller: _new,
-                label: 'Contraseña',
-                hint: 'Mínimo 8 caracteres',
-                enabled: !widget.controller.isBusy,
-                obscureText: _obscure,
-                autofillHints: const [AutofillHints.newPassword],
-                textInputAction: TextInputAction.done,
-                validator: FormValidators.password,
-                onFieldSubmitted: (_) => _save(),
-                suffixIcon: IconButton(
-                  tooltip: _obscure
-                      ? 'Mostrar contraseña'
-                      : 'Ocultar contraseña',
-                  onPressed: widget.controller.isBusy
-                      ? null
-                      : () => setState(() => _obscure = !_obscure),
-                  icon: Icon(
-                    _obscure
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
+      builder: (context, _) {
+        final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+        return AutofillGroup(
+          child: Form(
+            key: _form,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  core_l10n.AppLocalizations.tr(l10n.nuevaContrasena),
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 28),
+                MareaTextField(
+                  key: const Key('recovery-password'),
+                  controller: _new,
+                  label: core_l10n.AppLocalizations.tr(l10n.contrasena),
+                  hint: core_l10n.AppLocalizations.tr(l10n.minimoCaracteres),
+                  enabled: !widget.controller.isBusy,
+                  obscureText: _obscure,
+                  autofillHints: const [AutofillHints.newPassword],
+                  textInputAction: TextInputAction.done,
+                  validator: FormValidators.password,
+                  onFieldSubmitted: (_) => _save(),
+                  suffixIcon: IconButton(
+                    tooltip: _obscure
+                        ? core_l10n.AppLocalizations.tr(l10n.mostrarContrasena)
+                        : core_l10n.AppLocalizations.tr(l10n.ocultarContrasena),
+                    onPressed: widget.controller.isBusy
+                        ? null
+                        : () => setState(() => _obscure = !_obscure),
+                    icon: Icon(
+                      _obscure
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
                   ),
                 ),
-              ),
-              SessionFeedback(controller: widget.controller),
-              const SizedBox(height: 28),
-              PrimaryButton(
-                label: 'Guardar contraseña',
-                isLoading: widget.controller.isBusy,
-                onPressed: widget.controller.isBusy ? null : _save,
-              ),
-            ],
+                SessionFeedback(controller: widget.controller),
+                const SizedBox(height: 28),
+                PrimaryButton(
+                  label: core_l10n.AppLocalizations.tr(l10n.guardarContrasena),
+                  isLoading: widget.controller.isBusy,
+                  onPressed: widget.controller.isBusy ? null : _save,
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     ),
   );
 
   @override
-  Widget build(BuildContext context) => widget.recovery
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return widget.recovery
       ? _recoveryForm()
       : Scaffold(
           appBar: AppBar(
             leading: widget.recovery ? null : const ProfileBackButton(),
             automaticallyImplyLeading: !widget.recovery,
             title: Text(
-              widget.changeEmail ? 'Cambiar correo' : 'Cambiar contraseña',
+              widget.changeEmail ? core_l10n.AppLocalizations.tr(l10n.cambiarCorreo) : core_l10n.AppLocalizations.tr(l10n.cambiarContrasena),
             ),
           ),
           body: SingleChildScrollView(
@@ -134,18 +142,18 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           children: [
                             Text(
                               widget.changeEmail
-                                  ? 'El cambio necesita confirmación en tus correos. Hasta completarla seguirás usando el actual.'
-                                  : 'Usa una contraseña única de al menos 8 caracteres.',
+                                  ? core_l10n.AppLocalizations.tr(l10n.confirmacionCambioCorreo)
+                                  : core_l10n.AppLocalizations.tr(l10n.usaContrasenaUnica),
                             ),
                             const SizedBox(height: 24),
                             if (!widget.recovery) ...[
                               MareaTextField(
                                 controller: _current,
-                                label: 'Contraseña actual',
+                                label: core_l10n.AppLocalizations.tr(l10n.contrasenaActual),
                                 obscureText: _obscure,
                                 autofillHints: const [AutofillHints.password],
                                 validator: (v) => v == null || v.isEmpty
-                                    ? 'Escribe tu contraseña actual.'
+                                    ? core_l10n.AppLocalizations.tr(l10n.escribeContrasenaActual)
                                     : null,
                               ),
                               const SizedBox(height: 16),
@@ -153,8 +161,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                             MareaTextField(
                               controller: _new,
                               label: widget.changeEmail
-                                  ? 'Nuevo correo'
-                                  : 'Nueva contraseña',
+                                  ? core_l10n.AppLocalizations.tr(l10n.nuevoCorreo)
+                                  : core_l10n.AppLocalizations.tr(l10n.nuevaContrasena),
                               obscureText: !widget.changeEmail && _obscure,
                               keyboardType: widget.changeEmail
                                   ? TextInputType.emailAddress
@@ -171,8 +179,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                   ? null
                                   : IconButton(
                                       tooltip: _obscure
-                                          ? 'Mostrar contraseña'
-                                          : 'Ocultar contraseña',
+                                          ? core_l10n.AppLocalizations.tr(l10n.mostrarContrasena)
+                                          : core_l10n.AppLocalizations.tr(l10n.ocultarContrasena),
                                       onPressed: () =>
                                           setState(() => _obscure = !_obscure),
                                       icon: Icon(
@@ -186,7 +194,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                               const SizedBox(height: 16),
                               MareaTextField(
                                 controller: _confirm,
-                                label: 'Confirmar nueva contraseña',
+                                label:                                 core_l10n.AppLocalizations.tr(l10n.confirmarNuevaContrasena),
                                 obscureText: _obscure,
                                 validator: (v) =>
                                     FormValidators.confirmPassword(
@@ -198,11 +206,11 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                 const SizedBox(height: 16),
                                 MareaTextField(
                                   controller: _nonce,
-                                  label: 'Código de seguridad',
+                                  label: core_l10n.AppLocalizations.tr(l10n.codigoSeguridad),
                                   keyboardType: TextInputType.number,
                                 ),
-                                const Text(
-                                  'Solo si se solicita.',
+                                Text(
+                                  core_l10n.AppLocalizations.tr(l10n.soloSiSeSolicita),
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 TextButton(
@@ -211,7 +219,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                       : widget
                                             .controller
                                             .requestReauthentication,
-                                  child: const Text('Enviar código por correo'),
+                                  child: Text(
+                                    core_l10n.AppLocalizations.tr(l10n.enviarCodigoCorreo),
+                                  ),
                                 ),
                               ],
                             ],
@@ -232,14 +242,15 @@ class _SecurityScreenState extends State<SecurityScreen> {
               maxWidth: 560,
               child: PrimaryButton(
                 label: widget.changeEmail
-                    ? 'Solicitar cambio de correo'
-                    : 'Guardar contraseña',
+                    ? core_l10n.AppLocalizations.tr(l10n.solicitarCambioCorreo)
+                    : core_l10n.AppLocalizations.tr(l10n.guardarContrasena),
                 isLoading: widget.controller.isBusy,
                 onPressed: _save,
               ),
             ),
           ),
         );
+  }
 }
 
 class PasswordUpdatedScreen extends StatelessWidget {
@@ -258,12 +269,16 @@ class PasswordUpdatedScreen extends StatelessWidget {
         ),
         const SizedBox(height: 28),
         Text(
-          'Contraseña actualizada',
+          (AppLocalizations.of(context) ?? AppLocalizationsEs())
+              .contrasenaActualizada,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 28),
-        PrimaryButton(label: 'Entrar', onPressed: () => context.go('/home')),
+        PrimaryButton(
+          label: (AppLocalizations.of(context) ?? AppLocalizationsEs()).entrar,
+          onPressed: () => context.go('/home'),
+        ),
       ],
     ),
   );

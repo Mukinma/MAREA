@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:marea/core/location/device_location_service.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
 import 'package:marea/features/map/data/mission_map_repository.dart';
@@ -214,6 +215,25 @@ void main() {
     return (repo, location);
   }
 
+  testWidgets('map quick filters use the active language', (tester) async {
+    addTearDown(() async {
+      await AppLocalizations.delegate.load(const Locale('es', 'MX'));
+    });
+    await AppLocalizations.delegate.load(const Locale('en', 'US'));
+
+    await withTiles(() async {
+      await open(tester);
+      await tester.tap(find.text('Categorías'));
+      await tester.pumpAndSettle();
+      expect(find.text('All'), findsOneWidget);
+      expect(find.text('Today'), findsOneWidget);
+      expect(find.text('Art'), findsOneWidget);
+      expect(find.text('Music'), findsOneWidget);
+      expect(find.text('Food'), findsOneWidget);
+      expect(find.text('Fashion'), findsOneWidget);
+    });
+  });
+
   testWidgets('nearby map entry immediately shows public experience markers', (
     tester,
   ) async {
@@ -373,27 +393,28 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('quick categories expand inline and apply the selected category', (
-    tester,
-  ) async {
-    final (repo, _) = await open(tester);
-    expect(find.text('Categorías'), findsOneWidget);
-    await tester.tap(find.text('Categorías'));
-    await tester.pumpAndSettle();
-    expect(find.text('Arte'), findsOneWidget);
-    expect(find.byTooltip('Ocultar categorías'), findsOneWidget);
+  testWidgets(
+    'quick categories expand inline and apply the selected category',
+    (tester) async {
+      final (repo, _) = await open(tester);
+      expect(find.text('Categorías'), findsOneWidget);
+      await tester.tap(find.text('Categorías'));
+      await tester.pumpAndSettle();
+      expect(find.text('Arte'), findsOneWidget);
+      expect(find.byTooltip('Ocultar categorías'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('Arte'));
-    await tester.tap(find.widgetWithText(ActionChip, 'Arte'));
-    await tester.pumpAndSettle();
-    expect(repo.filters.last.category, 'arte');
+      await tester.ensureVisible(find.text('Arte'));
+      await tester.tap(find.widgetWithText(ActionChip, 'Arte'));
+      await tester.pumpAndSettle();
+      expect(repo.filters.last.category, 'arte');
 
-    await tester.tap(find.byTooltip('Ocultar categorías'));
-    await tester.pumpAndSettle();
-    expect(find.text('Arte'), findsNothing);
-    expect(find.bySemanticsLabel('Arte'), findsOneWidget);
-    expect(find.byTooltip('Ocultar categorías'), findsNothing);
-  });
+      await tester.tap(find.byTooltip('Ocultar categorías'));
+      await tester.pumpAndSettle();
+      expect(find.text('Arte'), findsNothing);
+      expect(find.bySemanticsLabel('Arte'), findsOneWidget);
+      expect(find.byTooltip('Ocultar categorías'), findsNothing);
+    },
+  );
 
   for (final width in [390.0, 1366.0]) {
     testWidgets('new map layout retains published AR entry at $width', (

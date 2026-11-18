@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,11 +16,15 @@ class LegalLinks extends StatelessWidget {
     children: [
       TextButton(
         onPressed: () => context.push('/terms'),
-        child: Text(compact ? 'Términos' : 'Términos y condiciones'),
+        child: Text(
+          compact
+              ? AppLocalizations.tr('Términos')
+              : AppLocalizations.tr('Términos y condiciones'),
+        ),
       ),
       TextButton(
         onPressed: () => context.push('/privacy'),
-        child: const Text('Aviso de privacidad'),
+        child: Text(AppLocalizations.tr('Aviso de privacidad')),
       ),
     ],
   );
@@ -46,8 +51,10 @@ class ConsentFields extends StatelessWidget {
         controlAffinity: ListTileControlAffinity.leading,
         value: terms,
         onChanged: enabled ? (value) => onTermsChanged(value ?? false) : null,
-        title: const Text(
-          'Acepto los términos y he leído el aviso de privacidad.',
+        title: Text(
+          AppLocalizations.tr(
+            'Acepto los términos y he leído el aviso de privacidad.',
+          ),
         ),
       ),
       CheckboxListTile(
@@ -56,7 +63,7 @@ class ConsentFields extends StatelessWidget {
         controlAffinity: ListTileControlAffinity.leading,
         value: adult,
         onChanged: enabled ? (value) => onAdultChanged(value ?? false) : null,
-        title: const Text('Tengo 18 años o más.'),
+        title: Text(AppLocalizations.tr('Tengo 18 años o más.')),
       ),
     ],
   );
@@ -80,11 +87,13 @@ class LegalDocumentScreen extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            deletion
-                ? 'Eliminar mi cuenta'
-                : kind == 'terms'
-                ? 'Términos y condiciones'
-                : 'Aviso de privacidad',
+            AppLocalizations.tr(
+              deletion
+                  ? 'Eliminar mi cuenta'
+                  : kind == 'terms'
+                  ? 'Términos y condiciones'
+                  : 'Aviso de privacidad',
+            ),
           ),
           leading: BackButton(
             onPressed: () =>
@@ -101,18 +110,22 @@ class LegalDocumentScreen extends StatelessWidget {
                 children: [
                   if (deletion) ...[
                     Text(
-                      'Tú decides cuándo irte.',
+                      AppLocalizations.tr('Tú decides cuándo irte.'),
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Puedes eliminar tu cuenta de MAREA desde Configuración → Eliminar cuenta. Se borrarán tu acceso, perfil, preferencias e imágenes. Es una acción permanente.',
+                    Text(
+                      AppLocalizations.tr(
+                        'Puedes eliminar tu cuenta de MAREA desde Configuración → Eliminar cuenta. Se borrarán tu acceso, perfil, preferencias e imágenes. Es una acción permanente.',
+                      ),
                     ),
                     const SizedBox(height: 24),
                     PrimaryButton(
                       label: controller.status == AuthStatus.authenticated
-                          ? 'Ir a Configuración'
-                          : 'Iniciar sesión para eliminar mi cuenta',
+                          ? AppLocalizations.tr('Ir a Configuración')
+                          : AppLocalizations.tr(
+                              'Iniciar sesión para eliminar mi cuenta',
+                            ),
                       onPressed: () => context.go(
                         controller.status == AuthStatus.authenticated
                             ? '/settings'
@@ -121,7 +134,9 @@ class LegalDocumentScreen extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () => context.go('/recover-password'),
-                      child: const Text('No puedo acceder a mi cuenta'),
+                      child: Text(
+                        AppLocalizations.tr('No puedo acceder a mi cuenta'),
+                      ),
                     ),
                     if (policy.supportEmail case final email?)
                       TextButton(
@@ -131,18 +146,31 @@ class LegalDocumentScreen extends StatelessWidget {
                               scheme: 'mailto',
                               path: email,
                               queryParameters: {
-                                'subject':
-                                    'Solicitud de eliminación de cuenta MAREA',
+                                'subject': AppLocalizations.tr(
+                                  'Solicitud de eliminación de cuenta MAREA',
+                                ),
                               },
                             ),
                           );
                           if (!ok && context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Escríbenos a $email')),
+                              SnackBar(
+                                content: Text(
+                                  AppLocalizations.trTemplate(
+                                    'Escríbenos a {email}',
+                                    {'email': email},
+                                  ),
+                                ),
+                              ),
                             );
                           }
                         },
-                        child: Text('Solicitar ayuda: $email'),
+                        child: Text(
+                          AppLocalizations.trTemplate(
+                            'Solicitar ayuda: {email}',
+                            {'email': email},
+                          ),
+                        ),
                       ),
                   ] else if (doc != null) ...[
                     Text(
@@ -150,7 +178,12 @@ class LegalDocumentScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     const SizedBox(height: 8),
-                    Text('Versión ${doc.version} · México'),
+                    Text(
+                      AppLocalizations.trTemplate(
+                        'Versión {version} · México',
+                        {'version': doc.version.toString()},
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     SelectableText(
                       doc.body,
@@ -158,17 +191,19 @@ class LegalDocumentScreen extends StatelessWidget {
                     ),
                   ] else ...[
                     Text(
-                      'Documento pendiente de publicación',
+                      AppLocalizations.tr('Documento pendiente de publicación'),
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       controller.legalError ??
-                          'MAREA todavía no ha publicado este documento. No es posible crear una cuenta hasta que estén disponibles los términos y el aviso de privacidad.',
+                          AppLocalizations.tr(
+                            'MAREA todavía no ha publicado este documento. No es posible crear una cuenta hasta que estén disponibles los términos y el aviso de privacidad.',
+                          ),
                     ),
                     TextButton(
                       onPressed: controller.reloadLegal,
-                      child: const Text('Volver a cargar'),
+                      child: Text(AppLocalizations.tr('Volver a cargar')),
                     ),
                   ],
                 ],
@@ -192,7 +227,7 @@ class _AcceptLegalScreenState extends State<AcceptLegalScreen> {
   bool terms = false, adult = false;
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Antes de continuar')),
+    appBar: AppBar(title: Text(AppLocalizations.tr('Antes de continuar'))),
     body: SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Center(
@@ -204,12 +239,14 @@ class _AcceptLegalScreenState extends State<AcceptLegalScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Conoce las condiciones de MAREA',
+                  AppLocalizations.tr('Conoce las condiciones de MAREA'),
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'La comunidad es para mayores de 18 años. Revisa los documentos vigentes antes de continuar. Si no deseas aceptarlos, puedes cerrar sesión o eliminar tu cuenta.',
+                Text(
+                  AppLocalizations.tr(
+                    'La comunidad es para mayores de 18 años. Revisa los documentos vigentes antes de continuar. Si no deseas aceptarlos, puedes cerrar sesión o eliminar tu cuenta.',
+                  ),
                 ),
                 ConsentFields(
                   terms: terms,
@@ -220,7 +257,7 @@ class _AcceptLegalScreenState extends State<AcceptLegalScreen> {
                 ),
                 SessionFeedback(controller: widget.controller),
                 PrimaryButton(
-                  label: 'Aceptar y continuar',
+                  label: AppLocalizations.tr('Aceptar y continuar'),
                   isLoading: widget.controller.isBusy,
                   onPressed:
                       terms &&
@@ -250,11 +287,13 @@ class _AcceptLegalScreenState extends State<AcceptLegalScreen> {
                   onPressed: widget.controller.isBusy
                       ? null
                       : () => widget.controller.signOut(),
-                  child: const Text('Cerrar sesión'),
+                  child: Text(AppLocalizations.tr('Cerrar sesión')),
                 ),
                 TextButton(
                   onPressed: () => context.go('/settings'),
-                  child: const Text('Gestionar o eliminar mi cuenta'),
+                  child: Text(
+                    AppLocalizations.tr('Gestionar o eliminar mi cuenta'),
+                  ),
                 ),
               ],
             ),

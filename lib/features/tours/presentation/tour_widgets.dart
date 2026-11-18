@@ -1,8 +1,13 @@
+import 'package:marea/core/localization/app_localizations.dart' as legacy;
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/theme/app_colors.dart';
+
+String _tourText(String value) => legacy.AppLocalizations.tr(value);
 
 void leaveTour(BuildContext context, String fallback) {
   if (Navigator.canPop(context)) {
@@ -17,23 +22,32 @@ class TourBackButton extends StatelessWidget {
   final String fallback;
   final VoidCallback? onPressed;
   @override
-  Widget build(BuildContext context) => IconButton(
-    tooltip: 'Volver',
-    onPressed: onPressed ?? () => leaveTour(context, fallback),
-    icon: const Icon(Icons.arrow_back),
-  );
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return IconButton(
+      tooltip: _tourText(legacy.AppLocalizations.tr(l10n.volver)),
+      onPressed: onPressed ?? () => leaveTour(context, fallback),
+      icon: const Icon(Icons.arrow_back),
+    );
+  }
 }
 
-String tourError(Object e) {
+String tourError(Object e, {AppLocalizations? l10n}) {
   if (e is PostgrestException && e.message == 'space_permission_required') {
-    return 'El permiso del espacio fue retirado. Solicita una nueva revisión para volver a publicar.';
+    return _tourText(
+      l10n?.permisoEspacioRetiradoError ??
+          'El permiso del espacio fue retirado. Solicita una nueva revisión para volver a publicar.',
+    );
   }
   if (e is PostgrestException && e.message == 'capture_superseded') {
-    return 'Esta captura fue sustituida por otra más reciente. Vuelve a la posición para continuar con la captura actual.';
+    return _tourText(
+      l10n?.capturaSustituidaError ??
+          'Esta captura fue sustituida por otra más reciente. Vuelve a la posición para continuar con la captura actual.',
+    );
   }
-  return e is StateError
-      ? e.message.toString()
-      : AppFailureMapper.from(e).message;
+  return _tourText(
+    e is StateError ? e.message.toString() : AppFailureMapper.from(e).message,
+  );
 }
 
 class TourNotice extends StatelessWidget {
@@ -51,9 +65,17 @@ class TourNotice extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(text),
+        Text(_tourText(text)),
         if (onRetry != null)
-          TextButton(onPressed: onRetry, child: const Text('Reintentar')),
+          TextButton(
+            onPressed: onRetry,
+            child: Text(
+              _tourText(
+                (AppLocalizations.of(context) ?? AppLocalizationsEs())
+                    .reintentar,
+              ),
+            ),
+          ),
       ],
     ),
   );
@@ -87,7 +109,11 @@ Future<String?> tourTextDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(c),
-          child: const Text('Cancelar'),
+          child: Text(
+            _tourText(
+              (AppLocalizations.of(context) ?? AppLocalizationsEs()).cancelar,
+            ),
+          ),
         ),
         FilledButton(
           onPressed: () {
@@ -95,7 +121,11 @@ Future<String?> tourTextDialog(
               Navigator.pop(c, input.text.trim());
             }
           },
-          child: const Text('Guardar'),
+          child: Text(
+            _tourText(
+              (AppLocalizations.of(context) ?? AppLocalizationsEs()).guardar,
+            ),
+          ),
         ),
       ],
     ),

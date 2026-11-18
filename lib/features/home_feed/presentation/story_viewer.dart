@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +36,7 @@ class _StoryViewerState extends State<StoryViewer>
   Timer? _expiry;
   int _index = 0;
   bool _holding = false,
+      _paused = false,
       _background = false,
       _profileOpen = false,
       _menuOpen = false,
@@ -44,7 +46,13 @@ class _StoryViewerState extends State<StoryViewer>
   String? _error;
   Story get _story => widget.stories[_index];
   bool get _shouldPause =>
-      _holding || _background || _profileOpen || _menuOpen || !_loaded || _busy;
+      _holding ||
+      _paused ||
+      _background ||
+      _profileOpen ||
+      _menuOpen ||
+      !_loaded ||
+      _busy;
   @override
   void initState() {
     super.initState();
@@ -130,6 +138,7 @@ class _StoryViewerState extends State<StoryViewer>
     }
     setState(() {
       _index = next;
+      _paused = false;
       _prepare();
     });
   }
@@ -157,18 +166,20 @@ class _StoryViewerState extends State<StoryViewer>
         final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('¿Eliminar historia?'),
-            content: const Text(
-              'Dejará de estar disponible para la comunidad.',
+            title: Text(AppLocalizations.tr('¿Eliminar historia?')),
+            content: Text(
+              AppLocalizations.tr(
+                'Dejará de estar disponible para la comunidad.',
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar'),
+                child: Text(AppLocalizations.tr('Cancelar')),
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Eliminar'),
+                child: Text(AppLocalizations.tr('Eliminar')),
               ),
             ],
           ),
@@ -182,19 +193,19 @@ class _StoryViewerState extends State<StoryViewer>
         final result = await showDialog<String>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Reportar historia'),
+            title: Text(AppLocalizations.tr('Reportar historia')),
             content: TextField(
               controller: reason,
               maxLength: 500,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Motivo (mínimo 5 caracteres)',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.tr('Motivo (mínimo 5 caracteres)'),
               ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
+                child: Text(AppLocalizations.tr('Cancelar')),
               ),
               FilledButton(
                 onPressed: () {
@@ -202,7 +213,7 @@ class _StoryViewerState extends State<StoryViewer>
                     Navigator.pop(context, reason.text.trim());
                   }
                 },
-                child: const Text('Enviar reporte'),
+                child: Text(AppLocalizations.tr('Enviar reporte')),
               ),
             ],
           ),
@@ -211,9 +222,9 @@ class _StoryViewerState extends State<StoryViewer>
         if (result != null) {
           await widget.repository.report(_story.id, result);
           if (mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Reporte enviado')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(AppLocalizations.tr('Reporte enviado'))),
+            );
           }
         }
       }
@@ -240,184 +251,300 @@ class _StoryViewerState extends State<StoryViewer>
       child: Focus(
         autofocus: true,
         child: Scaffold(
-          backgroundColor: AppColors.brandNavy,
-          appBar: AppBar(
-            backgroundColor: AppColors.brandNavy,
-            foregroundColor: Colors.white,
-            title: TextButton(
-              onPressed: _profile,
-              child: Text(
-                widget.profiles[story.authorId]?.fullName ?? 'Historia',
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-            actions: [
-              PopupMenuButton<String>(
-                enabled: !_busy,
-                onOpened: () {
-                  _menuOpen = true;
-                  _sync();
-                },
-                onCanceled: () {
-                  _menuOpen = false;
-                  _sync();
-                },
-                onSelected: (action) {
-                  _menuOpen = false;
-                  _action(action);
-                },
-                itemBuilder: (_) => [
-                  PopupMenuItem(
-                    value: story.authorId == widget.viewerId
-                        ? 'delete'
-                        : 'report',
-                    child: Text(
-                      story.authorId == widget.viewerId
-                          ? 'Eliminar historia'
-                          : 'Reportar historia',
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          body: SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  child: AnimatedBuilder(
-                    animation: _progress,
-                    builder: (_, _) => Row(
-                      children: [
-                        for (var i = 0; i < widget.stories.length; i++)
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 2,
-                              ),
-                              child: LinearProgressIndicator(
-                                value: i < _index
-                                    ? 1
-                                    : i == _index
-                                    ? _progress.value
-                                    : 0,
-                                backgroundColor: Colors.white24,
-                                color: AppColors.aqua,
+          backgroundColor: Colors.black,
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              final viewerWidth = constraints.maxWidth < 640
+                  ? constraints.maxWidth
+                  : 640.0;
+              return Center(
+                child: SizedBox(
+                  key: const Key('story-viewer-frame'),
+                  width: viewerWidth,
+                  height: constraints.maxHeight,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (_url != null)
+                        FutureBuilder<String>(
+                          future: _url,
+                          builder: (_, snapshot) {
+                            if (snapshot.hasError) return _imageError();
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return Image.network(
+                              snapshot.data!,
+                              fit: BoxFit.contain,
+                              frameBuilder: (_, child, frame, synchronous) {
+                                if (frame != null || synchronous) {
+                                  WidgetsBinding.instance.addPostFrameCallback(
+                                    (_) => _ready(story.id),
+                                  );
+                                }
+                                return child;
+                              },
+                              errorBuilder: (_, _, _) => _imageError(),
+                            );
+                          },
+                        ),
+                      const Positioned.fill(
+                        child: IgnorePointer(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black87,
+                                  Colors.transparent,
+                                  Colors.black87,
+                                ],
+                                stops: [0, .38, 1],
                               ),
                             ),
                           ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) => GestureDetector(
-                      onTapUp: (details) =>
-                          _handleContentTap(details, constraints.biggest),
-                      onLongPressStart: (_) {
-                        _holding = true;
-                        _sync();
-                      },
-                      onLongPressEnd: (_) {
-                        _holding = false;
-                        _sync();
-                      },
-                      onLongPressCancel: () {
-                        _holding = false;
-                        _sync();
-                      },
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            if (_url != null)
-                              SizedBox(
-                                width: constraints.maxWidth,
-                                height: constraints.maxHeight * .82,
-                                child: FutureBuilder<String>(
-                                  future: _url,
-                                  builder: (_, snapshot) {
-                                    if (snapshot.hasError) return _imageError();
-                                    if (!snapshot.hasData) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-                                    return Image.network(
-                                      snapshot.data!,
-                                      width: constraints.maxWidth,
-                                      height: constraints.maxHeight * .82,
-                                      fit: BoxFit.contain,
-                                      frameBuilder:
-                                          (_, child, frame, synchronous) {
-                                            if (frame != null || synchronous) {
-                                              WidgetsBinding.instance
-                                                  .addPostFrameCallback(
-                                                    (_) => _ready(story.id),
-                                                  );
-                                            }
-                                            return child;
-                                          },
-                                      errorBuilder: (_, _, _) => _imageError(),
-                                    );
-                                  },
+                        ),
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTapUp: (details) => _handleContentTap(
+                          details,
+                          Size(viewerWidth, constraints.maxHeight),
+                        ),
+                        onLongPressStart: (_) {
+                          _holding = true;
+                          _sync();
+                        },
+                        onLongPressEnd: (_) {
+                          _holding = false;
+                          _sync();
+                        },
+                        onLongPressCancel: () {
+                          _holding = false;
+                          _sync();
+                        },
+                        child: const SizedBox.expand(),
+                      ),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: SafeArea(
+                          bottom: false,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      tooltip: AppLocalizations.tr(
+                                        'Cerrar historia',
+                                      ),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      icon: const Icon(
+                                        Icons.close_rounded,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: TextButton(
+                                        onPressed: _profile,
+                                        style: TextButton.styleFrom(
+                                          alignment: Alignment.centerLeft,
+                                          foregroundColor: Colors.white,
+                                        ),
+                                        child: Text(
+                                          widget
+                                                  .profiles[story.authorId]
+                                                  ?.fullName ??
+                                              AppLocalizations.tr('Historia'),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    PopupMenuButton<String>(
+                                      tooltip: AppLocalizations.tr('Acciones'),
+                                      enabled: !_busy,
+                                      iconColor: Colors.white,
+                                      onOpened: () {
+                                        _menuOpen = true;
+                                        _sync();
+                                      },
+                                      onCanceled: () {
+                                        _menuOpen = false;
+                                        _sync();
+                                      },
+                                      onSelected: (action) {
+                                        _menuOpen = false;
+                                        _action(action);
+                                      },
+                                      itemBuilder: (_) => [
+                                        PopupMenuItem(
+                                          value:
+                                              story.authorId == widget.viewerId
+                                              ? 'delete'
+                                              : 'report',
+                                          child: Text(
+                                            AppLocalizations.tr(
+                                              story.authorId == widget.viewerId
+                                                  ? 'Eliminar historia'
+                                                  : 'Reportar historia',
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            if (story.text.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Text(
-                                  story.text,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: story.imagePath == null ? 26 : 18,
-                                    height: 1.4,
+                                const SizedBox(height: 8),
+                                AnimatedBuilder(
+                                  animation: _progress,
+                                  builder: (_, _) => Row(
+                                    children: [
+                                      for (
+                                        var i = 0;
+                                        i < widget.stories.length;
+                                        i++
+                                      )
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 2,
+                                            ),
+                                            child: LinearProgressIndicator(
+                                              value: i < _index
+                                                  ? 1
+                                                  : i == _index
+                                                  ? _progress.value
+                                                  : 0,
+                                              backgroundColor: Colors.white24,
+                                              color: AppColors.aqua,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                spacing: 8,
-                                runSpacing: 8,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: 16,
+                        right: 16,
+                        bottom: 0,
+                        child: SafeArea(
+                          top: false,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: constraints.maxHeight * .42,
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  _storyTag(
-                                    Icons.sell_outlined,
-                                    communityCategories[story.category] ??
-                                        'Otros',
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        tooltip: AppLocalizations.tr(
+                                          _paused
+                                              ? 'Reanudar historia'
+                                              : 'Pausar historia',
+                                        ),
+                                        color: Colors.white,
+                                        onPressed: () {
+                                          setState(() => _paused = !_paused);
+                                          _sync();
+                                        },
+                                        icon: Icon(
+                                          _paused
+                                              ? Icons.play_arrow_rounded
+                                              : Icons.pause_rounded,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      IconButton(
+                                        tooltip: AppLocalizations.tr(
+                                          'Historia siguiente',
+                                        ),
+                                        color: Colors.white,
+                                        onPressed: () => _move(1),
+                                        icon: const Icon(
+                                          Icons.skip_next_rounded,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  if (story.targetType != null)
-                                    _storyTag(
-                                      Icons.people_outline,
-                                      story.targetType!.databaseValue,
+                                  if (story.text.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        8,
+                                        16,
+                                        8,
+                                        18,
+                                      ),
+                                      child: Text(
+                                        story.text,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: story.imagePath == null
+                                              ? 26
+                                              : 18,
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                    ),
+                                  Wrap(
+                                    alignment: WrapAlignment.center,
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      _storyTag(
+                                        Icons.sell_outlined,
+                                        communityCategories[story.category] ??
+                                            'Otros',
+                                      ),
+                                      if (story.targetType != null)
+                                        _storyTag(
+                                          Icons.people_outline,
+                                          story.targetType!.databaseValue,
+                                        ),
+                                    ],
+                                  ),
+                                  if (_error != null)
+                                    Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Text(
+                                        _error!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ),
                                 ],
                               ),
                             ),
-                            if (_error != null)
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Text(
-                                  _error!,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -446,13 +573,13 @@ class _StoryViewerState extends State<StoryViewer>
     padding: const EdgeInsets.all(24),
     child: Column(
       children: [
-        const Text(
-          'No pudimos cargar esta foto.',
+        Text(
+          AppLocalizations.tr('No pudimos cargar esta foto.'),
           style: TextStyle(color: Colors.white),
         ),
         TextButton(
           onPressed: () => setState(_prepare),
-          child: const Text('Reintentar'),
+          child: Text(AppLocalizations.tr('Reintentar')),
         ),
       ],
     ),

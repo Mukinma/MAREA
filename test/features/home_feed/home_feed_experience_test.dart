@@ -16,6 +16,8 @@ import 'package:marea/features/home_feed/presentation/story_composer.dart';
 import 'package:marea/features/home_feed/presentation/story_viewer.dart';
 import 'package:marea/features/home_feed/presentation/follow_button.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
+import 'package:marea/features/community/models/community_models.dart';
+import 'package:marea/features/profile/models/profile.dart';
 import '../../support/fake_map_surface.dart';
 import '../../support/fakes.dart';
 import '../../support/home_feed_fakes.dart';
@@ -78,8 +80,8 @@ void main() {
           expect(find.text(homeMission().title), findsNothing);
           expect(find.byTooltip('Crear'), findsOneWidget);
           expect(find.text('Publicar'), findsNothing);
-          expect(find.text('Tu historia'), findsNothing);
-          expect(find.byKey(const Key('home-stories-surface')), findsNothing);
+          expect(find.text('Tu historia'), findsOneWidget);
+          expect(find.byKey(const Key('home-stories-surface')), findsOneWidget);
           expect(find.text('Mariana Torres'), findsWidgets);
           expect(find.byTooltip('Inicio'), findsOneWidget);
           expect(find.byTooltip('Misiones'), findsOneWidget);
@@ -266,7 +268,11 @@ void main() {
     await tester.ensureVisible(story);
     await tester.tap(story);
     final cameraScreen = find.byType(StoryCameraScreen);
-    for (var frame = 0; frame < 30 && cameraScreen.evaluate().isEmpty; frame++) {
+    for (
+      var frame = 0;
+      frame < 30 && cameraScreen.evaluate().isEmpty;
+      frame++
+    ) {
       await tester.pump(const Duration(milliseconds: 50));
     }
     expect(cameraScreen, findsOneWidget);
@@ -404,6 +410,62 @@ void main() {
     router.dispose();
     session.dispose();
   });
+  for (final width in [390.0, 1440.0]) {
+    testWidgets('story image layout keeps overlays visible at $width', (
+      tester,
+    ) async {
+      const height = 844.0;
+      tester.view.physicalSize = Size(width, height);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final now = DateTime.now();
+      final story = Story(
+        id: 'photo-story',
+        authorId: 'other',
+        imagePath: 'photo',
+        text: 'Una historia con imagen.',
+        createdAt: now,
+        expiresAt: now.add(const Duration(hours: 24)),
+      );
+      final batch = StoryBatch(stories: [story], serverTime: now);
+      final repository = StoriesFake()..values.add(story);
+      final session = controller(HomeFeedFake(), stories: repository);
+      await tester.pumpWidget(
+        testApp(
+          StoryViewer(
+            stories: batch.stories,
+            batch: batch,
+            repository: repository,
+            profiles: const {
+              'other': CommunityProfile(
+                id: 'other',
+                fullName: 'Mariana Torres',
+                username: 'mariana',
+                userType: UserType.creator,
+              ),
+            },
+            controller: session,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final frame = tester.getRect(find.byKey(const Key('story-viewer-frame')));
+      final username = tester.getRect(find.text('Mariana Torres'));
+      final progress = tester.getRect(find.byType(LinearProgressIndicator));
+      expect(frame.width, width < 640 ? width : 640);
+      expect(frame.height, height);
+      expect(username.bottom, lessThan(progress.top));
+      expect(progress.bottom, lessThan(height / 2));
+      expect(find.text('Una historia con imagen.'), findsOneWidget);
+      expect(find.byType(AppBar), findsNothing);
+      expect(tester.takeException(), isNull);
+
+      await tester.pumpWidget(const SizedBox());
+      session.dispose();
+    });
+  }
   testWidgets(
     'a failed story publish retains the photo and retries the same operation',
     (tester) async {
@@ -473,10 +535,12 @@ void main() {
       );
       await tester.pump();
       expect(stories.viewed, contains('one'));
+      await tester.pump(const Duration(milliseconds: 500));
+      final frame = tester.getRect(find.byKey(const Key('story-viewer-frame')));
       final gesture = await tester.startGesture(
-        tester.getCenter(find.text('Primera')),
+        Offset(frame.left + 12, frame.top + frame.height * .5),
       );
-      await tester.pump(const Duration(milliseconds: 550));
+      await tester.pump(const Duration(milliseconds: 600));
       final indicator = find.byType(LinearProgressIndicator).first;
       final progress = tester.widget<LinearProgressIndicator>(indicator).value;
       await tester.pump(const Duration(seconds: 6));

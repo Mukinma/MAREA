@@ -14,12 +14,16 @@ import 'package:marea/core/theme/app_spacing.dart';
 import 'package:marea/core/utils/form_validators.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
+import 'package:marea/features/profile/presentation/profile_sections.dart';
 import 'package:marea/features/community/presentation/post_location_picker.dart';
 import 'package:marea/features/community/models/community_models.dart';
 
 import 'package:marea/shared/widgets/social_avatar.dart';
 import 'package:marea/shared/widgets/profile_image.dart';
 import 'package:marea/shared/widgets/session_feedback.dart';
+import 'package:marea/l10n/app_localizations.dart' as gen;
+import 'package:marea/l10n/app_localizations_es.dart' as gen;
+import 'package:marea/core/localization/app_localizations.dart';
 
 enum _CoverChoice { gallery, styles }
 
@@ -38,6 +42,29 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  gen.AppLocalizations get _l10n =>
+      gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
+  String _tr(String value) => AppLocalizations.tr(value);
+
+  String _weekdayLabel(String weekday) => switch (weekday) {
+    'mon' => _tr(_l10n.lunes),
+    'tue' => _tr(_l10n.martes),
+    'wed' => _tr(_l10n.miercoles),
+    'thu' => _tr(_l10n.jueves),
+    'fri' => _tr(_l10n.viernes),
+    'sat' => _tr(_l10n.sabado),
+    'sun' => _tr(_l10n.domingo),
+    _ => weekday,
+  };
+
+  String _coverLabel(String cover) => switch (cover) {
+    'marea' => _tr(_l10n.marea),
+    'lavanda' => _tr(_l10n.lavanda),
+    'durazno' => _tr(_l10n.durazno),
+    'menta' => _tr(_l10n.menta),
+    _ => cover,
+  };
+
   final _form = GlobalKey<FormState>();
   late String _section =
       widget.initialSection == 'professional' &&
@@ -57,7 +84,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         text:
             _original?.businessHours.containsKey(day) == true &&
                 _original?.businessHours[day] == null
-            ? 'cerrado'
+            ? AppLocalizations.tr('cerrado')
             : _original?.businessHours[day],
       ),
   };
@@ -98,7 +125,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     businessHours: {
       for (final day in _hours.keys)
         if (_hours[day]!.text.trim().isNotEmpty)
-          day: _hours[day]!.text.trim().toLowerCase() == 'cerrado'
+          day: _isClosedHours(_hours[day]!.text)
               ? null
               : _hours[day]!.text.trim(),
     },
@@ -114,6 +141,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           !_interests.containsAll(_original.interests)) ||
       jsonEncode(_draft?.toUpdateJson()) !=
           jsonEncode(_original.toUpdateJson());
+
+  bool _isClosedHours(String value) =>
+      const {'cerrado', 'closed'}.contains(value.trim().toLowerCase());
+  String? _translatedError(String? error) =>
+      error == null ? null : _tr(error);
   @override
   void initState() {
     super.initState();
@@ -155,16 +187,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final discard = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('¿Descartar tus cambios?'),
-          content: const Text('Los cambios todavía no se han guardado.'),
+          title: Text(_tr(_l10n.descartarCambios)),
+          content: Text(_tr(_l10n.cambiosNoGuardados)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Seguir editando'),
+              child: Text(_tr(_l10n.seguirEditando)),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Descartar'),
+              child: Text(_tr(_l10n.descartar)),
             ),
           ],
         ),
@@ -186,26 +218,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(20),
                 child: Text(
-                  'Cambiar foto de portada',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  _tr(_l10n.cambiarFotoPortada),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library_outlined),
-                title: const Text('Galería'),
+                title: Text(_tr(_l10n.galeria)),
                 onTap: () => Navigator.pop(ctx, _CoverChoice.gallery),
               ),
               ListTile(
                 leading: const Icon(Icons.landscape_outlined),
-                title: const Text('Estilos de MAREA'),
+                title: Text(_tr(_l10n.estilosMarea)),
                 onTap: () => Navigator.pop(ctx, _CoverChoice.styles),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancelar'),
+                child: Text(_tr(_l10n.cancelar)),
               ),
               const SizedBox(height: 12),
             ],
@@ -258,8 +293,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         setState(
           () => _error = e is AppFailure
-              ? e.message
-              : 'No pudimos abrir tus fotos. Inténtalo nuevamente.',
+              ? _tr(e.message)
+              : _tr(_l10n.errorAbrirFotos),
         );
       }
     } finally {
@@ -336,9 +371,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (e) {
       if (mounted) {
         setState(
-          () => _error = e is AppFailure
-              ? e.message
-              : 'No pudimos guardar las imágenes. Tus cambios siguen aquí para reintentar.',
+          () =>
+              _error = e is AppFailure
+                  ? _tr(e.message)
+                  : _tr(_l10n.errorGuardarImagenes),
         );
       }
     } finally {
@@ -431,7 +467,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               icon: const Icon(Icons.photo_camera_outlined, size: 16),
-              label: const Text('Cambiar foto de perfil'),
+              label: Text(_tr(_l10n.cambiarFotoPerfil)),
             ),
           ),
         ),
@@ -453,7 +489,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Me mueve', style: Theme.of(ctx).textTheme.titleLarge),
+                Text(
+                  _tr(_l10n.meMueve),
+                  style: Theme.of(ctx).textTheme.titleLarge,
+                ),
                 const SizedBox(height: 16),
                 Wrap(
                   spacing: 8,
@@ -461,7 +500,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     for (final entry in ProfilePreferences.interests.entries)
                       FilterChip(
-                        label: Text(entry.value),
+                        label: Text(
+                          localizedProfileInterestLabel(context, entry.key),
+                        ),
                         selected: selected.contains(entry.key),
                         onSelected: (value) => update(() {
                           value
@@ -474,7 +515,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 24),
                 FilledButton(
                   onPressed: () => Navigator.pop(ctx, selected),
-                  child: const Text('Listo'),
+                  child: Text(_tr(_l10n.listo)),
                 ),
               ],
             ),
@@ -522,13 +563,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(20),
-                child: Text('Estilos de MAREA'),
+                child: Text(_tr(_l10n.estilosMarea)),
               ),
               for (final entry in ProfilePreferences.covers.entries)
                 ListTile(
-                  title: Text(entry.value),
+                  title: Text(_coverLabel(entry.key)),
                   leading: ClipOval(
                     child: SizedBox(
                       width: 32,
@@ -546,7 +587,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancelar'),
+                child: Text(_tr(_l10n.cancelar)),
               ),
             ],
           ),
@@ -671,8 +712,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         key: const Key('edit-cover-action'),
         contentPadding: EdgeInsets.zero,
         leading: const Icon(Icons.add_photo_alternate_outlined),
-        title: const Text('Cambiar foto de portada'),
-        subtitle: const Text('Elige una foto o usa un estilo predeterminado'),
+        title: Text(_tr(_l10n.cambiarFotoPortada)),
+        subtitle: Text(_tr(_l10n.elegirFotoOPreset)),
         trailing: const Icon(Icons.chevron_right),
         onTap: _saving ? null : _chooseCoverPhoto,
       ),
@@ -685,16 +726,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             colors: _waveColors ?? ProfileWaves.defaultColors,
           ),
         ),
-        title: const Text('Personalizar olitas'),
-        subtitle: const Text('Colores independientes de tu fotografía'),
+        title: Text(_tr(_l10n.personalizarOlitas)),
+        subtitle: Text(_tr(_l10n.coloresIndependientesFoto)),
         trailing: const Icon(Icons.chevron_right),
         onTap: _saving ? null : _customizeWaves,
       ),
       const SizedBox(height: 8),
       Row(
         children: [
-          const Expanded(
-            child: Text('Me mueve', style: TextStyle(fontSize: 14)),
+          Expanded(
+            child: Text(
+              _tr(_l10n.meMueve),
+              style: const TextStyle(fontSize: 14),
+            ),
           ),
           Flexible(
             flex: 2,
@@ -702,7 +746,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: _editInterests,
-                child: const Text('Editar intereses', textAlign: TextAlign.end),
+                child: Text(
+                  _tr(_l10n.editarIntereses),
+                  textAlign: TextAlign.end,
+                ),
               ),
             ),
           ),
@@ -714,7 +761,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           IconButton.outlined(
             onPressed: _editInterests,
-            tooltip: 'Añadir intereses',
+            tooltip: _tr(_l10n.anadirIntereses),
             icon: const Icon(Icons.add, size: 18),
           ),
           for (final interest in _interests)
@@ -729,7 +776,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               shape: const StadiumBorder(),
               visualDensity: VisualDensity.compact,
               labelStyle: const TextStyle(fontSize: 11),
-              label: Text(ProfilePreferences.interests[interest] ?? interest),
+              label: Text(localizedProfileInterestLabel(context, interest)),
             ),
         ],
       ),
@@ -739,9 +786,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _coverBytes != null)
         ExpansionTile(
           tilePadding: EdgeInsets.zero,
-          title: const Text(
-            'Opciones de imágenes',
-            style: TextStyle(fontSize: 14),
+          title: Text(
+            _tr(_l10n.opcionesImagenes),
+            style: const TextStyle(fontSize: 14),
           ),
           children: [
             if (_avatarPath != null || _avatarBytes != null)
@@ -750,7 +797,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   _avatarPath = null;
                   _avatarBytes = null;
                 }),
-                child: const Text('Quitar foto'),
+                child: Text(_tr(_l10n.quitarFoto)),
               ),
             if (_coverPath != null || _coverBytes != null)
               TextButton(
@@ -758,7 +805,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   _coverPath = null;
                   _coverBytes = null;
                 }),
-                child: const Text('Quitar portada'),
+                child: Text(_tr(_l10n.quitarPortada)),
               ),
           ],
         ),
@@ -787,17 +834,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 children: [
                   _EditorField(
                     controller: _name,
-                    label: 'Nombre completo',
+                    label: _tr(_l10n.nombreCompleto),
                     textInputAction: TextInputAction.next,
-                    validator: FormValidators.fullName,
+                    validator: (value) =>
+                        _translatedError(FormValidators.fullName(value)),
                   ),
                   _summaryField(
-                    'Tipo de perfil',
-                    _profile.userType.databaseValue,
+                    _tr(_l10n.tipoPerfil),
+                    localizedProfileUserTypeLabel(context, _profile.userType),
                   ),
                   _summaryField(
-                    'Ubicación',
-                    _location ?? 'Añadir ubicación',
+                    _tr(_l10n.ubicacion),
+                    _location ?? _tr(_l10n.agregarUbicacion),
                     onTap: _chooseLocation,
                   ),
                 ],
@@ -809,11 +857,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 children: [
                   _EditorField(
                     controller: _bio,
-                    label: 'Sobre mí',
-                    hint: '¿Qué haces y qué te mueve?',
+                    label: _tr(_l10n.sobreMi),
+                    hint: _tr(_l10n.hintSobreMi),
                     maxLength: 160,
                     maxLines: 3,
-                    validator: FormValidators.bio,
+                    validator: (value) =>
+                        _translatedError(FormValidators.bio(value)),
                   ),
                 ],
               ),
@@ -821,26 +870,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               _preferences(),
               const SizedBox(height: 24),
               _EditorSection(
-                title: 'Más información',
+                title: _tr(_l10n.masInformacion),
                 children: [
                   _EditorField(
                     controller: _username,
-                    label: 'Nombre de usuario',
+                    label: _tr(_l10n.nombreUsuario),
                     prefixText: '@',
                     textInputAction: TextInputAction.next,
-                    validator: FormValidators.username,
+                    validator: (value) =>
+                        _translatedError(FormValidators.username(value)),
                   ),
                   Text(
-                    'Tipo de perfil: ${_profile.userType.databaseValue}',
+                    AppLocalizations.trTemplate(
+                      'Tipo de perfil: {type}',
+                      {
+                        'type': localizedProfileUserTypeLabel(
+                          context,
+                          _profile.userType,
+                        ),
+                      },
+                    ),
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                  const Text('Elegido al crear tu perfil.'),
+                  Text(_tr(_l10n.elegidoAlCrearPerfil)),
                   _EditorField(
                     controller: _website,
-                    label: 'Sitio web',
+                    label: _tr(_l10n.sitioWeb),
                     hint: 'https://tusitio.com',
                     keyboardType: TextInputType.url,
-                    validator: ProfilePreferences.websiteError,
+                    validator: (value) => _translatedError(
+                      ProfilePreferences.websiteError(value),
+                    ),
                   ),
                 ],
               ),
@@ -850,9 +910,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         if (_profile.userType != UserType.general)
           MareaTabs(
-            options: const {
-              'identity': 'Identidad',
-              'professional': 'Profesional',
+            options: {
+              'identity': _tr(_l10n.identidad),
+              'professional': _tr(_l10n.profesional),
             },
             value: _section,
             onChanged: (value) {
@@ -866,29 +926,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             visible: _section == 'professional',
             child: _EditorSection(
               key: const Key('edit-professional'),
-              title: 'Información profesional',
+              title: _tr(_l10n.informacionProfesional),
               children: [
                 _EditorField(
                   controller: _contact,
-                  label: 'Enlace de contacto',
-                  hint: 'https://wa.me/... o tu página de contacto',
+                  label: _tr(_l10n.enlaceContacto),
+                  hint: _tr(_l10n.hintEnlaceContacto),
                   keyboardType: TextInputType.url,
-                  validator: ProfilePreferences.websiteError,
+                  validator: (value) => _translatedError(
+                    ProfilePreferences.websiteError(value),
+                  ),
                 ),
                 if (_profile.userType == UserType.creator)
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Disponible para colaborar'),
+                    title: Text(_tr(_l10n.disponibleColaborar)),
                     value: _collaboration,
                     onChanged: (v) => setState(() => _collaboration = v),
                   ),
                 if (_profile.userType == UserType.business) ...[
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Ubicación del negocio'),
-                    subtitle: Text(_location ?? 'Sin ubicación'),
+                    title: Text(_tr(_l10n.ubicacionNegocio)),
+                    subtitle: Text(_location ?? _tr(_l10n.sinUbicacion)),
                     trailing: IconButton(
-                      tooltip: 'Quitar ubicación',
+                      tooltip: _tr(_l10n.quitarUbicacion),
                       icon: const Icon(Icons.clear),
                       onPressed: () => setState(() {
                         _location = null;
@@ -914,22 +976,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       }
                     },
                   ),
-                  const Text('Horarios semanales · hora local del negocio'),
-                  const Text(
-                    'Usa 09:00-18:00. Escribe cerrado para un día sin atención; vacío si no quieres mostrarlo.',
-                  ),
+                  Text(_tr(_l10n.horariosSemanales)),
+                  Text(_tr(_l10n.horariosInstruccion)),
                   for (final day in ProfilePreferences.weekdays.entries)
                     _EditorField(
                       controller: _hours[day.key]!,
-                      label: day.value,
-                      hint: '09:00-18:00 o cerrado',
-                      validator: (value) => ProfilePreferences.hoursError({
-                        day.key: value?.trim().isEmpty ?? true
-                            ? null
-                            : value!.trim().toLowerCase() == 'cerrado'
-                            ? null
-                            : value.trim(),
-                      }),
+                      label: _weekdayLabel(day.key),
+                      hint: _tr(_l10n.horarioEjemplo),
+                      validator: (value) => _translatedError(
+                        ProfilePreferences.hoursError({
+                          day.key: value?.trim().isEmpty ?? true
+                              ? null
+                              : _isClosedHours(value!)
+                              ? null
+                              : value.trim(),
+                        }),
+                      ),
                     ),
                 ],
               ],
@@ -943,13 +1005,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     if (_original == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Editar perfil')),
+        appBar: AppBar(title: Text(_tr(_l10n.editarPerfil))),
         body: Center(
           child: TextButton(
             onPressed: () => context.go('/profile'),
-            child: const Text(
-              'No pudimos cargar tu perfil. Volver a intentarlo.',
-            ),
+            child: Text(_tr(_l10n.errorCargarPerfil)),
           ),
         ),
       );
@@ -964,9 +1024,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         appBar: AppBar(
           backgroundColor: const Color(0xFFF4FBFE),
           titleSpacing: 0,
-          title: const Text(
-            'Editar perfil',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          title: Text(
+            _tr(_l10n.editarPerfil),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           leading: Padding(
             padding: const EdgeInsets.all(8),
@@ -978,7 +1038,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           actions: [
             TextButton(
               onPressed: _dirty && !_saving ? _save : null,
-              child: const Text('Guardar'),
+              child: Text(_tr(_l10n.guardar)),
             ),
             const SizedBox(width: 8),
           ],
@@ -1042,8 +1102,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     icon: const Icon(Icons.check_rounded, size: 20),
                     label: Text(
                       _saving || widget.controller.isBusy
-                          ? 'Guardando...'
-                          : 'Guardar cambios',
+                          ? _tr(_l10n.guardando)
+                          : _tr(_l10n.guardarCambios),
                     ),
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -111,21 +112,23 @@ class _StoryComposerState extends State<StoryComposer> {
       builder: (context) {
         final controller = TextEditingController();
         return AlertDialog(
-          title: const Text('Añadir texto'),
+          title: Text(AppLocalizations.tr('Añadir texto')),
           content: TextField(
             controller: controller,
             autofocus: true,
             maxLength: 120,
-            decoration: const InputDecoration(hintText: 'Escribe algo...'),
+            decoration: InputDecoration(
+              hintText: AppLocalizations.tr('Escribe algo...'),
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(AppLocalizations.tr('Cancelar')),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, controller.text.trim()),
-              child: const Text('Añadir'),
+              child: Text(AppLocalizations.tr('Añadir')),
             ),
           ],
         );
@@ -146,13 +149,16 @@ class _StoryComposerState extends State<StoryComposer> {
           children: [
             DropdownButtonFormField<String>(
               initialValue: _category,
-              decoration: const InputDecoration(
-                labelText: 'Categoría',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.tr('Categoría'),
                 prefixIcon: Icon(Icons.sell_outlined),
               ),
               items: [
                 for (final entry in communityCategories.entries)
-                  DropdownMenuItem(value: entry.key, child: Text(entry.value)),
+                  DropdownMenuItem(
+                    value: entry.key,
+                    child: Text(AppLocalizations.tr(entry.value)),
+                  ),
               ],
               onChanged: (value) {
                 if (value != null) setState(() => _category = value);
@@ -161,16 +167,19 @@ class _StoryComposerState extends State<StoryComposer> {
             const SizedBox(height: 8),
             DropdownButtonFormField<UserType?>(
               initialValue: _targetType,
-              decoration: const InputDecoration(
-                labelText: 'Público',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.tr('Público'),
                 prefixIcon: Icon(Icons.people_outline),
               ),
               items: [
-                const DropdownMenuItem(value: null, child: Text('Todos')),
+                DropdownMenuItem(
+                  value: null,
+                  child: Text(AppLocalizations.tr('Todos')),
+                ),
                 for (final type in UserType.values)
                   DropdownMenuItem(
                     value: type,
-                    child: Text(type.databaseValue),
+                    child: Text(AppLocalizations.tr(type.databaseValue)),
                   ),
               ],
               onChanged: (value) => setState(() => _targetType = value),
@@ -184,11 +193,19 @@ class _StoryComposerState extends State<StoryComposer> {
   Future<void> _publish() async {
     final repo = widget.controller.storiesRepository;
     if (repo == null) {
-      setState(() => _error = 'Las historias todavía no están disponibles.');
+      setState(
+        () => _error = AppLocalizations.tr(
+          'Las historias todavía no están disponibles.',
+        ),
+      );
       return;
     }
     if (_image == null) {
-      setState(() => _error = 'Toma una foto o elige una de tu galería.');
+      setState(
+        () => _error = AppLocalizations.tr(
+          'Toma una foto o elige una de tu galería.',
+        ),
+      );
       return;
     }
     setState(() {
@@ -210,7 +227,7 @@ class _StoryComposerState extends State<StoryComposer> {
       );
       final validation = input.validate();
       if (validation != null) {
-        setState(() => _error = validation);
+        setState(() => _error = AppLocalizations.tr(validation));
         return;
       }
       _submitted ??= input;
@@ -237,8 +254,10 @@ class _StoryComposerState extends State<StoryComposer> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Toma una foto o elige una de tu galería.',
+                    Text(
+                      AppLocalizations.tr(
+                        'Toma una foto o elige una de tu galería.',
+                      ),
                       style: TextStyle(color: Colors.white),
                     ),
                     const SizedBox(height: 18),
@@ -361,18 +380,18 @@ class _StoryComposerState extends State<StoryComposer> {
                     _toolButton(
                       Icons.text_fields,
                       _addTextOverlay,
-                      label: 'Texto',
+                      label: AppLocalizations.tr('Texto'),
                     ),
                     _toolButton(
                       Icons.edit,
                       () => setState(() => _drawing = !_drawing),
-                      label: 'Dibujar',
+                      label: AppLocalizations.tr('Dibujar'),
                       active: _drawing,
                     ),
                     _toolButton(
                       Icons.tune,
                       _showStoryOptions,
-                      label: 'Opciones',
+                      label: AppLocalizations.tr('Opciones'),
                     ),
                   ],
                 ),

@@ -6,23 +6,30 @@ import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
+import 'package:marea/features/showcase/presentation/showcase_widgets.dart';
+import 'package:marea/l10n/app_localizations.dart' as gen;
+import 'package:marea/l10n/app_localizations_es.dart' as gen;
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class CreateScreen extends StatelessWidget {
   const CreateScreen({required this.controller, super.key});
   final AppSessionController controller;
   @override
-  Widget build(BuildContext context) => ColoredBox(
-    color: AppColors.canvas,
-    child: CommunityPage(
-      title: 'Crear',
-      children: [
-        CreationChoices(
-          controller: controller,
-          onSelect: (path) => context.push(path),
-        ),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
+    return ColoredBox(
+      color: AppColors.canvas,
+      child: CommunityPage(
+        title: core_l10n.AppLocalizations.tr(l10n.crear),
+        children: [
+          CreationChoices(
+            controller: controller,
+            onSelect: (path) => context.push(path),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Same choices in the navigation palette and direct /create destination.
@@ -38,20 +45,29 @@ class CreationChoices extends StatelessWidget {
   final bool homeOnly;
   @override
   Widget build(BuildContext context) {
+    final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
     final story = (
-      title: homeOnly ? 'Historia' : 'Crear historia',
-      description: homeOnly
-          ? 'Una foto visible durante 24 h.'
-          : 'Comparte una foto o texto durante 24 horas.',
+      title: core_l10n.AppLocalizations.tr(
+        homeOnly ? 'Historia' : l10n.crearHistoria,
+      ),
+      description: core_l10n.AppLocalizations.tr(
+        homeOnly
+            ? 'Una foto visible durante 24 h.'
+            : l10n.descripcionCrearHistoria,
+      ),
       path: '/stories/new',
       icon: homeOnly ? Icons.add_a_photo_outlined : Icons.add_circle_outline,
       color: AppColors.mint,
     );
     final post = (
-      title: homeOnly ? 'Publicación' : 'Publicar en Inicio',
-      description: homeOnly
-          ? 'Texto o foto en el feed.'
-          : 'Comparte una idea, una novedad o lo que estás creando.',
+      title: core_l10n.AppLocalizations.tr(
+        homeOnly ? 'Publicación' : l10n.publicarEnInicio,
+      ),
+      description: core_l10n.AppLocalizations.tr(
+        homeOnly
+            ? 'Texto o foto en el feed.'
+            : l10n.descripcionPublicarEnInicio,
+      ),
       path: '/posts/new',
       icon: Icons.dynamic_feed_outlined,
       color: AppColors.peach,
@@ -70,40 +86,51 @@ class CreationChoices extends StatelessWidget {
             post,
             story,
           ] else ...[
-            story,
+          (
+            title: core_l10n.AppLocalizations.tr(l10n.crearHistoria),
+            description: core_l10n.AppLocalizations.tr(l10n.descripcionCrearHistoria),
+            path: '/stories/new',
+            icon: Icons.add_circle_outline,
+            color: AppColors.mint,
+          ),
+          (
+            title: core_l10n.AppLocalizations.tr(l10n.crearMisionHerramientas),
+            description: core_l10n.AppLocalizations.tr(l10n.descripcionCrearMisionInicio),
+            path: '/missions/new',
+            icon: Icons.flag_outlined,
+            color: AppColors.mint,
+          ),
+          (
+            title: core_l10n.AppLocalizations.tr(l10n.publicarEnInicio),
+            description: core_l10n.AppLocalizations.tr(l10n.descripcionPublicarEnInicio),
+            path: '/posts/new',
+            icon: Icons.dynamic_feed_outlined,
+            color: AppColors.peach,
+          ),
+          if (controller.tourRepository != null &&
+              controller.profile?.userType != null &&
+              controller.profile!.userType != UserType.general)
             (
-              title: 'Crear misión',
-              description: 'Convoca a tu comunidad para hacer algo juntos.',
-              path: '/missions/new',
-              icon: Icons.flag_outlined,
+              title: core_l10n.AppLocalizations.tr(l10n.crearRecorrido360),
+              description: core_l10n.AppLocalizations.tr(l10n.descripcionCrearRecorrido360),
+              path: '/tours/new',
+              icon: Icons.panorama_photosphere_outlined,
               color: AppColors.mint,
             ),
-            post,
-            if (controller.tourRepository != null &&
-                controller.profile?.userType != null &&
-                controller.profile!.userType != UserType.general)
-              (
-                title: 'Crear recorrido 360°',
-                description: 'Muestra tu local y añade puntos con AR.',
-                path: '/tours/new',
-                icon: Icons.panorama_photosphere_outlined,
-                color: AppColors.mint,
-              ),
-            for (final kind
-                in controller.profile?.userType.showcaseKinds ??
-                    <ShowcaseKind>[])
-              (
-                title: kind.action,
-                description: 'Para tu perfil. Publica o guarda un borrador.',
-                path: '/showcase/new?kind=${kind.name}',
-                icon: kind == ShowcaseKind.project
-                    ? Icons.palette_outlined
-                    : kind == ShowcaseKind.product
-                    ? Icons.inventory_2_outlined
-                    : Icons.design_services_outlined,
-                color: AppColors.lavender,
-              ),
-          ],
+          for (final kind
+              in controller.profile?.userType.showcaseKinds ?? <ShowcaseKind>[])
+            (
+              title: localizedShowcaseKindAction(context, kind),
+              description: core_l10n.AppLocalizations.tr(l10n.descripcionCrearFichaPerfil),
+              path: '/showcase/new?kind=${kind.name}',
+              icon: kind == ShowcaseKind.project
+                  ? Icons.palette_outlined
+                  : kind == ShowcaseKind.product
+                  ? Icons.inventory_2_outlined
+                  : Icons.design_services_outlined,
+              color: AppColors.lavender,
+            ),
+            ],
         ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -185,6 +212,7 @@ Future<void> showCreateMenu(
 }) async {
   final router = GoRouter.of(context);
   final width = MediaQuery.sizeOf(context).width;
+  final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
   Widget panel(BuildContext c) => SafeArea(
     top: !homeOnly,
     child: SingleChildScrollView(
@@ -199,7 +227,9 @@ Future<void> showCreateMenu(
             children: [
               Expanded(
                 child: Text(
-                  homeOnly ? 'Crear' : 'Pon tu idea en movimiento',
+                  core_l10n.AppLocalizations.tr(
+                    homeOnly ? l10n.crear : l10n.ponTuIdeaMovimiento,
+                  ),
                   style: const TextStyle(
                     fontSize: 23,
                     fontWeight: FontWeight.w800,
@@ -208,7 +238,7 @@ Future<void> showCreateMenu(
                 ),
               ),
               IconButton(
-                tooltip: 'Cerrar menú de creación',
+                tooltip: core_l10n.AppLocalizations.tr(l10n.cerrarMenu),
                 onPressed: () => Navigator.pop(c),
                 icon: const Icon(Icons.close),
               ),

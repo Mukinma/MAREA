@@ -11,7 +11,10 @@ import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
 import 'package:marea/features/showcase/presentation/showcase_widgets.dart';
+import 'package:marea/l10n/app_localizations.dart' as gen;
+import 'package:marea/l10n/app_localizations_es.dart' as gen;
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 class ShowcaseDetailScreen extends StatefulWidget {
   const ShowcaseDetailScreen({
     required this.controller,
@@ -88,21 +91,20 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
   }
 
   Future<void> _delete() async {
+    final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('¿Eliminar esta ficha?'),
-        content: const Text(
-          'Se eliminará del apartado junto con sus fotografías. Esta acción no se puede deshacer.',
-        ),
+        title: Text(core_l10n.AppLocalizations.tr(l10n.eliminarEstaFicha)),
+        content: Text(core_l10n.AppLocalizations.tr(l10n.eliminarFichaAdvertencia)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(core_l10n.AppLocalizations.tr(l10n.cancelar)),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Eliminar'),
+            child: Text(core_l10n.AppLocalizations.tr(l10n.eliminar)),
           ),
         ],
       ),
@@ -112,7 +114,8 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
     final ok = await runCommunityAction(
       context,
       () => widget.controller.showcaseRepository!.delete(_item!),
-      success: 'Ficha eliminada.',
+      success: (gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs())
+          .fichaEliminada,
     );
     if (!mounted) return;
     setState(() => _busy = false);
@@ -127,6 +130,7 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
 
   Widget _details(ShowcaseItem item, bool owner) {
     final repo = widget.controller.showcaseRepository!;
+    final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
     return ProfileFormSection(
       children: [
         Column(
@@ -134,14 +138,21 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
           children: [
             Text(item.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
-            Text('${item.kind.label} · ${communityCategories[item.category]}'),
+            Text(
+              core_l10n.AppLocalizations.tr(
+                l10n.fichaTipoCategoria(
+                  localizedShowcaseKindLabel(context, item.kind),
+                  localizedShowcaseCategoryLabel(context, item.category),
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             SelectableText(item.body),
             const SizedBox(height: 20),
             if (item.kind != ShowcaseKind.project)
               Text(
                 item.price == null
-                    ? 'Consultar precio'
+                    ? core_l10n.AppLocalizations.tr(l10n.consultarPrecio)
                     : '\$${item.price!.toStringAsFixed(2)} MXN',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
@@ -166,7 +177,7 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
                         ? null
                         : () => _action(() => repo.setSaved(item.id, !_saved)),
                     icon: Icon(_saved ? Icons.bookmark : Icons.bookmark_border),
-                    label: Text(_saved ? 'Quitar de guardados' : 'Guardar'),
+                    label: Text(_saved ? core_l10n.AppLocalizations.tr(l10n.quitarDeGuardados) : core_l10n.AppLocalizations.tr(l10n.guardar)),
                   ),
                 if (item.projectUrl != null)
                   OutlinedButton.icon(
@@ -179,7 +190,7 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
                       }
                     }),
                     icon: const Icon(Icons.link),
-                    label: const Text('Ver proyecto'),
+                    label: Text(core_l10n.AppLocalizations.tr(l10n.verProyectoFicha)),
                   ),
                 if (!owner &&
                     item.status == ShowcaseStatus.published &&
@@ -190,34 +201,34 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
                         : () async {
                             final reason = await askCommunityText(
                               context,
-                              title: 'Reportar ficha',
-                              label: 'Motivo del reporte',
+                              title: core_l10n.AppLocalizations.tr(l10n.reportarFicha),
+                              label: core_l10n.AppLocalizations.tr(l10n.motivoReporteFicha),
                               maxLength: 500,
                             );
                             if (reason != null && mounted) {
                               await _action(
                                 () => repo.report(item.id, reason),
-                                success: 'Reporte enviado.',
+                                success: core_l10n.AppLocalizations.tr(l10n.reporteFichaEnviado),
                               );
                             }
                           },
                     icon: const Icon(Icons.flag_outlined),
-                    label: const Text('Reportar'),
+                    label: Text(core_l10n.AppLocalizations.tr(l10n.reportar)),
                   ),
               ],
             ),
             if (owner) ...[
               const Divider(height: 40),
               Text(
-                'Administrar ficha · ${item.status.label}',
+                core_l10n.AppLocalizations.tr(
+                  l10n.administrarFichaEstado(
+                    localizedShowcaseStatusLabel(context, item.status),
+                  ),
+                ),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              if (!item.available)
-                const Text('No disponible: solo aparece en tu administración.'),
-              if (item.hidden)
-                const Text(
-                  'Oculta por moderación. Editarla no cambia ese estado.',
-                ),
+              if (!item.available) Text(core_l10n.AppLocalizations.tr(l10n.noDisponibleSoloAdministracion)),
+              if (item.hidden) Text(core_l10n.AppLocalizations.tr(l10n.ocultaPorModeracion)),
               const SizedBox(height: 16),
               Wrap(
                 spacing: 12,
@@ -247,14 +258,14 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
                     icon: const Icon(Icons.archive_outlined),
                     label: Text(
                       item.status == ShowcaseStatus.archived
-                          ? 'Volver a borrador'
-                          : 'Archivar',
+                          ? core_l10n.AppLocalizations.tr(l10n.volverABorrador)
+                          : core_l10n.AppLocalizations.tr(l10n.archivarFicha),
                     ),
                   ),
                   TextButton.icon(
                     onPressed: _busy ? null : _delete,
                     icon: const Icon(Icons.delete_outline),
-                    label: const Text('Eliminar ficha'),
+                    label: Text(core_l10n.AppLocalizations.tr(l10n.eliminarFicha)),
                   ),
                 ],
               ),
@@ -314,20 +325,25 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
     final item = _item;
     final repo = widget.controller.showcaseRepository;
     final owner = item?.ownerId == widget.controller.profile?.id;
     return Scaffold(
       appBar: AppBar(
         leading: const ProfileBackButton(),
-        title: Text(item?.kind.label ?? 'Ficha'),
+        title: Text(
+          item == null
+              ? core_l10n.AppLocalizations.tr(l10n.ficha)
+              : localizedShowcaseKindLabel(context, item.kind),
+        ),
       ),
       body: _loading && item == null
           ? const Center(child: MareaSkeleton(kind: SkeletonKind.detail))
           : _error != null
           ? CommunityNotice(message: _error!, onRetry: _load)
           : item == null || repo == null
-          ? const CommunityNotice(message: 'Esta ficha ya no está disponible.')
+          ? CommunityNotice(message: core_l10n.AppLocalizations.tr(l10n.estaFichaNoDisponible))
           : _detailBody(item, owner),
       bottomNavigationBar:
           (_loading && item == null) ||
@@ -340,7 +356,7 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
               child: FilledButton.icon(
                 onPressed: _busy ? null : _edit,
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Editar ficha'),
+                label: Text(core_l10n.AppLocalizations.tr(l10n.editarFicha)),
               ),
             )
           : _owner?.contactUrl != null &&
@@ -358,7 +374,7 @@ class _ShowcaseDetailScreenState extends State<ShowcaseDetailScreen> {
                         }
                       }),
                 icon: const Icon(Icons.open_in_new),
-                label: const Text('Contactar'),
+                label: Text(core_l10n.AppLocalizations.tr(l10n.contactar)),
               ),
             )
           : null,
@@ -395,54 +411,57 @@ class _ShowcaseGalleryState extends State<ShowcaseGallery> {
     curve: Curves.easeOut,
   );
   @override
-  Widget build(BuildContext context) => MareaSurface(
-    radius: 24,
-    clipBehavior: Clip.antiAlias,
-    child: Column(
-      children: [
-        SizedBox(
-          height: widget.height,
-          child: PageView(
-            controller: _pages,
-            onPageChanged: (value) => setState(() => _index = value),
-            children: [
-              for (final path in widget.item.imagePaths)
-                ShowcasePhoto(
-                  path: path,
-                  repository: widget.controller.showcaseRepository!,
-                  height: widget.height,
-                ),
-            ],
-          ),
-        ),
-        if (widget.item.imagePaths.length > 1)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget build(BuildContext context) {
+    final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
+    return MareaSurface(
+      radius: 24,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          SizedBox(
+            height: widget.height,
+            child: PageView(
+              controller: _pages,
+              onPageChanged: (value) => setState(() => _index = value),
               children: [
-                IconButton(
-                  tooltip: 'Fotografía anterior',
-                  onPressed: _index == 0 ? null : () => _move(-1),
-                  icon: const Icon(Icons.chevron_left),
-                ),
-                Semantics(
-                  liveRegion: true,
-                  child: Text(
-                    '${_index + 1} / ${widget.item.imagePaths.length}',
+                for (final path in widget.item.imagePaths)
+                  ShowcasePhoto(
+                    path: path,
+                    repository: widget.controller.showcaseRepository!,
+                    height: widget.height,
                   ),
-                ),
-                IconButton(
-                  tooltip: 'Fotografía siguiente',
-                  onPressed: _index == widget.item.imagePaths.length - 1
-                      ? null
-                      : () => _move(1),
-                  icon: const Icon(Icons.chevron_right),
-                ),
               ],
             ),
           ),
-      ],
-    ),
-  );
+          if (widget.item.imagePaths.length > 1)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    tooltip: core_l10n.AppLocalizations.tr(l10n.fotografiaAnterior),
+                    onPressed: _index == 0 ? null : () => _move(-1),
+                    icon: const Icon(Icons.chevron_left),
+                  ),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      '${_index + 1} / ${widget.item.imagePaths.length}',
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: core_l10n.AppLocalizations.tr(l10n.fotografiaSiguiente),
+                    onPressed: _index == widget.item.imagePaths.length - 1
+                        ? null
+                        : () => _move(1),
+                    icon: const Icon(Icons.chevron_right),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }

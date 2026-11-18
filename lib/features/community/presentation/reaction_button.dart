@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
@@ -201,7 +202,9 @@ class _ReactionButtonState extends State<ReactionButton>
                         if (widget.selected != null)
                           TextButton(
                             onPressed: () => _select(null),
-                            child: const Text('Retirar reacción'),
+                            child: Text(
+                              AppLocalizations.tr('Retirar reacción'),
+                            ),
                           ),
                       ],
                     ),
@@ -292,7 +295,11 @@ class _ReactionButtonState extends State<ReactionButton>
         value: widget.compact ? '${widget.count} reacciones' : null,
         onTap: widget.enabled ? _toggle : null,
         customSemanticsActions: widget.enabled
-            ? {CustomSemanticsAction(label: 'Elegir reacción'): _open}
+            ? {
+                CustomSemanticsAction(
+                  label: AppLocalizations.tr('Elegir reacción'),
+                ): _open,
+              }
             : null,
         child: FocusableActionDetector(
           enabled: widget.enabled,
@@ -399,11 +406,11 @@ class _ReactionButtonState extends State<ReactionButton>
           excludeSemantics: true,
           button: true,
           enabled: widget.enabled,
-          label: 'Elegir reacción',
+          label: AppLocalizations.tr('Elegir reacción'),
           value: '${widget.count} reacciones',
           onTap: widget.enabled ? _open : null,
           child: Tooltip(
-            message: 'Elegir reacción',
+            message: AppLocalizations.tr('Elegir reacción'),
             child: TextButton(
               style: TextButton.styleFrom(
                 minimumSize: const Size(48, 48),

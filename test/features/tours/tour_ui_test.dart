@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marea/core/localization/app_localizations.dart' as legacy;
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/tours/data/tour_repository.dart';
 import 'package:marea/features/tours/models/tour_models.dart';
@@ -51,6 +53,59 @@ class ReloadTourFake extends TourFake {
 }
 
 void main() {
+  testWidgets('tour management labels follow the selected English locale', (
+    tester,
+  ) async {
+    final repo = ReloadTourFake();
+    final controller = AppSessionController(
+      authRepository: FakeAuthRepository(),
+      profileRepository: FakeProfileRepository(),
+      tourRepository: repo,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en', 'US'),
+        supportedLocales: const [Locale('es', 'MX'), Locale('en', 'US')],
+        localizationsDelegates: [
+          legacy.AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        home: TourManagementScreen(controller: controller),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Your tours'), findsOneWidget);
+    expect(find.text('Show your venue in 360°'), findsOneWidget);
+    expect(find.text('Requests and review'), findsOneWidget);
+    expect(find.text('Draft'), findsOneWidget);
+    expect(find.text('Edit draft'), findsOneWidget);
+    expect(find.byTooltip('Back'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en', 'US'),
+        supportedLocales: const [Locale('es', 'MX'), Locale('en', 'US')],
+        localizationsDelegates: [
+          legacy.AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        home: TourRequestsScreen(controller: controller),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Venue and content permissions are reviewed separately.'),
+      findsOneWidget,
+    );
+    expect(find.text('There are no pending requests.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(const SizedBox());
+    await legacy.AppLocalizations.delegate.load(const Locale('es', 'MX'));
+    controller.dispose();
+  });
+
   testWidgets(
     'retrying a failed tour list starts a new lookup without an async setState',
     (tester) async {

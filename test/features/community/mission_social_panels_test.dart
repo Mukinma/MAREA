@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/core/config/app_config.dart';
+import 'package:marea/core/localization/on_device_post_translator.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/features/community/presentation/missions_screen.dart';
@@ -117,7 +118,53 @@ final missionFixture = Mission(
   capacity: 3,
   createdAt: DateTime.utc(2026),
 );
+
+class DetailTranslator implements PostContentTranslator {
+  int calls = 0;
+
+  @override
+  bool get isSupported => true;
+
+  @override
+  Future<TranslatedPostContent> translate({
+    required String title,
+    required String body,
+    required String targetLanguage,
+  }) async {
+    calls++;
+    return TranslatedPostContent(
+      title: 'Traducido: $title',
+      body: body,
+      alreadyInTargetLanguage: false,
+    );
+  }
+}
+
 void main() {
+  testWidgets('mission detail does not send translations to the app provider', (
+    tester,
+  ) async {
+    final translator = DetailTranslator();
+    final controller = AppSessionController(
+      authRepository: FakeAuthRepository(),
+      profileRepository: FakeProfileRepository(),
+      communityRepository: DetailCommunity(),
+      postContentTranslator: translator,
+    );
+    await controller.initialize();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      testApp(MissionDetailScreen(controller: controller, missionId: 'm')),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    await tester.tap(find.text('Traducir misión'));
+    await tester.pump();
+
+    expect(translator.calls, 0);
+  });
+
   testWidgets(
     'mission detail comment link marks notice read only after target is loaded',
     (tester) async {

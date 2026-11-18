@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import '../models/tour_models.dart';
 import 'capture_plan.dart';
 import 'capture_cube.dart';
 import 'capture_cube_guide.dart';
+
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 
 /// Guidance and shutter stay visible while the camera content scrolls.
 class CaptureGuidancePanel extends StatelessWidget {
@@ -37,25 +41,35 @@ class CaptureGuidancePanel extends StatelessWidget {
       ? cubeGuide!.steps[guideIndex]
       : null;
 
-  String get instruction {
-    if (busy) return 'Guardando la toma…';
+  String instruction(AppLocalizations l10n) {
+    if (busy) return core_l10n.AppLocalizations.tr(l10n.guardandoToma);
     if (!automatic && cubeGuide != null) {
       return _cubeStep?.instruction(first: guideIndex == 0) ??
-          'Puedes tomar más fotos.';
+          core_l10n.AppLocalizations.tr('Puedes tomar más fotos.');
     }
-    if (!automatic) return 'Gira despacio y toma fotos alrededor de ti.';
+    if (!automatic) {
+      return core_l10n.AppLocalizations.tr(
+        'Gira despacio y toma fotos alrededor de ti.',
+      );
+    }
     if (paused) {
-      return 'Captura en pausa. Continúa cuando estés listo.';
+      return core_l10n.AppLocalizations.tr(
+        'Captura en pausa. Continúa cuando estés listo.',
+      );
     }
     final target = this.target;
-    if (target == null) return 'Mueve la cámara despacio alrededor de ti.';
+    if (target == null) {
+      return core_l10n.AppLocalizations.tr(
+        'Mueve la cámara despacio alrededor de ti.',
+      );
+    }
     if (!fresh || !yaw.isFinite || !pitch.isFinite) {
-      return 'Esperando orientación del teléfono. Muévelo suavemente.';
+      return core_l10n.AppLocalizations.tr(l10n.esperandoOrientacionMover);
     }
     if (aimed) {
       return steady
-          ? 'Encuadre listo. Tomando foto…'
-          : 'Mantén el teléfono estable un momento.';
+          ? core_l10n.AppLocalizations.tr(l10n.posicionListaAceptar)
+          : core_l10n.AppLocalizations.tr(l10n.mantenerTelefonoEstableMomento);
     }
     if (target.pitch.abs() >= 85) {
       final position = target.pitch > 0
@@ -81,17 +95,29 @@ class CaptureGuidancePanel extends StatelessWidget {
     final directions = <String>[];
     if (tilt.abs() >= 3) {
       directions.add(
-        'Inclina ${tilt > 0 ? 'hacia arriba' : 'hacia abajo'} ${tilt.abs().round()}°',
+        tilt > 0
+            ? core_l10n.AppLocalizations.tr(
+                l10n.inclinaArribaGrados(tilt.abs().round()),
+              )
+            : core_l10n.AppLocalizations.tr(
+                l10n.inclinaAbajoGrados(tilt.abs().round()),
+              ),
       );
     }
     // Azimuth is immaterial when aiming at the ceiling or floor.
     if (target.pitch.abs() < 85 && turn.abs() >= 3) {
       directions.add(
-        'Gira ${turn.abs().round()}° a la ${turn > 0 ? 'derecha' : 'izquierda'}',
+        turn > 0
+            ? core_l10n.AppLocalizations.tr(
+                l10n.giraDerechaGrados(turn.abs().round()),
+              )
+            : core_l10n.AppLocalizations.tr(
+                l10n.giraIzquierdaGrados(turn.abs().round()),
+              ),
       );
     }
     return directions.isEmpty
-        ? 'Ajusta ligeramente el encuadre hasta alinear la cámara.'
+        ? core_l10n.AppLocalizations.tr(l10n.ajustaEncuadreAlinear)
         : directions.join('. ');
   }
 
@@ -131,138 +157,151 @@ class CaptureGuidancePanel extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => Material(
-    elevation: 8,
-    color: Theme.of(context).colorScheme.surface,
-    child: LayoutBuilder(
-      builder: (context, constraints) => ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: constraints.maxHeight * .6),
-        child: SafeArea(
-          top: false,
-          minimum: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Flexible(
-                fit: FlexFit.loose,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ExcludeSemantics(
-                            child: !automatic && cubeGuide != null
-                                ? SizedBox(
-                                    width:
-                                        MediaQuery.textScalerOf(
-                                              context,
-                                            ).scale(1) >
-                                            1.5
-                                        ? 64
-                                        : 92,
-                                    height:
-                                        MediaQuery.textScalerOf(
-                                              context,
-                                            ).scale(1) >
-                                            1.5
-                                        ? 64
-                                        : 92,
-                                    child: CaptureCube(
-                                      step: _cubeStep,
-                                      completed: _cubeStep == null,
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return Material(
+      elevation: 8,
+      color: Theme.of(context).colorScheme.surface,
+      child: LayoutBuilder(
+        builder: (context, constraints) => ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: constraints.maxHeight * .6),
+          child: SafeArea(
+            top: false,
+            minimum: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ExcludeSemantics(
+                              child: !automatic && cubeGuide != null
+                                  ? SizedBox(
+                                      width:
+                                          MediaQuery.textScalerOf(
+                                                context,
+                                              ).scale(1) >
+                                              1.5
+                                          ? 64
+                                          : 92,
+                                      height:
+                                          MediaQuery.textScalerOf(
+                                                context,
+                                              ).scale(1) >
+                                              1.5
+                                          ? 64
+                                          : 92,
+                                      child: CaptureCube(
+                                        step: _cubeStep,
+                                        completed: _cubeStep == null,
+                                      ),
+                                    )
+                                  : Icon(
+                                      _directionIcon,
+                                      size: 32,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
                                     ),
-                                  )
-                                : Icon(
-                                    _directionIcon,
-                                    size: 32,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (!automatic && cubeGuide != null) ...[
-                                  Text(
-                                    _cubeStep == null
-                                        ? 'Guía recorrida'
-                                        : '${_cubeStep!.faceLabel} · ${_cubeStep!.zoneLabel}',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleSmall,
-                                  ),
-                                  Text(
-                                    _cubeStep == null
-                                        ? 'Referencia: el centro'
-                                        : 'Paso ${guideIndex + 1} de ${cubeGuide!.steps.length} · desde el centro',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                ] else
-                                  Text(
-                                    instruction,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleSmall,
-                                  ),
-                              ],
                             ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (!automatic && cubeGuide != null) ...[
+                                    Text(
+                                      _cubeStep == null
+                                          ? core_l10n.AppLocalizations.tr(
+                                              'Guía recorrida',
+                                            )
+                                          : '${_cubeStep!.faceLabel} · ${_cubeStep!.zoneLabel}',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleSmall,
+                                    ),
+                                    Text(
+                                      _cubeStep == null
+                                          ? core_l10n.AppLocalizations.tr(
+                                              'Referencia: el centro',
+                                            )
+                                          : core_l10n.AppLocalizations.tr(
+                                              'Paso ${guideIndex + 1} de ${cubeGuide!.steps.length} · desde el centro',
+                                            ),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
+                                  ] else
+                                    Text(
+                                      instruction(l10n),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleSmall,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (!automatic && cubeGuide != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            instruction(l10n),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
-                      ),
-                      if (!automatic && cubeGuide != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          instruction,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
+                        if (showAngles) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            fresh && yaw.isFinite && pitch.isFinite
+                                ? _angleDetails
+                                : core_l10n.AppLocalizations.tr(
+                                    'Giro — · inclinación —',
+                                  ),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
                       ],
-                      if (showAngles) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          fresh && yaw.isFinite && pitch.isFinite
-                              ? _angleDetails
-                              : 'Giro — · inclinación —',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              FilledButton.icon(
-                onPressed: busy
-                    ? null
-                    : automatic
-                    ? onTogglePause
-                    : onTake,
-                icon: Icon(
-                  automatic
-                      ? paused
-                            ? Icons.play_arrow_rounded
-                            : Icons.pause_rounded
-                      : Icons.camera_alt_outlined,
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: busy
+                      ? null
+                      : automatic
+                      ? onTogglePause
+                      : onTake,
+                  icon: Icon(
+                    automatic
+                        ? paused
+                              ? Icons.play_arrow_rounded
+                              : Icons.pause_rounded
+                        : Icons.camera_alt_outlined,
+                  ),
+                  label: Text(
+                    automatic
+                        ? paused
+                              ? core_l10n.AppLocalizations.tr(
+                                  'Continuar captura',
+                                )
+                              : core_l10n.AppLocalizations.tr('Pausar captura')
+                        : core_l10n.AppLocalizations.tr('Tomar foto'),
+                  ),
                 ),
-                label: Text(
-                  automatic
-                      ? paused
-                            ? 'Continuar captura'
-                            : 'Pausar captura'
-                      : 'Tomar foto',
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

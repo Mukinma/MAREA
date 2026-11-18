@@ -170,7 +170,7 @@ void main() {
     expect(find.textContaining('A 0 m aproximadamente'), findsOneWidget);
     final tiles = tester.widgetList<ListTile>(find.byType(ListTile)).toList();
     expect((tiles.first.title! as Text).data, 'Local cercano');
-    expect(find.text('Actualizar cerca de mí'), findsOneWidget);
+    expect(find.text('Descubrir cerca de mí'), findsOneWidget);
     await tester.tap(find.byTooltip('Más opciones'));
     await tester.pumpAndSettle();
     expect(find.text('Ver mapa'), findsNothing);

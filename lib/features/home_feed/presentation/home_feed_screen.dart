@@ -1,3 +1,5 @@
+import 'package:marea/core/localization/app_localizations.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/location/device_location_service.dart';
@@ -258,7 +260,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       initial: !_hasLocation
           ? null
           : PostLocationSelection(
-              label: 'Punto elegido',
+              label: AppLocalizations.tr('Punto elegido'),
               coordinates: PostCoordinates(
                 latitude: _latitude!,
                 longitude: _longitude!,
@@ -316,7 +318,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
           if (_hasLocation)
             TextButton(
               onPressed: _pickLocation,
-              child: const Text('Elegir punto'),
+              child: Text(AppLocalizations.tr('Elegir punto')),
             ),
         ],
       ),
@@ -334,7 +336,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   Widget _entry(CommunityPost post) {
     final repo = widget.controller.communityRepository;
     if (repo == null) {
-      return const CommunityNotice(message: 'La comunidad no está disponible.');
+      return CommunityNotice(
+        message: AppLocalizations.tr('La comunidad no está disponible.'),
+      );
     }
     return PostCard(
       key: ValueKey(post.id),
@@ -349,6 +353,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       mediaRepository: widget.controller.mediaRepository,
       stats: _stats[post.id],
       publicUrl: widget.controller.publicUrl,
+      contentTranslator: widget.controller.postContentTranslator,
       moderator: widget.controller.profile?.role == ProfileRole.admin,
       onHomeCategory: _applyCategory,
       onStats: (value) => _stats[post.id] = value,
@@ -416,9 +421,12 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         children: [
           Icon(icon, color: AppColors.aquaDark, size: 28),
           const SizedBox(height: 8),
-          Text(message, textAlign: TextAlign.center),
+          Text(AppLocalizations.tr(message), textAlign: TextAlign.center),
           if (action != null)
-            TextButton(onPressed: onAction, child: Text(action)),
+            TextButton(
+              onPressed: onAction,
+              child: Text(AppLocalizations.tr(action)),
+            ),
         ],
       ),
     );

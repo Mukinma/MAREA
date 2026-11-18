@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
@@ -114,7 +115,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         final interest = await social.interest(widget.interestId!);
         if (!mounted) return;
         if (interest == null || interest.postId != widget.postId) {
-          setState(() => _error = 'Este interés ya no está disponible.');
+          setState(
+            () => _error = AppLocalizations.tr(
+              'Este interés ya no está disponible.',
+            ),
+          );
           return;
         }
         final profiles = await widget.controller.communityRepository!.profiles(
@@ -126,12 +131,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         await showSocialPanel(
           context,
           SocialPanelFrame(
-            title: 'Interés de colaboración',
+            title: AppLocalizations.tr('Interés de colaboración'),
             child: ListView(
               padding: const EdgeInsets.all(20),
               children: [
                 Text(
-                  profiles.firstOrNull?.fullName ?? 'Cuenta no disponible',
+                  profiles.firstOrNull?.fullName ??
+                      AppLocalizations.tr('Cuenta no disponible'),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
@@ -142,7 +148,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 const SizedBox(height: 16),
                 Text(socialDate(interest.createdAt)),
                 const SizedBox(height: 12),
-                const Text('Mensaje privado entre el solicitante y el autor.'),
+                Text(
+                  AppLocalizations.tr(
+                    'Mensaje privado entre el solicitante y el autor.',
+                  ),
+                ),
               ],
             ),
           ),
@@ -175,7 +185,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       leading: IconButton(
-        tooltip: 'Volver',
+        tooltip: AppLocalizations.tr('Volver'),
         onPressed: () {
           if (context.canPop()) {
             context.pop();
@@ -185,7 +195,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         },
         icon: const Icon(Icons.arrow_back_rounded),
       ),
-      title: const Text('Publicación'),
+      title: Text(AppLocalizations.tr('Publicación')),
     ),
     body: CommunityPage(
       title: '',
@@ -194,8 +204,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         if (_loading && _post == null)
           const Center(child: MareaSkeleton(kind: SkeletonKind.detail))
         else if (_post == null && _error == null)
-          const CommunityNotice(
-            message: 'Esta publicación fue retirada o ya no está disponible.',
+          CommunityNotice(
+            message: AppLocalizations.tr(
+              'Esta publicación fue retirada o ya no está disponible.',
+            ),
           ),
         if (_error != null)
           CommunityNotice(
@@ -217,6 +229,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             saved: _saved,
             stats: _stats,
             publicUrl: widget.controller.publicUrl,
+            contentTranslator: widget.controller.postContentTranslator,
             onStats: (stats) => _stats = stats,
             onChanged: _load,
             onSaved: (saved) => _saved = saved,

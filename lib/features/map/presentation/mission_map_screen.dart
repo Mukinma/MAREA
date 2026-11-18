@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/tours/presentation/business_ar_screen.dart';
 import 'package:marea/features/tours/models/tour_models.dart';
 
@@ -53,6 +54,7 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
   int _tourGeneration = 0;
   int _cameraGestureGeneration = 0;
   bool _ready = false, _locating = false, _manuallyExplored = false;
+  late bool _showTours = widget.showTours;
   DevicePosition? _position;
   ({DevicePosition fix, int gesture})? _pendingLocation;
   DeviceLocationFailure? _locationFailure;
@@ -120,15 +122,12 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
 
   Future<void> _refreshArea(MapViewport viewport, {bool force = false}) async {
     _initialSearchStarted = true;
-    await Future.wait([
-      _state.search(force: force),
-      _loadTours(viewport),
-    ]);
+    await Future.wait([_state.search(force: force), _loadTours(viewport)]);
   }
 
   Future<void> _loadTours(MapViewport snapshot) async {
     final repository = widget.session.tourRepository;
-    if (!widget.showTours || repository == null) return;
+    if (!_showTours || repository == null) return;
     final generation = ++_tourGeneration;
     try {
       final center = snapshot.center;
@@ -136,7 +135,7 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
         latitude: center.latitude,
         longitude: center.longitude,
       );
-      if (!mounted || generation != _tourGeneration || !widget.showTours) return;
+      if (!mounted || generation != _tourGeneration || !_showTours) return;
       final bounds = snapshot.bounds;
       setState(
         () => _tours = tours.where((t) {
@@ -153,8 +152,12 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
     } catch (e) {
       if (mounted && generation == _tourGeneration) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No pudimos cargar los recorridos de esta zona.'),
+          SnackBar(
+            content: Text(
+              AppLocalizations.tr(
+                'No pudimos cargar los recorridos de esta zona.',
+              ),
+            ),
           ),
         );
       }
@@ -279,9 +282,11 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
     if (!mounted) return;
     if (!opened) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Puedes cambiar el permiso en los ajustes del navegador o del dispositivo.',
+            AppLocalizations.tr(
+              'Puedes cambiar el permiso en los ajustes del navegador o del dispositivo.',
+            ),
           ),
         ),
       );
@@ -360,6 +365,36 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
                               onSubmitted: _submit,
                               onFilters: _filters,
                             ),
+                            if (widget.session.tourRepository != null)
+                              Wrap(
+                                spacing: 8,
+                                children: [
+                                  FilterChip(
+                                    label: Text(
+                                      AppLocalizations.tr('Locales 360°'),
+                                    ),
+                                    selected: _showTours,
+                                    onSelected: (show) async {
+                                      setState(() => _showTours = show);
+                                      _tourGeneration++;
+                                      if (show) {
+                                        final viewport =
+                                            await _captureViewport();
+                                        if (viewport != null) {
+                                          await _loadTours(viewport);
+                                        }
+                                      }
+                                    },
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        context.push('/tours/nearby'),
+                                    child: Text(
+                                      AppLocalizations.tr('Descubrir cerca'),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             const SizedBox(height: 4),
                             if (!keyboardOpen &&
                                 !(selected != null && size.maxHeight < 650))
@@ -527,11 +562,24 @@ class _MissionMapScreenState extends State<MissionMapScreen> {
     String message, {
     required String action,
     required VoidCallback onAction,
-  }) => Row(
-    children: [
-      Expanded(child: Text(message, style: const TextStyle(fontSize: 12))),
-      TextButton(onPressed: onAction, child: Text(action)),
-    ],
+  }) => Padding(
+    padding: const EdgeInsets.only(top: 8),
+    child: MareaSurface(
+      color: AppColors.surface,
+      radius: 18,
+      padding: const EdgeInsets.only(left: 12, right: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              AppLocalizations.tr(message),
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
+          TextButton(onPressed: onAction, child: Text(action)),
+        ],
+      ),
+    ),
   );
 }
 

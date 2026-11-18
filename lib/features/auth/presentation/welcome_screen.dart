@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/config/app_config.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -12,7 +13,7 @@ class WelcomeScreen extends StatelessWidget {
   final AppSessionController? controller;
 
   Widget _brand() => Semantics(
-    label: 'MAREA',
+    label: AppLocalizations.tr('MAREA. Conecta. Crea. Explora.'),
     image: true,
     child: Image.asset(
       'assets/brand/MAREA_LOGOTIPO.png',
@@ -66,11 +67,11 @@ class WelcomeScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text.rich(
-          const TextSpan(
+          TextSpan(
             children: [
-              TextSpan(text: 'Tu ciudad\ntambién '),
+              TextSpan(text: AppLocalizations.tr('Tu ciudad\ntambién ')),
               TextSpan(
-                text: 'crea.',
+                text: AppLocalizations.tr('crea.'),
                 style: TextStyle(color: Color(0xFF00BDCF)),
               ),
             ],
@@ -87,8 +88,10 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        const Text(
-          'Conecta con artistas, emprendedores\ny negocios que hacen la ciudad más viva.',
+        Text(
+          AppLocalizations.tr(
+            'Conecta con artistas, emprendedores\ny negocios que hacen la ciudad más viva.',
+          ),
           style: TextStyle(
             fontSize: 16,
             height: 1.4,
@@ -105,12 +108,12 @@ class WelcomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           ),
           onPressed: () => context.go('/register'),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
                 child: Text(
-                  'Crear cuenta',
+                  AppLocalizations.tr('Crear cuenta'),
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                 ),
               ),
@@ -128,51 +131,34 @@ class WelcomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           ),
           onPressed: () => context.go('/login'),
-          child: const Text(
-            'Iniciar sesión',
+          child: Text(
+            AppLocalizations.tr('Iniciar sesión'),
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
           ),
         ),
         const SizedBox(height: 10),
         if (controller != null) ...[
-        AnimatedBuilder(
-          animation: controller!,
-          builder: (context, _) {
-            final isBusy = controller!.isBusy;
+          AnimatedBuilder(
+            animation: controller!,
+            builder: (context, _) {
+              final isBusy = controller!.isBusy;
 
-            return OutlinedButton(
-              key: const Key('welcome-google'),
-              onPressed: isBusy
-                  ? null
-                  : () => _signInWithGoogle(context),
-
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF172B4D),
-                backgroundColor: Colors.white,
-
-                disabledForegroundColor:
-                    const Color(0xFF718096),
-
-                side: const BorderSide(
-                  color: Color(0xFFDCE6EC),
-                  width: 1.2,
+              return OutlinedButton(
+                key: const Key('welcome-google'),
+                onPressed: isBusy ? null : () => _signInWithGoogle(context),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF172B4D),
+                  backgroundColor: Colors.white,
+                  disabledForegroundColor: const Color(0xFF718096),
+                  side: const BorderSide(color: Color(0xFFDCE6EC), width: 1.2),
+                  shape: const StadiumBorder(),
+                  minimumSize: const Size(double.infinity, 54),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
                 ),
-
-                shape: const StadiumBorder(),
-
-                minimumSize: const Size(
-                  double.infinity,
-                  54,
-                ),
-
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-
                 elevation: 0,
               ),
-
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
@@ -187,12 +173,12 @@ class WelcomeScreen extends StatelessWidget {
                     )
                   else
                     _googleIcon(),
-
                   const SizedBox(width: 12),
-
                   Flexible(
                     child: Text(
-                      isBusy ? 'Conectando...' : 'Continuar con Google',
+                      AppLocalizations.tr(
+                        isBusy ? 'Conectando...' : 'Continuar con Google',
+                      ),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 16,
@@ -203,9 +189,9 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            );
-          },
-        ),
+              );
+            },
+          ),
         ],
         const SizedBox(height: 12),
         const LegalLinks(compact: true),

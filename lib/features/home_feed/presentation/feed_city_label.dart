@@ -1,3 +1,4 @@
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/community/models/community_models.dart';
@@ -13,6 +14,7 @@ class FeedCityLabel extends StatefulWidget {
     this.city,
     this.coordinates,
     this.repository,
+    this.fallbackLabel,
     this.color = AppColors.textSecondary,
     super.key,
   });
@@ -20,6 +22,7 @@ class FeedCityLabel extends StatefulWidget {
   final LocationCity? city;
   final PostCoordinates? coordinates;
   final LocationRepository? repository;
+  final String? fallbackLabel;
   final VoidCallback onTap;
   final Color color;
   @override
@@ -92,7 +95,9 @@ class _FeedCityLabelState extends State<FeedCityLabel> {
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    _city?.name ?? 'Ver ubicación',
+                    _city?.name ??
+                        widget.fallbackLabel ??
+                        AppLocalizations.tr('Ver ubicación'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12, color: widget.color),
@@ -105,7 +110,7 @@ class _FeedCityLabelState extends State<FeedCityLabel> {
       ),
       if (_failed)
         IconButton(
-          tooltip: 'Reintentar ciudad',
+          tooltip: AppLocalizations.tr('Reintentar ciudad'),
           onPressed: _resolve,
           icon: Icon(Icons.refresh, size: 18, color: widget.color),
         ),

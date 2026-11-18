@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/config/app_config.dart';
@@ -43,6 +44,8 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
   bool _busy = false, _applying = false, _imageFailed = false;
   late bool _saved = widget.saved;
   Future<String>? _url;
+  Map<String, String>? _translatedMission;
+  String? _translationLanguage;
   int _generation = 0;
   @override
   void initState() {
@@ -66,12 +69,26 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
         old.controller.profile?.id != widget.controller.profile?.id) {
       ++_generation;
     }
+    if (old.mission.title != widget.mission.title ||
+        old.mission.body != widget.mission.body) {
+      _translatedMission = null;
+    }
     if (!_busy) _saved = widget.saved;
     if (old.mission.imagePath != widget.mission.imagePath ||
         old.controller.communityRepository !=
             widget.controller.communityRepository) {
       _loadImage();
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final language = Localizations.localeOf(context).languageCode;
+    if (_translationLanguage != null && _translationLanguage != language) {
+      _translatedMission = null;
+    }
+    _translationLanguage = language;
   }
 
   Future<void> _save(bool value, {bool undo = false}) async {
@@ -91,10 +108,12 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              value ? 'Misión guardada' : 'Misión retirada de guardados',
+              AppLocalizations.tr(
+                value ? 'Misión guardada' : 'Misión retirada de guardados',
+              ),
             ),
             action: SnackBarAction(
-              label: 'Deshacer',
+              label: AppLocalizations.tr('Deshacer'),
               onPressed: () => _save(!value, undo: true),
             ),
           ),
@@ -181,14 +200,14 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
     onTap: _location,
     color: onPhoto ? Colors.white : AppColors.textSecondary,
   );
-  Widget _title({bool onPhoto = false}) => InkWell(
+  Widget _title({bool onPhoto = false, required String title}) => InkWell(
     onTap: _open,
     child: ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 48),
       child: Align(
         alignment: Alignment.bottomLeft,
         child: Text(
-          widget.mission.title,
+          title,
           style: TextStyle(
             color: onPhoto ? Colors.white : AppColors.brandNavy,
             fontSize: 20,
@@ -202,8 +221,10 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
 
   Widget _calendar() {
     final date = widget.mission.startsAt.toLocal();
-    const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-    const months = [
+    final isEnglish = Localizations.localeOf(context).languageCode == 'en';
+    const daysEs = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const daysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const monthsEs = [
       'ene',
       'feb',
       'mar',
@@ -217,9 +238,27 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
       'nov',
       'dic',
     ];
+    const monthsEn = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final days = isEnglish ? daysEn : daysEs;
+    final months = isEnglish ? monthsEn : monthsEs;
     String two(int n) => n.toString().padLeft(2, '0');
     return Semantics(
-      label: 'Fecha de misión: ${missionDate(widget.mission.startsAt)}',
+      label: AppLocalizations.trTemplate('Fecha de misión: {date}', {
+        'date': missionDate(widget.mission.startsAt),
+      }),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
@@ -295,7 +334,7 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
       ),
     ),
   );
-  Widget _textHero() => Column(
+  Widget _textHero(String title) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Row(
@@ -307,15 +346,15 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
         ],
       ),
       const SizedBox(height: 10),
-      _title(),
+      _title(title: title),
       _city(),
     ],
   );
-  Widget _photoHero(String? url) => LayoutBuilder(
+  Widget _photoHero(String? url, {required String title}) => LayoutBuilder(
     builder: (context, bounds) {
       final painter = TextPainter(
         text: TextSpan(
-          text: widget.mission.title,
+          text: title,
           style: const TextStyle(
             fontFamily: 'NunitoSans',
             fontSize: 20,
@@ -384,7 +423,10 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,
-                  children: [_title(onPhoto: true), _city(onPhoto: true)],
+                  children: [
+                    _title(onPhoto: true, title: title),
+                    _city(onPhoto: true),
+                  ],
                 ),
               ),
             ],
@@ -399,6 +441,8 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
     final mission = widget.mission;
     final controller = widget.controller;
     final own = mission.authorId == controller.profile?.id;
+    final translated = _translatedMission ?? const <String, String>{};
+    final translationContent = {'title': mission.title, 'body': mission.body};
     final cta = TextButton.icon(
       style: TextButton.styleFrom(
         backgroundColor: const Color(0xFFC9F8F3),
@@ -480,7 +524,10 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
                                     ),
                                   ),
                                   Text(
-                                    '${missionDate(mission.createdAt)} · Misión',
+                                    AppLocalizations.trTemplate(
+                                      '{date} · Misión',
+                                      {'date': missionDate(mission.createdAt)},
+                                    ),
                                     style: const TextStyle(
                                       color: AppColors.textSecondary,
                                       fontSize: 10,
@@ -495,7 +542,7 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
                     ),
                   ),
                   PopupMenuButton<String>(
-                    tooltip: 'Opciones de misión',
+                    tooltip: AppLocalizations.tr('Opciones de misión'),
                     icon: const Icon(Icons.more_horiz),
                     onSelected: (value) => value == 'save'
                         ? _save(!_saved)
@@ -503,14 +550,14 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
                         ? _collaborate()
                         : _open(),
                     itemBuilder: (_) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'open',
-                        child: Text('Ver detalles'),
+                        child: Text(AppLocalizations.tr('Ver detalles')),
                       ),
                       if (own)
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'manage',
-                          child: Text('Gestionar misión'),
+                          child: Text(AppLocalizations.tr('Gestionar misión')),
                         ),
                       PopupMenuItem(
                         value: 'save',
@@ -523,42 +570,55 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
                 ],
               ),
               const SizedBox(height: 2),
-              FutureBuilder<String>(
-                future: _url,
-                builder: (_, s) =>
-                    mission.imagePath == null || _imageFailed || s.hasError
-                    ? _textHero()
-                    : _photoHero(s.data),
-              ),
-              const SizedBox(height: 9),
-              Text(
-                mission.body,
-                style: const TextStyle(
-                  fontSize: 12,
-                  height: 1.3,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  FutureBuilder<String>(
+                    future: _url,
+                    builder: (_, s) =>
+                        mission.imagePath == null || _imageFailed || s.hasError
+                        ? _textHero(translated['title'] ?? mission.title)
+                        : _photoHero(
+                            s.data,
+                            title: translated['title'] ?? mission.title,
+                          ),
                   ),
-                  decoration: BoxDecoration(
-                    color: AppColors.mist,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    communityCategories[mission.category] ?? 'Otros',
+                  const SizedBox(height: 9),
+                  Text(
+                    translated['body'] ?? mission.body,
                     style: const TextStyle(
-                      fontSize: 10,
-                      color: AppColors.brandNavy,
+                      fontSize: 12,
+                      height: 1.3,
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                ),
+                  MissionTranslationAction(
+                    content: translationContent,
+                    onChanged: (value) =>
+                        setState(() => _translatedMission = value),
+                  ),
+                  const SizedBox(height: 6),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.mist,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        communityCategories[mission.category] ?? 'Otros',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: AppColors.brandNavy,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               if (controller.missionSocialRepository != null &&
                   controller.communityRepository != null)

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,22 +18,15 @@ import '../models/tour_models.dart';
 import 'tour_panorama.dart';
 import 'tour_widgets.dart';
 
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 enum _ReferenceKind { image, printable }
 
 enum _PointAction { edit, mark, list, link, reference }
-
-const _editorSteps = [
-  'Local',
-  'Zonas',
-  'Puntos y AR',
-  'Conexiones',
-  'Vista previa',
-  'Publicación',
-];
-
 Uint8List _referenceJPEG(Uint8List source) {
   final decoded = img.decodeImage(source);
-  if (decoded == null) throw StateError('No pudimos leer la imagen.');
+  if (decoded == null) {
+    throw StateError('No pudimos leer la imagen.');
+  }
   final image = img.bakeOrientation(decoded);
   final resized = image.width > 1600 || image.height > 1600
       ? img.copyResize(
@@ -109,16 +104,57 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   int _step = 0;
   Future<void> _localTail = Future.value();
   bool _dirty = false, _allowPop = false, _pendingSubmission = false;
+  bool _initialLoadStarted = false;
   String? _localFailure;
   late final String _account = widget.controller.profile?.id ?? '';
   bool get _current => mounted && widget.controller.profile?.id == _account;
+  AppLocalizations get _l10n =>
+      AppLocalizations.of(context) ?? AppLocalizationsEs();
+  String _editorError(Object error) =>
+      error is StateError && error.message == 'No pudimos leer la imagen.'
+      ? core_l10n.AppLocalizations.tr(_l10n.errorLeerImagen)
+      : tourError(error, l10n: _l10n);
   String get _key => 'draft-${_record?.id ?? widget.tourId ?? 'new'}';
+  String _stateLabel(String state) => switch (state) {
+    'published' => core_l10n.AppLocalizations.tr(_l10n.estadoPublicado),
+    'paused' => core_l10n.AppLocalizations.tr(_l10n.estadoPausado),
+    'in_review' || 'submitted' => core_l10n.AppLocalizations.tr(_l10n.estadoEnRevision),
+    'changes_requested' ||
+    'needs_changes' ||
+    'rejected' => core_l10n.AppLocalizations.tr(_l10n.estadoRequiereCambios),
+    'expired' => core_l10n.AppLocalizations.tr(_l10n.estadoFinalizado),
+    _ => core_l10n.AppLocalizations.tr(_l10n.estadoBorrador),
+  };
+  String _linkStatusLabel(dynamic status) => switch (status) {
+    'approved' => core_l10n.AppLocalizations.tr(_l10n.estadoAprobado),
+    'pending' => core_l10n.AppLocalizations.tr(_l10n.pendiente),
+    _ => status?.toString() ?? core_l10n.AppLocalizations.tr(_l10n.pendiente),
+  };
+  String _publicationProblemLabel(String issue) => switch (issue) {
+    'Agrega una posición 360°' => core_l10n.AppLocalizations.tr(_l10n.problemaAgregarPosicion360),
+    'Elige una posición inicial' => core_l10n.AppLocalizations.tr(_l10n.problemaElegirPosicionInicial),
+    'Espera a que todos los panoramas estén listos' =>
+      core_l10n.AppLocalizations.tr(_l10n.problemaPanoramasPendientes),
+    'Revisa los puntos de panoramas reemplazados' =>
+      core_l10n.AppLocalizations.tr(_l10n.problemaRevisarPuntosPanoramas),
+    'Revisa las conexiones de panoramas reemplazados' =>
+      core_l10n.AppLocalizations.tr(_l10n.problemaRevisarConexionesPanoramas),
+    _ => issue,
+  };
   @override
   void initState() {
     super.initState();
-    _load();
     for (final c in [_title, _name, _location, _lat, _lng, _context]) {
       c.addListener(_changed);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialLoadStarted) {
+      _initialLoadStarted = true;
+      _load();
     }
   }
 
@@ -133,9 +169,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
     try {
       final profile = widget.controller.profile;
       if (profile == null || profile.userType == UserType.general) {
-        throw StateError(
-          'Los recorridos se crean desde un perfil profesional.',
-        );
+        throw StateError(core_l10n.AppLocalizations.tr(_l10n.perfilProfesionalRecorridos));
       }
       // Read accepted local fields first: a failed RPC must never replace them
       // with an uninitialized form, including when the user immediately leaves.
@@ -158,13 +192,12 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           );
           if (!_current) return;
           if (_record == null) {
-            throw StateError('Este borrador no está disponible.');
+            throw StateError(core_l10n.AppLocalizations.tr(_l10n.borradorNoDisponible));
           }
         } catch (e) {
           if (local == null ||
               e is PostgrestException ||
-              (e is StateError &&
-                  e.message == 'Este borrador no está disponible.')) {
+              (e is StateError && e.message == core_l10n.AppLocalizations.tr(_l10n.borradorNoDisponible))) {
             rethrow;
           }
           final cached = local['record'];
@@ -179,7 +212,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                   'document': local['document'],
                 });
           if (_record!.ownerId != _account) {
-            throw StateError('Este borrador pertenece a otra cuenta.');
+            throw StateError(core_l10n.AppLocalizations.tr(_l10n.borradorOtraCuenta));
           }
           _offline = true;
         }
@@ -204,8 +237,8 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         _space = jsonMap(local['space']);
         _title.text = local['title'] as String;
         _saved = _offline
-            ? 'Borrador recuperado del dispositivo. Conecta para sincronizar.'
-            : 'Hay cambios locales pendientes de sincronizar.';
+            ? core_l10n.AppLocalizations.tr(_l10n.borradorRecuperado)
+            : core_l10n.AppLocalizations.tr(_l10n.cambiosLocalesPendientes);
       }
       _name.text = _space['name'] as String? ?? '';
       _location.text = _space['location_label'] as String? ?? '';
@@ -214,7 +247,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       _context.text = _space['context'] as String? ?? '';
       _loaded = true;
     } catch (e) {
-      if (_current) _error = tourError(e);
+      if (_current) _error = _editorError(e);
     } finally {
       if (_current) setState(() => _loading = false);
     }
@@ -262,12 +295,11 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       _localFailure = null;
     });
     _localTail = operation.catchError((Object error) {
-      _localFailure =
-          'No pudimos guardar los últimos cambios en este dispositivo.';
+      _localFailure = core_l10n.AppLocalizations.tr(_l10n.errorGuardarCambiosLocal);
     });
     return operation
         .then((_) {
-          if (_current) setState(() => _saved = 'Guardado en este dispositivo');
+          if (_current) setState(() => _saved = core_l10n.AppLocalizations.tr(_l10n.guardadoDispositivo));
         })
         .catchError((Object e) {
           if (_current) setState(() => _error = _localFailure);
@@ -282,18 +314,16 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       final discard = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
-          title: const Text('No se guardaron los cambios'),
-          content: const Text(
-            'Puedes volver a intentarlo o salir y descartar los últimos cambios.',
-          ),
+          title: Text(core_l10n.AppLocalizations.tr(_l10n.noSeGuardaronCambios)),
+          content: Text(core_l10n.AppLocalizations.tr(_l10n.volverIntentarCambios)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c, false),
-              child: const Text('Volver a intentar'),
+              child: Text(core_l10n.AppLocalizations.tr(_l10n.volverIntentar)),
             ),
             TextButton(
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('Descartar y salir'),
+              child: Text(core_l10n.AppLocalizations.tr(_l10n.descartarSalir)),
             ),
           ],
         ),
@@ -310,9 +340,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   Future<bool> _save() async {
     if (_busy || !_loaded || !_current) return false;
     if (_title.text.trim().isEmpty || _name.text.trim().isEmpty) {
-      setState(
-        () => _error = 'Escribe el título del recorrido y el nombre del local.',
-      );
+      setState(() => _error = core_l10n.AppLocalizations.tr(_l10n.errorTituloNombreLocal));
       return false;
     }
     setState(() {
@@ -331,9 +359,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         );
         if (!_current) return false;
         if (authorized == null || authorized.ownerId != _account) {
-          throw StateError(
-            'Este borrador no está disponible para sincronizar.',
-          );
+          throw StateError(core_l10n.AppLocalizations.tr(_l10n.borradorNoDisponibleSincronizar));
         }
         _record = authorized;
         _offline = false;
@@ -349,7 +375,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         _record = record;
         _doc = record.document.copy();
         _space = record.space;
-        _saved = 'Borrador sincronizado';
+        _saved = core_l10n.AppLocalizations.tr(_l10n.borradorSincronizado);
         _dirty = false;
         _pendingSubmission = false;
       });
@@ -359,7 +385,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       }
       return true;
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _editorError(e));
       return false;
     } finally {
       if (_current) setState(() => _busy = false);
@@ -387,8 +413,8 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   Future<void> _addZone() async {
     final name = await tourTextDialog(
       context,
-      'Nombre de zona',
-      help: 'Por ejemplo: Entrada, Barra, Mural o Terraza.',
+      core_l10n.AppLocalizations.tr(_l10n.nombreZona),
+      help: core_l10n.AppLocalizations.tr(_l10n.ejemploZonas),
     );
     if (!mounted || !_current || name == null) return;
     setState(() => _doc.addZone(name));
@@ -398,9 +424,8 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   Future<void> _addScene(TourZone zone) async {
     final name = await tourTextDialog(
       context,
-      'Posición de captura',
-      help:
-          'Una zona puede tener varias posiciones. Por ejemplo: Frente a la barra.',
+      core_l10n.AppLocalizations.tr(_l10n.posicionCaptura),
+      help: core_l10n.AppLocalizations.tr(_l10n.ejemploPosiciones),
     );
     if (!mounted || !_current || name == null) return;
     setState(() => zone.addScene(name));
@@ -408,9 +433,9 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   }
 
   Future<void> _addPoint(TourScene scene) async {
-    final name = await tourTextDialog(context, 'Nombre del punto');
+    final name = await tourTextDialog(context, core_l10n.AppLocalizations.tr(_l10n.nombrePunto));
     if (!mounted || !_current || name == null) return;
-    final explanation = await tourTextDialog(context, 'Explicación del punto');
+    final explanation = await tourTextDialog(context, core_l10n.AppLocalizations.tr(_l10n.explicacionPunto));
     if (!mounted || !_current || explanation == null) return;
     setState(() => scene.addPoint(name, explanation));
     await _local();
@@ -447,9 +472,8 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   Future<void> _link(TourPoint point) async {
     final query = await tourTextDialog(
       context,
-      'Buscar contenido',
-      help:
-          'Obras, servicios, productos de emprendimientos, publicaciones o misiones.',
+      core_l10n.AppLocalizations.tr(_l10n.buscarContenido),
+      help: core_l10n.AppLocalizations.tr(_l10n.tiposContenidoVinculable),
     );
     if (!mounted || !_current || query == null) return;
     try {
@@ -458,14 +482,13 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       final selected = await showDialog<Map<String, dynamic>>(
         context: context,
         builder: (c) => AlertDialog(
-          title: const Text('Vincular contenido'),
+          title: Text(core_l10n.AppLocalizations.tr(_l10n.vincularContenidoTitulo)),
           content: SizedBox(
             width: 420,
             child: ListView(
               shrinkWrap: true,
               children: [
-                if (links.isEmpty)
-                  const Text('No encontramos contenido disponible.'),
+                if (links.isEmpty) Text(core_l10n.AppLocalizations.tr(_l10n.sinContenidoDisponible)),
                 for (final link in links)
                   ListTile(
                     title: Text(link['title'] as String? ?? ''),
@@ -480,7 +503,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c),
-              child: const Text('Volver'),
+              child: Text(core_l10n.AppLocalizations.tr(_l10n.volver)),
             ),
           ],
         ),
@@ -494,11 +517,11 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           point.id,
         );
         if (mounted && _current) {
-          setState(() => _saved = 'Solicitud de vinculación enviada al autor');
+          setState(() => _saved = core_l10n.AppLocalizations.tr(_l10n.solicitudVinculacionEnviada));
         }
       }
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _editorError(e));
     }
   }
 
@@ -624,42 +647,48 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           icon: const Icon(Icons.camera_alt_outlined),
           label: Text(
             point.ar == null
-                ? 'Añadir imagen RA'
+                ? core_l10n.AppLocalizations.tr('Añadir imagen RA')
                 : point.ar!['tested_version'] != null &&
                       point.ar!['tested_version'] ==
                           point.ar!['reference_version']
-                ? 'Volver a probar RA'
-                : 'Probar RA',
+                ? core_l10n.AppLocalizations.tr('Volver a probar RA')
+                : core_l10n.AppLocalizations.tr('Probar RA'),
           ),
         ),
       ),
       PopupMenuButton<_PointAction>(
-        tooltip: 'Más opciones de ${point.name}',
+        tooltip: core_l10n.AppLocalizations.tr(
+          'Más opciones de ${point.name}',
+        ),
         enabled: !_busy,
         onSelected: (action) => _pointAction(action, scene, point),
         itemBuilder: (_) => [
-          const PopupMenuItem(
+          PopupMenuItem(
             value: _PointAction.edit,
-            child: Text('Editar texto'),
+            child: Text(core_l10n.AppLocalizations.tr('Editar texto')),
           ),
           if (!scene.isHorizontalPanorama)
             PopupMenuItem(
               value: _PointAction.mark,
               enabled: scene.panoramaPath != null,
-              child: const Text('Ubicar en 360°'),
+              child: Text(core_l10n.AppLocalizations.tr('Ubicar en 360°')),
             ),
-          const PopupMenuItem(
+          PopupMenuItem(
             value: _PointAction.list,
-            child: Text('Mostrar sólo en lista'),
+            child: Text(
+              core_l10n.AppLocalizations.tr('Mostrar sólo en lista'),
+            ),
           ),
-          const PopupMenuItem(
+          PopupMenuItem(
             value: _PointAction.link,
-            child: Text('Vincular contenido'),
+            child: Text(core_l10n.AppLocalizations.tr('Vincular contenido')),
           ),
           if (point.ar != null)
-            const PopupMenuItem(
+            PopupMenuItem(
               value: _PointAction.reference,
-              child: Text('Cambiar imagen RA'),
+              child: Text(
+                core_l10n.AppLocalizations.tr('Cambiar imagen RA'),
+              ),
             ),
         ],
       ),
@@ -683,10 +712,9 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       if (!mounted || !_current) return;
       final width = await tourTextDialog(
         context,
-        'Ancho físico en centímetros',
+        core_l10n.AppLocalizations.tr(_l10n.anchoFisicoCentimetros),
         initial: marker ? '20' : '',
-        help:
-            'Mide la imagen instalada. Para el distintivo, imprime a este ancho y compruébalo con una regla.',
+        help: core_l10n.AppLocalizations.tr(_l10n.medirImagenInstalada),
       );
       final cm = double.tryParse(width ?? '');
       if (width == null) return;
@@ -726,26 +754,27 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                 name: 'activador-${point.id}.jpg',
               ),
             ],
-            text:
-                'Imprimir con ancho exacto de $cm cm, sin recortar. Medir antes de probar AR.',
+            text: core_l10n.AppLocalizations.tr(
+              _l10n.imprimirAnchoExacto(cm),
+            ),
           ),
         );
       }
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _editorError(e));
     }
   }
 
   Future<void> _connect(TourScene scene) async {
     final targets = _doc.scenes.where((s) => s.id != scene.id).toList();
     if (targets.isEmpty) {
-      setState(() => _error = 'Agrega otra posición para conectarla.');
+      setState(() => _error = core_l10n.AppLocalizations.tr(_l10n.agregaPosicionConectar));
       return;
     }
     final target = await showDialog<TourScene>(
       context: context,
       builder: (c) => SimpleDialog(
-        title: const Text('Conectar con'),
+        title: Text(core_l10n.AppLocalizations.tr(_l10n.conectarCon)),
         children: [
           for (final t in targets)
             SimpleDialogOption(
@@ -758,8 +787,8 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
     if (!mounted || !_current || target == null) return;
     final instruction = await tourTextDialog(
       context,
-      'Cómo llegar',
-      help: 'Por ejemplo: Camina hacia el mural junto a la barra.',
+      core_l10n.AppLocalizations.tr(_l10n.comoLlegar),
+      help: core_l10n.AppLocalizations.tr(_l10n.ejemploIndicacion),
     );
     if (!mounted || !_current || instruction == null) return;
     final position = scene.isHorizontalPanorama
@@ -810,7 +839,9 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
     if (!mounted || day == null) return null;
     final time = await showTimePicker(
       context: context,
-      helpText: '$title · hora de este dispositivo',
+      helpText: core_l10n.AppLocalizations.tr(
+        _l10n.horaDispositivo(title),
+      ),
       initialTime: TimeOfDay.now(),
     );
     return time == null
@@ -836,7 +867,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       });
       await _local();
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _editorError(e));
     }
   }
 
@@ -858,7 +889,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           setState(() {
             _record = current;
             _pendingSubmission = false;
-            _saved = tourStateLabel(current.state);
+            _saved = _stateLabel(current.state);
           });
           await _local(changed: false);
           return;
@@ -875,12 +906,12 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         setState(() {
           _record = record;
           _pendingSubmission = false;
-          _saved = tourStateLabel(record.state);
+          _saved = _stateLabel(record.state);
         });
         await _local(changed: false);
       }
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) setState(() => _error = _editorError(e));
     } finally {
       if (_current) setState(() => _busy = false);
     }
@@ -896,492 +927,506 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => PopScope(
-    canPop:
-        _allowPop ||
-        _loading ||
-        !_current ||
-        widget.controller.profile?.userType == UserType.general,
-    onPopInvokedWithResult: (didPop, result) {
-      if (!didPop) _back();
-    },
-    child: Scaffold(
-      appBar: AppBar(
-        leading: TourBackButton(fallback: '/tours', onPressed: _back),
-        title: Text(
-          widget.tourId == null
-              ? 'Crear recorrido 360°'
-              : 'Editar recorrido 360°',
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    return PopScope(
+      canPop:
+          _allowPop ||
+          _loading ||
+          !_current ||
+          widget.controller.profile?.userType == UserType.general,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _back();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: TourBackButton(fallback: '/tours', onPressed: _back),
+          title: Text(
+            core_l10n.AppLocalizations.tr(
+              widget.tourId == null
+                  ? l10n.crearRecorrido360
+                  : 'Editar recorrido 360°',
+            ),
+          ),
         ),
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : !_loaded
-          ? Center(
-              child: TourNotice(
-                _error ?? 'No pudimos recuperar el borrador.',
-                onRetry: _load,
-              ),
-            )
-          : widget.controller.profile?.userType == UserType.general
-          ? Center(
-              child: TourNotice(_error ?? 'Necesitas un perfil profesional.'),
-            )
-          : AbsorbPointer(
-              absorbing: _busy,
-              child: ListView(
-                controller: _scroll,
-                padding: const EdgeInsets.all(20),
-                children: [
-                  Text('Paso ${_step + 1} de ${_editorSteps.length}'),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<int>(
-                    key: ValueKey('tour-editor-step-$_step'),
-                    initialValue: _step,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Paso del recorrido',
+        body: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : !_loaded
+            ? Center(
+                child: TourNotice(
+                  _error ?? core_l10n.AppLocalizations.tr(l10n.borradorNoRecuperado),
+                  onRetry: _load,
+                ),
+              )
+            : widget.controller.profile?.userType == UserType.general
+            ? Center(
+                child: TourNotice(_error ?? core_l10n.AppLocalizations.tr(l10n.necesitasPerfilProfesional)),
+              )
+            : AbsorbPointer(
+                absorbing: _busy,
+                child: ListView(
+                  controller: _scroll,
+                  padding: const EdgeInsets.all(20),
+                  children: [
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        for (var i = 0; i < 6; i++)
+                          ChoiceChip(
+                            label: Text(
+                              [
+                                core_l10n.AppLocalizations.tr(l10n.pasoLocal),
+                                core_l10n.AppLocalizations.tr(l10n.pasoZonas),
+                                core_l10n.AppLocalizations.tr(l10n.pasoPuntosAr),
+                                core_l10n.AppLocalizations.tr(l10n.pasoConexiones),
+                                core_l10n.AppLocalizations.tr(l10n.pasoVistaPrevia),
+                                core_l10n.AppLocalizations.tr(l10n.pasoPublicacion),
+                              ][i],
+                            ),
+                            selected: _step == i,
+                            onSelected: _busy
+                                ? null
+                                : (_) => _changeStep(i),
+                          ),
+                      ],
                     ),
-                    items: [
-                      for (var i = 0; i < _editorSteps.length; i++)
-                        DropdownMenuItem(
-                          value: i,
-                          child: Text(_editorSteps[i]),
+                    const SizedBox(height: 16),
+                    if (_error != null) TourNotice(_error!),
+                    if (_saved != null)
+                      Text(
+                        _saved!,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    const SizedBox(height: 12),
+                    if (_step == 0) ...[
+                      TextField(
+                        controller: _title,
+                        decoration: InputDecoration(
+                          labelText: core_l10n.AppLocalizations.tr(l10n.tituloRecorrido),
                         ),
-                    ],
-                    onChanged: _busy
-                        ? null
-                        : (value) {
-                            if (value != null) _changeStep(value);
-                          },
-                  ),
-                  const SizedBox(height: 16),
-                  if (_error != null) TourNotice(_error!),
-                  if (_saved != null)
-                    Text(
-                      _saved!,
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  const SizedBox(height: 12),
-                  if (_step == 0) ...[
-                    TextField(
-                      controller: _title,
-                      decoration: const InputDecoration(
-                        labelText: 'Título del recorrido',
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _name,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre del local',
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _name,
+                        decoration: InputDecoration(
+                          labelText: core_l10n.AppLocalizations.tr(l10n.nombreLocal),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _location,
-                      decoration: const InputDecoration(
-                        labelText: 'Ubicación pública',
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _location,
+                        decoration: InputDecoration(
+                          labelText: core_l10n.AppLocalizations.tr(l10n.ubicacionPublica),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        final selected = await showCommunityLocationPicker(
-                          context,
-                          repository: widget.controller.locationRepository,
-                        );
-                        if (!mounted || !_current || selected == null) return;
-                        setState(() {
-                          _location.text = selected.label;
-                          _lat.text = '${selected.coordinates.latitude}';
-                          _lng.text = '${selected.coordinates.longitude}';
-                          _space['location_precision'] =
-                              selected.coordinates.precision.name;
-                        });
-                        await _local();
-                      },
-                      icon: const Icon(Icons.place_outlined),
-                      label: const Text('Confirmar ubicación en el mapa'),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _context,
-                      maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'Tu relación con el local',
-                        helperText:
-                            'El administrador revisará la responsabilidad del espacio. No incluyas documentos sensibles.',
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          final selected = await showCommunityLocationPicker(
+                            context,
+                            repository: widget.controller.locationRepository,
+                          );
+                          if (!mounted || !_current || selected == null) return;
+                          setState(() {
+                            _location.text = selected.label;
+                            _lat.text = '${selected.coordinates.latitude}';
+                            _lng.text = '${selected.coordinates.longitude}';
+                            _space['location_precision'] =
+                                selected.coordinates.precision.name;
+                          });
+                          await _local();
+                        },
+                        icon: const Icon(Icons.place_outlined),
+                        label: Text(core_l10n.AppLocalizations.tr(l10n.confirmarUbicacionMapa)),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    OutlinedButton(
-                      onPressed: _evidence,
-                      child: const Text('Añadir evidencia privada del local'),
-                    ),
-                    Text(
-                      '${jsonList(_space['evidence_paths']).length} imágenes privadas para revisión',
-                    ),
-                    Text(
-                      'Horarios: ${widget.controller.profile?.businessHours.values.whereType<String>().join(' · ') ?? ''}',
-                    ),
-                    Text(
-                      'Contacto: ${widget.controller.profile?.contactUrl ?? ''}',
-                    ),
-                    TextButton(
-                      onPressed: () => context.push('/profile/edit'),
-                      child: const Text('Editar datos del perfil'),
-                    ),
-                  ],
-                  if (_step == 1) ...[
-                    const Text(
-                      'Una zona agrupa posiciones 360°. Captura cada posición sin caminar durante las tomas.',
-                    ),
-                    FilledButton.icon(
-                      onPressed: _busy ? null : _addZone,
-                      icon: const Icon(Icons.add),
-                      label: const Text('Agregar zona'),
-                    ),
-                    for (final z in _doc.zones)
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                z.name,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  final name = await tourTextDialog(
-                                    context,
-                                    'Editar zona',
-                                    initial: z.name,
-                                  );
-                                  if (_current && name != null) {
-                                    setState(() => z.data['name'] = name);
-                                    _local();
-                                  }
-                                },
-                                child: const Text('Editar nombre'),
-                              ),
-                              for (final s in z.scenes)
-                                Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Text(
-                                      s.name,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    Text(
-                                      s.panoramaPath == null
-                                          ? 'Sin panorama listo'
-                                          : 'Panorama listo',
-                                    ),
-                                    Wrap(
-                                      spacing: 8,
-                                      children: [
-                                        if (!kIsWeb)
-                                          TextButton(
-                                            onPressed: _busy
-                                                ? null
-                                                : () => _capture(s),
-                                            child: const Text(
-                                              'Capturar / retomar',
-                                            ),
-                                          ),
-                                        TextButton(
-                                          onPressed: _busy
-                                              ? null
-                                              : () => _capture(s, import: true),
-                                          child: const Text('Importar 360°'),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              OutlinedButton(
-                                onPressed: _busy ? null : () => _addScene(z),
-                                child: const Text('Agregar posición'),
-                              ),
-                            ],
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _context,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          labelText: core_l10n.AppLocalizations.tr(l10n.relacionLocal),
+                          helperText: core_l10n.AppLocalizations.tr(l10n.revisaraResponsabilidad),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton(
+                        onPressed: _evidence,
+                        child: Text(core_l10n.AppLocalizations.tr(l10n.anadirEvidenciaPrivada)),
+                      ),
+                      Text(
+                        core_l10n.AppLocalizations.tr(
+                          l10n.imagenesPrivadasRevision(
+                            jsonList(_space['evidence_paths']).length,
                           ),
                         ),
                       ),
-                  ],
-                  if (_step == 2) ...[
-                    for (final s in _doc.scenes)
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                s.name,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              for (final p in s.points) ...[
-                                const Divider(),
+                      Text(
+                        core_l10n.AppLocalizations.tr(
+                          l10n.horarios(
+                            widget.controller.profile?.businessHours.values
+                                    .whereType<String>()
+                                    .join(' · ') ??
+                                '',
+                          ),
+                        ),
+                      ),
+                      Text(
+                        core_l10n.AppLocalizations.tr(
+                          l10n.contacto(
+                            widget.controller.profile?.contactUrl ?? '',
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => context.push('/profile/edit'),
+                        child: Text(core_l10n.AppLocalizations.tr(l10n.editarDatosPerfil)),
+                      ),
+                    ],
+                    if (_step == 1) ...[
+                      Text(core_l10n.AppLocalizations.tr(l10n.zonaAgrupaPosiciones)),
+                      FilledButton.icon(
+                        onPressed: _busy ? null : _addZone,
+                        icon: const Icon(Icons.add),
+                        label: Text(core_l10n.AppLocalizations.tr(l10n.agregarZona)),
+                      ),
+                      for (final z in _doc.zones)
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
                                 Text(
-                                  p.name,
+                                  z.name,
                                   style: const TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 22,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                Text(p.description),
-                                if (p.data['needs_review'] == true)
-                                  const Text(
-                                    'Revisa este punto después del cambio de panorama.',
-                                  ),
-                                if (p.link != null)
-                                  Text(
-                                    '${p.link!['title']} · ${p.link!['status'] ?? 'pendiente'}',
-                                  ),
-                                _pointControls(s, p),
-                              ],
-                              OutlinedButton(
-                                onPressed: () => _addPoint(s),
-                                child: const Text('Agregar punto'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
-                  if (_step == 3) ...[
-                    DropdownButtonFormField<String>(
-                      initialValue: _doc.scene(_doc.startSceneId ?? '')?.id,
-                      decoration: const InputDecoration(
-                        labelText: 'Posición inicial',
-                      ),
-                      isExpanded: true,
-                      items: [
-                        for (final s in _doc.scenes)
-                          DropdownMenuItem(value: s.id, child: Text(s.name)),
-                      ],
-                      onChanged: (id) {
-                        setState(() => _doc.data['start_scene_id'] = id);
-                        _local();
-                      },
-                    ),
-                    for (var i = 0; i < _doc.zones.length; i++)
-                      ListTile(
-                        title: Text(_doc.zones[i].name),
-                        subtitle: const Text('Orden de zonas'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              tooltip: 'Subir zona',
-                              onPressed: i == 0
-                                  ? null
-                                  : () => _move(
-                                      _doc.data['zones'] as List,
-                                      i,
-                                      -1,
-                                    ),
-                              icon: const Icon(Icons.arrow_upward),
-                            ),
-                            IconButton(
-                              tooltip: 'Bajar zona',
-                              onPressed: i == _doc.zones.length - 1
-                                  ? null
-                                  : () =>
-                                        _move(_doc.data['zones'] as List, i, 1),
-                              icon: const Icon(Icons.arrow_downward),
-                            ),
-                          ],
-                        ),
-                      ),
-                    for (final s in _doc.scenes)
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                s.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              for (final c in s.connections)
-                                ListTile(
-                                  title: Text(c['label'] as String? ?? ''),
-                                  subtitle: Text(
-                                    c['needs_review'] == true
-                                        ? 'Revisa esta conexión'
-                                        : c['instruction'] as String? ?? '',
-                                  ),
-                                  trailing: IconButton(
-                                    tooltip: 'Eliminar conexión',
-                                    onPressed: () {
-                                      setState(
-                                        () => jsonList(s.data['connections'])
-                                            .removeWhere(
-                                              (v) => v['id'] == c['id'],
-                                            ),
-                                      );
+                                TextButton(
+                                  onPressed: () async {
+                                    final name = await tourTextDialog(
+                                      context,
+                                      core_l10n.AppLocalizations.tr(l10n.editarZona),
+                                      initial: z.name,
+                                    );
+                                    if (_current && name != null) {
+                                      setState(() => z.data['name'] = name);
                                       _local();
-                                    },
-                                    icon: const Icon(Icons.close),
-                                  ),
+                                    }
+                                  },
+                                  child: Text(core_l10n.AppLocalizations.tr(l10n.editarNombre)),
                                 ),
-                              TextButton(
-                                onPressed: s.panoramaPath == null
-                                    ? null
-                                    : () => _connect(s),
-                                child: const Text('Conectar otra posición'),
-                              ),
-                            ],
+                                for (final s in z.scenes)
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Text(
+                                        s.name,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      Text(
+                                        s.panoramaPath == null
+                                            ? core_l10n.AppLocalizations.tr(l10n.sinPanoramaListo)
+                                            : core_l10n.AppLocalizations.tr(l10n.panoramaListo),
+                                      ),
+                                      Wrap(
+                                        spacing: 8,
+                                        children: [
+                                          if (!kIsWeb)
+                                            TextButton(
+                                              onPressed: _busy
+                                                  ? null
+                                                  : () => _capture(s),
+                                              child: Text(core_l10n.AppLocalizations.tr(l10n.capturarRetomar)),
+                                            ),
+                                          TextButton(
+                                            onPressed: _busy
+                                                ? null
+                                                : () =>
+                                                      _capture(s, import: true),
+                                            child: Text(core_l10n.AppLocalizations.tr(l10n.importar360)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                OutlinedButton(
+                                  onPressed: _busy ? null : () => _addScene(z),
+                                  child: Text(core_l10n.AppLocalizations.tr(l10n.agregarPosicion)),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    const Text('Paradas con cámara'),
-                    for (final id in jsonList(_doc.data['ar_order']))
-                      if (_doc.point(id as String) != null)
-                        ListTile(
-                          title: Text(_doc.point(id)!.name),
-                          subtitle: const Text(
-                            'Orden del recorrido presencial',
+                    ],
+                    if (_step == 2) ...[
+                      for (final s in _doc.scenes)
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  s.name,
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                for (final p in s.points) ...[
+                                  const Divider(),
+                                  Text(
+                                    p.name,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(p.description),
+                                  if (p.data['needs_review'] == true)
+                                    Text(core_l10n.AppLocalizations.tr(l10n.revisarPuntoCambioPanorama)),
+                                  if (p.link != null)
+                                    Text(
+                                      '${p.link!['title']} · ${_linkStatusLabel(p.link!['status'])}',
+                                    ),
+                                  _pointControls(s, p),
+                                ],
+                                OutlinedButton(
+                                  onPressed: () => _addPoint(s),
+                                  child: Text(core_l10n.AppLocalizations.tr(l10n.agregarPunto)),
+                                ),
+                              ],
+                            ),
                           ),
+                        ),
+                    ],
+                    if (_step == 3) ...[
+                      DropdownButtonFormField<String>(
+                        initialValue: _doc.scene(_doc.startSceneId ?? '')?.id,
+                        decoration: InputDecoration(
+                          labelText: core_l10n.AppLocalizations.tr(l10n.posicionInicial),
+                        ),
+                        isExpanded: true,
+                        items: [
+                          for (final s in _doc.scenes)
+                            DropdownMenuItem(value: s.id, child: Text(s.name)),
+                        ],
+                        onChanged: (id) {
+                          setState(() => _doc.data['start_scene_id'] = id);
+                          _local();
+                        },
+                      ),
+                      for (var i = 0; i < _doc.zones.length; i++)
+                        ListTile(
+                          title: Text(_doc.zones[i].name),
+                          subtitle: Text(core_l10n.AppLocalizations.tr(l10n.ordenZonas)),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                tooltip: 'Subir parada',
-                                onPressed: () => _move(
-                                  _doc.data['ar_order'] as List,
-                                  jsonList(_doc.data['ar_order']).indexOf(id),
-                                  -1,
-                                ),
+                                tooltip: core_l10n.AppLocalizations.tr(l10n.subirZona),
+                                onPressed: i == 0
+                                    ? null
+                                    : () => _move(
+                                        _doc.data['zones'] as List,
+                                        i,
+                                        -1,
+                                      ),
                                 icon: const Icon(Icons.arrow_upward),
                               ),
                               IconButton(
-                                tooltip: 'Bajar parada',
-                                onPressed: () => _move(
-                                  _doc.data['ar_order'] as List,
-                                  jsonList(_doc.data['ar_order']).indexOf(id),
-                                  1,
-                                ),
+                                tooltip: core_l10n.AppLocalizations.tr(l10n.bajarZona),
+                                onPressed: i == _doc.zones.length - 1
+                                    ? null
+                                    : () => _move(
+                                        _doc.data['zones'] as List,
+                                        i,
+                                        1,
+                                      ),
                                 icon: const Icon(Icons.arrow_downward),
                               ),
                             ],
                           ),
                         ),
-                  ],
-                  if (_step == 4) ...[
-                    const Text(
-                      'Revisa el panorama, sus conexiones y sus puntos. Las pruebas AR se realizan en el local.',
-                    ),
-                    FilledButton(
-                      onPressed: _busy
-                          ? null
-                          : () async {
-                              if (await _save() && context.mounted) {
-                                await context.push(
-                                  '/tours/${_record!.id}?preview=true',
-                                );
-                              }
-                            },
-                      child: const Text('Abrir vista previa privada'),
-                    ),
-                  ],
-                  if (_step == 5) ...[
-                    Text(
-                      'Espacio: ${_space['verified'] == true ? 'autorizado' : 'pendiente de revisión'}',
-                    ),
-                    Text(
-                      'Versión: ${tourStateLabel(_record?.state ?? 'draft')}',
-                    ),
-                    if (_record?.publicRevisionId != null)
-                      const Text(
-                        'La versión pública anterior seguirá disponible hasta aprobar estos cambios.',
+                      for (final s in _doc.scenes)
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  s.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                for (final c in s.connections)
+                                  ListTile(
+                                    title: Text(c['label'] as String? ?? ''),
+                                    subtitle: Text(
+                                      c['needs_review'] == true
+                                          ? core_l10n.AppLocalizations.tr(l10n.revisarConexion)
+                                          : c['instruction'] as String? ?? '',
+                                    ),
+                                    trailing: IconButton(
+                                      tooltip: core_l10n.AppLocalizations.tr(l10n.eliminarConexion),
+                                      onPressed: () {
+                                        setState(
+                                          () => jsonList(s.data['connections'])
+                                              .removeWhere(
+                                                (v) => v['id'] == c['id'],
+                                              ),
+                                        );
+                                        _local();
+                                      },
+                                      icon: const Icon(Icons.close),
+                                    ),
+                                  ),
+                                TextButton(
+                                  onPressed: s.panoramaPath == null
+                                      ? null
+                                      : () => _connect(s),
+                                  child: Text(core_l10n.AppLocalizations.tr(l10n.conectarOtraPosicion)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      Text(core_l10n.AppLocalizations.tr(l10n.paradasConCamara)),
+                      for (final id in jsonList(_doc.data['ar_order']))
+                        if (_doc.point(id as String) != null)
+                          ListTile(
+                            title: Text(_doc.point(id)!.name),
+                            subtitle: Text(core_l10n.AppLocalizations.tr(l10n.ordenRecorridoPresencial)),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  tooltip: core_l10n.AppLocalizations.tr(l10n.subirParada),
+                                  onPressed: () => _move(
+                                    _doc.data['ar_order'] as List,
+                                    jsonList(_doc.data['ar_order']).indexOf(id),
+                                    -1,
+                                  ),
+                                  icon: const Icon(Icons.arrow_upward),
+                                ),
+                                IconButton(
+                                  tooltip: core_l10n.AppLocalizations.tr(l10n.bajarParada),
+                                  onPressed: () => _move(
+                                    _doc.data['ar_order'] as List,
+                                    jsonList(_doc.data['ar_order']).indexOf(id),
+                                    1,
+                                  ),
+                                  icon: const Icon(Icons.arrow_downward),
+                                ),
+                              ],
+                            ),
+                          ),
+                    ],
+                    if (_step == 4) ...[
+                      Text(core_l10n.AppLocalizations.tr(l10n.revisarAntesVistaPrevia)),
+                      FilledButton(
+                        onPressed: _busy
+                            ? null
+                            : () async {
+                                if (await _save() && context.mounted) {
+                                  await context.push(
+                                    '/tours/${_record!.id}?preview=true',
+                                  );
+                                }
+                              },
+                        child: Text(core_l10n.AppLocalizations.tr(l10n.abrirVistaPreviaPrivada)),
                       ),
-                    for (final issue in _doc.publicationProblems)
-                      TourNotice(issue),
-                    if (_doc.points.any(
-                      (p) => p.link != null && p.link!['status'] != 'approved',
-                    ))
-                      const TourNotice(
-                        'Los vínculos pendientes no aparecerán en la versión pública.',
-                      ),
-                    OutlinedButton(
-                      onPressed: () async {
-                        final start = await _pickDateTime('Inicio de vigencia');
-                        if (!mounted || !_current || start == null) return;
-                        final end = await _pickDateTime('Fin de vigencia');
-                        if (!mounted || !_current || end == null) return;
-                        if (!end.isAfter(start)) {
-                          setState(
-                            () =>
-                                _error = 'El fin debe ser posterior al inicio.',
-                          );
-                          return;
-                        }
-                        setState(
-                          () => _doc.data.addAll({
-                            'starts_at': start.toUtc().toIso8601String(),
-                            'ends_at': end.toUtc().toIso8601String(),
-                          }),
-                        );
-                        _local();
-                      },
-                      child: const Text('Definir vigencia temporal'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(
-                          () => _doc.data.addAll({
-                            'starts_at': null,
-                            'ends_at': null,
-                          }),
-                        );
-                        _local();
-                      },
-                      child: const Text('Vigencia permanente'),
-                    ),
-                    FilledButton(
-                      onPressed: _busy || _doc.publicationProblems.isNotEmpty
-                          ? null
-                          : _submit,
-                      child: Text(
+                    ],
+                    if (_step == 5) ...[
+                      Text(
                         _space['verified'] == true
-                            ? 'Publicar versión'
-                            : 'Enviar a revisión',
+                            ? core_l10n.AppLocalizations.tr(l10n.espacioAutorizado)
+                            : core_l10n.AppLocalizations.tr(l10n.espacioPendienteRevision),
+                      ),
+                      Text(
+                        core_l10n.AppLocalizations.tr(
+                          l10n.version(_stateLabel(_record?.state ?? 'draft')),
+                        ),
+                      ),
+                      if (_record?.publicRevisionId != null)
+                        Text(core_l10n.AppLocalizations.tr(l10n.versionPublicaDisponible)),
+                      for (final issue in _doc.publicationProblems)
+                        TourNotice(_publicationProblemLabel(issue)),
+                      if (_doc.points.any(
+                        (p) =>
+                            p.link != null && p.link!['status'] != 'approved',
+                      ))
+                        TourNotice(core_l10n.AppLocalizations.tr(l10n.vinculosPendientes)),
+                      OutlinedButton(
+                        onPressed: () async {
+                          final start = await _pickDateTime(
+                            core_l10n.AppLocalizations.tr(l10n.inicioVigencia),
+                          );
+                          if (!mounted || !_current || start == null) return;
+                          final end = await _pickDateTime(core_l10n.AppLocalizations.tr(l10n.finVigencia));
+                          if (!mounted || !_current || end == null) return;
+                          if (!end.isAfter(start)) {
+                            setState(() => _error = core_l10n.AppLocalizations.tr(l10n.finPosteriorInicio));
+                            return;
+                          }
+                          setState(
+                            () => _doc.data.addAll({
+                              'starts_at': start.toUtc().toIso8601String(),
+                              'ends_at': end.toUtc().toIso8601String(),
+                            }),
+                          );
+                          _local();
+                        },
+                        child: Text(core_l10n.AppLocalizations.tr(l10n.definirVigenciaTemporal)),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(
+                            () => _doc.data.addAll({
+                              'starts_at': null,
+                              'ends_at': null,
+                            }),
+                          );
+                          _local();
+                        },
+                        child: Text(core_l10n.AppLocalizations.tr(l10n.vigenciaPermanente)),
+                      ),
+                      FilledButton(
+                        onPressed: _busy || _doc.publicationProblems.isNotEmpty
+                            ? null
+                            : _submit,
+                        child: Text(
+                          _space['verified'] == true
+                              ? core_l10n.AppLocalizations.tr(l10n.publicarVersion)
+                              : core_l10n.AppLocalizations.tr(l10n.enviarRevision),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                    FilledButton(
+                      onPressed: _busy ? null : _save,
+                      child: Text(
+                        _busy ? core_l10n.AppLocalizations.tr(l10n.guardando) : core_l10n.AppLocalizations.tr(l10n.guardarBorrador),
                       ),
                     ),
+                    if (_step < 5)
+                      TextButton(
+                        onPressed: () => setState(() => _step++),
+                        child: Text(core_l10n.AppLocalizations.tr(l10n.continuarPaso)),
+                      ),
+                    const SizedBox(height: 24),
                   ],
-                  const SizedBox(height: 20),
-                  if (_step < 5)
-                    FilledButton(
-                      onPressed: _busy
-                          ? null
-                          : () => _changeStep(_step + 1, sync: true),
-                      child: Text(_busy ? 'Guardando…' : 'Guardar y continuar'),
-                    ),
-                  TextButton(
-                    onPressed: _busy ? null : _save,
-                    child: const Text('Guardar borrador'),
-                  ),
-                  const SizedBox(height: 24),
-                ],
+                ),
               ),
-            ),
-    ),
-  );
+      ),
+    );
+  }
 }

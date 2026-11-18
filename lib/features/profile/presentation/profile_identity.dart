@@ -5,6 +5,8 @@ import 'package:marea/features/community/presentation/post_location_picker.dart'
 import 'package:marea/features/profile/presentation/profile_waves.dart';
 import 'package:marea/shared/widgets/profile_image.dart';
 import 'package:marea/shared/widgets/social_avatar.dart';
+import 'package:marea/features/profile/presentation/profile_sections.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 
 /// Identity always belongs to [profile]. Account actions are supplied separately.
 class ProfileIdentity extends StatelessWidget {
@@ -14,7 +16,7 @@ class ProfileIdentity extends StatelessWidget {
     required this.wide,
     this.onSettings,
     this.onMenu,
-    this.settingsTooltip = 'Configuración',
+    this.settingsTooltip,
     this.editAction,
     super.key,
   });
@@ -22,7 +24,7 @@ class ProfileIdentity extends StatelessWidget {
   final AppSessionController controller;
   final bool wide;
   final VoidCallback? onSettings, onMenu;
-  final String settingsTooltip;
+  final String? settingsTooltip;
   final Widget? editAction;
 
   @override
@@ -77,7 +79,9 @@ class ProfileIdentity extends StatelessWidget {
                   children: [
                     if (onSettings != null)
                       IconButton(
-                        tooltip: settingsTooltip,
+                        tooltip:
+                            settingsTooltip ??
+                            AppLocalizations.tr('Configuración'),
                         onPressed: onSettings,
                         style: IconButton.styleFrom(
                           foregroundColor: Colors.white,
@@ -87,7 +91,7 @@ class ProfileIdentity extends StatelessWidget {
                       ),
                     if (onMenu != null)
                       IconButton(
-                        tooltip: 'Menú del perfil',
+                        tooltip: AppLocalizations.tr('Menú del perfil'),
                         onPressed: onMenu,
                         style: IconButton.styleFrom(
                           foregroundColor: Colors.white,
@@ -136,9 +140,13 @@ class ProfileIdentity extends StatelessWidget {
                         right: 6,
                         bottom: 10,
                         child: Tooltip(
-                          message: 'Disponible para colaborar',
+                          message: AppLocalizations.tr(
+                            'Disponible para colaborar',
+                          ),
                           child: Semantics(
-                            label: 'Disponible para colaborar',
+                            label: AppLocalizations.tr(
+                              'Disponible para colaborar',
+                            ),
                             child: Container(
                               width: 19,
                               height: 19,
@@ -190,7 +198,7 @@ class ProfileIdentity extends StatelessWidget {
                 runSpacing: 2,
                 children: [
                   Text(
-                    profile.userType.databaseValue,
+                    localizedProfileUserTypeLabel(context, profile.userType),
                     style: const TextStyle(
                       fontSize: 12,
                       color: Color(0xFF07345C),
@@ -246,7 +254,8 @@ class ProfileIdentity extends StatelessWidget {
                       const SizedBox(width: 3),
                       Expanded(
                         child: Text(
-                          profile.location ?? 'Ubicación no indicada',
+                          profile.location ??
+                              AppLocalizations.tr('Ubicación no indicada'),
                           style: const TextStyle(
                             fontSize: 11,
                             color: Color(0xFF607C98),

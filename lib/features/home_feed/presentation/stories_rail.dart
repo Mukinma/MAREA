@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:go_router/go_router.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
@@ -186,7 +188,7 @@ class StoriesRailState extends State<StoriesRail> {
         return grouped[b]!.last.createdAt.compareTo(grouped[a]!.last.createdAt);
       });
     if (ids.isEmpty && !_loading && _error == null) {
-      return const SizedBox.shrink();
+      if (widget.controller.profile == null) return const SizedBox.shrink();
     }
 
     return Padding(
@@ -215,7 +217,7 @@ class StoriesRailState extends State<StoriesRail> {
                   child: Semantics(
                     header: true,
                     child: Text(
-                      'Historias',
+                      AppLocalizations.tr('Historias'),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.brandNavy,
                         fontWeight: FontWeight.w800,
@@ -223,33 +225,45 @@ class StoriesRailState extends State<StoriesRail> {
                     ),
                   ),
                 ),
-                if (ids.isNotEmpty)
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (final id in ids)
-                          _circle(
-                            label: id == widget.controller.profile?.id
-                                ? 'Tú'
-                                : _profiles[id]?.fullName ?? 'Usuario',
-                            unread: grouped[id]!.any((s) => !s.seen),
-                            onTap: () => _view(grouped[id]!),
-                            avatar: ProfileImage(
-                              path: _profiles[id]?.avatarPath,
-                              repository: widget.controller.mediaRepository,
-                              fallback: CircleAvatar(
-                                backgroundColor: AppColors.mist,
-                                child: Text(_profiles[id]?.initials ?? 'M'),
-                              ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.controller.profile != null)
+                        _circle(
+                          label: AppLocalizations.tr('Tu historia'),
+                          onTap: () => context.push('/stories/new'),
+                          avatar: const ColoredBox(
+                            color: AppColors.mint,
+                            child: Icon(
+                              Icons.add,
+                              color: AppColors.brandNavy,
                             ),
                           ),
-                      ],
-                    ),
-                  )
-                else if (_loading)
+                        ),
+                      for (final id in ids)
+                        _circle(
+                          label: id == widget.controller.profile?.id
+                              ? AppLocalizations.tr('Tú')
+                              : _profiles[id]?.fullName ??
+                                    AppLocalizations.tr('Usuario'),
+                          unread: grouped[id]!.any((s) => !s.seen),
+                          onTap: () => _view(grouped[id]!),
+                          avatar: ProfileImage(
+                            path: _profiles[id]?.avatarPath,
+                            repository: widget.controller.mediaRepository,
+                            fallback: CircleAvatar(
+                              backgroundColor: AppColors.mist,
+                              child: Text(_profiles[id]?.initials ?? 'M'),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                if (ids.isEmpty && _loading)
                   const Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(16, 10, 16, 6),
                     child: SizedBox.square(

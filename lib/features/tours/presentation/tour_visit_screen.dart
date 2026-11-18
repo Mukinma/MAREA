@@ -1,3 +1,5 @@
+import 'package:marea/l10n/app_localizations.dart';
+import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
@@ -7,6 +9,8 @@ import '../data/tour_progress_store.dart';
 import '../data/tour_local_store.dart';
 import 'tour_panorama.dart';
 import 'tour_widgets.dart';
+
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 
 class TourVisitScreen extends StatefulWidget {
   const TourVisitScreen({
@@ -42,6 +46,8 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
   }
 
   bool get _current => mounted && widget.controller.profile?.id == _account;
+  AppLocalizations get _l10n =>
+      AppLocalizations.of(context) ?? AppLocalizationsEs();
   Future<void> _load() async {
     try {
       final tour =
@@ -53,8 +59,9 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
       if (!mounted || !_current) return;
       if (tour == null) {
         setState(
-          () => _error =
-              'Este recorrido no está disponible. Puede estar pausado o haber finalizado.',
+          () => _error = core_l10n.AppLocalizations.tr(
+            _l10n.recorridoNoDisponible,
+          ),
         );
         return;
       }
@@ -105,7 +112,7 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
                 widget.controller,
                 point,
                 notice: _newVersion
-                    ? 'Este recorrido tiene una versión nueva. Al empezar se reiniciará el progreso anterior.'
+                    ? core_l10n.AppLocalizations.tr(_l10n.versionNuevaRecorrido)
                     : null,
               );
             }
@@ -113,7 +120,9 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
         }
       }
     } catch (e) {
-      if (_current) setState(() => _error = tourError(e));
+      if (_current) {
+        setState(() => _error = tourError(e, l10n: _l10n));
+      }
     }
   }
 
@@ -125,8 +134,8 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
       if (mounted && _current) {
         setState(
           () => _error = e is TourProgressPersistenceException
-              ? 'No pudimos guardar el progreso en este dispositivo. Mantén la pantalla abierta e inténtalo de nuevo.'
-              : 'Progreso guardado en este dispositivo. Se sincronizará al volver a abrir el recorrido.',
+              ? core_l10n.AppLocalizations.tr(_l10n.errorGuardarProgreso)
+              : core_l10n.AppLocalizations.tr(_l10n.progresoGuardado),
         );
       }
     }
@@ -148,6 +157,7 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     final tour = _tour, scene = _scene;
     return Scaffold(
       appBar: AppBar(
@@ -156,13 +166,13 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
         ),
         title: Text(
           widget.preview
-              ? 'Vista previa privada'
-              : tour?.title ?? 'Recorrido 360°',
+              ? core_l10n.AppLocalizations.tr(l10n.vistaPreviaPrivada)
+              : tour?.title ?? core_l10n.AppLocalizations.tr(l10n.recorrido360),
         ),
         actions: [
           if (tour != null && !widget.preview)
             IconButton(
-              tooltip: 'Compartir recorrido',
+              tooltip: core_l10n.AppLocalizations.tr(l10n.compartirRecorrido),
               onPressed: () => SharePlus.instance.share(
                 ShareParams(
                   uri: Uri.parse(
@@ -201,7 +211,7 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
                       ),
                       TextButton(
                         onPressed: () => setState(() => _started = false),
-                        child: const Text('Zonas'),
+                        child: Text(core_l10n.AppLocalizations.tr(l10n.zonas)),
                       ),
                     ],
                   ),
@@ -236,7 +246,17 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
                       for (final c in scene.connections)
                         ListTile(
                           title: Text(
-                            'Ir a ${c['label'] ?? _tour!.document.scene(c['target_scene_id'] as String)?.name ?? 'otra posición'}',
+                            core_l10n.AppLocalizations.tr(
+                              l10n.irAUbicacion(
+                                c['label'] ??
+                                    _tour!.document
+                                        .scene(c['target_scene_id'] as String)
+                                        ?.name ??
+                                    core_l10n.AppLocalizations.tr(
+                                      l10n.otraPosicion,
+                                    ),
+                              ),
+                            ),
                           ),
                           subtitle: Text(c['instruction'] as String? ?? ''),
                           trailing: const Icon(Icons.arrow_forward),
@@ -244,7 +264,9 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
                         ),
                       TextButton(
                         onPressed: () => setState(() => _started = false),
-                        child: const Text('Finalizar visita'),
+                        child: Text(
+                          core_l10n.AppLocalizations.tr(l10n.finalizarVisita),
+                        ),
                       ),
                     ],
                   ),
@@ -262,12 +284,10 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Mira alrededor en 360° y cambia entre posiciones. Puedes conocer cada punto sin usar la cámara ni compartir tu ubicación.',
-                ),
+                Text(core_l10n.AppLocalizations.tr(l10n.miraAlrededor360)),
                 if (_newVersion)
-                  const TourNotice(
-                    'El recorrido cambió desde tu última visita. Empieza la versión actual.',
+                  TourNotice(
+                    core_l10n.AppLocalizations.tr(l10n.recorridoCambio),
                   ),
                 FilledButton.icon(
                   onPressed: scene == null
@@ -284,8 +304,8 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
                   icon: const Icon(Icons.panorama_photosphere),
                   label: Text(
                     _progress?.sceneId == null
-                        ? 'Empezar visita'
-                        : 'Retomar visita',
+                        ? core_l10n.AppLocalizations.tr(l10n.empezarVisita)
+                        : core_l10n.AppLocalizations.tr(l10n.retomarVisita),
                   ),
                 ),
                 if (tour.hasAR)
@@ -294,7 +314,9 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
                       '/tours/${tour.id}/ar${widget.preview ? '?preview=true' : ''}',
                     ),
                     icon: const Icon(Icons.camera_alt_outlined),
-                    label: const Text('Recorrer con cámara'),
+                    label: Text(
+                      core_l10n.AppLocalizations.tr(l10n.recorrerConCamara),
+                    ),
                   ),
                 for (final z in tour.document.zones) ...[
                   const SizedBox(height: 16),
@@ -326,7 +348,7 @@ class _TourVisitScreenState extends State<TourVisitScreen> {
                 ],
                 TextButton(
                   onPressed: () => context.push('/people/${tour.ownerId}'),
-                  child: const Text('Volver al perfil'),
+                  child: Text(core_l10n.AppLocalizations.tr(l10n.volverPerfil)),
                 ),
               ],
             ),
@@ -340,6 +362,7 @@ Future<bool> showTourPoint(
   TourPoint point, {
   String? notice,
 }) async {
+  final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
   final link = point.link;
   return await showModalBottomSheet<bool>(
         context: context,
@@ -363,7 +386,10 @@ Future<bool> showTourPoint(
               Text(point.description),
               if (link != null && link['status'] == 'approved') ...[
                 const SizedBox(height: 16),
-                Text(link['title'] as String? ?? 'Contenido vinculado'),
+                Text(
+                  link['title'] as String? ??
+                      core_l10n.AppLocalizations.tr(l10n.contenidoVinculado),
+                ),
                 FilledButton(
                   onPressed: () async {
                     Navigator.pop(c);
@@ -377,13 +403,17 @@ Future<bool> showTourPoint(
                       await context.push('/$route/${link['id']}');
                     }
                   },
-                  child: const Text('Ver contenido'),
+                  child: Text(core_l10n.AppLocalizations.tr(l10n.verContenido)),
                 ),
               ] else if (link != null)
-                const TourNotice('Este contenido todavía no está disponible.'),
+                TourNotice(
+                  core_l10n.AppLocalizations.tr(l10n.contenidoNoDisponible),
+                ),
               TextButton(
                 onPressed: () => Navigator.pop(c, true),
-                child: const Text('Continuar recorrido'),
+                child: Text(
+                  core_l10n.AppLocalizations.tr(l10n.continuarRecorrido),
+                ),
               ),
             ],
           ),
