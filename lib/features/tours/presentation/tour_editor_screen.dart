@@ -371,6 +371,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         _doc,
       );
       if (!_current) return false;
+      widget.controller.toursChanged();
       setState(() {
         _record = record;
         _doc = record.document.copy();
@@ -886,6 +887,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         if (!_current) return;
         if (current != null &&
             (current.state == 'submitted' || current.state == 'published')) {
+          widget.controller.toursChanged();
           setState(() {
             _record = current;
             _pendingSubmission = false;
@@ -903,6 +905,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         _record!.id,
       );
       if (_current) {
+        widget.controller.toursChanged();
         setState(() {
           _record = record;
           _pendingSubmission = false;

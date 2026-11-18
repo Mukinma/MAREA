@@ -57,6 +57,12 @@ class AppSessionController extends ChangeNotifier {
   final StoriesRepository? storiesRepository;
   final MissionMapRepository? missionMapRepository;
   final TourRepository? tourRepository;
+  final _tourChanges = ChangeNotifier();
+  Listenable get tourChanges => _tourChanges;
+  void toursChanged() {
+    if (!_disposed) _tourChanges.notifyListeners();
+  }
+
   final MarkerRepository? markerRepository;
   final bool allowCaptureUploads;
   int _markerRevision = 0;
@@ -95,6 +101,7 @@ class AppSessionController extends ChangeNotifier {
       _refreshing = false,
       _disposed = false,
       _recovering = false,
+      _recoveryComplete = false,
       _needsLegal = false;
   int _generation = 0;
   int _profileRevision = 0;
@@ -103,6 +110,19 @@ class AppSessionController extends ChangeNotifier {
   void refreshHomeFeed() {
     _homeFeedRevision++;
     notifyListeners();
+  }
+
+  // A catalog refresh must keep the router's pending form result intact.
+  final _missionChanges = ChangeNotifier();
+  Listenable get missionChanges => _missionChanges;
+  void missionsChanged() {
+    if (!_disposed) _missionChanges.notifyListeners();
+  }
+
+  final _missionDraftChanges = ChangeNotifier();
+  Listenable get missionDraftChanges => _missionDraftChanges;
+  void missionDraftsChanged() {
+    if (!_disposed) _missionDraftChanges.notifyListeners();
   }
 
   AppFailure? _failure;
@@ -116,6 +136,7 @@ class AppSessionController extends ChangeNotifier {
   Profile? get profile => _profile;
   bool get isBusy => _busy;
   bool get isRecovering => _recovering;
+  bool get isRecoveryComplete => _recoveryComplete;
   bool get needsLegalAcceptance => _needsLegal;
   bool get needsOnboarding =>
       _profile != null && _profile!.initialProfileCompletedAt == null;
@@ -197,6 +218,11 @@ class AppSessionController extends ChangeNotifier {
       await _run(() async {
         _recovering = false;
         await _auth.signInWithGoogle(redirectTo: redirectTo);
+        // A callback that arrives during launch can be ignored by the listener
+        // while this operation owns the session lock.
+        if (_status != AuthStatus.authenticated && _auth.currentUser != null) {
+          await _loadAuthenticated();
+        }
         return true;
       }) ??
       false;
@@ -409,11 +435,18 @@ class AppSessionController extends ChangeNotifier {
           currentPassword: currentPassword,
           nonce: nonce,
         );
+        _recoveryComplete = _recovering;
         _recovering = false;
         _showSuccess('Contraseña actualizada.');
         return true;
       }) ??
       false;
+  void continueAfterRecovery() {
+    if (!_recoveryComplete) return;
+    _recoveryComplete = false;
+    clearFeedback();
+  }
+
   Future<bool> changeEmail(String newEmail, String currentPassword) async =>
       await _run(() async {
         await _auth.changeEmail(newEmail, currentPassword);
@@ -541,6 +574,7 @@ class AppSessionController extends ChangeNotifier {
     _notifications?.setSession(null);
     _profile = null;
     _recovering = false;
+    _recoveryComplete = false;
     _needsLegal = false;
     _notify();
   }
@@ -548,6 +582,9 @@ class AppSessionController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _missionChanges.dispose();
+    _missionDraftChanges.dispose();
+    _tourChanges.dispose();
     _notifications?.dispose();
     push?.dispose();
     ++_generation;

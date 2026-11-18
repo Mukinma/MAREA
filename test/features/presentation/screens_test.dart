@@ -43,7 +43,7 @@ void main() {
   testWidgets('register explains the public username identity', (tester) async {
     await tester.pumpWidget(testApp(RegisterScreen(controller: controller)));
 
-    expect(find.text('¿Qué perfil quieres crear?'), findsOneWidget);
+    expect(find.text('Tipo de perfil'), findsOneWidget);
     expect(find.byKey(const Key('register-username')), findsNothing);
     await tester.ensureVisible(find.byKey(const Key('register-type-creator')));
     await tester.tap(find.byKey(const Key('register-type-creator')));

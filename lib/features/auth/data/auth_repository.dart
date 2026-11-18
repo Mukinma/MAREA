@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/features/legal/legal_policy.dart';
@@ -52,10 +54,18 @@ abstract interface class AuthRepository {
 }
 
 class SupabaseAuthRepository implements AuthRepository {
-  SupabaseAuthRepository(this._client, {this.allowGoogleOAuth = true});
+  SupabaseAuthRepository(
+    this._client, {
+    this.allowGoogleOAuth = true,
+    String googleWebClientId = const String.fromEnvironment(
+      'GOOGLE_WEB_CLIENT_ID',
+    ),
+  }) : _googleWebClientId = googleWebClientId.trim();
 
+  static const _googleAccountChannel = MethodChannel('marea/google-sign-in');
   final SupabaseClient _client;
   final bool allowGoogleOAuth;
+  final String _googleWebClientId;
 
   @override
   AuthUser? get currentUser => _mapUser(_client.auth.currentUser);
@@ -132,13 +142,49 @@ class SupabaseAuthRepository implements AuthRepository {
       );
     }
     try {
-      await _client.auth.signInWithOAuth(
+      if (!kIsWeb &&
+          defaultTargetPlatform == TargetPlatform.android &&
+          _googleWebClientId.isNotEmpty &&
+          await _signInWithAndroidGoogle()) {
+        return;
+      }
+      final launched = await _client.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: redirectTo,
+        queryParams: const {'prompt': 'select_account'},
       );
+      if (!launched) {
+        throw const AppFailure('No pudimos abrir Google. Intenta de nuevo.');
+      }
+    } on AppFailure {
+      rethrow;
     } catch (error) {
       throw AppFailureMapper.from(error);
     }
+  }
+
+  Future<bool> _signInWithAndroidGoogle() async {
+    final nonce = _client.auth.generateRawNonce();
+    final String? token;
+    try {
+      token = await _googleAccountChannel.invokeMethod<String>(
+        'chooseAccount',
+        {'serverClientId': _googleWebClientId, 'nonce': nonce},
+      );
+    } on MissingPluginException {
+      return false;
+    } on PlatformException catch (error) {
+      if (error.code == 'unavailable') return false;
+      throw const AppFailure('No pudimos abrir Google. Intenta de nuevo.');
+    }
+    if (token != null) {
+      await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: token,
+        nonce: nonce,
+      );
+    }
+    return true;
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/profile/models/profile.dart';
+import 'package:marea/features/shell/presentation/marea_create_action.dart';
 import '../models/tour_models.dart';
 import 'tour_widgets.dart';
 import 'tour_visit_screen.dart';
@@ -15,7 +16,8 @@ String _tourStateLabel(AppLocalizations l10n, String state) =>
     _tourText(switch (state) {
       'published' => legacy.AppLocalizations.tr(l10n.estadoPublicado),
       'paused' => legacy.AppLocalizations.tr(l10n.estadoPausado),
-      'in_review' || 'submitted' => legacy.AppLocalizations.tr(l10n.estadoEnRevision),
+      'in_review' ||
+      'submitted' => legacy.AppLocalizations.tr(l10n.estadoEnRevision),
       'changes_requested' ||
       'needs_changes' ||
       'rejected' => legacy.AppLocalizations.tr(l10n.estadoRequiereCambios),
@@ -29,7 +31,9 @@ String _requestStatusLabel(AppLocalizations l10n, Object? status) {
     'approved' => _tourText(legacy.AppLocalizations.tr(l10n.estadoAprobado)),
     'pending' => _tourText(legacy.AppLocalizations.tr(l10n.pendiente)),
     'rejected' => _tourText(legacy.AppLocalizations.tr(l10n.estadoRechazado)),
-    'superseded' => _tourText(legacy.AppLocalizations.tr(l10n.solicitudSustituida)),
+    'superseded' => _tourText(
+      legacy.AppLocalizations.tr(l10n.solicitudSustituida),
+    ),
     'revoked' => _tourText(legacy.AppLocalizations.tr(l10n.estadoRevocado)),
     _ => value,
   };
@@ -52,6 +56,19 @@ class TourManagementScreen extends StatefulWidget {
 
 class _TourManagementScreenState extends State<TourManagementScreen> {
   late Future<List<TourRecord>> _items = _load();
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.tourChanges.addListener(_reload);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.tourChanges.removeListener(_reload);
+    super.dispose();
+  }
+
   Future<List<TourRecord>> _load() async =>
       await widget.controller.tourRepository?.list(
         owner: widget.controller.profile?.id,
@@ -81,7 +98,11 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
-            Text(_tourText(legacy.AppLocalizations.tr(l10n.capturaConectaPanoramas))),
+            Text(
+              _tourText(
+                legacy.AppLocalizations.tr(l10n.capturaConectaPanoramas),
+              ),
+            ),
             const SizedBox(height: 16),
             if (widget.controller.profile?.userType != null &&
                 widget.controller.profile!.userType != UserType.general)
@@ -91,11 +112,15 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
                   if (mounted) _reload();
                 },
                 icon: const Icon(Icons.add),
-                label: Text(_tourText(legacy.AppLocalizations.tr(l10n.crearRecorrido))),
+                label: Text(
+                  _tourText(legacy.AppLocalizations.tr(l10n.crearRecorrido)),
+                ),
               ),
             OutlinedButton(
               onPressed: () => context.push('/tours/requests'),
-              child: Text(_tourText(legacy.AppLocalizations.tr(l10n.solicitudesRevision))),
+              child: Text(
+                _tourText(legacy.AppLocalizations.tr(l10n.solicitudesRevision)),
+              ),
             ),
             if (s.hasError)
               TourNotice(
@@ -105,7 +130,11 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
             else if (!s.hasData)
               const LinearProgressIndicator()
             else if (s.data!.isEmpty)
-              TourNotice(_tourText(legacy.AppLocalizations.tr(l10n.todaviaSinRecorridos)))
+              TourNotice(
+                _tourText(
+                  legacy.AppLocalizations.tr(l10n.todaviaSinRecorridos),
+                ),
+              )
             else
               for (final t in s.data!)
                 Card(
@@ -123,7 +152,13 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
                         ),
                         Text(_tourStateLabel(l10n, t.state)),
                         if (t.publicRevisionId != null)
-                          Text(_tourText(legacy.AppLocalizations.tr(l10n.versionPublicaConserva))),
+                          Text(
+                            _tourText(
+                              legacy.AppLocalizations.tr(
+                                l10n.versionPublicaConserva,
+                              ),
+                            ),
+                          ),
                         Wrap(
                           spacing: 8,
                           children: [
@@ -132,12 +167,24 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
                                 await context.push('/tours/${t.id}/edit');
                                 if (mounted) _reload();
                               },
-                              child: Text(_tourText(legacy.AppLocalizations.tr(l10n.editarBorrador))),
+                              child: Text(
+                                _tourText(
+                                  legacy.AppLocalizations.tr(
+                                    l10n.editarBorrador,
+                                  ),
+                                ),
+                              ),
                             ),
                             if (t.publicRevisionId != null)
                               TextButton(
                                 onPressed: () => context.push('/tours/${t.id}'),
-                                child: Text(_tourText(legacy.AppLocalizations.tr(l10n.verRecorrido))),
+                                child: Text(
+                                  _tourText(
+                                    legacy.AppLocalizations.tr(
+                                      l10n.verRecorrido,
+                                    ),
+                                  ),
+                                ),
                               ),
                             if (t.publicRevisionId != null)
                               TextButton(
@@ -160,8 +207,16 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
                                 },
                                 child: Text(
                                   t.state == 'paused'
-                                      ? _tourText(legacy.AppLocalizations.tr(l10n.reanudar))
-                                      : _tourText(legacy.AppLocalizations.tr(l10n.pausar)),
+                                      ? _tourText(
+                                          legacy.AppLocalizations.tr(
+                                            l10n.reanudar,
+                                          ),
+                                        )
+                                      : _tourText(
+                                          legacy.AppLocalizations.tr(
+                                            l10n.pausar,
+                                          ),
+                                        ),
                                 ),
                               ),
                           ],
@@ -199,7 +254,10 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     final reason = approve
         ? legacy.AppLocalizations.tr(l10n.estadoAprobado)
-        : await tourTextDialog(context, _tourText(legacy.AppLocalizations.tr(l10n.queDebeCorregirse)));
+        : await tourTextDialog(
+            context,
+            _tourText(legacy.AppLocalizations.tr(l10n.queDebeCorregirse)),
+          );
     if (reason == null) return;
     try {
       await widget.controller.tourRepository!.review(
@@ -225,14 +283,20 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const TourBackButton(fallback: '/tours'),
-        title: Text(_tourText(legacy.AppLocalizations.tr(l10n.solicitudesRevision))),
+        title: Text(
+          _tourText(legacy.AppLocalizations.tr(l10n.solicitudesRevision)),
+        ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _items,
         builder: (c, s) => ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Text(_tourText(legacy.AppLocalizations.tr(l10n.autorizacionEspacioContenido))),
+            Text(
+              _tourText(
+                legacy.AppLocalizations.tr(l10n.autorizacionEspacioContenido),
+              ),
+            ),
             if (s.hasError)
               TourNotice(
                 _tourText(tourError(s.error!, l10n: l10n)),
@@ -241,7 +305,11 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
             else if (!s.hasData)
               const LinearProgressIndicator()
             else if (s.data!.isEmpty)
-              TourNotice(_tourText(legacy.AppLocalizations.tr(l10n.sinSolicitudesPendientes)))
+              TourNotice(
+                _tourText(
+                  legacy.AppLocalizations.tr(l10n.sinSolicitudesPendientes),
+                ),
+              )
             else
               for (final r in s.data!)
                 Card(
@@ -284,7 +352,11 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
                                     child: Image.network(
                                       s.data!,
                                       errorBuilder: (_, e, st) => Text(
-                                        _tourText(legacy.AppLocalizations.tr(l10n.evidenciaNoDisponible)),
+                                        _tourText(
+                                          legacy.AppLocalizations.tr(
+                                            l10n.evidenciaNoDisponible,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   )
@@ -296,16 +368,25 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
                               final record = TourRecord.fromJson(r['tour']);
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => TourVisitScreen(
+                                  builder: (_) => MareaCreationPage(
                                     controller: widget.controller,
-                                    tourId: record.id,
-                                    preview: true,
-                                    reviewRecord: record,
+                                    child: TourVisitScreen(
+                                      controller: widget.controller,
+                                      tourId: record.id,
+                                      preview: true,
+                                      reviewRecord: record,
+                                    ),
                                   ),
                                 ),
                               );
                             },
-                            child: Text(_tourText(legacy.AppLocalizations.tr(l10n.verVersionEnviada))),
+                            child: Text(
+                              _tourText(
+                                legacy.AppLocalizations.tr(
+                                  l10n.verVersionEnviada,
+                                ),
+                              ),
+                            ),
                           ),
                         if (r['status'] == 'approved' &&
                             (r['kind'] == 'link' || r['kind'] == 'space') &&
@@ -337,8 +418,16 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
                             },
                             child: Text(
                               r['kind'] == 'space'
-                                  ? _tourText(legacy.AppLocalizations.tr(l10n.retirarPermisoPausar))
-                                  : _tourText(legacy.AppLocalizations.tr(l10n.retirarPermisoContenido)),
+                                  ? _tourText(
+                                      legacy.AppLocalizations.tr(
+                                        l10n.retirarPermisoPausar,
+                                      ),
+                                    )
+                                  : _tourText(
+                                      legacy.AppLocalizations.tr(
+                                        l10n.retirarPermisoContenido,
+                                      ),
+                                    ),
                             ),
                           ),
                         if ((r['state'] == 'pending' ||
@@ -354,11 +443,21 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
                             children: [
                               FilledButton(
                                 onPressed: () => _review(r, true),
-                                child: Text(_tourText(legacy.AppLocalizations.tr(l10n.aprobar))),
+                                child: Text(
+                                  _tourText(
+                                    legacy.AppLocalizations.tr(l10n.aprobar),
+                                  ),
+                                ),
                               ),
                               OutlinedButton(
                                 onPressed: () => _review(r, false),
-                                child: Text(_tourText(legacy.AppLocalizations.tr(l10n.pedirCambios))),
+                                child: Text(
+                                  _tourText(
+                                    legacy.AppLocalizations.tr(
+                                      l10n.pedirCambios,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -413,7 +512,9 @@ class _ProfileTourCardState extends State<ProfileTourCard> {
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.panorama_photosphere_outlined),
-                  title: Text(_tourText(legacy.AppLocalizations.tr(l10n.explorarLocal))),
+                  title: Text(
+                    _tourText(legacy.AppLocalizations.tr(l10n.explorarLocal)),
+                  ),
                   subtitle: Text(
                     '${t.title} · ${_tourText(legacy.AppLocalizations.tr(l10n.recorrido360))}',
                   ),

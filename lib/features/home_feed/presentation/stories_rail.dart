@@ -134,12 +134,12 @@ class StoriesRailState extends State<StoriesRail> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(vertical: 3),
           child: Column(
             children: [
               Container(
-                width: 50,
-                height: 50,
+                width: 46,
+                height: 46,
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -196,7 +196,7 @@ class StoriesRailState extends State<StoriesRail> {
       child: MareaSurface(
         key: const Key('home-stories-surface'),
         color: AppColors.surface,
-        radius: 24,
+        radius: 20,
         clipBehavior: Clip.antiAlias,
         child: Ink(
           decoration: const BoxDecoration(
@@ -208,7 +208,7 @@ class StoriesRailState extends State<StoriesRail> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.only(top: 10, bottom: 7),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

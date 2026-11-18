@@ -3,10 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/core/router/app_router.dart';
+import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
+import 'package:marea/features/chat/data/chat_repository.dart';
+import 'package:marea/features/chat/models/chat_models.dart';
 import 'package:marea/features/missions/presentation/mission_catalog_screen.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
 import '../../support/fakes.dart';
+
+class _Chat implements ChatRepository {
+  @override
+  Future<List<ChatConversation>> conversations() async => [
+    ChatConversation(
+      id: 'conversation-1',
+      requesterId: sampleProfile.id,
+      recipientId: 'friend',
+      status: 'accepted',
+      createdAt: DateTime.utc(2026, 10),
+    ),
+  ];
+
+  @override
+  Future<List<ChatMessage>> messages(String conversation) async => [];
+
+  @override
+  Stream<void> changes(String conversation) => const Stream.empty();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   testWidgets(
@@ -18,7 +43,13 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPadding);
-      final session = await authenticatedController();
+      final session = AppSessionController(
+        authRepository: FakeAuthRepository(),
+        profileRepository: FakeProfileRepository(),
+        legalRepository: FakeLegalRepository(),
+        chatRepository: _Chat(),
+      );
+      await session.initialize();
       final router = AppRouter.create(session)..go('/home');
       await tester.pumpWidget(
         MaterialApp.router(
@@ -42,6 +73,9 @@ void main() {
       );
       final semantics = tester.ensureSemantics();
       for (final path in [
+        '/map',
+        '/profile',
+        '/messages',
         '/explore?section=saved',
         '/missions?section=own',
         '/create',
@@ -51,7 +85,10 @@ void main() {
         expect(router.routeInformationProvider.value.uri.toString(), path);
         expect(find.byType(AppShell), findsOneWidget);
         expect(find.byType(MissionCatalogScreen), findsNothing);
-        expect(find.byKey(const Key('create-destination')), findsNothing);
+        expect(
+          find.byKey(const Key('create-destination')).hitTestable(),
+          findsOneWidget,
+        );
         final selection = tester
             .getSemantics(find.byKey(const Key('mobile-tab-missions')))
             .flagsCollection
@@ -94,10 +131,26 @@ void main() {
       router.push('/profile/edit');
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('mobile-dock')).hitTestable(), findsNothing);
+      expect(find.byTooltip('Crear').hitTestable(), findsNothing);
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.byType(MissionCatalogScreen), findsOneWidget);
       expect(find.byTooltip('Misiones').hitTestable(), findsOneWidget);
+      for (final path in ['/missions/mission-1', '/messages/conversation-1']) {
+        router.push(path);
+        await tester.pumpAndSettle();
+        expect(find.byTooltip('Crear').hitTestable(), findsOneWidget);
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+      }
+      router.push('/settings');
+      await tester.pumpAndSettle();
+      expect(find.byTooltip('Crear').hitTestable(), findsOneWidget);
+      await tester.tap(find.byTooltip('Crear').hitTestable());
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Cerrar menú de creación'));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/settings');
       semantics.dispose();
       await tester.pumpWidget(const SizedBox());
       router.dispose();

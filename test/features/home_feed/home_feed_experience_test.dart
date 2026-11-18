@@ -35,6 +35,16 @@ class _StoryGallery extends ImagePickerPlatform {
   }) async => image;
 }
 
+class _PendingStoryDelete extends StoriesFake {
+  final deletion = Completer<void>();
+
+  @override
+  Future<void> delete(String id) async {
+    await deletion.future;
+    await super.delete(id);
+  }
+}
+
 AppSessionController controller(HomeFeedFake feed, {StoriesFake? stories}) =>
     AppSessionController(
       authRepository: FakeAuthRepository(),
@@ -205,13 +215,13 @@ void main() {
   });
 
   testWidgets(
-    'Inicio opens its creation choices and the people tab in Explorar',
+    'Inicio opens the shared creation choices and the people tab in Explorar',
     (tester) async {
       tester.view.physicalSize = const Size(390, 844);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      final session = controller(HomeFeedFake());
+      final session = controller(HomeFeedFake(), stories: StoriesFake());
       addTearDown(session.dispose);
       await session.initialize();
       final router = AppRouter.create(session)..go('/home');
@@ -221,7 +231,7 @@ void main() {
       await tester.tap(find.byTooltip('Crear'));
       await tester.pumpAndSettle();
       expect(find.text('Historia'), findsOneWidget);
-      expect(find.text('Crear misión'), findsNothing);
+      expect(find.text('Crear misión'), findsOneWidget);
       await tester.tap(find.text('Publicación'));
       await tester.pumpAndSettle();
       expect(find.text('Crear publicación'), findsOneWidget);
@@ -381,7 +391,9 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     session.dispose();
   });
-  testWidgets('opening a story covers the shell navigation', (tester) async {
+  testWidgets('stories keep Crear available and pause behind its menu', (
+    tester,
+  ) async {
     final now = DateTime.now();
     final stories = StoriesFake()
       ..values.add(
@@ -406,6 +418,13 @@ void main() {
     await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('Mi historia'), findsOneWidget);
     expect(find.byTooltip('Inicio').hitTestable(), findsNothing);
+    await tester.tap(find.byTooltip('Crear').hitTestable());
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 6));
+    await tester.tap(find.byTooltip('Cerrar menú de creación'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Mi historia'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
     router.dispose();
     session.dispose();
@@ -497,6 +516,50 @@ void main() {
       session.dispose();
     },
   );
+  testWidgets('Crear cannot interrupt deletion of the current story', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    final stories = _PendingStoryDelete()
+      ..values.add(
+        Story(
+          id: 'own',
+          authorId: sampleProfile.id,
+          text: 'Mi historia',
+          createdAt: now,
+          expiresAt: now.add(const Duration(hours: 1)),
+        ),
+      );
+    final session = controller(HomeFeedFake(), stories: stories);
+    await session.initialize();
+    final router = AppRouter.create(session)..go('/home');
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tú'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    final viewer = find.byType(StoryViewer);
+    await tester.tap(
+      find.descendant(
+        of: viewer,
+        matching: find.byType(PopupMenuButton<String>),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar historia'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Eliminar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Crear').hitTestable());
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Cerrar menú de creación'), findsNothing);
+    stories.deletion.complete();
+    await tester.pumpAndSettle();
+    expect(viewer, findsNothing);
+    await tester.pumpWidget(const SizedBox());
+    router.dispose();
+    session.dispose();
+  });
   testWidgets(
     'story viewer marks shown content seen and supports pause and next',
     (tester) async {

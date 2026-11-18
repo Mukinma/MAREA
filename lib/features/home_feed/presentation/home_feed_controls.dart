@@ -97,8 +97,9 @@ class HomeFeedControls extends StatelessWidget {
                   foregroundColor: AppColors.brandNavy,
                   minimumSize: const Size(48, 36),
                   tapTargetSize: MaterialTapTargetSize.padded,
-                  textStyle: const TextStyle(
+                  textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontSize: 13,
+                    letterSpacing: 0,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -142,7 +143,11 @@ class _FeedModeButton extends StatelessWidget {
           foregroundColor: selected
               ? AppColors.brandNavy
               : AppColors.textSecondary,
-          textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+          textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+            fontSize: 13,
+            letterSpacing: 0,
+            fontWeight: FontWeight.w800,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),

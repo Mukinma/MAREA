@@ -5,12 +5,14 @@ import 'package:marea/core/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/features/auth/presentation/access_layout.dart';
 import 'package:marea/features/legal/legal_screens.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({this.controller, super.key});
+  const WelcomeScreen({this.controller, this.allowGoogle = true, super.key});
 
   final AppSessionController? controller;
+  final bool allowGoogle;
 
   Widget _brand() => Semantics(
     label: AppLocalizations.tr('MAREA. Conecta. Crea. Explora.'),
@@ -35,7 +37,7 @@ class WelcomeScreen extends StatelessWidget {
           alignment: Alignment.topCenter,
           excludeFromSemantics: true,
         ),
-        Positioned(top: wide ? 44 : 85, left: 24, right: 24, child: _brand()),
+        if (!wide) Positioned(top: 85, left: 24, right: 24, child: _brand()),
       ],
     ),
   );
@@ -50,14 +52,17 @@ class WelcomeScreen extends StatelessWidget {
   Future<void> _signInWithGoogle(BuildContext context) async {
     final controller = this.controller;
     if (controller == null) return;
+    final messenger = ScaffoldMessenger.of(context)..removeCurrentSnackBar();
     final redirectTo = kIsWeb
         ? Uri.base.origin
         : AppConfig.fromEnvironment().mobileOAuthRedirect;
     await controller.signInWithGoogle(redirectTo: redirectTo);
-    if (!context.mounted || controller.failure == null) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(controller.failure!.message)));
+    final failure = controller.failure;
+    if (failure == null) return;
+    controller.clearFeedback();
+    if (context.mounted && ModalRoute.of(context)?.isCurrent != false) {
+      showAccessAlert(messenger, failure.message);
+    }
   }
 
   Widget _actions(BuildContext context, {required bool wide}) => Padding(
@@ -137,7 +142,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        if (controller != null) ...[
+        if (allowGoogle && controller != null) ...[
           AnimatedBuilder(
             animation: controller!,
             builder: (context, _) {
@@ -156,39 +161,37 @@ class WelcomeScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 12,
+                  ),
+                  elevation: 0,
                 ),
-                elevation: 0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (isBusy)
-                    const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    )
-                  else
-                    _googleIcon(),
-                  const SizedBox(width: 12),
-                  Flexible(
-                    child: Text(
-                      AppLocalizations.tr(
-                        isBusy ? 'Conectando...' : 'Continuar con Google',
-                      ),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isBusy)
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    else
+                      _googleIcon(),
+                    const SizedBox(width: 12),
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.tr(
+                          isBusy ? 'Conectando...' : 'Continuar con Google',
+                        ),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.2,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
               );
             },
           ),
@@ -201,55 +204,65 @@ class WelcomeScreen extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFFF7FCFF),
-    body: LayoutBuilder(
-      builder: (context, bounds) {
-        final wide = bounds.maxWidth >= 1024;
-        return SingleChildScrollView(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1280),
-              child: wide
-                  ? SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(28),
-                                child: LayoutBuilder(
-                                  builder: (_, b) =>
-                                      _hero(b.maxWidth, wide: true),
+  Widget build(BuildContext context) => ScaffoldMessenger(
+    child: Scaffold(
+      backgroundColor: const Color(0xFFF7FCFF),
+      body: LayoutBuilder(
+        builder: (context, bounds) {
+          final wide = bounds.maxWidth >= 1024;
+          return SingleChildScrollView(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1280),
+                child: wide
+                    ? SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            children: [
+                              _brand(),
+                              const SizedBox(height: 24),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(28),
+                                      child: LayoutBuilder(
+                                        builder: (_, b) =>
+                                            _hero(b.maxWidth, wide: true),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: _actions(context, wide: true),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 520),
+                        child: LayoutBuilder(
+                          builder: (_, b) => Stack(
+                            children: [
+                              _hero(b.maxWidth),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: b.maxWidth * 1.32 - 70,
                                 ),
+                                child: _actions(context, wide: false),
                               ),
-                            ),
-                            Expanded(child: _actions(context, wide: true)),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    )
-                  : ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 600),
-                      child: LayoutBuilder(
-                        builder: (_, b) => Stack(
-                          children: [
-                            _hero(b.maxWidth),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: b.maxWidth * 1.32 - 70,
-                              ),
-                              child: _actions(context, wide: false),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     ),
   );
 }

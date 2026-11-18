@@ -29,6 +29,7 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
   String? _error;
   bool _loading = false;
   int _generation = 0;
+  late int _markerRevision;
   List<ArMarker> _items = [];
   final _deleting = <String>{};
   final _images = <String, Future<Uint8List>>{};
@@ -37,6 +38,7 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
   void initState() {
     super.initState();
     _owner = widget.controller.profile?.id;
+    _markerRevision = widget.controller.markerRevision;
     widget.controller.addListener(_accountChanged);
     _reload();
   }
@@ -49,14 +51,19 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
 
   void _accountChanged() {
     final owner = widget.controller.profile?.id;
-    if (_owner == owner) return;
-    setState(() {
-      _owner = owner;
-      _items = [];
-      _images.clear();
-      _deleting.clear();
-      _error = null;
-    });
+    final ownerChanged = _owner != owner;
+    final revision = widget.controller.markerRevision;
+    if (!ownerChanged && _markerRevision == revision) return;
+    _markerRevision = revision;
+    if (ownerChanged) {
+      setState(() {
+        _owner = owner;
+        _items = [];
+        _images.clear();
+        _deleting.clear();
+        _error = null;
+      });
+    }
     _reload();
   }
 
@@ -130,7 +137,6 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
       await widget.repository.delete(owner, marker.id);
       if (_current(owner, generation)) {
         widget.controller.markersChanged();
-        await _reload();
       }
     } catch (error) {
       if (_current(owner, generation)) {

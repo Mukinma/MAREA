@@ -5,7 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marea/app.dart';
 import 'package:marea/core/errors/app_failure.dart';
+import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
+import 'package:marea/core/theme/app_theme.dart';
+import 'package:marea/features/legal/legal_policy.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/profile/presentation/edit_profile_screen.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
@@ -19,12 +22,91 @@ void main() {
     }),
   );
   testWidgets(
-    'welcome leads to registration and requires both unchecked declarations',
+    'recovery keeps the email and destination from a protected link',
     (tester) async {
+      final auth = FakeAuthRepository()..user = null;
+      final controller = AppSessionController(
+        authRepository: auth,
+        profileRepository: FakeProfileRepository(),
+        legalRepository: FakeLegalRepository(),
+      );
+      addTearDown(auth.close);
+      addTearDown(controller.dispose);
+      await controller.initialize();
+      final router = AppRouter.create(controller)..go('/missions');
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('login-email')),
+        'ana@example.com',
+      );
+      await tester.tap(find.text('Olvidé mi contraseña'));
+      await tester.pumpAndSettle();
+      final uri = router.routeInformationProvider.value.uri;
+      expect(uri.path, '/recover-password');
+      expect(uri.queryParameters['returnTo'], '/missions');
+      final field = tester.widget<TextField>(
+        find.descendant(
+          of: find.byKey(const Key('code-destination')),
+          matching: find.byType(TextField),
+        ),
+      );
+      expect(field.controller!.text, 'ana@example.com');
+    },
+  );
+  testWidgets(
+    'Google continues through legal acceptance and profile selection',
+    (tester) async {
+      final auth = FakeAuthRepository()..user = null;
+      final profiles = FakeProfileRepository()
+        ..value = sampleProfile.copyWith(initialProfileCompletedAt: null);
+      final controller = AppSessionController(
+        authRepository: auth,
+        profileRepository: profiles,
+        legalRepository: FakeLegalRepository()..accepted = false,
+      );
+      addTearDown(auth.close);
+      addTearDown(controller.dispose);
+      await controller.initialize();
+      final router = AppRouter.create(controller)
+        ..go('/login?returnTo=%2Fmissions');
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+      );
+      await tester.pumpAndSettle();
+
+      Future<void> tap(Finder finder) async {
+        await tester.ensureVisible(finder);
+        await tester.tap(finder);
+        await tester.pumpAndSettle();
+      }
+
+      await tap(find.byKey(const Key('login-google')));
+      expect(find.text('Antes de continuar'), findsOneWidget);
+      await tap(find.byKey(const Key('accept-terms')));
+      await tap(find.byKey(const Key('confirm-adult')));
+      await tap(find.text('Aceptar y continuar'));
+      expect(find.text('Elige tu perfil'), findsOneWidget);
+      await tap(find.byKey(const Key('register-type-creator')));
+      await tap(find.text('Confirmar y entrar'));
+
+      expect(router.routeInformationProvider.value.uri.path, '/missions');
+      expect(profiles.value.userType, UserType.creator);
+    },
+  );
+  testWidgets(
+    'registration keeps its draft through legal reading and clears outdated acceptance',
+    (tester) async {
+      final legal = VersionedLegalRepository();
       final c = AppSessionController(
         authRepository: FakeAuthRepository()..user = null,
         profileRepository: FakeProfileRepository(),
-        legalRepository: FakeLegalRepository(),
+        legalRepository: legal,
       );
       await tester.pumpWidget(MareaApp(controller: c));
       await tester.pumpAndSettle();
@@ -43,6 +125,10 @@ void main() {
       await tester.ensureVisible(find.text('Continuar'));
       await tester.tap(find.text('Continuar'));
       await tester.pumpAndSettle();
+      final email = find.byKey(const Key('register-email'));
+      final password = find.byKey(const Key('register-password'));
+      await tester.enterText(email, 'ana@example.com');
+      await tester.enterText(password, 'test-password-123');
       PrimaryButton submit() => tester.widget(
         find.byWidgetPredicate(
           (w) => w is PrimaryButton && w.label == 'Crear cuenta',
@@ -57,9 +143,35 @@ void main() {
       await tester.tap(find.byKey(const Key('confirm-adult')));
       await tester.pump();
       expect(submit().onPressed, isNotNull);
+      await tester.ensureVisible(find.text('Aviso de privacidad'));
       await tester.tap(find.text('Aviso de privacidad'));
       await tester.pumpAndSettle();
       expect(find.text('Privacidad de prueba'), findsOneWidget);
+      expect(find.text('Versión test-1 · México'), findsOneWidget);
+      await tester.tap(find.byTooltip('Atrás'));
+      await tester.pumpAndSettle();
+      String fieldText(Finder field) => tester
+          .widget<TextField>(
+            find.descendant(of: field, matching: find.byType(TextField)),
+          )
+          .controller!
+          .text;
+      expect(fieldText(email), 'ana@example.com');
+      expect(fieldText(password), 'test-password-123');
+      expect(submit().onPressed, isNotNull);
+
+      legal.privacyVersion = 'test-2';
+      await c.reloadLegal();
+      await tester.pumpAndSettle();
+      expect(submit().onPressed, isNull);
+      CheckboxListTile checkbox(String key) =>
+          tester.widget(find.byKey(Key(key)));
+      expect(checkbox('accept-terms').value, isFalse);
+      expect(checkbox('confirm-adult').value, isTrue);
+      legal.privacyVersion = 'test-1';
+      await c.reloadLegal();
+      await tester.pumpAndSettle();
+      expect(checkbox('accept-terms').value, isFalse);
     },
   );
   testWidgets('editing prompts before discarding a modified bio', (
@@ -204,6 +316,21 @@ void main() {
       findsOneWidget,
     );
   });
+}
+
+class VersionedLegalRepository extends FakeLegalRepository {
+  String privacyVersion = 'test-1';
+
+  @override
+  Future<LegalPolicy> loadPolicy() async => LegalPolicy(
+    signupEnabled: policy.signupEnabled,
+    terms: policy.terms,
+    privacy: LegalDocument(
+      version: privacyVersion,
+      title: policy.privacy!.title,
+      body: policy.privacy!.body,
+    ),
+  );
 }
 
 class DelayedDeleteAuthRepository extends FakeAuthRepository {

@@ -31,6 +31,36 @@ void main() {
     );
   });
   test(
+    'recovery confirmation holds the protected destination until continued',
+    () {
+      final guard = AppRouteGuard();
+      final destination = Uri.parse('/posts/p?panel=comments');
+      guard.redirectFor(AuthStatus.unauthenticated, destination);
+
+      final success = Uri.parse(
+        guard.redirectFor(
+          AuthStatus.authenticated,
+          Uri.parse('/reset-password'),
+          recoveryComplete: true,
+        )!,
+      );
+      expect(success.path, '/password-updated');
+      expect(success.queryParameters['returnTo'], destination.toString());
+      expect(
+        guard.redirectFor(
+          AuthStatus.authenticated,
+          success,
+          recoveryComplete: true,
+        ),
+        isNull,
+      );
+      expect(
+        guard.redirectFor(AuthStatus.authenticated, success),
+        destination.toString(),
+      );
+    },
+  );
+  test(
     'pending onboarding is routed once and skipped users are not forced back',
     () {
       expect(
@@ -40,6 +70,14 @@ void main() {
           onboarding: true,
         ),
         '/onboarding',
+      );
+      expect(
+        AppRouter.redirectFor(
+          AuthStatus.authenticated,
+          '/onboarding',
+          onboarding: true,
+        ),
+        isNull,
       );
       expect(
         AppRouter.redirectFor(
@@ -71,4 +109,17 @@ void main() {
       '/legal/accept',
     );
   });
+  test(
+    'finishing initial profile goes Home and subsequent visits go to Profile',
+    () {
+      final guard = AppRouteGuard();
+      final path = Uri.parse('/onboarding');
+      expect(
+        guard.redirectFor(AuthStatus.authenticated, path, onboarding: true),
+        isNull,
+      );
+      expect(guard.redirectFor(AuthStatus.authenticated, path), '/home');
+      expect(guard.redirectFor(AuthStatus.authenticated, path), '/profile');
+    },
+  );
 }

@@ -1,102 +1,118 @@
-import 'package:marea/l10n/app_localizations.dart';
-import 'package:marea/l10n/app_localizations_es.dart';
-import 'package:marea/core/localization/app_localizations.dart' as core;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:marea/core/config/app_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/utils/form_validators.dart';
 import 'package:marea/features/auth/data/auth_repository.dart';
+import 'package:marea/features/auth/presentation/access_layout.dart';
+import 'package:marea/features/auth/presentation/access_navigation.dart';
 import 'package:marea/features/auth/presentation/profile_type_picker.dart';
-import 'package:marea/features/profile/models/profile.dart';
-import 'package:marea/features/legal/legal_policy.dart';
 import 'package:marea/features/legal/legal_screens.dart';
-import 'package:marea/shared/widgets/auth_layout.dart';
-import 'package:marea/shared/widgets/marea_text_field.dart';
-import 'package:marea/shared/widgets/marea_surface.dart';
+import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({required this.controller, super.key});
+
   final AppSessionController controller;
+
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _identityForm = GlobalKey<FormState>(),
-      _accessForm = GlobalKey<FormState>();
-  final _name = TextEditingController(),
-      _username = TextEditingController(),
-      _email = TextEditingController(),
-      _password = TextEditingController();
+  final _identityForm = GlobalKey<FormState>();
+  final _accessForm = GlobalKey<FormState>();
+  final _messengerKey = GlobalKey<ScaffoldMessengerState>();
+  final _name = TextEditingController();
+  final _username = TextEditingController();
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+  late var _consent = AccessConsentDraft(widget.controller);
   UserType? _type;
   int _step = 0;
-  bool _obscure = true, _terms = false, _adult = false, _checking = false;
-  String? _usernameError, _emailError, _passwordError, _error;
-  bool get _busy => _checking || widget.controller.isBusy;
+  bool _obscure = true, _checking = false, _reloadingLegal = false;
+  bool _usernameCheckFailed = false;
+  String? _usernameError, _emailError, _passwordError;
+
+  bool get _busy => _checking || _reloadingLegal || widget.controller.isBusy;
+
+  @override
+  void didUpdateWidget(covariant RegisterScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      _consent.dispose();
+      _consent = AccessConsentDraft(widget.controller);
+    }
+  }
+
   @override
   void dispose() {
+    _consent.dispose();
     for (final field in [_name, _username, _email, _password]) {
       field.dispose();
     }
     super.dispose();
   }
 
+  void _showStep(int step) {
+    FocusScope.of(context).unfocus();
+    widget.controller.clearFeedback();
+    _messengerKey.currentState?.removeCurrentSnackBar();
+    setState(() => _step = step);
+  }
+
   void _back() {
     if (_busy) return;
-    widget.controller.clearFeedback();
     if (_step == 0) {
-      context.go('/welcome');
-      return;
+      widget.controller.clearFeedback();
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go('/welcome');
+      }
+    } else {
+      _showStep(_step - 1);
     }
-    setState(() {
-      _step--;
-      _error = null;
-    });
   }
 
   Future<void> _next() async {
     if (_busy) return;
-    FocusScope.of(context).unfocus();
     if (_step == 0) {
       if (_type == null) {
-        final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
-        setState(() => _error = core.AppLocalizations.tr(l10n.eligePerfil));
+        showAccessAlert(
+          _messengerKey.currentState!,
+          'Elige un tipo de perfil para continuar.',
+        );
         return;
       }
-      setState(() {
-        _step = 1;
-        _error = null;
-      });
+      _showStep(1);
       return;
     }
+    if (_usernameCheckFailed) {
+      _usernameError = null;
+      _usernameCheckFailed = false;
+    }
     if (!_identityForm.currentState!.validate()) return;
-    setState(() {
-      _checking = true;
-      _error = null;
-    });
+
+    FocusScope.of(context).unfocus();
+    setState(() => _checking = true);
     try {
       final available = await widget.controller.isUsernameAvailable(
         FormValidators.normalizeUsername(_username.text),
       );
       if (!mounted) return;
-      if (!available) {
-        final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
-        setState(() => _usernameError = core.AppLocalizations.tr(l10n.usuarioOcupado));
-        _identityForm.currentState!.validate();
+      if (available) {
+        _showStep(2);
       } else {
-        setState(() => _step = 2);
+        _setUsernameError('Este usuario ya está ocupado.');
       }
-    } catch (error) {
+    } catch (_) {
       if (mounted) {
-        setState(
-          () => _error = core.AppLocalizations.tr(
-            AppFailureMapper.from(error).message,
-          ),
+        _setUsernameError(
+          'No pudimos comprobar el usuario. Intenta de nuevo.',
+          retry: true,
         );
       }
     } finally {
@@ -104,373 +120,363 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  void _setUsernameError(String? message, {bool retry = false}) {
+    setState(() {
+      _usernameError = message;
+      _usernameCheckFailed = retry;
+    });
+    _identityForm.currentState?.validate();
+  }
+
+  Future<void> _reloadLegal() async {
+    if (_busy) return;
+    setState(() => _reloadingLegal = true);
+    await widget.controller.reloadLegal();
+    if (mounted) setState(() => _reloadingLegal = false);
+  }
+
   Future<void> _submit() async {
-    if (_busy ||
-        !_accessForm.currentState!.validate() ||
-        !_terms ||
-        !_adult ||
-        !widget.controller.legalPolicy.canRegister) {
-      return;
-    }
+    if (_busy || !_accessForm.currentState!.validate()) return;
+    final consent = _consent.consent;
+    if (consent == null || !widget.controller.legalPolicy.canRegister) return;
+
     FocusScope.of(context).unfocus();
+    _messengerKey.currentState?.removeCurrentSnackBar();
     final outcome = await widget.controller.signUp(
       fullName: _name.text.trim(),
       username: FormValidators.normalizeUsername(_username.text),
       email: _email.text.trim(),
       password: _password.text,
       userType: _type!,
-      consent: LegalConsent(
-        termsVersion: widget.controller.legalPolicy.terms!.version,
-        privacyVersion: widget.controller.legalPolicy.privacy!.version,
-        acceptedTerms: _terms,
-        adultConfirmed: _adult,
-      ),
+      consent: consent,
     );
     if (!mounted) return;
     if (outcome == SignUpOutcome.confirmationRequired) {
-      context.go('/check-email', extra: _email.text.trim());
-    } else if (outcome == null) {
-      final failure = widget.controller.failure;
-      if (failure?.kind == AppFailureKind.usernameTaken ||
-          failure?.message.contains('usuario') == true) {
-        setState(() {
-          _step = 1;
-          _usernameError = core.AppLocalizations.tr(failure!.message);
-        });
-        widget.controller.clearFeedback();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _identityForm.currentState?.validate();
-        });
-      } else if (failure?.kind == AppFailureKind.emailAlreadyUsed ||
-          failure?.kind == AppFailureKind.weakPassword) {
-        setState(() {
-          if (failure!.kind == AppFailureKind.emailAlreadyUsed) {
-            _emailError = core.AppLocalizations.tr(failure.message);
-          } else {
-            _passwordError = core.AppLocalizations.tr(failure.message);
-          }
-        });
-        widget.controller.clearFeedback();
-        _accessForm.currentState?.validate();
-      }
+      context.goWithAccessEmail('/check-email', email: _email.text.trim());
+      return;
     }
+    if (outcome != null) return;
+    final failure = widget.controller.failure;
+    if (failure == null) return;
+    if (failure.kind == AppFailureKind.usernameTaken ||
+        failure.message == 'Este nombre de usuario ya está ocupado.') {
+      _usernameError = failure.message;
+      _showStep(1);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _identityForm.currentState?.validate();
+      });
+    } else if (failure.kind == AppFailureKind.emailAlreadyUsed ||
+        failure.kind == AppFailureKind.weakPassword) {
+      setState(() {
+        if (failure.kind == AppFailureKind.emailAlreadyUsed) {
+          _emailError = failure.message;
+        } else {
+          _passwordError = failure.message;
+        }
+      });
+      widget.controller.clearFeedback();
+      _accessForm.currentState?.validate();
+    } else {
+      widget.controller.clearFeedback();
+      showAccessAlert(_messengerKey.currentState!, failure.message);
+    }
+  }
+
+  void _navigateToAccess(String path) {
+    widget.controller.clearFeedback();
+    context.goWithAccessEmail(path, email: _email.text.trim());
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     return AnimatedBuilder(
-    animation: widget.controller,
-    builder: (context, _) => PopScope(
-      canPop: _step == 0 && !_busy,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _back();
-      },
-      child: AuthLayout(
-        register: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
+      animation: widget.controller,
+      builder: (context, _) {
+        final canRegister =
+            widget.controller.legalPolicy.canRegister && _consent.hasDocuments;
+        final canContinue =
+            !_busy && (_step != 2 || (canRegister && _consent.isComplete));
+        return PopScope(
+          canPop: _step == 0 && !_busy,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) _back();
+          },
+          child: AccessLayout(
+            key: ValueKey(_step),
+            messengerKey: _messengerKey,
+            showBack: true,
+            onBack: _busy ? null : _back,
+            step: _step + 1,
+            totalSteps: 3,
+            title: const ['Tipo de perfil', 'Tu perfil', 'Tu acceso'][_step],
+            description: const [
+              'Elige cómo quieres participar. Tu tipo de perfil quedará fijo al crear la cuenta.',
+              'Así te verán y podrán encontrarte en Marea.',
+              'Usarás este correo para verificar tu cuenta e iniciar sesión.',
+            ][_step],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                IconButton(
-                  tooltip: core.AppLocalizations.tr(l10n.atras),
-                  onPressed: _busy ? null : _back,
-                  icon: const Icon(Icons.arrow_back_rounded),
-                ),
-                const Spacer(),
-                Text(
-                  core.AppLocalizations.tr(l10n.pasoRegistro(_step + 1)),
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w700,
+                switch (_step) {
+                  0 => ProfileTypePicker(
+                    value: _type,
+                    enabled: !_busy,
+                    onChanged: (type) {
+                      _messengerKey.currentState?.removeCurrentSnackBar();
+                      setState(() => _type = type);
+                    },
                   ),
+                  1 => _buildIdentityForm(),
+                  _ => _buildAccessForm(canRegister),
+                },
+                const SizedBox(height: 24),
+                PrimaryButton(
+                  key: const Key('register-continue'),
+                  label: _step == 2 ? 'Crear cuenta' : 'Continuar',
+                  isLoading: _checking || widget.controller.isBusy,
+                  loadingLabel: _checking
+                      ? 'Comprobando usuario…'
+                      : _step == 2
+                      ? 'Creando cuenta…'
+                      : null,
+                  onPressed: canContinue
+                      ? (_step == 2 ? _submit : _next)
+                      : null,
                 ),
+                if (_step == 0 || (_step == 2 && _emailError == null))
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      const Text('¿Ya tienes cuenta?'),
+                      TextButton(
+                        onPressed: _busy
+                            ? null
+                            : () => _navigateToAccess('/login'),
+                        child: const Text('Iniciar sesión'),
+                      ),
+                    ],
+                  ),
               ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              [
-                core.AppLocalizations.tr(l10n.quePerfilQuieresCrear),
-                core.AppLocalizations.tr(l10n.tuPerfil),
-                core.AppLocalizations.tr(l10n.creaTuAcceso),
-              ][_step],
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                value: (_step + 1) / 3,
-                minHeight: 4,
-                color: AppColors.aquaDark,
-                backgroundColor: AppColors.mint,
-              ),
-            ),
-            const SizedBox(height: 28),
-            if (_step == 0)
-              ProfileTypePicker(
-                value: _type,
-                enabled: !_busy,
-                onChanged: (type) => setState(() {
-                  _type = type;
-                  _error = null;
-                }),
-              ),
-            if (_step == 1)
-              AutofillGroup(
-                child: Form(
-                  key: _identityForm,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          ProfileTypeIcon(type: _type!),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              _type!.label,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      MareaTextField(
-                        key: const Key('register-name'),
-                        controller: _name,
-                        label: core.AppLocalizations.tr(_type!.nameLabel),
-                        enabled: !_busy,
-                        autofillHints: const [AutofillHints.name],
-                        textInputAction: TextInputAction.next,
-                        validator: FormValidators.fullName,
-                      ),
-                      const SizedBox(height: 16),
-                      MareaTextField(
-                        key: const Key('register-username'),
-                        controller: _username,
-                        label: core.AppLocalizations.tr(l10n.usuario),
-                        prefixText: '@',
-                        enabled: !_busy,
-                        textInputAction: TextInputAction.done,
-                        validator: (v) =>
-                            FormValidators.username(v) ?? _usernameError,
-                        onChanged: (_) => setState(() => _usernameError = null),
-                        onFieldSubmitted: (_) => _next(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            if (_step == 2)
-              AutofillGroup(
-                child: Form(
-                  key: _accessForm,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      MareaSurface(
-                        inset: true,
-                        padding: const EdgeInsets.all(12),
-                        child: LayoutBuilder(
-                          builder: (context, bounds) {
-                            final change = TextButton(
-                              onPressed: _busy
-                                  ? null
-                                  : () => setState(() => _step = 0),
-                              child: Text(core.AppLocalizations.tr(l10n.cambiar)),
-                            );
-                            final compact =
-                                bounds.maxWidth < 320 ||
-                                MediaQuery.textScalerOf(context).scale(1) > 1.3;
-                            final identity = Row(
-                              children: [
-                                ProfileTypeIcon(type: _type!),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    _type!.label,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                ),
-                                if (!compact) change,
-                              ],
-                            );
-                            return compact
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      identity,
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: change,
-                                      ),
-                                    ],
-                                  )
-                                : identity;
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        core.AppLocalizations.tr(l10n.tipoPerfilFijo),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      MareaTextField(
-                        key: const Key('register-email'),
-                        controller: _email,
-                        label: core.AppLocalizations.tr(l10n.correo),
-                        enabled: !_busy,
-                        keyboardType: TextInputType.emailAddress,
-                        autofillHints: const [AutofillHints.email],
-                        textInputAction: TextInputAction.next,
-                        validator: (v) =>
-                            FormValidators.email(v?.trim()) ?? _emailError,
-                        onChanged: (_) {
-                          final hadError = _emailError != null;
-                          setState(() => _emailError = null);
-                          if (hadError) _accessForm.currentState?.validate();
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      MareaTextField(
-                        key: const Key('register-password'),
-                        controller: _password,
-                        label: core.AppLocalizations.tr(l10n.contrasena),
-                        hint: core.AppLocalizations.tr(l10n.minimoCaracteres),
-                        enabled: !_busy,
-                        obscureText: _obscure,
-                        autofillHints: const [AutofillHints.newPassword],
-                        textInputAction: TextInputAction.done,
-                        validator: (v) =>
-                            FormValidators.password(v) ?? _passwordError,
-                        onChanged: (_) => setState(() => _passwordError = null),
-                        onFieldSubmitted: (_) => _submit(),
-                        suffixIcon: IconButton(
-                          tooltip: _obscure
-                              ? core.AppLocalizations.tr(l10n.mostrarContrasena)
-                              : core.AppLocalizations.tr(l10n.ocultarContrasena),
-                          onPressed: _busy
-                              ? null
-                              : () => setState(() => _obscure = !_obscure),
-                          icon: Icon(
-                            _obscure
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      if (!widget.controller.legalPolicy.canRegister) ...[
-                        Text(
-                          widget.controller.legalError ??
-                              core.AppLocalizations.tr(l10n.registroNoDisponible),
-                        ),
-                        TextButton(
-                          onPressed: _busy
-                              ? null
-                              : widget.controller.reloadLegal,
-                          child: Text(core.AppLocalizations.tr(l10n.reintentar)),
-                        ),
-                      ],
-                      ConsentFields(
-                        terms: _terms,
-                        adult: _adult,
-                        enabled:
-                            !_busy && widget.controller.legalPolicy.canRegister,
-                        onTermsChanged: (v) => setState(() => _terms = v),
-                        onAdultChanged: (v) => setState(() => _adult = v),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            if (_error ?? widget.controller.failure?.message
-                case final String error)
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Semantics(
-                  liveRegion: true,
-                  child: Text(
-                        core.AppLocalizations.tr(error),
-                    style: const TextStyle(color: AppColors.error),
-                  ),
-                ),
-              ),
-            const SizedBox(height: 28),
-            PrimaryButton(
-              key: const Key('register-continue'),
-              label: _step == 2 ? core.AppLocalizations.tr(l10n.crearCuentaAccion) : core.AppLocalizations.tr(l10n.continuar),
-              isLoading: _busy,
-              onPressed:
-                  _busy ||
-                      (_step == 2 &&
-                          (!_terms ||
-                              !_adult ||
-                              !widget.controller.legalPolicy.canRegister))
-                  ? null
-                  : _step == 2
-                  ? _submit
-                  : _next,
-            ),
-            if (_step == 0) ...[
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                key: const Key('register-google'),
-                onPressed: _busy
-                    ? null
-                    : () => widget.controller.signInWithGoogle(
-                        redirectTo: kIsWeb
-                            ? Uri.base.origin
-                            : AppConfig.fromEnvironment().mobileOAuthRedirect,
-                      ),
-                icon: const Text(
-                  'G',
-                  style: TextStyle(
-                    color: Color(0xFF4285F4),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                label: Text(core.AppLocalizations.tr(l10n.continuarConGoogle)),
-              ),
-            ],
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: _busy
-                  ? null
-                  : () {
-                      widget.controller.clearFeedback();
-                      context.go('/login', extra: _email.text.trim());
-                    },
-              child: Text(core.AppLocalizations.tr(l10n.iniciarSesion)),
-            ),
-            if (_step == 2 && _emailError != null)
-              TextButton(
-                onPressed: _busy
-                    ? null
-                    : () {
-                        widget.controller.clearFeedback();
-                        context.go(
-                          '/recover-password',
-                          extra: _email.text.trim(),
-                        );
-                      },
-                child: Text(core.AppLocalizations.tr(l10n.recuperarContrasena)),
-              ),
-          ],
-        ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildIdentityForm() => AutofillGroup(
+    child: Form(
+      key: _identityForm,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
+        children: [
+          _ProfileSummary(type: _type!),
+          AccessTextField(
+            key: const Key('register-name'),
+            controller: _name,
+            label: _type!.nameLabel,
+            enabled: !_busy,
+            autofillHints: const [AutofillHints.name],
+            textInputAction: TextInputAction.next,
+            validator: FormValidators.fullName,
+          ),
+          AccessTextField(
+            key: const Key('register-username'),
+            controller: _username,
+            label: 'Usuario',
+            prefixText: '@',
+            helperText:
+                '3 a 24 caracteres. Puedes usar letras, números, punto y guion bajo.',
+            enabled: !_busy,
+            autofillHints: const [AutofillHints.username],
+            textInputAction: TextInputAction.done,
+            validator: (v) => FormValidators.username(v) ?? _usernameError,
+            onChanged: (_) {
+              if (_usernameError != null) {
+                _setUsernameError(null);
+              }
+            },
+            onFieldSubmitted: (_) => _next(),
+          ),
+        ],
       ),
     ),
+  );
+
+  Widget _buildAccessForm(bool canRegister) => AutofillGroup(
+    child: Form(
+      key: _accessForm,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
+        children: [
+          _ProfileSummary(
+            type: _type!,
+            onChange: () => _showStep(0),
+            changeEnabled: !_busy,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AccessTextField(
+                key: const Key('register-email'),
+                controller: _email,
+                label: 'Correo',
+                enabled: !_busy,
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [AutofillHints.email],
+                textInputAction: TextInputAction.next,
+                validator: (v) =>
+                    FormValidators.email(v?.trim()) ?? _emailError,
+                onChanged: (_) {
+                  if (_emailError == null) return;
+                  setState(() => _emailError = null);
+                  _accessForm.currentState?.validate();
+                },
+              ),
+              if (_emailError != null)
+                Wrap(
+                  children: [
+                    TextButton(
+                      onPressed: _busy
+                          ? null
+                          : () => _navigateToAccess('/login'),
+                      child: const Text('Iniciar sesión'),
+                    ),
+                    TextButton(
+                      onPressed: _busy
+                          ? null
+                          : () => _navigateToAccess('/recover-password'),
+                      child: const Text('Recuperar contraseña'),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          AccessTextField(
+            key: const Key('register-password'),
+            controller: _password,
+            label: 'Contraseña',
+            helperText: 'Usa al menos 8 caracteres.',
+            enabled: !_busy,
+            obscureText: _obscure,
+            autofillHints: const [AutofillHints.newPassword],
+            textInputAction: TextInputAction.done,
+            validator: (v) => FormValidators.password(v) ?? _passwordError,
+            onChanged: (_) {
+              if (_passwordError == null) return;
+              setState(() => _passwordError = null);
+              _accessForm.currentState?.validate();
+            },
+            onFieldSubmitted: (_) => _submit(),
+            suffixIcon: IconButton(
+              tooltip: _obscure ? 'Mostrar contraseña' : 'Ocultar contraseña',
+              onPressed: _busy
+                  ? null
+                  : () => setState(() => _obscure = !_obscure),
+              icon: Icon(
+                _obscure
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+              ),
+            ),
+          ),
+          if (!canRegister)
+            AccessFeedback(
+              message: _consent.hasDocuments
+                  ? 'El registro está pausado. Intenta más tarde.'
+                  : 'No pudimos cargar los documentos de Marea.',
+              action: TextButton(
+                onPressed: _busy ? null : _reloadLegal,
+                child: Text(_reloadingLegal ? 'Cargando…' : 'Reintentar'),
+              ),
+            ),
+          Material(
+            color: AppColors.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: AppColors.border),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+              child: ConsentFields(
+                terms: _consent.terms,
+                adult: _consent.adult,
+                enabled: !_busy && canRegister,
+                onTermsChanged: (value) =>
+                    setState(() => _consent.terms = value),
+                onAdultChanged: (value) =>
+                    setState(() => _consent.adult = value),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _ProfileSummary extends StatelessWidget {
+  const _ProfileSummary({
+    required this.type,
+    this.onChange,
+    this.changeEnabled = true,
+  });
+
+  final UserType type;
+  final VoidCallback? onChange;
+  final bool changeEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final identity = Row(
+      children: [
+        AccessProfileIcon(type: type),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            type.label,
+            style: const TextStyle(
+              color: AppColors.brandNavy,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      ],
+    );
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: onChange == null
+          ? identity
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final change = TextButton(
+                  onPressed: changeEnabled ? onChange : null,
+                  child: const Text('Cambiar'),
+                );
+                final compact =
+                    constraints.maxWidth < 252 ||
+                    MediaQuery.textScalerOf(context).scale(16) > 22;
+                return compact
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [identity, change],
+                      )
+                    : Row(
+                        children: [
+                          Expanded(child: identity),
+                          change,
+                        ],
+                      );
+              },
+            ),
     );
   }
 }

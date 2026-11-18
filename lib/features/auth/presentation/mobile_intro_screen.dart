@@ -1,15 +1,12 @@
-import 'dart:math' as math;
-import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/theme/app_radius.dart';
+import 'package:marea/features/auth/presentation/access_layout.dart';
 import 'package:marea/features/auth/presentation/intro_decorations.dart';
 import 'package:marea/features/auth/presentation/intro_waves.dart';
 
-const introBackground = Color(0xFFEFF8FC);
-const introForeground = Color(0xFFF7FAFC);
-const introNavy = Color(0xFF0B3045);
-const introAqua = Color(0xFF19C2CC);
-const introMuted = Color(0xFF6B889D);
+const _introCanvas = Color(0xFFF7FAFC);
 
 class MobileIntroScreen extends StatefulWidget {
   const MobileIntroScreen({required this.onComplete, super.key});
@@ -47,7 +44,7 @@ class _MobileIntroScreenState extends State<MobileIntroScreen>
     } else {
       _pages.animateToPage(
         page,
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 240),
         curve: Curves.easeInOutCubic,
       );
     }
@@ -62,143 +59,145 @@ class _MobileIntroScreenState extends State<MobileIntroScreen>
 
   @override
   Widget build(BuildContext context) {
+    final nextLabel = _page == _slides.length - 1 ? 'Comenzar' : 'Siguiente';
+    void next() =>
+        _page == _slides.length - 1 ? widget.onComplete() : _goTo(_page + 1);
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor: introForeground,
+        systemNavigationBarColor: _introCanvas,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
         key: const Key('mobile-intro'),
-        backgroundColor: introBackground,
-        body: Column(
-          children: [
-            SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(32, 8, 24, 0),
-                child: SizedBox(
-                  height: 56,
-                  child: Row(
-                    children: [
-                      Semantics(
-                        label: 'MAREA',
-                        image: true,
-                        child: Image.asset(
-                          'assets/brand/MAREA_LOGOTIPO.png',
-                          width: 124,
-                          height: 36,
-                          excludeFromSemantics: true,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      const Spacer(),
-                      TextButton(
+        backgroundColor: _introCanvas,
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                    child: AccessHeader(
+                      brandWidth: 120,
+                      end: TextButton(
                         key: const Key('intro-skip'),
-                        onPressed: widget.onComplete,
                         style: TextButton.styleFrom(
-                          foregroundColor: introNavy,
-                          textStyle: const TextStyle(
-                            fontFamily: 'NunitoSans',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                         ),
-                        child: Text(AppLocalizations.tr('Saltar')),
+                        onPressed: widget.onComplete,
+                        child: const Text(
+                          'Saltar',
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: PageView.builder(
-                key: const Key('intro-pages'),
-                controller: _pages,
-                itemCount: _slides.length,
-                onPageChanged: (page) => setState(() => _page = page),
-                itemBuilder: (_, index) => _IntroPage(
-                  key: ValueKey(index),
-                  index: index,
-                  active: _page == index,
-                  foreground: _foreground,
-                ),
-              ),
-            ),
-            ColoredBox(
-              color: introForeground,
-              child: SafeArea(
-                top: false,
-                child: SizedBox(
-                  height: 96,
-                  width: double.infinity,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: List.generate(
-                          _slides.length,
-                          (index) => Semantics(
-                            key: Key('intro-dot-$index'),
-                            button: true,
-                            selected: _page == index,
-                            label: AppLocalizations.trTemplate(
-                              'Pantalla {number} de 4',
-                              {'number': '${index + 1}'},
+                  Expanded(
+                    child: PageView.builder(
+                      key: const Key('intro-pages'),
+                      controller: _pages,
+                      itemCount: _slides.length,
+                      onPageChanged: (page) => setState(() => _page = page),
+                      itemBuilder: (_, index) => _IntroPage(
+                        key: ValueKey(index),
+                        index: index,
+                        active: _page == index,
+                        foreground: _foreground,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+                    child: LayoutBuilder(
+                      builder: (context, bounds) {
+                        final labelFits =
+                            bounds.maxWidth >= 324 &&
+                            MediaQuery.textScalerOf(context).scale(1) <= 1.3;
+                        const nextKey = Key('intro-next');
+                        const arrow = Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 21,
+                        );
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                for (
+                                  var index = 0;
+                                  index < _slides.length;
+                                  index++
+                                )
+                                  _pageButton(index),
+                              ],
                             ),
-                            child: InkResponse(
-                              onTap: () => _goTo(index),
-                              radius: 24,
-                              child: SizedBox(
-                                width: 28,
-                                height: 48,
-                                child: Center(
-                                  child: AnimatedContainer(
-                                    duration:
-                                        MediaQuery.disableAnimationsOf(context)
-                                        ? Duration.zero
-                                        : const Duration(milliseconds: 250),
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: index == _page
-                                          ? introAqua
-                                          : const Color(0xFFD2E0E7),
-                                      shape: BoxShape.circle,
+                            if (labelFits)
+                              Flexible(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8),
+                                  child: FilledButton(
+                                    key: nextKey,
+                                    onPressed: next,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      spacing: 8,
+                                      children: [
+                                        Flexible(child: Text(nextLabel)),
+                                        arrow,
+                                      ],
                                     ),
                                   ),
                                 ),
+                              )
+                            else
+                              IconButton.filled(
+                                key: nextKey,
+                                tooltip: nextLabel,
+                                onPressed: next,
+                                icon: arrow,
                               ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 24,
-                        child: IconButton.filled(
-                          key: const Key('intro-next'),
-                          tooltip: _page == 3 ? 'Comenzar' : 'Siguiente',
-                          style: IconButton.styleFrom(
-                            backgroundColor: introNavy,
-                            foregroundColor: Colors.white,
-                            fixedSize: const Size(56, 56),
-                          ),
-                          onPressed: () => _page == 3
-                              ? widget.onComplete()
-                              : _goTo(_page + 1),
-                          icon: const Icon(
-                            Icons.arrow_forward_rounded,
-                            size: 27,
-                          ),
-                        ),
-                      ),
-                    ],
+                          ],
+                        );
+                      },
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _pageButton(int index) {
+    final selected = _page == index;
+    return Semantics(
+      key: Key('intro-dot-$index'),
+      button: true,
+      selected: selected,
+      label: 'Pantalla ${index + 1} de ${_slides.length}',
+      child: InkResponse(
+        onTap: () => _goTo(index),
+        radius: 24,
+        child: SizedBox.square(
+          dimension: 48,
+          child: Center(
+            child: AnimatedContainer(
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : const Duration(milliseconds: 160),
+              width: selected ? 24 : 9,
+              height: 9,
+              decoration: BoxDecoration(
+                color: selected ? AppColors.aquaDark : AppColors.textSecondary,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -207,44 +206,30 @@ class _MobileIntroScreenState extends State<MobileIntroScreen>
 
 class _Slide {
   const _Slide(this.title, this.description, this.alignment);
-  final List<TextSpan> title;
-  final String description;
+
+  final String title, description;
   final Alignment alignment;
 }
 
-const _accent = TextStyle(color: introAqua);
 const _slides = [
   _Slide(
-    [
-      TextSpan(text: 'Tu ciudad\ntambién '),
-      TextSpan(text: 'crea.', style: _accent),
-    ],
-    'Conecta con artistas, emprendedores, negocios y experiencias cerca de ti.',
+    'Tu ciudad\ntambién crea',
+    'Descubre a las personas y los proyectos que le dan vida a tu comunidad.',
     Alignment(0, .75),
   ),
   _Slide(
-    [
-      TextSpan(text: 'Descubre\nnuevos '),
-      TextSpan(text: 'lugares.', style: _accent),
-    ],
-    'Explora cafeterías, restaurantes, espacios culturales y más.',
+    'Descubre nuevos lugares',
+    'Encuentra cafeterías, restaurantes y espacios culturales cerca de ti.',
     Alignment(0, .7),
   ),
   _Slide(
-    [
-      TextSpan(text: 'Conecta\n'),
-      TextSpan(text: 'talento', style: _accent),
-      TextSpan(text: ' local.'),
-    ],
-    'Encuentra artistas, emprendedores y colaboraciones reales.',
+    'Conecta con talento local',
+    'Conoce a artistas, emprendedores y negocios con quienes puedes colaborar.',
     Alignment(0, .5),
   ),
   _Slide(
-    [
-      TextSpan(text: 'Vive\nexperiencias '),
-      TextSpan(text: 'reales.', style: _accent),
-    ],
-    'Eventos, pop-ups, bazares, sesiones en vivo y más cerca de ti.',
+    'Encuentra tu próxima misión',
+    'Explora oportunidades para crear, aprender o participar en tu ciudad.',
     Alignment(0, .7),
   ),
 ];
@@ -330,136 +315,68 @@ class _IntroPageState extends State<_IntroPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final slide = _slides[widget.index];
     final reduced = MediaQuery.disableAnimationsOf(context);
+    final theme = Theme.of(context);
     return LayoutBuilder(
-      builder: (context, bounds) {
-        final width = bounds.maxWidth;
-        final titleSize = (width / 390 * 36).clamp(29.0, 40.0);
-        return CustomScrollView(
-          // Large accessibility text can scroll vertically while navigation
-          // stays visible. At normal sizes, the photo fills the viewport.
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(width * .105, 20, width * .065, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      builder: (context, bounds) => SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.hero),
+              child: SizedBox(
+                height: (bounds.maxHeight * .66).clamp(164, 520),
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    Semantics(
-                      header: true,
-                      child: Text.rich(
-                        TextSpan(children: slide.title),
-                        style: TextStyle(
-                          color: introNavy,
-                          fontSize: titleSize,
-                          height: 1.15,
-                          letterSpacing: -.6,
-                          fontWeight: FontWeight.w800,
+                    Image.asset(
+                      'assets/onboarding/Hero${widget.index + 1}.webp',
+                      fit: BoxFit.cover,
+                      alignment: slide.alignment,
+                      excludeFromSemantics: true,
+                      filterQuality: FilterQuality.medium,
+                    ),
+                    IgnorePointer(
+                      child: ExcludeSemantics(
+                        child: IntroDecorations(
+                          page: widget.index,
+                          drift: _drift,
+                          entrance: _entrance,
+                          reducedMotion: reduced,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      slide.description,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        height: 1.4,
-                        color: introMuted,
+                    const Positioned(
+                      bottom: -1,
+                      left: 0,
+                      right: 0,
+                      height: 28,
+                      child: IgnorePointer(
+                        child: CustomPaint(painter: IntroWavesPainter()),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: SizedBox(
-                height: 200,
-                child: ClipRect(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      RepaintBoundary(
-                        child: AnimatedBuilder(
-                          animation: _drift,
-                          child: Image.asset(
-                            'assets/onboarding/Hero${widget.index + 1}.webp',
-                            fit: BoxFit.cover,
-                            alignment: slide.alignment,
-                            excludeFromSemantics: true,
-                            filterQuality: FilterQuality.medium,
-                          ),
-                          builder: (_, child) => Transform.scale(
-                            scale: reduced
-                                ? 1
-                                : 1.012 +
-                                      math.sin(_drift.value * math.pi * 2) *
-                                          .006,
-                            alignment: slide.alignment,
-                            child: child,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: (width * .25).clamp(80.0, 110.0),
-                        child: const IgnorePointer(
-                          child: DecoratedBox(
-                            key: Key('intro-photo-fade'),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  introBackground,
-                                  Color(0xD9EFF8FC),
-                                  Color(0x00EFF8FC),
-                                ],
-                                stops: [0, .25, 1],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      IgnorePointer(
-                        child: ExcludeSemantics(
-                          child: IntroDecorations(
-                            page: widget.index,
-                            drift: _drift,
-                            entrance: _entrance,
-                            reducedMotion: reduced,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: -1,
-                        left: 0,
-                        right: 0,
-                        height: width * 2063 / 9055,
-                        child: IgnorePointer(
-                          child: RepaintBoundary(
-                            child: AnimatedBuilder(
-                              animation: _drift,
-                              builder: (_, _) => CustomPaint(
-                                painter: IntroWavesPainter(
-                                  drift: reduced
-                                      ? 0
-                                      : math.sin(_drift.value * math.pi * 2),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            const SizedBox(height: 20),
+            Semantics(
+              header: true,
+              child: Text(
+                slide.title,
+                style: theme.textTheme.headlineMedium?.copyWith(fontSize: 34),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              slide.description,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: AppColors.textSecondary,
               ),
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }

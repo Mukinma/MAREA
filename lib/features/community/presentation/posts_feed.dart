@@ -854,7 +854,11 @@ class _PostCardState extends State<PostCard> {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           minimumSize: const Size(48, 36),
           tapTargetSize: MaterialTapTargetSize.padded,
-          textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+          textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+            fontSize: 12,
+            letterSpacing: 0,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         icon: Icon(visual.icon, size: 16),
         label: label,
@@ -996,10 +1000,12 @@ class _PostCardState extends State<PostCard> {
     final post = widget.post;
     final theme = Theme.of(context);
     final request = _url;
-    return MareaCard(
-      margin: const EdgeInsets.only(bottom: 14),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 8, 14, 6),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: MareaSurface(
+        color: AppColors.surface,
+        radius: 20,
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -1034,7 +1040,7 @@ class _PostCardState extends State<PostCard> {
                                 Text(
                                   widget.author?.fullName ??
                                       AppLocalizations.tr('Perfil de MAREA'),
-                                  style: theme.textTheme.titleMedium?.copyWith(
+                                  style: theme.textTheme.titleSmall?.copyWith(
                                     color: AppColors.brandNavy,
                                     fontWeight: FontWeight.w800,
                                   ),
@@ -1049,7 +1055,9 @@ class _PostCardState extends State<PostCard> {
                                       ),
                                     },
                                   ),
-                                  style: theme.textTheme.bodySmall,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                                 ),
                               ],
                             ),

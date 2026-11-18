@@ -1,45 +1,46 @@
-import 'package:marea/l10n/app_localizations.dart';
-import 'package:marea/l10n/app_localizations_es.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:marea/core/config/app_config.dart';
-import 'package:go_router/go_router.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/app_spacing.dart';
 import 'package:marea/core/utils/form_validators.dart';
-import 'package:marea/shared/widgets/auth_layout.dart';
-import 'package:marea/shared/widgets/marea_text_field.dart';
+import 'package:marea/features/auth/presentation/access_layout.dart';
+import 'package:marea/features/auth/presentation/access_navigation.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
 
 import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
+
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({required this.controller, this.email, super.key});
+  const LoginScreen({
+    required this.controller,
+    this.email,
+    this.allowGoogle = true,
+    super.key,
+  });
 
   final AppSessionController controller;
   final String? email;
+  final bool allowGoogle;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+enum _SignInMethod { password, google }
+
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _messengerKey = GlobalKey<ScaffoldMessengerState>();
   late final _emailController = TextEditingController(text: widget.email);
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  String? _confirmationEmail;
+  _SignInMethod? _pending;
+  AppFailure? _passwordFailure;
 
-  Future<void> _signInWithGoogle() async {
-    FocusScope.of(context).unfocus();
-    if (widget.controller.isBusy) return;
-    await widget.controller.signInWithGoogle(
-      redirectTo: kIsWeb
-          ? Uri.base.origin
-          : AppConfig.fromEnvironment().mobileOAuthRedirect,
-    );
-  }
+  bool get _busy => _pending != null || widget.controller.isBusy;
 
   @override
   void dispose() {
@@ -48,180 +49,209 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  void _go(String location, {String? email}) {
     FocusScope.of(context).unfocus();
-    if (!_formKey.currentState!.validate() || widget.controller.isBusy) return;
-    final email = _emailController.text.trim();
+    widget.controller.clearFeedback();
+    context.goWithAccessEmail(location, email: email);
+  }
+
+  void _clearPasswordFailure() {
+    if (_passwordFailure == null) return;
+    setState(() => _passwordFailure = null);
+    widget.controller.clearFeedback();
+  }
+
+  Future<void> _submit() async {
+    if (_busy || !_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
+    _messengerKey.currentState?.removeCurrentSnackBar();
+    setState(() {
+      _pending = _SignInMethod.password;
+      _passwordFailure = null;
+    });
     final ok = await widget.controller.signIn(
-      email: email,
+      email: _emailController.text.trim(),
       password: _passwordController.text,
     );
     if (!mounted) return;
+    if (ok) TextInput.finishAutofillContext();
+    final failure = ok ? null : widget.controller.failure;
+    final needsConfirmation = failure?.kind == AppFailureKind.emailNotConfirmed;
     setState(() {
-      _confirmationEmail =
-          !ok &&
-              _emailController.text.trim() == email &&
-              widget.controller.failure?.kind ==
-                  AppFailureKind.emailNotConfirmed
-          ? email
-          : null;
+      _pending = null;
+      _passwordFailure = needsConfirmation ? failure : null;
     });
+    if (failure != null) {
+      widget.controller.clearFeedback();
+      if (!needsConfirmation) {
+        final message = switch (failure.message) {
+          'No pudimos conectarnos. Inténtalo nuevamente.' ||
+          'Espera un momento antes de volver a intentarlo.' => failure.message,
+          _ => 'Revisa tu correo y contraseña e inténtalo de nuevo.',
+        };
+        showAccessAlert(_messengerKey.currentState!, message);
+      }
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    if (_busy || !widget.allowGoogle) return;
+    FocusScope.of(context).unfocus();
+    _messengerKey.currentState?.removeCurrentSnackBar();
+    setState(() {
+      _pending = _SignInMethod.google;
+      _passwordFailure = null;
+    });
+    final ok = await widget.controller.signInWithGoogle(
+      redirectTo: kIsWeb
+          ? Uri.base.origin
+          : AppConfig.fromEnvironment().mobileOAuthRedirect,
+    );
+    if (!mounted) return;
+    setState(() => _pending = null);
+    final failure = ok ? null : widget.controller.failure;
+    if (failure != null) {
+      widget.controller.clearFeedback();
+      showAccessAlert(_messengerKey.currentState!, failure.message);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     return AnimatedBuilder(
       animation: widget.controller,
-      builder: (context, _) => AuthLayout(
-        child: AutofillGroup(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: widget.controller.isBusy
-                        ? null
-                        : () => context.go('/welcome'),
-                    icon: const Icon(Icons.arrow_back_rounded),
-                    label: Text(core_l10n.AppLocalizations.tr(l10n.inicio)),
+      builder: (context, _) {
+        return AccessLayout(
+          messengerKey: _messengerKey,
+          title: core_l10n.AppLocalizations.tr('Iniciar sesión'),
+          showBack: true,
+          onBack: _busy ? null : () => _go('/welcome'),
+          child: AutofillGroup(
+            onDisposeAction: AutofillContextAction.cancel,
+            child: Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteractionIfError,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AccessTextField(
+                    key: const Key('login-email'),
+                    enabled: !_busy,
+                    controller: _emailController,
+                    label: 'Correo',
+                    hint: 'tu@correo.com',
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [
+                      AutofillHints.username,
+                      AutofillHints.email,
+                    ],
+                    validator: (value) => FormValidators.email(value?.trim()),
+                    onChanged: (_) => _clearPasswordFailure(),
                   ),
-                ),
-                Text(
-                  core_l10n.AppLocalizations.tr(l10n.iniciarSesion),
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: AppSpacing.xxl),
-                MareaTextField(
-                  key: const Key('login-email'),
-                  enabled: !widget.controller.isBusy,
-                  controller: _emailController,
-                  label: core_l10n.AppLocalizations.tr(l10n.correo),
-                  hint: core_l10n.AppLocalizations.tr('tu@correo.com'),
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  autofillHints: const [AutofillHints.email],
-                  validator: FormValidators.email,
-                  onChanged: (_) {
-                    setState(() => _confirmationEmail = null);
-                    widget.controller.clearFeedback();
-                  },
-                ),
-                const SizedBox(height: AppSpacing.md),
-                MareaTextField(
-                  key: const Key('login-password'),
-                  enabled: !widget.controller.isBusy,
-                  controller: _passwordController,
-                  label: core_l10n.AppLocalizations.tr(l10n.contrasena),
-                  obscureText: _obscurePassword,
-                  textInputAction: TextInputAction.done,
-                  autofillHints: const [AutofillHints.password],
-                  validator: FormValidators.password,
-                  onFieldSubmitted: (_) => _submit(),
-                  suffixIcon: IconButton(
-                    tooltip: _obscurePassword
-                        ? core_l10n.AppLocalizations.tr(l10n.mostrarContrasena)
-                        : core_l10n.AppLocalizations.tr(l10n.ocultarContrasena),
-                    onPressed: () =>
-                        setState(() => _obscurePassword = !_obscurePassword),
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+                  const SizedBox(height: AppSpacing.md),
+                  AccessTextField(
+                    key: const Key('login-password'),
+                    enabled: !_busy,
+                    controller: _passwordController,
+                    label: 'Contraseña',
+                    obscureText: _obscurePassword,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.password],
+                    validator: (value) => (value ?? '').isEmpty
+                        ? 'Escribe una contraseña.'
+                        : null,
+                    onChanged: (_) => _clearPasswordFailure(),
+                    onFieldSubmitted: (_) => _submit(),
+                    suffixIcon: IconButton(
+                      tooltip: _obscurePassword
+                          ? 'Mostrar contraseña'
+                          : 'Ocultar contraseña',
+                      onPressed: _busy
+                          ? null
+                          : () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: widget.controller.isBusy
-                        ? null
-                        : () {
-                            widget.controller.clearFeedback();
-                            context.go('/recover-password');
-                          },
-                    child: Text(core_l10n.AppLocalizations.tr(l10n.olvideContrasena)),
-                  ),
-                ),
-                AnimatedBuilder(
-                  animation: widget.controller,
-                  builder: (context, _) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (widget.controller.failure case final failure?) ...[
-                          Text(
-                            core_l10n.AppLocalizations.tr(failure.message),
-                            style: const TextStyle(
-                              color: AppColors.error,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.sm),
-                        ],
-                        PrimaryButton(
-                          label: core_l10n.AppLocalizations.tr(l10n.entrar),
-                          isLoading: widget.controller.isBusy,
-                          onPressed: _submit,
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        OutlinedButton.icon(
-                          key: const Key('login-google'),
-                          onPressed: widget.controller.isBusy
-                              ? null
-                              : _signInWithGoogle,
-                          icon: const Text(
-                            'G',
-                            style: TextStyle(
-                              color: Color(0xFF4285F4),
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          label: Text(
-                            core_l10n.AppLocalizations.tr(l10n.continuarConGoogle),
-                          ),
-                        ),
-                        if (_confirmationEmail != null &&
-                            widget.controller.failure?.kind ==
-                                AppFailureKind.emailNotConfirmed)
-                          TextButton(
-                            onPressed: widget.controller.isBusy
-                                ? null
-                                : () {
-                                    final email = _confirmationEmail!;
-                                    widget.controller.clearFeedback();
-                                    context.go('/check-email', extra: email);
-                                  },
-                            child: Text(core_l10n.AppLocalizations.tr(l10n.confirmarMiCorreo)),
-                          ),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(core_l10n.AppLocalizations.tr(l10n.noTienesCuenta)),
-                    TextButton(
-                      onPressed: widget.controller.isBusy
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _busy
                           ? null
-                          : () => context.go('/register'),
-                      child: Text(core_l10n.AppLocalizations.tr(l10n.crearCuenta)),
+                          : () => _go(
+                              '/recover-password',
+                              email: _emailController.text.trim(),
+                            ),
+                      child: const Text('Olvidé mi contraseña'),
+                    ),
+                  ),
+                  if (_passwordFailure != null) ...[
+                    AccessFeedback(
+                      message: 'Confirma tu correo para entrar a Marea.',
+                      error: false,
+                      action: TextButton(
+                        onPressed: _busy
+                            ? null
+                            : () => _go(
+                                '/check-email',
+                                email: _emailController.text.trim(),
+                              ),
+                        child: const Text('Confirmar mi correo'),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
+                  PrimaryButton(
+                    label: 'Entrar',
+                    loadingLabel: 'Iniciando sesión…',
+                    isLoading: _pending == _SignInMethod.password,
+                    onPressed: _busy ? null : _submit,
+                  ),
+                  if (widget.allowGoogle) ...[
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                      child: Row(
+                        spacing: AppSpacing.sm,
+                        children: [
+                          Expanded(child: Divider()),
+                          Text(
+                            'o',
+                            style: TextStyle(color: AppColors.textSecondary),
+                          ),
+                          Expanded(child: Divider()),
+                        ],
+                      ),
+                    ),
+                    AccessGoogleButton(
+                      key: const Key('login-google'),
+                      isLoading: _pending == _SignInMethod.google,
+                      onPressed: _busy ? null : _signInWithGoogle,
                     ),
                   ],
-                ),
-              ],
+                  const SizedBox(height: AppSpacing.sm),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      const Text('¿No tienes cuenta?'),
+                      TextButton(
+                        onPressed: _busy ? null : () => _go('/register'),
+                        child: const Text('Crear cuenta'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

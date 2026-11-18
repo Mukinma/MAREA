@@ -10,9 +10,13 @@ import 'package:go_router/go_router.dart';
 import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
+import 'package:marea/features/ar_markers/data/marker_repository.dart';
 import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/features/community/presentation/missions_screen.dart';
+import 'package:marea/features/home_feed/data/stories_repository.dart';
 import 'package:marea/features/profile/models/profile.dart';
+import 'package:marea/features/showcase/data/showcase_repository.dart';
+import 'package:marea/features/tours/data/tour_repository.dart';
 import '../../support/fakes.dart';
 import '../../support/mission_repository_fake.dart';
 
@@ -23,6 +27,10 @@ Future<GoRouter> openRoute(
   GlobalKey? captureKey,
   UserType? userType,
   SocialRepository? socialRepository,
+  StoriesRepository? storiesRepository,
+  ShowcaseRepository? showcaseRepository,
+  TourRepository? tourRepository,
+  MarkerRepository? markerRepository,
 }) async {
   final profile = FakeProfileRepository()
     ..value = sampleProfile.copyWith(
@@ -34,6 +42,10 @@ Future<GoRouter> openRoute(
     profileRepository: profile,
     communityRepository: repo,
     socialRepository: socialRepository,
+    storiesRepository: storiesRepository,
+    showcaseRepository: showcaseRepository,
+    tourRepository: tourRepository,
+    markerRepository: markerRepository,
   );
   await session.initialize();
   final router = AppRouter.create(session)..go(path);
@@ -169,13 +181,8 @@ void main() {
     (tester) async {
       final repo = MissionRepositoryFake();
       await openRoute(tester, repo, '/missions');
-      final createLabel = find.text('Crear misión');
-      await tapVisible(
-        tester,
-        createLabel.evaluate().isNotEmpty
-            ? createLabel
-            : find.byTooltip('Crear misión'),
-      );
+      await tapVisible(tester, find.byTooltip('Crear'));
+      await tapVisible(tester, find.text('Crear misión'));
       await validComposer(tester);
       await tapVisible(tester, find.text('Publicar misión'));
       expect(find.byType(MissionDetailScreen), findsOneWidget);
@@ -188,6 +195,42 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  testWidgets('global creation refreshes open mission drafts after saving', (
+    tester,
+  ) async {
+    final repo = MissionRepositoryFake();
+    final router = await openRoute(tester, repo, '/missions');
+    router.push('/missions?section=drafts');
+    await tester.pumpAndSettle();
+    final catalogLoads = repo.listings;
+    expect(find.text('Crear misión'), findsNothing);
+    await tapVisible(tester, find.byTooltip('Crear'));
+    await tapVisible(tester, find.text('Crear misión'));
+    await fill(tester, 'Título de la misión', 'Próxima colaboración');
+    await tapVisible(tester, find.text('Guardar borrador'));
+    await tapVisible(tester, find.byTooltip('Cerrar'));
+    expect(router.state.uri.queryParameters['section'], 'drafts');
+    expect(find.text('Próxima colaboración'), findsOneWidget);
+    expect(repo.listings, catalogLoads);
+  });
+  testWidgets('discarding a saved draft removes it from the retained list', (
+    tester,
+  ) async {
+    final router = await openRoute(
+      tester,
+      MissionRepositoryFake(),
+      '/missions?section=drafts',
+    );
+    await tapVisible(tester, find.byTooltip('Crear'));
+    await tapVisible(tester, find.text('Crear misión'));
+    await fill(tester, 'Título de la misión', 'Borrador a descartar');
+    await tapVisible(tester, find.text('Guardar borrador'));
+    await fill(tester, 'Descripción', 'Cambio sin guardar');
+    await tapVisible(tester, find.byTooltip('Cerrar'));
+    await tapVisible(tester, find.text('Descartar cambios'));
+    expect(router.state.uri.queryParameters['section'], 'drafts');
+    expect(find.text('Borrador a descartar'), findsNothing);
+  });
   testWidgets(
     'network failure keeps form and double submission sends only once',
     (tester) async {

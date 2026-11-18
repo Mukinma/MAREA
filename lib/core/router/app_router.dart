@@ -37,6 +37,7 @@ import 'package:marea/features/profile/presentation/edit_profile_screen.dart';
 import 'package:marea/features/profile/presentation/profile_screen.dart';
 import 'package:marea/features/profile/presentation/settings_screen.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
+import 'package:marea/features/shell/presentation/marea_create_action.dart';
 import 'package:marea/features/map/presentation/mission_map_screen.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
@@ -45,6 +46,8 @@ import 'package:marea/features/community/presentation/post_composer_screen.dart'
 import 'package:marea/features/community/presentation/missions_screen.dart';
 import 'package:marea/features/community/presentation/moderation_screen.dart';
 import 'package:marea/features/chat/presentation/chat_screen.dart';
+import 'access_destination_store.dart'
+    if (dart.library.js_interop) 'access_destination_store_web.dart';
 
 abstract final class AppRouter {
   static const _authPaths = {
@@ -60,6 +63,7 @@ abstract final class AppRouter {
     AuthStatus status,
     String location, {
     bool recovery = false,
+    bool recoveryComplete = false,
     bool onboarding = false,
     bool legal = false,
   }) {
@@ -72,17 +76,23 @@ abstract final class AppRouter {
     if (recovery) {
       return location == '/reset-password' ? null : '/reset-password';
     }
-    if (location == '/reset-password') return '/home';
+    if (recoveryComplete) {
+      return location == '/password-updated' ? null : '/password-updated';
+    }
     if (legal) {
       return location == '/legal/accept' || location == '/settings'
           ? null
           : '/legal/accept';
     }
-    if (onboarding && location != '/onboarding') return '/onboarding';
-    if (!onboarding && location == '/onboarding') return '/profile';
+    if (onboarding) {
+      return location == '/onboarding' ? null : '/onboarding';
+    }
+    if (location == '/onboarding') return '/profile';
     return location == '/' ||
             _authPaths.contains(location) ||
-            location == '/legal/accept'
+            location == '/legal/accept' ||
+            location == '/reset-password' ||
+            location == '/password-updated'
         ? '/home'
         : null;
   }
@@ -106,10 +116,17 @@ abstract final class AppRouter {
   static GoRouter create(
     AppSessionController controller, {
     MobileIntroStore? mobileIntroStore,
+    bool allowGoogle = true,
   }) {
     final rootKey = GlobalKey<NavigatorState>();
-    final guard = AppRouteGuard();
+    final guard = AppRouteGuard(persistDestination: true);
     final introStore = mobileIntroStore ?? SharedPreferencesMobileIntroStore();
+    GoRouterWidgetBuilder withCreate(GoRouterWidgetBuilder build) =>
+        (context, state) => MareaCreationPage(
+          controller: controller,
+          child: build(context, state),
+        );
+
     return GoRouter(
       navigatorKey: rootKey,
       initialLocation: '/',
@@ -118,6 +135,7 @@ abstract final class AppRouter {
         controller.status,
         state.uri,
         recovery: controller.isRecovering,
+        recoveryComplete: controller.isRecoveryComplete,
         onboarding: controller.needsOnboarding,
         legal: controller.needsLegalAcceptance,
       ),
@@ -130,23 +148,32 @@ abstract final class AppRouter {
         GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
         GoRoute(
           path: '/welcome',
-          builder: (_, _) =>
-              WelcomeEntryScreen(store: introStore, controller: controller),
+          builder: (_, _) => WelcomeEntryScreen(
+            store: introStore,
+            controller: controller,
+            allowGoogle: allowGoogle,
+          ),
         ),
         GoRoute(
           path: '/terms',
-          builder: (_, _) =>
-              LegalDocumentScreen(controller: controller, kind: 'terms'),
+          builder: withCreate(
+            (_, _) =>
+                LegalDocumentScreen(controller: controller, kind: 'terms'),
+          ),
         ),
         GoRoute(
           path: '/privacy',
-          builder: (_, _) =>
-              LegalDocumentScreen(controller: controller, kind: 'privacy'),
+          builder: withCreate(
+            (_, _) =>
+                LegalDocumentScreen(controller: controller, kind: 'privacy'),
+          ),
         ),
         GoRoute(
           path: '/delete-account',
-          builder: (_, _) =>
-              LegalDocumentScreen(controller: controller, kind: 'deletion'),
+          builder: withCreate(
+            (_, _) =>
+                LegalDocumentScreen(controller: controller, kind: 'deletion'),
+          ),
         ),
         GoRoute(
           path: '/legal/accept',
@@ -174,7 +201,9 @@ abstract final class AppRouter {
         ),
         GoRoute(
           path: '/password-updated',
-          builder: (_, _) => const PasswordUpdatedScreen(),
+          builder: (_, _) => PasswordUpdatedScreen(
+            onContinue: controller.continueAfterRecovery,
+          ),
         ),
         GoRoute(
           path: '/reset-password',
@@ -195,6 +224,7 @@ abstract final class AppRouter {
           builder: (_, state) => LoginScreen(
             controller: controller,
             email: state.extra as String?,
+            allowGoogle: allowGoogle,
           ),
         ),
         GoRoute(
@@ -331,10 +361,12 @@ abstract final class AppRouter {
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/showcase/:id',
-          builder: (_, state) => ShowcaseDetailScreen(
-            key: ValueKey(state.pathParameters['id']),
-            controller: controller,
-            itemId: state.pathParameters['id']!,
+          builder: withCreate(
+            (_, state) => ShowcaseDetailScreen(
+              key: ValueKey(state.pathParameters['id']),
+              controller: controller,
+              itemId: state.pathParameters['id']!,
+            ),
           ),
         ),
         GoRoute(
@@ -377,55 +409,65 @@ abstract final class AppRouter {
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/missions/:id/sent',
-          builder: (_, state) => MissionApplicationSentScreen(
-            key: ValueKey('sent:${state.uri}'),
-            controller: controller,
-            missionId: state.pathParameters['id']!,
-            applicationId: state.uri.queryParameters['application'],
+          builder: withCreate(
+            (_, state) => MissionApplicationSentScreen(
+              key: ValueKey('sent:${state.uri}'),
+              controller: controller,
+              missionId: state.pathParameters['id']!,
+              applicationId: state.uri.queryParameters['application'],
+            ),
           ),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/missions/:id/manage',
-          builder: (_, state) => MissionManagementScreen(
-            key: ValueKey(
-              'manage:${state.pathParameters['id']}:${controller.profile?.id}',
+          builder: withCreate(
+            (_, state) => MissionManagementScreen(
+              key: ValueKey(
+                'manage:${state.pathParameters['id']}:${controller.profile?.id}',
+              ),
+              controller: controller,
+              missionId: state.pathParameters['id']!,
             ),
-            controller: controller,
-            missionId: state.pathParameters['id']!,
           ),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/missions/:id',
-          builder: (_, state) => MissionDetailScreen(
-            key: ValueKey(state.uri.toString()),
-            controller: controller,
-            missionId: state.pathParameters['id']!,
-            panel: state.uri.queryParameters['panel'],
-            commentId: state.uri.queryParameters['comment'],
-            notificationId: state.uri.queryParameters['notification'],
+          builder: withCreate(
+            (_, state) => MissionDetailScreen(
+              key: ValueKey(state.uri.toString()),
+              controller: controller,
+              missionId: state.pathParameters['id']!,
+              panel: state.uri.queryParameters['panel'],
+              commentId: state.uri.queryParameters['comment'],
+              notificationId: state.uri.queryParameters['notification'],
+            ),
           ),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/messages/:id',
-          builder: (_, state) => ChatConversationScreen(
-            controller: controller,
-            conversationId: state.pathParameters['id']!,
+          builder: withCreate(
+            (_, state) => ChatConversationScreen(
+              controller: controller,
+              conversationId: state.pathParameters['id']!,
+            ),
           ),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/posts/:id',
-          builder: (_, state) => PostDetailScreen(
-            key: ValueKey(state.uri.toString()),
-            controller: controller,
-            postId: state.pathParameters['id']!,
-            panel: state.uri.queryParameters['panel'],
-            commentId: state.uri.queryParameters['comment'],
-            interestId: state.uri.queryParameters['interest'],
-            notificationId: state.uri.queryParameters['notification'],
+          builder: withCreate(
+            (_, state) => PostDetailScreen(
+              key: ValueKey(state.uri.toString()),
+              controller: controller,
+              postId: state.pathParameters['id']!,
+              panel: state.uri.queryParameters['panel'],
+              commentId: state.uri.queryParameters['comment'],
+              interestId: state.uri.queryParameters['interest'],
+              notificationId: state.uri.queryParameters['notification'],
+            ),
           ),
         ),
         GoRoute(
@@ -449,35 +491,41 @@ abstract final class AppRouter {
               state.pathParameters['id'] == controller.profile?.id
               ? '/profile'
               : null,
-          builder: (_, state) => PublicProfileScreen(
-            controller: controller,
-            profileId: state.pathParameters['id']!,
+          builder: withCreate(
+            (_, state) => PublicProfileScreen(
+              controller: controller,
+              profileId: state.pathParameters['id']!,
+            ),
           ),
         ),
         GoRoute(
           path: '/tours',
           parentNavigatorKey: rootKey,
-          builder: (_, _) => TourManagementScreen(
-            key: ValueKey(controller.profile?.id),
-            controller: controller,
+          builder: withCreate(
+            (_, _) => TourManagementScreen(
+              key: ValueKey(controller.profile?.id),
+              controller: controller,
+            ),
           ),
         ),
         GoRoute(
           path: '/ar-markers',
           parentNavigatorKey: rootKey,
-          builder: (_, _) => controller.markerRepository == null
-              ? const Scaffold(
-                  body: Center(
-                    child: Text(
-                      'Los marcadores no están disponibles en esta sesión.',
+          builder: withCreate(
+            (_, _) => controller.markerRepository == null
+                ? const Scaffold(
+                    body: Center(
+                      child: Text(
+                        'Los marcadores no están disponibles en esta sesión.',
+                      ),
                     ),
+                  )
+                : MarkerManagementScreen(
+                    key: ValueKey(controller.profile?.id),
+                    controller: controller,
+                    repository: controller.markerRepository!,
                   ),
-                )
-              : MarkerManagementScreen(
-                  key: ValueKey(controller.profile?.id),
-                  controller: controller,
-                  repository: controller.markerRepository!,
-                ),
+          ),
         ),
         GoRoute(
           path: '/ar-markers/new',
@@ -529,9 +577,11 @@ abstract final class AppRouter {
         GoRoute(
           path: '/nearby-alerts',
           parentNavigatorKey: rootKey,
-          builder: (_, _) => ProximitySettingsScreen(
-            key: ValueKey(controller.profile?.id),
-            controller: controller,
+          builder: withCreate(
+            (_, _) => ProximitySettingsScreen(
+              key: ValueKey(controller.profile?.id),
+              controller: controller,
+            ),
           ),
         ),
         GoRoute(
@@ -545,17 +595,21 @@ abstract final class AppRouter {
         GoRoute(
           path: '/tours/requests',
           parentNavigatorKey: rootKey,
-          builder: (_, _) => TourRequestsScreen(
-            key: ValueKey(controller.profile?.id),
-            controller: controller,
+          builder: withCreate(
+            (_, _) => TourRequestsScreen(
+              key: ValueKey(controller.profile?.id),
+              controller: controller,
+            ),
           ),
         ),
         GoRoute(
           path: '/tours/nearby',
           parentNavigatorKey: rootKey,
-          builder: (_, _) => TourDiscoveryScreen(
-            key: ValueKey(controller.profile?.id),
-            controller: controller,
+          builder: withCreate(
+            (_, _) => TourDiscoveryScreen(
+              key: ValueKey(controller.profile?.id),
+              controller: controller,
+            ),
           ),
         ),
         GoRoute(
@@ -605,18 +659,22 @@ abstract final class AppRouter {
         GoRoute(
           path: '/tours/:id',
           parentNavigatorKey: rootKey,
-          builder: (_, s) => TourVisitScreen(
-            key: ValueKey('${controller.profile?.id}:${s.uri}'),
-            controller: controller,
-            tourId: s.pathParameters['id']!,
-            preview: s.uri.queryParameters['preview'] == 'true',
-            pointId: s.uri.queryParameters['point'],
+          builder: withCreate(
+            (_, s) => TourVisitScreen(
+              key: ValueKey('${controller.profile?.id}:${s.uri}'),
+              controller: controller,
+              tourId: s.pathParameters['id']!,
+              preview: s.uri.queryParameters['preview'] == 'true',
+              pointId: s.uri.queryParameters['point'],
+            ),
           ),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/moderation',
-          builder: (_, _) => ModerationScreen(controller: controller),
+          builder: withCreate(
+            (_, _) => ModerationScreen(controller: controller),
+          ),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
@@ -629,7 +687,7 @@ abstract final class AppRouter {
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/settings',
-          builder: (_, _) => SettingsScreen(controller: controller),
+          builder: withCreate((_, _) => SettingsScreen(controller: controller)),
         ),
       ],
     );
@@ -637,7 +695,24 @@ abstract final class AppRouter {
 }
 
 class AppRouteGuard {
+  AppRouteGuard({bool persistDestination = false})
+    : _persistDestination = persistDestination,
+      _requestedLocation = persistDestination
+          ? internalDestination(readAccessDestination())
+          : null;
+
+  final bool _persistDestination;
   String? _requestedLocation;
+  bool _visitedPendingProfile = false;
+
+  void _remember(String? location) {
+    if (_requestedLocation == location) return;
+    _requestedLocation = location;
+    if (_persistDestination) {
+      writeAccessDestination(internalDestination(location));
+    }
+  }
+
   static String? internalDestination(String? value) {
     if (value == null ||
         !value.startsWith('/') ||
@@ -661,28 +736,44 @@ class AppRouteGuard {
     AuthStatus status,
     Uri uri, {
     bool recovery = false,
+    bool recoveryComplete = false,
     bool onboarding = false,
     bool legal = false,
   }) {
-    _requestedLocation ??= internalDestination(uri.queryParameters['returnTo']);
+    if (_requestedLocation == null) {
+      _remember(internalDestination(uri.queryParameters['returnTo']));
+    }
     final post = internalDestination(uri.toString());
     if (post != null &&
         (status != AuthStatus.authenticated ||
             recovery ||
+            recoveryComplete ||
             onboarding ||
             legal)) {
-      _requestedLocation = post;
+      _remember(post);
     }
-    final redirect = AppRouter.redirectFor(
+    final previousPendingProfile = _visitedPendingProfile;
+    _visitedPendingProfile =
+        status == AuthStatus.authenticated &&
+        onboarding &&
+        (previousPendingProfile || uri.path == '/onboarding');
+    final appRedirect = AppRouter.redirectFor(
       status,
       uri.path,
       recovery: recovery,
+      recoveryComplete: recoveryComplete,
       onboarding: onboarding,
       legal: legal,
     );
+    final redirect =
+        previousPendingProfile &&
+            uri.path == '/onboarding' &&
+            appRedirect == '/profile'
+        ? '/home'
+        : appRedirect;
     if (status == AuthStatus.initializing) {
       if (redirect == '/' && uri.path != '/') {
-        _requestedLocation ??= uri.toString();
+        if (_requestedLocation == null) _remember(uri.toString());
       }
       return redirect;
     }
@@ -690,13 +781,15 @@ class AppRouteGuard {
     if (requested != null) {
       if (status == AuthStatus.authenticated &&
           !recovery &&
+          !recoveryComplete &&
           !onboarding &&
           !legal &&
           (uri.path == '/' ||
               AppRouter._authPaths.contains(uri.path) ||
               uri.path == '/legal/accept' ||
-              uri.path == '/onboarding')) {
-        _requestedLocation = null;
+              uri.path == '/onboarding' ||
+              uri.path == '/password-updated')) {
+        _remember(null);
         return requested;
       }
       if (uri.path == '/') {
@@ -704,6 +797,7 @@ class AppRouteGuard {
               status,
               Uri.parse(requested).path,
               recovery: recovery,
+              recoveryComplete: recoveryComplete,
               onboarding: onboarding,
               legal: legal,
             ) ??
@@ -721,7 +815,8 @@ class AppRouteGuard {
           (AppRouter._authPaths.contains(uri.path) ||
               uri.path == '/legal/accept' ||
               uri.path == '/onboarding' ||
-              uri.path == '/reset-password')) {
+              uri.path == '/reset-password' ||
+              uri.path == '/password-updated')) {
         return uri
             .replace(
               queryParameters: {...uri.queryParameters, 'returnTo': requested},

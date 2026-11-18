@@ -324,6 +324,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(repo.deletions, [(sampleProfile.id, markerId)]);
     expect(find.text('Menú del taller'), findsNothing);
+    repo.items = [marker()];
+    controller.markersChanged();
+    await tester.pumpAndSettle();
+    expect(find.text('Menú del taller'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

@@ -69,6 +69,8 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
 
   @override
   void dispose() {
+    widget.controller.missionChanges.removeListener(_load);
+    widget.controller.missionDraftChanges.removeListener(_reloadDrafts);
     _scroll.dispose();
     _search.dispose();
     _debounce?.cancel();
@@ -83,7 +85,13 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
   @override
   void initState() {
     super.initState();
+    widget.controller.missionChanges.addListener(_load);
+    widget.controller.missionDraftChanges.addListener(_reloadDrafts);
     _load();
+  }
+
+  void _reloadDrafts() {
+    if (_draftView) _load();
   }
 
   Future<void> _load({bool append = false}) async {
@@ -297,18 +305,6 @@ class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
             _tab == 2 ? 'Mis candidaturas' : 'Misiones',
           ),
           onRefresh: () => _load(),
-          action: FilledButton.icon(
-            onPressed: () async {
-              final id = await context.push<String>('/missions/new');
-              if (!mounted) return;
-              await _load();
-              if (!context.mounted || id == null) return;
-              await context.push('/missions/$id');
-              if (mounted) await _load();
-            },
-            icon: const Icon(Icons.add),
-            label: Text(AppLocalizations.tr('Crear misión')),
-          ),
           children: [
             MareaTabs(
               options: {

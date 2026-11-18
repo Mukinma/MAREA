@@ -70,6 +70,34 @@ void main() {
   });
 
   test(
+    'loads legal and profile gates when Google returns during launch',
+    () async {
+      final googleAuth = support.FakeAuthRepository()..user = null;
+      final googleSession = AppSessionController(
+        authRepository: googleAuth,
+        profileRepository: support.FakeProfileRepository()
+          ..value = support.sampleProfile.copyWith(
+            initialProfileCompletedAt: null,
+          ),
+        legalRepository: support.FakeLegalRepository()..accepted = false,
+      );
+      addTearDown(googleSession.dispose);
+      addTearDown(googleAuth.close);
+      await googleSession.initialize();
+
+      expect(
+        await googleSession.signInWithGoogle(
+          redirectTo: 'com.marea.app://login-callback',
+        ),
+        isTrue,
+      );
+      expect(googleSession.status, AuthStatus.authenticated);
+      expect(googleSession.needsLegalAcceptance, isTrue);
+      expect(googleSession.needsOnboarding, isTrue);
+    },
+  );
+
+  test(
     'returns confirmationRequired without authenticating the session',
     () async {
       auth.signUpOutcome = SignUpOutcome.confirmationRequired;

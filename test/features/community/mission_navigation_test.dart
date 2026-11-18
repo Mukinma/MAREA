@@ -1,15 +1,28 @@
-import 'package:marea/features/shell/presentation/app_shell.dart';
 import 'package:marea/features/showcase/presentation/create_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marea/core/errors/app_failure.dart';
+import 'package:marea/features/ar_markers/data/marker_repository.dart';
 import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/features/community/models/post_social.dart';
+import 'package:marea/features/tours/data/tour_repository.dart';
 import '../../support/fakes.dart';
+import '../../support/home_feed_fakes.dart';
 import '../../support/mission_repository_fake.dart';
+import '../../support/showcase_repository_fake.dart';
 import 'missions_screen_test.dart' show openRoute, tapVisible, capture;
+
+class _AvailableTours implements TourRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _AvailableMarkers implements MarkerRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 class _NotificationReadFails implements SocialRepository {
   @override
@@ -67,19 +80,10 @@ void main() {
         '/missions',
         captureKey: key,
       );
-      if (width < 600) {
-        final shell = tester.widget<AppShell>(find.byType(AppShell));
-        showCreateMenu(
-          tester.element(find.byType(AppShell)),
-          shell.controller!,
-        );
-        await tester.pumpAndSettle();
-      } else {
-        await tapVisible(tester, find.byTooltip('Crear'));
-      }
+      await tapVisible(tester, find.byTooltip('Crear'));
       final pixels = width.toInt();
       await capture(tester, key, 'mission-create-menu-$pixels');
-      expect(find.text('Pon tu idea en movimiento'), findsOneWidget);
+      expect(find.byTooltip('Cerrar menú de creación'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }
@@ -114,40 +118,86 @@ void main() {
     expect(n.missionId, 'm');
     expect(n.postId, isNull);
   });
-  testWidgets('every profile can create a mission from create destination', (
+  testWidgets('direct create destination hides unavailable services', (
     tester,
   ) async {
     await openRoute(tester, MissionRepositoryFake(), '/create');
     expect(find.text('Crear misión'), findsOneWidget);
+    for (final option in [
+      'Historia',
+      'Obra / proyecto',
+      'Crear recorrido 360°',
+      'Crear marcador RA',
+    ]) {
+      expect(find.text(option), findsNothing);
+    }
     await tapVisible(tester, find.text('Crear misión'));
     expect(find.text('Continuar'), findsOneWidget);
   });
   for (final type in UserType.values) {
-    testWidgets('create palette includes mission for ${type.name}', (
-      tester,
-    ) async {
-      await openRoute(
-        tester,
-        MissionRepositoryFake(),
-        '/missions',
-        userType: type,
-      );
-      await tapVisible(tester, find.byTooltip('Crear'));
-      expect(find.text('Pon tu idea en movimiento'), findsOneWidget);
-      final create = find.descendant(
-        of: find.byType(CreationChoices),
-        matching: find.text('Crear misión'),
-      );
-      expect(create, findsOneWidget);
-      await tapVisible(tester, create);
-      expect(find.text('Nueva misión'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+    testWidgets(
+      'mobile create palette uses capability rules for ${type.name}',
+      (tester) async {
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        await openRoute(
+          tester,
+          MissionRepositoryFake(),
+          '/missions',
+          userType: type,
+          storiesRepository: StoriesFake(),
+          showcaseRepository: ShowcaseRepositoryFake(),
+          tourRepository: _AvailableTours(),
+          markerRepository: _AvailableMarkers(),
+        );
+        await tapVisible(tester, find.byTooltip('Crear'));
+        expect(find.byTooltip('Cerrar menú de creación'), findsOneWidget);
+        final create = find.descendant(
+          of: find.byType(CreationChoices),
+          matching: find.text('Crear misión'),
+        );
+        expect(create, findsOneWidget);
+        final labels = switch (type) {
+          UserType.general => <String>[],
+          UserType.creator => ['Obra / proyecto', 'Crear recorrido 360°'],
+          UserType.entrepreneur => [
+            'Producto',
+            'Servicio',
+            'Crear recorrido 360°',
+          ],
+          UserType.business => ['Servicio', 'Crear recorrido 360°'],
+        };
+        for (final label in [
+          'Publicación',
+          'Historia',
+          'Crear misión',
+          'Crear marcador RA',
+        ]) {
+          expect(find.text(label), findsOneWidget);
+        }
+        for (final option in [
+          'Obra / proyecto',
+          'Producto',
+          'Servicio',
+          'Crear recorrido 360°',
+        ]) {
+          expect(
+            find.text(option),
+            labels.contains(option) ? findsOneWidget : findsNothing,
+          );
+        }
+        await tapVisible(tester, create);
+        expect(find.text('Nueva misión'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
   testWidgets('saved view only lists privately saved missions', (tester) async {
     final repo = MissionRepositoryFake();
     await openRoute(tester, repo, '/missions');
-    await tapVisible(tester, find.text('Guardadas'));
+    await tapVisible(tester, find.byTooltip('Misiones guardadas'));
     expect(find.text(repo.value.title), findsNothing);
     expect(find.text('Aún no has guardado misiones.'), findsOneWidget);
   });

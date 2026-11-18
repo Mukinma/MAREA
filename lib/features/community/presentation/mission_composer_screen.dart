@@ -301,7 +301,10 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
             _showPublished(draft!);
             return;
           }
-          if (draft != null) await repo.deleteMissionDraft(_draftId);
+          if (draft != null) {
+            await repo.deleteMissionDraft(_draftId);
+            widget.controller.missionDraftsChanged();
+          }
           if (_imagePath != null) {
             try {
               await repo.removeMissionImage(_imagePath!);
@@ -468,6 +471,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       _draftSaveAttempted = true;
       await repo.saveMissionDraft(_draftData, id: _draftId);
       _draftSaved = true;
+      widget.controller.missionDraftsChanged();
       await _cleanOldDraftImage();
       if (!mounted) return true;
       setState(() => _dirty = false);
@@ -506,6 +510,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
   Future<bool> _recoverPublished(CommunityRepository repo) async {
     final draft = await repo.missionDraft(_draftId);
     if (draft?.isPublished != true) return false;
+    widget.controller.missionsChanged();
     if (draft!.publishedMissionId != null &&
         _image == null &&
         _start != null &&
@@ -651,6 +656,7 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
       _busy = true;
       _error = null;
     });
+    var draftSavedThisAttempt = false;
     try {
       if (!_editing && _publishStarted && await _recoverPublished(repo)) return;
       await _uploadImage();
@@ -668,17 +674,18 @@ class _MissionComposerScreenState extends State<MissionComposerScreen> {
           }
         }
       } else {
-        {
-          _draftSaveAttempted = true;
-          await repo.saveMissionDraft(_draftData, id: _draftId);
-          _draftSaved = true;
-          await _cleanOldDraftImage();
-          _publishStarted = true;
-        }
+        _draftSaveAttempted = true;
+        await repo.saveMissionDraft(_draftData, id: _draftId);
+        draftSavedThisAttempt = true;
+        _draftSaved = true;
+        await _cleanOldDraftImage();
+        _publishStarted = true;
         id = await repo.publishMissionDraft(_draftId, input);
       }
+      widget.controller.missionsChanged();
       if (mounted) _exit(id);
     } catch (error) {
+      if (draftSavedThisAttempt) widget.controller.missionDraftsChanged();
       if (mounted) setState(() => _error = communityError(error));
     } finally {
       if (mounted) setState(() => _busy = false);

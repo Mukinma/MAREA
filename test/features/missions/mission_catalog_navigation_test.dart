@@ -114,8 +114,11 @@ void main() {
     expect(find.text('Explorar misiones'), findsNothing);
     expect(find.text('Misión destacada'), findsNothing);
     expect(
-      find.descendant(of: photo, matching: find.byType(Icon)),
-      findsNothing,
+      find.descendant(
+        of: photo,
+        matching: find.byIcon(Icons.camera_alt_outlined),
+      ),
+      findsOneWidget,
     );
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
@@ -162,9 +165,26 @@ void main() {
     final photo = find.byKey(const Key('mission-catalog-category-fotografia'));
     final art = find.byKey(const Key('mission-catalog-category-arte'));
     expect(tester.getTopLeft(photo).dx, greaterThan(tester.getTopLeft(art).dx));
+    final artIcon = find.descendant(
+      of: art,
+      matching: find.byIcon(Icons.palette_outlined),
+    );
+    final artSurface = find
+        .descendant(of: art, matching: find.byType(AnimatedContainer))
+        .first;
+    final defaultDecoration =
+        tester.widget<AnimatedContainer>(artSurface).decoration!
+            as BoxDecoration;
+    expect(artIcon, findsOneWidget);
 
     await tester.tap(art);
     await tester.pumpAndSettle();
+    final selectedDecoration =
+        tester.widget<AnimatedContainer>(artSurface).decoration!
+            as BoxDecoration;
+    expect(artIcon, findsOneWidget);
+    expect(selectedDecoration.color, defaultDecoration.color);
+    expect(selectedDecoration.border, isNot(defaultDecoration.border));
     await tester.tap(find.byTooltip('Filtros'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('mission-catalog-filter-arte')), findsNothing);
@@ -239,7 +259,16 @@ void main() {
     await tester.pumpAndSettle();
     final offset = scroll.pixels;
     expect(offset, greaterThan(0));
-    await tester.tap(find.text('Guardadas'));
+    final savedMissions = find.byTooltip('Misiones guardadas');
+    expect(
+      tester.getCenter(savedMissions).dy,
+      tester.getCenter(find.byTooltip('Filtros')).dy,
+    );
+    expect(
+      tester.getCenter(savedMissions).dx,
+      greaterThan(tester.getCenter(find.byTooltip('Filtros')).dx),
+    );
+    await tester.tap(savedMissions);
     await tester.pumpAndSettle();
     expect(router.state.uri.queryParameters['section'], 'saved');
     expect(find.text('Misiones guardadas'), findsOneWidget);

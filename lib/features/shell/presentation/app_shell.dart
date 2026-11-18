@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/theme/app_colors.dart';
-import 'package:marea/core/theme/app_depth.dart';
+import 'package:marea/features/shell/presentation/marea_create_action.dart';
 import 'package:marea/shared/widgets/marea_logo.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
@@ -61,7 +61,6 @@ class AppShell extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, bounds) {
       final desktop = bounds.maxWidth >= 600;
-      final isHome = location == '/home';
       final profileLayout =
           location == '/profile' || location.startsWith('/people/');
       final scaler = MediaQuery.textScalerOf(context);
@@ -129,7 +128,7 @@ class AppShell extends StatelessWidget {
           ],
         ),
       );
-      final create = _CreateAction(
+      final create = MareaCreateAction(
         selected: location.startsWith('/create'),
         expanded: desktop && !compact,
         stacked: !desktop,
@@ -138,7 +137,7 @@ class AppShell extends StatelessWidget {
             context.go('/create');
             return;
           }
-          await showCreateMenu(context, controller!, homeOnly: isHome);
+          await showCreateMenu(context, controller!);
         },
       );
       if (desktop) {
@@ -167,7 +166,9 @@ class AppShell extends StatelessWidget {
                         const Spacer(),
                         ..._utilities(context),
                         const SizedBox(width: 8),
-                        create,
+                        if (controller == null ||
+                            canOpenCreateMenu(controller!))
+                          create,
                       ],
                     ),
                   ),
@@ -234,9 +235,7 @@ class AppShell extends StatelessWidget {
               ],
             ),
           ),
-          bottomNavigationBar:
-              Uri.parse(location).path == '/missions' &&
-                  MediaQuery.viewInsetsOf(context).bottom > 0
+          bottomNavigationBar: MediaQuery.viewInsetsOf(context).bottom > 0
               ? null
               : GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -259,7 +258,8 @@ class AppShell extends StatelessWidget {
                                   _navigate(context, destination.path),
                             ),
                           ),
-                          if (isHome && controller != null) ...[
+                          if (controller != null &&
+                              canOpenCreateMenu(controller!)) ...[
                             const SizedBox(width: 8),
                             create,
                           ],
@@ -418,111 +418,6 @@ class _NavigationItem extends StatelessWidget {
                           color: selected
                               ? AppColors.brandNavy
                               : AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CreateAction extends StatefulWidget {
-  const _CreateAction({
-    required this.onTap,
-    required this.selected,
-    required this.expanded,
-    required this.stacked,
-  });
-  final Future<void> Function() onTap;
-  final bool selected, expanded, stacked;
-  @override
-  State<_CreateAction> createState() => _CreateActionState();
-}
-
-class _CreateActionState extends State<_CreateAction> {
-  bool _open = false;
-  Future<void> _tap() async {
-    if (_open) return;
-    setState(() => _open = true);
-    try {
-      await widget.onTap();
-    } finally {
-      if (mounted) setState(() => _open = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(widget.stacked ? 22 : 28);
-    return Semantics(
-      label: AppLocalizations.tr('Crear'),
-      button: true,
-      selected: widget.selected,
-      excludeSemantics: true,
-      onTap: _tap,
-      child: Tooltip(
-        message: AppLocalizations.tr('Crear'),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: radius,
-            boxShadow: AppDepth.action,
-          ),
-          child: Material(
-            key: const Key('create-destination'),
-            color: AppColors.actionBlue,
-            borderRadius: radius,
-            child: InkWell(
-              borderRadius: radius,
-              onTap: _tap,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: widget.stacked ? 6 : (widget.expanded ? 20 : 16),
-                  vertical: widget.stacked ? 8 : 16,
-                ),
-                child: Flex(
-                  direction: widget.stacked ? Axis.vertical : Axis.horizontal,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnimatedRotation(
-                      turns: _open ? 0.125 : 0,
-                      duration: MediaQuery.disableAnimationsOf(context)
-                          ? Duration.zero
-                          : const Duration(milliseconds: 180),
-                      child: const Icon(
-                        Icons.add_rounded,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                    if (widget.stacked)
-                      SizedBox(
-                        width: 48,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            AppLocalizations.tr('Crear'),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (widget.expanded) ...[
-                      SizedBox(width: widget.stacked ? 0 : 8, height: 4),
-                      Text(
-                        AppLocalizations.tr('Crear'),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],

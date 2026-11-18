@@ -33,7 +33,10 @@ class MareaApp extends StatefulWidget {
 class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
   late final AppLocaleController _localeController =
       widget.localeController ?? AppLocaleController();
-  late final _router = AppRouter.create(widget.controller);
+  late final _router = AppRouter.create(
+    widget.controller,
+    allowGoogle: !widget.productionPilot,
+  );
   StreamSubscription<String>? _proximityOpened;
   Timer? _proximityTimer;
   String? _proximityAccount;
@@ -72,7 +75,8 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
             c.status == AuthStatus.authenticated &&
             !c.needsOnboarding &&
             !c.needsLegalAcceptance &&
-            !c.isRecovering,
+            !c.isRecovering &&
+            !c.isRecoveryComplete,
       ),
     );
     _pushChanged();
@@ -84,7 +88,8 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
       widget.controller.profile != null &&
       !widget.controller.needsOnboarding &&
       !widget.controller.needsLegalAcceptance &&
-      !widget.controller.isRecovering;
+      !widget.controller.isRecovering &&
+      !widget.controller.isRecoveryComplete;
 
   Future<void> _syncProximity() async {
     final c = widget.controller;
@@ -201,7 +206,8 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
         c.status != AuthStatus.authenticated ||
         c.needsOnboarding ||
         c.needsLegalAcceptance ||
-        c.isRecovering) {
+        c.isRecovering ||
+        c.isRecoveryComplete) {
       return;
     }
     final notice = c.push?.takePending(c.profile!.id);

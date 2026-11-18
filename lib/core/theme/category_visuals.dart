@@ -113,4 +113,30 @@ abstract final class CategoryVisuals {
 
   static CategoryVisual forCategory(String value) =>
       values[value] ?? values['otros']!;
+
+  static const _missionPalette = <String, (Color, Color)>{
+    'arte': (Color(0xFFFFBBAA), Color(0xFF992E23)),
+    'musica': (Color(0xFFD6B8FC), Color(0xFF5E32A1)),
+    'gastronomia': (Color(0xFFA4E7CB), Color(0xFF17684E)),
+    'fotografia': (Color(0xFFA5E1EB), Color(0xFF11636F)),
+    'digital': (Color(0xFFB1D3FF), Color(0xFF215DA4)),
+    'moda': (Color(0xFFFEB8D9), Color(0xFF9B255C)),
+    'escritura': (Color(0xFFFFDC89), Color(0xFF835300)),
+    'diseno': (Color(0xFFB8E6A6), Color(0xFF386B2B)),
+    'otros': (Color(0xFFDBDFFE), Color(0xFF505992)),
+  };
+
+  static ({IconData icon, Color color, Color accent}) forMission(
+    String? value,
+  ) {
+    if (value == null) {
+      return (
+        icon: Icons.explore_outlined,
+        color: const Color(0xFFE1EBFF),
+        accent: const Color(0xFF164383),
+      );
+    }
+    final (color, accent) = _missionPalette[value] ?? _missionPalette['otros']!;
+    return (icon: forCategory(value).icon, color: color, accent: accent);
+  }
 }
