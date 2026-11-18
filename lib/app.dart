@@ -50,8 +50,8 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     widget.controller.push?.addListener(_pushChanged);
     _localeController.addListener(_localeChanged);
     unawaited(_localeController.load());
+    WidgetsBinding.instance.addObserver(this);
     if (widget.controller.markerRepository != null) {
-      WidgetsBinding.instance.addObserver(this);
       _proximityOpened = NativeProximityBridge.instance.opened.listen(
         (_) => _openProximity(),
       );
@@ -73,6 +73,7 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
         c.profile?.id,
         ready:
             c.status == AuthStatus.authenticated &&
+            !c.needsMfa &&
             !c.needsOnboarding &&
             !c.needsLegalAcceptance &&
             !c.isRecovering &&
@@ -85,6 +86,7 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
 
   bool get _readyForProximity =>
       widget.controller.status == AuthStatus.authenticated &&
+      !widget.controller.needsMfa &&
       widget.controller.profile != null &&
       !widget.controller.needsOnboarding &&
       !widget.controller.needsLegalAcceptance &&
@@ -121,6 +123,7 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      unawaited(widget.controller.recheckAppSession());
       if (widget.controller.markerRepository != null && _readyForProximity) {
         unawaited(
           NativeProximityBridge.instance
@@ -204,6 +207,7 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     final c = widget.controller;
     if (c.profile == null ||
         c.status != AuthStatus.authenticated ||
+        c.needsMfa ||
         c.needsOnboarding ||
         c.needsLegalAcceptance ||
         c.isRecovering ||

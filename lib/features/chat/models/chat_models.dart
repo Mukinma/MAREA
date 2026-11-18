@@ -1,3 +1,48 @@
+enum ChatRequestAudience {
+  everyone('Cualquier cuenta'),
+  following('Solo las cuentas que sigo'),
+  nobody('Nadie');
+
+  const ChatRequestAudience(this.label);
+
+  final String label;
+}
+
+class BlockedChatAccount {
+  const BlockedChatAccount({required this.id, this.fullName, this.username});
+
+  final String id;
+  final String? fullName, username;
+
+  factory BlockedChatAccount.fromJson(Map<String, dynamic> json) =>
+      BlockedChatAccount(
+        id: json['id'] as String,
+        fullName: json['full_name'] as String?,
+        username: json['username'] as String?,
+      );
+}
+
+class ChatPrivacySettings {
+  const ChatPrivacySettings({
+    required this.requestAudience,
+    required this.blockedAccounts,
+  });
+
+  final ChatRequestAudience requestAudience;
+  final List<BlockedChatAccount> blockedAccounts;
+
+  factory ChatPrivacySettings.fromJson(Map<String, dynamic> json) =>
+      ChatPrivacySettings(
+        requestAudience: ChatRequestAudience.values.byName(
+          json['request_audience'] as String,
+        ),
+        blockedAccounts: (json['blocked_accounts'] as List)
+            .cast<Map<String, dynamic>>()
+            .map(BlockedChatAccount.fromJson)
+            .toList(),
+      );
+}
+
 class ChatConversation {
   const ChatConversation({
     required this.id,

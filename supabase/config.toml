@@ -1,5 +1,9 @@
 project_id = "marea"
 
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
 [functions.delete-account]
 verify_jwt = true
 

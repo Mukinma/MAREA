@@ -27,6 +27,47 @@ Deno.test("FCM keeps identity and stable tags without exposing arbitrary URLs", 
     "marea_activity",
   );
 });
+Deno.test("grouped chat uses high priority and the activity channel", () => {
+  const result = buildFcmMessage({
+    notificationId: "n",
+    recipientId: "u",
+    token: "t",
+    kind: "marea_message",
+    category: "chat",
+    eventVersion: "v",
+    title: "MAREA",
+    body: "Nuevo mensaje",
+  });
+  assertEquals(result.message.data.category, "chat");
+  assertEquals(result.message.android.priority, "high");
+  assertEquals(
+    result.message.android.notification.channel_id,
+    "marea_activity",
+  );
+  assertEquals(result.message.android.notification.default_sound, true);
+  assertEquals(result.message.android.ttl, "86400s");
+});
+Deno.test("editorial reminders retain their existing quiet channel", () => {
+  const result = buildFcmMessage({
+    notificationId: "n",
+    recipientId: "u",
+    token: "t",
+    kind: "marea_message",
+    category: "reminders",
+    eventVersion: "v",
+    title: "MAREA",
+    body: "Un recordatorio",
+    ttlSeconds: 42,
+  });
+  assertEquals(result.message.data.category, "reminders");
+  assertEquals(result.message.android.priority, "normal");
+  assertEquals(
+    result.message.android.notification.channel_id,
+    "marea_messages",
+  );
+  assertEquals(result.message.android.notification.default_sound, false);
+  assertEquals(result.message.android.ttl, "42s");
+});
 Deno.test("invalid tokens are retired but temporary server failures retry", () => {
   assertEquals(
     deliveryResult(404, {

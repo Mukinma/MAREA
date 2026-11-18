@@ -113,6 +113,10 @@ class FakeProfileRepository implements ProfileRepository {
     value = Profile.fromJson({...value.toJson(), ...input.toJson()});
     return value;
   }
+
+  @override
+  Future<Profile> updateGoals(List<String> goals) async =>
+      value = value.copyWith(goals: ProfilePreferences.normalizeGoals(goals));
 }
 
 Future<AppSessionController> authenticatedController() async {

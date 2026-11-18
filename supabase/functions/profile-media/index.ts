@@ -1,5 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { ownsPath, validateAndNormalizePng } from './image.ts';
+import { checkAppSession } from '../_shared/app-session.ts';
 const cors = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'authorization, apikey, content-type, x-client-info','Access-Control-Allow-Methods':'POST, DELETE, OPTIONS'};
 const json = (status: number, body: Record<string, unknown>) => new Response(JSON.stringify(body), {status, headers:{...cors,'Content-Type':'application/json'}});
 Deno.serve(async request => {
@@ -12,6 +13,8 @@ Deno.serve(async request => {
   const caller = createClient(url,key,{global:{headers:{Authorization:authorization}},auth:{persistSession:false}});
   const {data: auth, error: authError} = await caller.auth.getUser();
   if (authError || !auth.user) return json(401,{error:'unauthorized'});
+  const denial = await checkAppSession(caller);
+  if (denial) return json(denial.status, {error: denial.error});
   const owner = auth.user.id;
   const admin = createClient(url,secret,{auth:{persistSession:false,autoRefreshToken:false}});
   const {data: operation, error: operationError} = await admin.rpc('begin_profile_media_operation',{owner_id:owner});

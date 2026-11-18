@@ -13,6 +13,7 @@ class LocationMap extends StatefulWidget {
     this.ornamentBottom = 12,
     this.onTap,
     this.onGesture,
+    this.captureGestures = false,
     super.key,
   });
   final LatLng point;
@@ -22,6 +23,7 @@ class LocationMap extends StatefulWidget {
   final VoidCallback? onReady;
   final ValueChanged<LatLng>? onTap;
   final VoidCallback? onGesture;
+  final bool captureGestures;
   @override
   State<LocationMap> createState() => _LocationMapState();
 }
@@ -41,6 +43,7 @@ class _LocationMapState extends State<LocationMap> {
       initialCenter: widget.point,
       initialZoom: widget.initialZoom,
       ornamentBottom: widget.ornamentBottom,
+      captureGestures: widget.captureGestures,
       onReady: () => widget.onReady?.call(),
       onIdle: () {},
       onGesture: () => widget.onGesture?.call(),

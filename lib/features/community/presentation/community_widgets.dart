@@ -148,12 +148,14 @@ Future<String?> askCommunityText(
   required String title,
   required String label,
   int maxLength = 1000,
+  bool flat = false,
 }) async {
   // The controller is disposed with the dialog, after its closing animation.
   return showDialog<String>(
     context: context,
-    builder: (_) =>
-        _TextDialog(title: title, label: label, maxLength: maxLength),
+    builder: (_) => _TextDialog(
+      title: title, label: label, maxLength: maxLength, flat: flat,
+    ),
   );
 }
 
@@ -162,9 +164,11 @@ class _TextDialog extends StatefulWidget {
     required this.title,
     required this.label,
     required this.maxLength,
+    required this.flat,
   });
   final String title, label;
   final int maxLength;
+  final bool flat;
   @override
   State<_TextDialog> createState() => _TextDialogState();
 }
@@ -181,18 +185,19 @@ class _TextDialogState extends State<_TextDialog> {
   Widget build(BuildContext context) {
     final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
     return AlertDialog(
-      title: Text(widget.title),
-      content: SizedBox(
-        width: 440,
-        child: TextField(
-          controller: _text,
-          autofocus: true,
-          minLines: 3,
-          maxLines: 6,
-          maxLength: widget.maxLength,
-          decoration: InputDecoration(labelText: widget.label),
-          onChanged: (_) => setState(() {}),
-        ),
+    elevation: widget.flat ? 0 : null,
+    scrollable: true,
+    title: Text(widget.title),
+    content: SizedBox(
+      width: 440,
+      child: TextField(
+        controller: _text,
+        autofocus: true,
+        minLines: 3,
+        maxLines: 6,
+        maxLength: widget.maxLength,
+        decoration: InputDecoration(labelText: widget.label),
+        onChanged: (_) => setState(() {}),
       ),
       actions: [
         TextButton(

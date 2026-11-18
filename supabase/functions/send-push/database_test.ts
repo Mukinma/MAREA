@@ -5,10 +5,15 @@ const user = "00000000-0000-4000-8000-000000000001";
 const actor = "00000000-0000-4000-8000-000000000002";
 const device = "00000000-0000-4000-8000-000000000003";
 const post = "00000000-0000-4000-8000-000000000004";
+const session = "00000000-0000-4000-8000-000000000005";
+const otherSession = "00000000-0000-4000-8000-000000000006";
 const fixture = `
 create role anon; create role authenticated; create role service_role;
 create schema auth;
 create function auth.uid() returns uuid language sql as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+create function auth.jwt() returns jsonb language sql as $$select nullif(current_setting('request.jwt.claims',true),'')::jsonb$$;
+create table auth.sessions(id uuid primary key,user_id uuid not null,aal text);
+create table auth.mfa_factors(user_id uuid not null,status text not null);
 create table public.profiles(id uuid primary key,full_name text);
 create table public.posts(id uuid primary key);
 create table public.missions(id uuid primary key);
@@ -22,8 +27,22 @@ create table public.notifications(id uuid primary key default gen_random_uuid(),
  constraint notifications_one_target check(num_nonnulls(post_id,mission_id)=1),check(recipient_id<>actor_id));
 insert into public.profiles values('${user}','Receptor'),('${actor}','Creador');
 insert into public.posts values('${post}');
-select set_config('request.jwt.claim.sub','${user}',false);`;
-async function database() {
+insert into auth.sessions values('${session}','${user}','aal1'),('${otherSession}','${actor}','aal1');
+select set_config('request.jwt.claim.sub','${user}',false);
+select set_config('request.jwt.claims','{"session_id":"${session}"}',false);`;
+
+async function migrateCategories(db: PGlite) {
+  await db.exec(
+    await Deno.readTextFile(
+      new URL(
+        "../../migrations/20261118000002_notification_categories.sql",
+        import.meta.url,
+      ),
+    ),
+  );
+}
+
+async function database({ legacy = false } = {}) {
   const db = new PGlite();
   await db.exec(fixture);
   await db.exec(
@@ -31,6 +50,7 @@ async function database() {
       new URL("../../migrations/014_android_push.sql", import.meta.url),
     ),
   );
+  if (!legacy) await migrateCategories(db);
   return db;
 }
 async function scalar(db: PGlite, sql: string) {
@@ -218,7 +238,8 @@ Deno.test("unknown timezones and another account changing a device are rejected"
       db.exec("select public.record_notification_activity('not/a/zone')")
     );
     await db.exec(
-      `select set_config('request.jwt.claim.sub','${actor}',false)`,
+      `select set_config('request.jwt.claim.sub','${actor}',false);
+      select set_config('request.jwt.claims','{"session_id":"${otherSession}"}',false)`,
     );
     await assertRejects(() =>
       db.exec(
@@ -276,6 +297,212 @@ Deno.test("the last expired lease becomes a terminal failure", async () => {
     assertEquals(
       await scalar(db, "select status as value from private.push_queue"),
       "failed",
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+Deno.test("migration preserves legacy preferences and pauses unattributed devices", async () => {
+  const db = await database({ legacy: true });
+  try {
+    await ready(db);
+    await db.exec("select public.set_notification_preferences(false,true)");
+    await migrateCategories(db);
+    assertEquals(
+      await scalar(
+        db,
+        "select array[chat_enabled,missions_enabled,collaborations_enabled,reactions_enabled,comments_enabled,marea_enabled] as value from public.notification_preferences",
+      ),
+      [true, false, false, false, false, true],
+    );
+    assertEquals(
+      await scalar(
+        db,
+        "select enabled as value from public.notification_devices",
+      ),
+      false,
+    );
+    await ready(db);
+    assertEquals(
+      await scalar(
+        db,
+        "select session_id as value from public.notification_devices",
+      ),
+      session,
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+Deno.test("a granular mute cancels a claimed alert and preserves the inbox", async () => {
+  const db = await database();
+  try {
+    await ready(db);
+    await db.exec(
+      `insert into public.notifications(recipient_id,actor_id,post_id,kind,event_key,post_title)
+      values('${user}','${actor}','${post}','reaction','reaction:mute','Pieza'),
+            ('${user}','${actor}','${post}','comment','comment:keep','Pieza');`,
+    );
+    const jobs = await scalar(
+      db,
+      "select public.claim_push_jobs() as value",
+    ) as {
+      queue_id: string;
+      lease_id: string;
+      category: string;
+    }[];
+    const reaction = jobs.find((job) => job.category === "reactions")!;
+    const comment = jobs.find((job) => job.category === "comments")!;
+    await db.exec("select public.set_notification_category('reactions',false)");
+    await db.exec(
+      "select public.set_notification_category('collaborations',false)",
+    );
+    assertEquals(
+      await scalar(
+        db,
+        `select public.push_job_is_current('${reaction.queue_id}','${reaction.lease_id}') as value`,
+      ),
+      false,
+    );
+    assertEquals(
+      await scalar(
+        db,
+        `select public.push_job_is_current('${comment.queue_id}','${comment.lease_id}') as value`,
+      ),
+      true,
+    );
+    assertEquals(
+      await scalar(
+        db,
+        "select array[reactions_enabled,collaborations_enabled,comments_enabled] as value from public.notification_preferences",
+      ),
+      [false, false, true],
+    );
+    assertEquals(
+      await scalar(
+        db,
+        "select count(*)::int as value from public.notifications",
+      ),
+      2,
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+Deno.test("legacy chat can reach active users with reminders disabled", async () => {
+  const db = await database();
+  try {
+    await ready(db);
+    await db.exec(
+      `select public.set_notification_category('reminders',false);
+      insert into public.notifications(recipient_id,kind,event_key,post_title)
+      values('${user}','marea_message','chat_message:1','Nuevo mensaje'),
+            ('${user}','marea_message','marea:test','Un recordatorio');
+      select public.record_notification_activity('America/Mexico_City');`,
+    );
+    const jobs = await scalar(
+      db,
+      "select public.claim_push_jobs() as value",
+    ) as {
+      queue_id: string;
+      lease_id: string;
+      category: string;
+      ttl_seconds: number;
+    }[];
+    assertEquals(
+      jobs.map(({ category, ttl_seconds }) => [category, ttl_seconds]),
+      [["chat", 86400]],
+    );
+    assertEquals(
+      await scalar(
+        db,
+        `select public.push_job_is_current('${jobs[0].queue_id}','${
+          jobs[0].lease_id
+        }') as value`,
+      ),
+      true,
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+Deno.test("a recent chat does not consume the reminder schedule budget", async () => {
+  const db = await database();
+  try {
+    await ready(db);
+    await db.exec(
+      `update public.notification_preferences set last_seen_at='2026-10-01T17:00:00Z',
+          next_marea_at='2026-10-05T17:00:00Z';
+      insert into public.notifications(recipient_id,kind,event_key,post_title,created_at)
+      values('${user}','marea_message','chat_request:1','Solicitud','2026-10-05T16:00:00Z');
+      select private.schedule_marea_messages('2026-10-05T17:00:00Z');`,
+    );
+    assertEquals(
+      await scalar(
+        db,
+        "select count(*)::int as value from public.notifications where event_key like 'marea:%'",
+      ),
+      1,
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+Deno.test("legacy calls with the same values preserve custom settings", async () => {
+  const db = await database();
+  try {
+    await ready(db);
+    await db.exec(
+      `select public.set_notification_category('reactions',false);
+      select public.set_notification_category('chat',false);
+      select public.set_notification_preferences(true,true);`,
+    );
+    assertEquals(
+      await scalar(
+        db,
+        "select array[chat_enabled,reactions_enabled,marea_enabled,missions_enabled] as value from public.notification_preferences",
+      ),
+      [false, false, true, true],
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+Deno.test("auth session revocation and MFA invalidate leased notifications", async () => {
+  const db = await database();
+  try {
+    await ready(db);
+    await db.exec(
+      `insert into public.notifications(recipient_id,actor_id,post_id,kind,event_key,post_title)
+      values('${user}','${actor}','${post}','comment','comment:session','Pieza');`,
+    );
+    const jobs = await scalar(
+      db,
+      "select public.claim_push_jobs() as value",
+    ) as {
+      queue_id: string;
+      lease_id: string;
+    }[];
+    assertEquals(jobs.length, 1);
+    const current = `select public.push_job_is_current('${jobs[0].queue_id}','${
+      jobs[0].lease_id
+    }') as value`;
+    await db.exec(`insert into auth.mfa_factors values('${user}','verified');`);
+    assertEquals(await scalar(db, current), false);
+    await db.exec(`update auth.sessions set aal='aal2' where id='${session}'`);
+    assertEquals(await scalar(db, current), true);
+    await db.exec(`delete from auth.sessions where id='${session}'`);
+    assertEquals(await scalar(db, current), false);
+    await assertRejects(() =>
+      db.exec(
+        `select public.register_notification_device('${device}','valid-length-token-1234',true)`,
+      )
     );
   } finally {
     await db.close();

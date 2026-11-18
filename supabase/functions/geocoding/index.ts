@@ -1,4 +1,5 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { checkAppSession } from "../_shared/app-session.ts";
 import { normalizePlace } from "./geocoding.ts";
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -56,6 +57,8 @@ Deno.serve(async (request) => {
       });
       const { data: user, error: authError } = await caller.auth.getUser();
       if (authError || !user.user) return json(401, { error: "unauthorized" });
+      const denial = await checkAppSession(caller);
+      if (denial) return json(denial.status, { error: denial.error });
       table = input.contentKind === "post" ? "posts" : "missions";
       const { data, error } = await caller.from(table).select(
         "id,location_latitude,location_longitude,location_city,location_city_resolved_at",

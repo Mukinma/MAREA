@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:marea/core/location/device_location_service.dart';
 import 'package:marea/core/session/app_session_controller.dart';
-import 'package:marea/features/tours/presentation/tour_widgets.dart';
+import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/theme/app_spacing.dart';
+import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 
 import '../data/app_proximity_targets.dart';
 import '../data/native_proximity_bridge.dart';
@@ -50,10 +52,11 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
 
   Future<void> _refresh() async {
     try {
-      final status = await _bridge.status();
+      final status = await _bridge.status().timeout(const Duration(seconds: 8));
       if (_current) {
         setState(() {
           _status = status;
+          _error = null;
           _busy = false;
         });
       }
@@ -125,79 +128,114 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
     super.dispose();
   }
 
+  Future<void> _stop() async {
+    if (!_current || _busy) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await _bridge.stop();
+      if (_current) await _refresh();
+    } catch (_) {
+      if (_current) {
+        setState(() => _error = 'No pudimos detener los avisos. Reintenta.');
+      }
+    } finally {
+      if (_current) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _openPermissions() async {
+    try {
+      await _bridge.openSettings();
+    } catch (_) {
+      if (_current) {
+        setState(() => _error = 'No pudimos abrir los permisos del teléfono.');
+      }
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Avisos a 20 metros'),
-      leading: const TourBackButton(fallback: '/profile'),
-    ),
-    body: !_current
-        ? const Center(child: Text('Abre los avisos desde tu sesión.'))
-        : ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              const Text(
-                'Recibe un aviso al acercarte a una Misión o un marcador RA, también con el teléfono bloqueado.',
-              ),
-              const SizedBox(height: 16),
-              if (_busy) const LinearProgressIndicator(),
-              if (_error != null) TourNotice(_error!),
-              if (_status['supported'] == false)
-                const TourNotice(
-                  'El seguimiento con la app cerrada está disponible en Android. La compatibilidad de iOS está pendiente.',
+  Widget build(BuildContext context) {
+    final supported = _status['supported'] == true;
+    final enabled = _status['enabled'] == true;
+    final running = _status['running'] == true;
+    return ProfilePage(
+      title: 'Ubicación y avisos cercanos',
+      fallback: '/settings',
+      busy: _current && _busy,
+      body: SingleChildScrollView(
+        child: ProfilePageFrame(
+          child: !_current
+              ? const Text('Abre los avisos desde tu sesión.')
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.lg,
+                  children: [
+                    const ProfileFormSection(
+                      title: 'Ubicación en el mapa',
+                      icon: Icons.map_outlined,
+                      children: [
+                        Text(
+                          'MAREA usa tu ubicación para centrar el mapa o buscar lugares cercanos cuando tú lo solicitas.',
+                        ),
+                      ],
+                    ),
+                    ProfileFormSection(
+                      title: 'Avisos a 20 metros',
+                      icon: Icons.notifications_active_outlined,
+                      children: [
+                        const Text(
+                          'Al activar los avisos, MAREA usa la ubicación precisa incluso con la app cerrada para avisarte si te acercas a una misión o un marcador de RA. Los lugares con ubicación aproximada quedan fuera de ese cálculo.',
+                        ),
+                        if (_error case final error?) ...[
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              error,
+                              style: const TextStyle(color: AppColors.error),
+                            ),
+                          ),
+                          if (_status.isEmpty)
+                            OutlinedButton(
+                              onPressed: _busy ? null : _refresh,
+                              child: const Text('Reintentar'),
+                            ),
+                        ],
+                        if (_status['supported'] == false)
+                          const Text(
+                            'Los avisos con la app cerrada están disponibles en Android.',
+                          ),
+                        if (enabled)
+                          Text(
+                            running
+                                ? 'Avisos activos para ${_status['count'] ?? 0} lugares cargados.'
+                                : 'El seguimiento está detenido. Revisa los permisos y reactívalo.',
+                          ),
+                        if (supported && !running)
+                          FilledButton(
+                            onPressed: _busy ? null : _activate,
+                            child: Text(
+                              enabled ? 'Reactivar avisos' : 'Activar avisos',
+                            ),
+                          ),
+                        if (supported && enabled)
+                          OutlinedButton(
+                            onPressed: _busy ? null : _stop,
+                            child: const Text('Detener avisos'),
+                          ),
+                        if (supported)
+                          TextButton(
+                            onPressed: _busy ? null : _openPermissions,
+                            child: const Text('Abrir permisos del teléfono'),
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
-              if (_status['enabled'] == true) ...[
-                Text(
-                  _status['running'] == true
-                      ? 'Avisos activos para ${_status['count'] ?? 0} lugares cargados.'
-                      : 'El seguimiento está detenido. Revisa los permisos y reactívalo.',
-                ),
-                if (_status['running'] != true)
-                  FilledButton(
-                    onPressed: _busy ? null : _activate,
-                    child: const Text('Reactivar avisos'),
-                  ),
-                const Text(
-                  'Los lugares se actualizan al abrir MAREA. El aviso depende de una ubicación GPS precisa; no se repite continuamente mientras permaneces dentro.',
-                ),
-                OutlinedButton(
-                  onPressed: _busy
-                      ? null
-                      : () async {
-                          if (!_current) return;
-                          try {
-                            await _bridge.stop();
-                            await _refresh();
-                          } catch (_) {
-                            if (_current) {
-                              setState(
-                                () => _error =
-                                    'No pudimos detener los avisos. Reintenta.',
-                              );
-                            }
-                          }
-                        },
-                  child: const Text('Detener avisos'),
-                ),
-              ] else
-                FilledButton.icon(
-                  onPressed: _busy || _status['supported'] != true
-                      ? null
-                      : _activate,
-                  icon: const Icon(Icons.notifications_active_outlined),
-                  label: const Text('Activar avisos'),
-                ),
-              TextButton(
-                onPressed: _busy || _status['supported'] != true
-                    ? null
-                    : _bridge.openSettings,
-                child: const Text('Abrir permisos del teléfono'),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Sólo se usan lugares con ubicación exacta. Las ubicaciones aproximadas no disparan avisos de 20 metros.',
-              ),
-            ],
-          ),
-  );
+        ),
+      ),
+    );
+  }
 }

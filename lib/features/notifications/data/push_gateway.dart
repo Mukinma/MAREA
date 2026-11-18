@@ -1,4 +1,5 @@
 import '../models/notification_destination.dart';
+import '../models/notification_preferences.dart';
 
 enum PushPermission { unavailable, denied, granted }
 
@@ -9,9 +10,20 @@ class ForegroundNotice {
     required this.kind,
     required this.title,
     required this.body,
+    this.category,
   });
   final PushNotice notice;
   final String version, kind, title, body;
+  final NotificationCategory? category;
+
+  ForegroundNotice withCategory(NotificationCategory value) => ForegroundNotice(
+    notice: notice,
+    version: version,
+    kind: kind,
+    title: title,
+    body: body,
+    category: value,
+  );
 }
 
 abstract interface class PushGateway {

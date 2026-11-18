@@ -4,7 +4,10 @@ import '../models/notification_preferences.dart';
 
 abstract interface class NotificationPreferencesRepository {
   Future<NotificationPreferences> load();
-  Future<void> save(NotificationPreferences preferences);
+  Future<NotificationPreferences> setCategory(
+    NotificationCategory category,
+    bool enabled,
+  );
   Future<void> recordActivity(String timezone);
   Future<void> registerDevice(
     String installationId,
@@ -30,11 +33,15 @@ class SupabaseNotificationPreferencesRepository
   }
 
   @override
-  Future<void> save(NotificationPreferences p) async {
-    await client.rpc(
-      'set_notification_preferences',
-      params: {'activity': p.activity, 'marea_messages': p.mareaMessages},
+  Future<NotificationPreferences> setCategory(
+    NotificationCategory category,
+    bool enabled,
+  ) async {
+    final result = await client.rpc<Map<String, dynamic>>(
+      'set_notification_category',
+      params: {'category': category.name, 'enabled': enabled},
     );
+    return NotificationPreferences.fromJson(result);
   }
 
   @override

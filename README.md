@@ -54,6 +54,16 @@ un cliente contra un esquema desactualizado. Ver [gate de despliegue](tool/READM
 
 Los tokens visuales están documentados en [`docs/design-system.md`](docs/design-system.md). Los assets provisionales de mascota permanecen desacoplados hasta su aprobación; logo y estados actuales usan recursos vectoriales propios del código.
 
+### Publicar los nuevos ajustes de cuenta
+
+Aplica las cuatro migraciones de Configuración del 18 de noviembre de 2026 y
+despliega `send-push`, `delete-account`, `profile-media` y `geocoding` antes de
+distribuir el cliente. Valida el esquema con `node tool/check_backend_contract.mjs`
+y comprueba que Auth permite inscribir y verificar TOTP. Al activar el segundo
+factor, las versiones anteriores de MAREA necesitan actualizarse para completar el
+inicio de sesión. Las instalaciones Android registradas antes del cambio vuelven
+a habilitar sus avisos al abrir MAREA con una sesión válida.
+
 ## Crear y configurar Supabase
 
 La configuración del backend se realiza con la CLI o desde el panel de

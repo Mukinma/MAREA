@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mb;
@@ -647,6 +648,13 @@ class _MapboxSurfaceState extends State<_MapboxSurface>
           children: [
             Positioned.fill(
               child: mb.MapWidget(
+                gestureRecognizers: options.captureGestures
+                    ? {
+                        Factory<OneSequenceGestureRecognizer>(
+                          EagerGestureRecognizer.new,
+                        ),
+                      }
+                    : null,
                 onMapCreated: (map) => unawaited(_created(map)),
                 onStyleLoadedListener: (_) => unawaited(_styleLoaded()),
                 onCameraChangeListener: (event) =>

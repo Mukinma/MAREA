@@ -28,6 +28,7 @@ import 'package:marea/features/auth/presentation/email_code_screen.dart';
 import 'package:marea/features/auth/data/mobile_intro_store.dart';
 import 'package:marea/features/auth/presentation/welcome_entry_screen.dart';
 import 'package:marea/features/auth/presentation/security_screen.dart';
+import 'package:marea/features/auth/presentation/account_security_screen.dart';
 import 'package:marea/features/legal/legal_screens.dart';
 import 'package:marea/features/profile/presentation/onboarding_screen.dart';
 import 'package:marea/features/auth/presentation/login_screen.dart';
@@ -36,6 +37,8 @@ import 'package:marea/features/auth/presentation/splash_screen.dart';
 import 'package:marea/features/profile/presentation/edit_profile_screen.dart';
 import 'package:marea/features/profile/presentation/profile_screen.dart';
 import 'package:marea/features/profile/presentation/settings_screen.dart';
+import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
+import 'package:marea/features/community/presentation/support_settings_screen.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
 import 'package:marea/features/shell/presentation/marea_create_action.dart';
 import 'package:marea/features/map/presentation/mission_map_screen.dart';
@@ -46,10 +49,12 @@ import 'package:marea/features/community/presentation/post_composer_screen.dart'
 import 'package:marea/features/community/presentation/missions_screen.dart';
 import 'package:marea/features/community/presentation/moderation_screen.dart';
 import 'package:marea/features/chat/presentation/chat_screen.dart';
+import 'package:marea/features/chat/presentation/chat_privacy_screen.dart';
 import 'access_destination_store.dart'
     if (dart.library.js_interop) 'access_destination_store_web.dart';
 
 abstract final class AppRouter {
+  static const _mfaPath = '/auth/verify-2fa';
   static const _authPaths = {
     '/welcome',
     '/login',
@@ -66,6 +71,7 @@ abstract final class AppRouter {
     bool recoveryComplete = false,
     bool onboarding = false,
     bool legal = false,
+    bool needsMfa = false,
   }) {
     if (_publicDocs.contains(location)) return null;
     if (status == AuthStatus.initializing) return location == '/' ? null : '/';
@@ -73,6 +79,7 @@ abstract final class AppRouter {
       if (location == '/') return '/welcome';
       return _authPaths.contains(location) ? null : '/login';
     }
+    if (needsMfa) return location == _mfaPath ? null : _mfaPath;
     if (recovery) {
       return location == '/reset-password' ? null : '/reset-password';
     }
@@ -80,7 +87,9 @@ abstract final class AppRouter {
       return location == '/password-updated' ? null : '/password-updated';
     }
     if (legal) {
-      return location == '/legal/accept' || location == '/settings'
+      return location == '/legal/accept' ||
+              location == '/settings' ||
+              location == '/settings/personal'
           ? null
           : '/legal/accept';
     }
@@ -89,6 +98,7 @@ abstract final class AppRouter {
     }
     if (location == '/onboarding') return '/profile';
     return location == '/' ||
+            location == _mfaPath ||
             _authPaths.contains(location) ||
             location == '/legal/accept' ||
             location == '/reset-password' ||
@@ -138,6 +148,7 @@ abstract final class AppRouter {
         recoveryComplete: controller.isRecoveryComplete,
         onboarding: controller.needsOnboarding,
         legal: controller.needsLegalAcceptance,
+        needsMfa: controller.needsMfa,
       ),
       errorBuilder: (_, _) => Scaffold(
         body: Center(
@@ -146,6 +157,12 @@ abstract final class AppRouter {
       ),
       routes: [
         GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
+        GoRoute(
+          path: _mfaPath,
+          builder: (_, _) => ProfileFlatStyle(
+            child: MfaChallengeScreen(controller: controller),
+          ),
+        ),
         GoRoute(
           path: '/welcome',
           builder: (_, _) => WelcomeEntryScreen(
@@ -156,24 +173,18 @@ abstract final class AppRouter {
         ),
         GoRoute(
           path: '/terms',
-          builder: withCreate(
-            (_, _) =>
-                LegalDocumentScreen(controller: controller, kind: 'terms'),
-          ),
+          builder: (_, _) =>
+              LegalDocumentScreen(controller: controller, kind: 'terms'),
         ),
         GoRoute(
           path: '/privacy',
-          builder: withCreate(
-            (_, _) =>
-                LegalDocumentScreen(controller: controller, kind: 'privacy'),
-          ),
+          builder: (_, _) =>
+              LegalDocumentScreen(controller: controller, kind: 'privacy'),
         ),
         GoRoute(
           path: '/delete-account',
-          builder: withCreate(
-            (_, _) =>
-                LegalDocumentScreen(controller: controller, kind: 'deletion'),
-          ),
+          builder: (_, _) =>
+              LegalDocumentScreen(controller: controller, kind: 'deletion'),
         ),
         GoRoute(
           path: '/legal/accept',
@@ -577,11 +588,9 @@ abstract final class AppRouter {
         GoRoute(
           path: '/nearby-alerts',
           parentNavigatorKey: rootKey,
-          builder: withCreate(
-            (_, _) => ProximitySettingsScreen(
-              key: ValueKey(controller.profile?.id),
-              controller: controller,
-            ),
+          builder: (_, _) => ProximitySettingsScreen(
+            key: ValueKey(controller.profile?.id),
+            controller: controller,
           ),
         ),
         GoRoute(
@@ -679,15 +688,56 @@ abstract final class AppRouter {
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/profile/edit',
-          builder: (_, state) => EditProfileScreen(
-            controller: controller,
-            initialSection: state.uri.queryParameters['section'],
+          builder: (_, state) => ProfileFlatStyle(
+            child: EditProfileScreen(
+              controller: controller,
+              initialSection: state.uri.queryParameters['section'],
+            ),
           ),
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/settings',
-          builder: withCreate((_, _) => SettingsScreen(controller: controller)),
+          builder: (_, _) => SettingsScreen(controller: controller),
+        ),
+        GoRoute(
+          path: '/settings/personal',
+          builder: (_, _) => ProfileFlatStyle(
+            child: PersonalDataScreen(controller: controller),
+          ),
+        ),
+        GoRoute(
+          path: '/settings/notifications',
+          builder: (_, _) => AccountNotificationsScreen(controller: controller),
+        ),
+        GoRoute(
+          path: '/settings/privacy',
+          builder: (_, _) => ProfileFlatStyle(
+            child: ChatPrivacyScreen(
+              key: ValueKey(controller.profile?.id),
+              controller: controller,
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/settings/security',
+          builder: (_, _) => ProfileFlatStyle(
+            child: AccountSecurityScreen(
+              key: ValueKey(controller.profile?.id),
+              controller: controller,
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/settings/support',
+          builder: (_, _) => SupportSettingsScreen(controller: controller),
+        ),
+        GoRoute(
+          path: '/settings/support/reports',
+          builder: (_, _) => UserReportsScreen(
+            key: ValueKey(controller.profile?.id),
+            controller: controller,
+          ),
         ),
       ],
     );
@@ -725,7 +775,7 @@ class AppRouteGuard {
         uri.hasScheme ||
         uri.hasAuthority ||
         !RegExp(
-          r'^/(discover|tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|ar-markers(?:/new|/[A-Za-z0-9_-]+/(?:edit|scan))?|nearby-alerts|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
+          r'^/(discover|settings(?:/(?:personal|notifications|privacy|security|support(?:/reports)?))?|profile/edit|tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|ar-markers(?:/new|/[A-Za-z0-9_-]+/(?:edit|scan))?|nearby-alerts|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
         ).hasMatch(uri.path)) {
       return null;
     }
@@ -739,6 +789,7 @@ class AppRouteGuard {
     bool recoveryComplete = false,
     bool onboarding = false,
     bool legal = false,
+    bool needsMfa = false,
   }) {
     if (_requestedLocation == null) {
       _remember(internalDestination(uri.queryParameters['returnTo']));
@@ -746,6 +797,7 @@ class AppRouteGuard {
     final post = internalDestination(uri.toString());
     if (post != null &&
         (status != AuthStatus.authenticated ||
+            needsMfa ||
             recovery ||
             recoveryComplete ||
             onboarding ||
@@ -764,6 +816,7 @@ class AppRouteGuard {
       recoveryComplete: recoveryComplete,
       onboarding: onboarding,
       legal: legal,
+      needsMfa: needsMfa,
     );
     final redirect =
         previousPendingProfile &&
@@ -780,11 +833,13 @@ class AppRouteGuard {
     final requested = _requestedLocation;
     if (requested != null) {
       if (status == AuthStatus.authenticated &&
+          !needsMfa &&
           !recovery &&
           !recoveryComplete &&
           !onboarding &&
           !legal &&
           (uri.path == '/' ||
+              uri.path == AppRouter._mfaPath ||
               AppRouter._authPaths.contains(uri.path) ||
               uri.path == '/legal/accept' ||
               uri.path == '/onboarding' ||
@@ -800,6 +855,7 @@ class AppRouteGuard {
               recoveryComplete: recoveryComplete,
               onboarding: onboarding,
               legal: legal,
+              needsMfa: needsMfa,
             ) ??
             requested;
       }
@@ -813,6 +869,7 @@ class AppRouteGuard {
           internalDestination(requested) != null &&
           uri.queryParameters['returnTo'] != requested &&
           (AppRouter._authPaths.contains(uri.path) ||
+              uri.path == AppRouter._mfaPath ||
               uri.path == '/legal/accept' ||
               uri.path == '/onboarding' ||
               uri.path == '/reset-password' ||

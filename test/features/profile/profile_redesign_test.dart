@@ -33,8 +33,11 @@ void main() {
     );
     for (final route in [
       '/settings',
+      '/settings/personal',
+      '/settings/notifications',
       '/settings/email',
       '/settings/password',
+      '/profile/preferences',
       '/showcase/$id',
       '/people/one',
     ]) {
@@ -47,10 +50,14 @@ void main() {
       );
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
-      expect(
-        router.routeInformationProvider.value.uri.path,
-        route.startsWith('/people/') ? '/explore' : '/profile',
-      );
+      expect(router.routeInformationProvider.value.uri.path, switch (route) {
+        '/settings/personal' ||
+        '/settings/notifications' ||
+        '/profile/preferences' => '/settings',
+        '/settings/email' || '/settings/password' => '/settings/personal',
+        _ when route.startsWith('/people/') => '/explore',
+        _ => '/profile',
+      });
     }
   });
 
@@ -101,6 +108,9 @@ void main() {
       for (final route in [
         '/profile/edit',
         '/settings',
+        '/settings/personal',
+        '/settings/notifications',
+        '/profile/preferences',
         '/settings/email',
         '/settings/password',
         if (type != UserType.general) '/showcase/new',

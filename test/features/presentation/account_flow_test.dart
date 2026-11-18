@@ -192,11 +192,114 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('¿Descartar tus cambios?'), findsNothing);
     expect(
-      tester.widget<TextFormField>(bio).controller!.text,
+      tester
+          .widget<TextField>(
+            find.descendant(of: bio, matching: find.byType(TextField)),
+          )
+          .controller!
+          .text,
       'Una bio diferente',
     );
     expect(c.profile!.bio, 'Creo experiencias que conectan la ciudad.');
   });
+
+  testWidgets('a public legal document shows loading until it is ready', (
+    tester,
+  ) async {
+    final auth = FakeAuthRepository()..user = null;
+    final legal = _LoadingLegal();
+    final controller = AppSessionController(
+      authRepository: auth,
+      profileRepository: FakeProfileRepository(),
+      legalRepository: legal,
+    );
+    addTearDown(auth.close);
+    addTearDown(controller.dispose);
+    await controller.initialize();
+    final router = AppRouter.create(controller)..go('/terms');
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+    );
+    await tester.pump();
+    expect(find.text('Cargando documento…'), findsOneWidget);
+    expect(find.text('Volver a cargar'), findsNothing);
+
+    legal.response.complete(legal.policy);
+    await tester.pumpAndSettle();
+    expect(find.text('Términos de prueba'), findsOneWidget);
+    expect(find.text('Cargando documento…'), findsNothing);
+  });
+
+  testWidgets(
+    'account credentials retain confirmation and security code flows',
+    (tester) async {
+      final auth = _CredentialAuth();
+      final controller = AppSessionController(
+        authRepository: auth,
+        profileRepository: FakeProfileRepository(),
+        legalRepository: FakeLegalRepository(),
+      );
+      await controller.initialize();
+      addTearDown(controller.dispose);
+      addTearDown(auth.close);
+      final router = AppRouter.create(controller)..go('/settings');
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+      );
+      await tester.pumpAndSettle();
+
+      Future<void> tap(String text) async {
+        final control = find.text(text);
+        await tester.ensureVisible(control);
+        await tester.tap(control);
+        await tester.pumpAndSettle();
+      }
+
+      Future<void> fill(String label, String value) async {
+        final field = find.byWidgetPredicate(
+          (widget) =>
+              widget is TextField && widget.decoration?.labelText == label,
+        );
+        await tester.ensureVisible(field);
+        await tester.enterText(field, value);
+        await tester.pump();
+      }
+
+      await tap('Mis datos personales');
+      expect(find.text('ana@marea.app'), findsOneWidget);
+      await tap('Correo electrónico');
+      await fill('Contraseña actual', 'actual-password');
+      await fill('Nuevo correo', 'ana-nueva@marea.app');
+      await tap('Solicitar cambio de correo');
+      expect(auth.emailChange, ('ana-nueva@marea.app', 'actual-password'));
+      expect(
+        find.textContaining('Revisa tu correo actual y el nuevo'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      expect(find.text('Mis datos personales'), findsOneWidget);
+      expect(find.text('ana@marea.app'), findsOneWidget);
+
+      await tap('Cambiar contraseña');
+      await tap('Enviar código por correo');
+      expect(auth.codesRequested, 1);
+      await fill('Contraseña actual', 'actual-password');
+      await fill('Nueva contraseña', 'nueva-password');
+      await fill('Confirmar nueva contraseña', 'nueva-password');
+      await fill('Código de seguridad', '123456');
+      await tap('Guardar contraseña');
+      expect(auth.passwordChange, (
+        'nueva-password',
+        'actual-password',
+        '123456',
+      ));
+      expect(find.text('Contraseña actualizada.'), findsOneWidget);
+      controller.clearFeedback();
+    },
+  );
 
   testWidgets('account deletion closes its dialog before the session changes', (
     tester,
@@ -218,6 +321,8 @@ void main() {
     await tester.tap(find.byTooltip('Perfil'));
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Configuración'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mis datos personales'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('open-delete-dialog')));
     await tester.tap(find.byKey(const Key('open-delete-dialog')));
@@ -298,6 +403,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Configuración'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Mis datos personales'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('open-delete-dialog')));
     await tester.tap(find.byKey(const Key('open-delete-dialog')));
     await tester.pumpAndSettle();
@@ -310,12 +417,44 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(c.status, AuthStatus.authenticated);
-    expect(find.text('Configuración'), findsOneWidget);
+    expect(find.text('Mis datos personales'), findsOneWidget);
     expect(
       find.text('No pudimos conectarnos. Inténtalo nuevamente.'),
       findsOneWidget,
     );
   });
+}
+
+class _CredentialAuth extends FakeAuthRepository {
+  (String, String)? emailChange;
+  (String, String?, String?)? passwordChange;
+  int codesRequested = 0;
+
+  @override
+  Future<void> changeEmail(String email, String currentPassword) async {
+    emailChange = (email, currentPassword);
+  }
+
+  @override
+  Future<void> changePassword(
+    String password, {
+    String? currentPassword,
+    String? nonce,
+  }) async {
+    passwordChange = (password, currentPassword, nonce);
+  }
+
+  @override
+  Future<void> requestReauthentication() async {
+    codesRequested++;
+  }
+}
+
+class _LoadingLegal extends FakeLegalRepository {
+  final response = Completer<LegalPolicy>();
+
+  @override
+  Future<LegalPolicy> loadPolicy() => response.future;
 }
 
 class VersionedLegalRepository extends FakeLegalRepository {

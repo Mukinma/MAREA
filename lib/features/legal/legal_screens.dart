@@ -6,6 +6,7 @@ import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/auth/presentation/access_layout.dart';
 import 'package:marea/features/legal/legal_policy.dart';
+import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
 
 class AccessConsentDraft {
@@ -145,15 +146,6 @@ class LegalDocumentScreen extends StatefulWidget {
 }
 
 class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
-  bool _reloading = false;
-
-  Future<void> _reload() async {
-    if (_reloading) return;
-    setState(() => _reloading = true);
-    await widget.controller.reloadLegal();
-    if (mounted) setState(() => _reloading = false);
-  }
-
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: widget.controller,
@@ -163,7 +155,12 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
       final terms = widget.kind == 'terms';
       final doc = terms ? policy.terms : policy.privacy;
       final available = doc != null && doc.body.trim().isNotEmpty;
-      return AccessLayout(
+      final authenticated =
+          widget.controller.status == AuthStatus.authenticated;
+      final loading =
+          widget.controller.status == AuthStatus.initializing ||
+          widget.controller.isLoadingLegal;
+      return ProfilePage(
         title: deletion
             ? 'Eliminar mi cuenta'
             : available
@@ -171,29 +168,44 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
             : terms
             ? 'Términos y condiciones'
             : 'Aviso de privacidad',
-        description: deletion
-            ? 'Tú decides cuándo irte.'
-            : available
-            ? 'Versión ${doc.version} · México'
-            : null,
-        maxWidth: 680,
-        onBack: () => context.canPop() ? context.pop() : context.go('/welcome'),
-        child: deletion
-            ? _buildDeletionHelp()
-            : available
-            ? SelectableText(
-                doc.body,
-                style: Theme.of(context).textTheme.bodyLarge,
-              )
-            : AccessFeedback(
-                message:
-                    widget.controller.legalError ??
-                    'Marea todavía no ha publicado este documento. El registro se habilitará cuando estén disponibles los términos y el aviso de privacidad.',
-                action: TextButton(
-                  onPressed: _reloading ? null : _reload,
-                  child: Text(_reloading ? 'Cargando…' : 'Volver a cargar'),
-                ),
-              ),
+        fallback: authenticated ? '/settings' : '/welcome',
+        busy: !deletion && loading,
+        body: SingleChildScrollView(
+          child: ProfilePageFrame(
+            child: ProfileFormSection(
+              children: [
+                if (deletion)
+                  _buildDeletionHelp()
+                else if (available) ...[
+                  Text(
+                    'Versión ${doc.version} · México',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  SelectableText(
+                    doc.body,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ] else if (loading)
+                  Semantics(
+                    liveRegion: true,
+                    child: const Text('Cargando documento…'),
+                  )
+                else
+                  AccessFeedback(
+                    message:
+                        widget.controller.legalError ??
+                        'Este documento aún no está disponible.',
+                    action: TextButton(
+                      onPressed: widget.controller.reloadLegal,
+                      child: const Text('Volver a cargar'),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
       );
     },
   );
@@ -205,14 +217,15 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'Puedes eliminar tu cuenta de MAREA desde Configuración → Eliminar cuenta. Se borrarán tu acceso, perfil, preferencias e imágenes. Es una acción permanente.',
+          'Puedes eliminar tu cuenta desde Configuración → Mis datos personales → Eliminar cuenta. Se borrarán tu acceso, perfil, preferencias e imágenes. Es una acción permanente.',
         ),
         const SizedBox(height: 24),
         PrimaryButton(
           label: authenticated
-              ? 'Ir a Configuración'
+              ? 'Ir a Mis datos personales'
               : 'Iniciar sesión para eliminar mi cuenta',
-          onPressed: () => context.go(authenticated ? '/settings' : '/login'),
+          onPressed: () =>
+              context.go(authenticated ? '/settings/personal' : '/login'),
         ),
         TextButton(
           onPressed: () => context.go('/recover-password'),

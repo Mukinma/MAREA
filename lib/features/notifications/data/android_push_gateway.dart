@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/services.dart';
 import '../models/notification_destination.dart';
+import '../models/notification_preferences.dart';
 import 'push_gateway.dart';
 
 FirebaseOptions? firebaseOptionsFromEnvironment() {
@@ -109,6 +110,9 @@ class AndroidPushGateway implements PushGateway {
                 notice: notice,
                 version: message.data['event_version']?.toString() ?? '',
                 kind: message.data['kind']?.toString() ?? '',
+                category: NotificationCategory.fromPayload(
+                  message.data['category'],
+                ),
                 title: message.notification?.title ?? 'MAREA',
                 body:
                     message.notification?.body ??
@@ -197,7 +201,7 @@ class AndroidPushGateway implements PushGateway {
       (await FlutterTimezone.getLocalTimezone()).identifier;
   @override
   Future<void> present(ForegroundNotice message) async {
-    final marea = message.kind == 'marea_message';
+    final marea = message.category == NotificationCategory.reminders;
     final channel = marea ? _mareaChannel : _channel;
     // A stable tag replaces retries of the same event in the Android tray.
     await _local.show(

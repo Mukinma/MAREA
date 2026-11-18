@@ -46,6 +46,7 @@ class MareaTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final useOutline = outlined || MareaFlatSurfaces.of(context);
     final field = TextFormField(
       enabled: enabled,
       controller: controller,
@@ -60,16 +61,16 @@ class MareaTextField extends StatelessWidget {
       onChanged: onChanged,
       inputFormatters: inputFormatters,
       decoration: InputDecoration(
-        filled: outlined,
+        filled: useOutline,
         labelText: label,
         hintText: hint,
         helperText: helperText,
-        floatingLabelBehavior: outlined ? FloatingLabelBehavior.always : null,
+        floatingLabelBehavior: useOutline ? FloatingLabelBehavior.always : null,
         prefixText: prefixText,
         suffixIcon: suffixIcon,
       ),
     );
-    return outlined
+    return useOutline
         ? field
         : MareaSurface(inset: true, radius: 16, child: field);
   }

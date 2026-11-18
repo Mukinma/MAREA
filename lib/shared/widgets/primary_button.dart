@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_depth.dart';
+import 'package:marea/shared/widgets/marea_surface.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
@@ -29,7 +30,10 @@ class PrimaryButton extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        boxShadow: onPressed != null && !isLoading ? AppDepth.action : null,
+        boxShadow:
+            onPressed != null && !isLoading && !MareaFlatSurfaces.of(context)
+            ? AppDepth.action
+            : null,
       ),
       child: FilledButton(
         onPressed: isLoading ? null : onPressed,

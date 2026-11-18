@@ -1,17 +1,24 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/models/post_social.dart';
 import 'package:marea/features/notifications/data/push_controller.dart';
 import 'package:marea/features/notifications/data/push_gateway.dart';
 import 'package:marea/features/notifications/data/notification_preferences_repository.dart';
 import 'package:marea/features/notifications/models/notification_preferences.dart';
 import 'package:marea/features/notifications/models/notification_destination.dart';
+import 'package:marea/features/profile/presentation/settings_screen.dart';
+import '../../support/fakes.dart';
+import '../../support/test_app.dart';
 
 class Gateway implements PushGateway {
   final taps = StreamController<PushNotice>.broadcast();
   final tokens = StreamController<String>.broadcast();
   final messages = StreamController<ForegroundNotice>.broadcast();
-  int presentations = 0, prompts = 0, resets = 0;
+  int presentations = 0, prompts = 0, resets = 0, settingsOpened = 0;
+  PushPermission permissionValue = PushPermission.granted;
   bool failPrompt = false;
   Completer<void>? pendingReset;
   @override
@@ -23,18 +30,21 @@ class Gateway implements PushGateway {
   @override
   Future<bool> initialize() async => true;
   @override
-  Future<PushPermission> permission() async => PushPermission.granted;
+  Future<PushPermission> permission() async => permissionValue;
   @override
   Future<PushPermission> promptOnce() async {
     prompts++;
     if (failPrompt) throw StateError('permission_temporarily_unavailable');
-    return PushPermission.granted;
+    return permissionValue;
   }
 
   @override
-  Future<PushPermission> requestPermission() async => PushPermission.granted;
+  Future<PushPermission> requestPermission() async => permissionValue;
   @override
-  Future<void> openSettings() async {}
+  Future<void> openSettings() async {
+    settingsOpened++;
+  }
+
   @override
   Future<String?> token() async => 'token';
   @override
@@ -71,6 +81,8 @@ class Preferences implements NotificationPreferencesRepository {
   String? registered;
   bool failUnregister = false;
   bool failLoad = false;
+  bool failSave = false;
+  SocialNotification? notificationValue;
   Completer<void>? pendingRegistration;
   int activities = 0;
   @override
@@ -80,8 +92,12 @@ class Preferences implements NotificationPreferencesRepository {
   }
 
   @override
-  Future<void> save(NotificationPreferences p) async {
-    value = p;
+  Future<NotificationPreferences> setCategory(
+    NotificationCategory category,
+    bool enabled,
+  ) async {
+    if (failSave) throw StateError('offline');
+    return value = value.withCategory(category, enabled);
   }
 
   @override
@@ -106,10 +122,84 @@ class Preferences implements NotificationPreferencesRepository {
   }
 
   @override
-  Future<SocialNotification?> notification(String id) async => null;
+  Future<SocialNotification?> notification(String id) async =>
+      notificationValue;
 }
 
 void main() {
+  test('stored categories override the effective legacy preferences', () {
+    final preferences = NotificationPreferences.fromJson({
+      'activity_enabled': false,
+      'marea_enabled': false,
+      'chat_enabled': true,
+      'missions_enabled': true,
+    });
+    expect(preferences.isEnabled(NotificationCategory.chat), isTrue);
+    expect(preferences.isEnabled(NotificationCategory.missions), isTrue);
+    expect(preferences.isEnabled(NotificationCategory.reactions), isFalse);
+    expect(preferences.isEnabled(NotificationCategory.reminders), isFalse);
+  });
+  testWidgets(
+    'notification settings expose real controls at 320 dp and 200%',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final gateway = Gateway()..permissionValue = PushPermission.denied;
+      final repository = Preferences()..failLoad = true;
+      final push = PushController(repository, gateway);
+      final auth = FakeAuthRepository();
+      final session = AppSessionController(
+        authRepository: auth,
+        profileRepository: FakeProfileRepository(),
+        push: push,
+      );
+      addTearDown(auth.close);
+      addTearDown(session.dispose);
+      await push.setSession('user', ready: true);
+      await tester.pumpWidget(
+        testApp(AccountNotificationsScreen(controller: session)),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      Future<void> tap(String label) async {
+        final target = find.text(label);
+        await tester.ensureVisible(target);
+        await tester.tap(target);
+        await tester.pumpAndSettle();
+      }
+
+      repository.failLoad = false;
+      await tap('Reintentar');
+      expect(find.text('Reintentar'), findsNothing);
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        await tap('Abrir ajustes de Android');
+        expect(gateway.settingsOpened, 1);
+      } else {
+        expect(find.text('Abrir ajustes de Android'), findsNothing);
+      }
+      await tap('Mensajes y solicitudes de chat');
+      await tap('Recordatorios de MAREA');
+      expect(repository.value.isEnabled(NotificationCategory.chat), isFalse);
+      expect(
+        repository.value.isEnabled(NotificationCategory.reminders),
+        isFalse,
+      );
+      expect(repository.value.isEnabled(NotificationCategory.missions), isTrue);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await push.endSession();
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
+
   test(
     'recovering initial data asks for the permission that was not shown',
     () async {
@@ -149,8 +239,8 @@ void main() {
       expect(repo.activities, 1);
       expect(gateway.prompts, 0);
       expect(repo.registered, isNull);
-      await c.save(const NotificationPreferences(mareaMessages: false));
-      expect(repo.value.mareaMessages, false);
+      await c.setCategory(NotificationCategory.reminders, false);
+      expect(repo.value.isEnabled(NotificationCategory.reminders), isFalse);
       c.dispose();
     },
   );
@@ -217,9 +307,14 @@ void main() {
     final old = c.setSession('old', ready: true);
     await Future<void>.delayed(Duration.zero);
     await c.setSession(null, ready: false);
-    repo.pending!.complete(const NotificationPreferences(activity: false));
+    repo.pending!.complete(
+      const NotificationPreferences().withCategory(
+        NotificationCategory.comments,
+        false,
+      ),
+    );
     await old;
-    expect(c.preferences.activity, true);
+    expect(c.preferences.isEnabled(NotificationCategory.comments), isTrue);
     expect(repo.registered, isNull);
   });
   test('logout resets native state even when revocation is offline', () async {
@@ -259,4 +354,73 @@ void main() {
       expect(gateway.presentations, 1);
     },
   );
+  test('muted categories filter foreground banners independently', () async {
+    final gateway = Gateway(), repo = Preferences();
+    final controller = PushController(repo, gateway);
+    addTearDown(controller.dispose);
+    await controller.setSession('user', ready: true);
+    await controller.setCategory(NotificationCategory.reminders, false);
+    await controller.setCategory(NotificationCategory.reactions, false);
+    for (final category in [
+      NotificationCategory.chat,
+      NotificationCategory.reminders,
+      NotificationCategory.reactions,
+    ]) {
+      gateway.messages.add(
+        ForegroundNotice(
+          notice: PushNotice(
+            notificationId: category.name,
+            recipientId: 'user',
+          ),
+          version: '1',
+          kind: 'marea_message',
+          category: category,
+          title: 'MAREA',
+          body: 'Una prueba',
+        ),
+      );
+    }
+    await Future<void>.delayed(Duration.zero);
+    expect(gateway.presentations, 1);
+  });
+
+  test('legacy ambiguous foreground notices use their event key', () async {
+    final gateway = Gateway(), repo = Preferences();
+    final controller = PushController(repo, gateway);
+    addTearDown(controller.dispose);
+    await controller.setSession('user', ready: true);
+    await controller.setCategory(NotificationCategory.reminders, false);
+    final createdAt = DateTime.utc(2026, 11, 18);
+    repo.notificationValue = SocialNotification(
+      id: 'chat',
+      recipientId: 'user',
+      actorId: 'author',
+      postId: null,
+      kind: NotificationKind.mareaMessage,
+      postTitle: 'Un mensaje',
+      createdAt: createdAt,
+      eventKey: 'chat_message:conversation',
+    );
+    gateway.messages.add(
+      ForegroundNotice(
+        notice: const PushNotice(notificationId: 'chat', recipientId: 'user'),
+        version: createdAt.toIso8601String(),
+        kind: 'marea_message',
+        title: 'MAREA',
+        body: 'Un mensaje',
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(gateway.presentations, 1);
+  });
+
+  test('a failed save restores the category preference', () async {
+    final gateway = Gateway(), repo = Preferences()..failSave = true;
+    final controller = PushController(repo, gateway);
+    addTearDown(controller.dispose);
+    await controller.setSession('user', ready: true);
+    await controller.setCategory(NotificationCategory.chat, false);
+    expect(controller.preferences.isEnabled(NotificationCategory.chat), isTrue);
+    expect(controller.error, isNotNull);
+  });
 }

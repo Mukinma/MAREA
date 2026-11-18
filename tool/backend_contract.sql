@@ -87,4 +87,18 @@ select
   (select bool_and(has_function_privilege('authenticated',signature,'EXECUTE') and not has_function_privilege('anon',signature,'EXECUTE')) from unnest(array['public.post_social_stats(uuid[])','public.set_post_reaction(uuid,text)','public.mark_notifications_read(uuid,timestamp with time zone)','public.create_post_comment(uuid,text,uuid)','public.delete_post_comment(uuid)','public.send_post_interest(uuid,text)']) signature)
     and not has_function_privilege('authenticated','public.social_post(uuid)','EXECUTE')
     and exists(select 1 from pg_trigger where tgrelid='public.post_reactions'::regclass and tgfoid='public.notify_post_reaction()'::regprocedure and tgenabled in ('O','A')) as social_functions_ready,
-  exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='notifications') as realtime_ready;
+  exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='notifications') as realtime_ready,
+  (select bool_and(coalesce(has_function_privilege('authenticated',to_regprocedure(signature),'EXECUTE'),false)
+    and not coalesce(has_function_privilege('anon',to_regprocedure(signature),'EXECUTE'),true))
+    from unnest(array['public.require_app_session()','public.get_chat_privacy()',
+      'public.set_chat_request_audience(text)','public.set_notification_category(text,boolean)',
+      'public.report_profile(uuid,text)','public.mark_report_reviewed(uuid,boolean)']) signature)
+    and (select count(*)=3 from pg_class where oid=any(array[
+      to_regclass('public.chat_request_preferences'),to_regclass('public.profile_reports'),
+      to_regclass('public.report_receipts')]) and relrowsecurity)
+    and exists(select 1 from pg_roles, unnest(rolconfig) entry where rolname='authenticator'
+      and entry='pgrst.db_pre_request=marea_access.enforce_app_session')
+    and exists(select 1 from pg_policies where schemaname='storage' and tablename='objects'
+      and policyname='App sessions protect private media' and permissive='RESTRICTIVE')
+    and exists(select 1 from information_schema.columns where table_schema='public'
+      and table_name='notification_devices' and column_name='session_id') as settings_contract_ready;

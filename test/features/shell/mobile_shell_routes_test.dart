@@ -1,5 +1,6 @@
 import 'dart:ui' show Tristate;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/core/router/app_router.dart';
@@ -37,6 +38,16 @@ void main() {
   testWidgets(
     'missions uses real router and legacy destinations remain reachable',
     (tester) async {
+      const proximityChannel = MethodChannel('marea/proximity_background');
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(
+        proximityChannel,
+        (_) async => {'supported': false, 'enabled': false},
+      );
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(proximityChannel, null),
+      );
       tester.view.physicalSize = const Size(390, 844);
       tester.view.devicePixelRatio = 1;
       tester.view.padding = const FakeViewPadding(bottom: 34);
@@ -143,14 +154,45 @@ void main() {
         await tester.binding.handlePopRoute();
         await tester.pumpAndSettle();
       }
-      router.push('/settings');
-      await tester.pumpAndSettle();
-      expect(find.byTooltip('Crear').hitTestable(), findsOneWidget);
-      await tester.tap(find.byTooltip('Crear').hitTestable());
-      await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Cerrar menú de creación'));
-      await tester.pumpAndSettle();
-      expect(router.state.uri.path, '/settings');
+      for (final path in [
+        '/settings',
+        '/settings/personal',
+        '/settings/notifications',
+        '/settings/privacy',
+        '/settings/security',
+        '/settings/support',
+        '/settings/support/reports',
+        '/nearby-alerts',
+        '/settings/email',
+        '/settings/password',
+        '/terms',
+        '/privacy',
+        '/profile/preferences',
+      ]) {
+        router.push(path);
+        try {
+          await tester.pumpAndSettle(
+            const Duration(milliseconds: 100),
+            EnginePhase.sendSemanticsUpdate,
+            const Duration(seconds: 20),
+          );
+        } catch (error) {
+          fail('La ruta $path no terminó de cargar: $error');
+        }
+        expect(router.state.uri.path, path);
+        expect(
+          find.byTooltip('Crear').hitTestable(),
+          findsNothing,
+          reason: path,
+        );
+        expect(
+          find.byKey(const Key('mobile-dock')).hitTestable(),
+          findsNothing,
+        );
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(find.byTooltip('Crear').hitTestable(), findsOneWidget);
+      }
       semantics.dispose();
       await tester.pumpWidget(const SizedBox());
       router.dispose();
