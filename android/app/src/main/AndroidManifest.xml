@@ -3,6 +3,9 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera.ar" android:required="false" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
@@ -11,6 +14,9 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.ar.core" android:value="optional" />
+        <service android:name=".ProximityService" android:exported="false"
+            android:foregroundServiceType="location" android:stopWithTask="false" />
+        <service android:name=".ProximityStopService" android:exported="false" />
         <meta-data android:name="firebase_messaging_auto_init_enabled" android:value="false" />
         <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_marea_notification" />

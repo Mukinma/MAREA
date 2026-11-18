@@ -19,6 +19,9 @@ import 'tour_panorama.dart';
 import 'tour_widgets.dart';
 
 import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
+enum _ReferenceKind { image, printable }
+
+enum _PointAction { edit, mark, list, link, reference }
 Uint8List _referenceJPEG(Uint8List source) {
   final decoded = img.decodeImage(source);
   if (decoded == null) {
@@ -90,6 +93,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       _lat = TextEditingController(),
       _lng = TextEditingController(),
       _context = TextEditingController();
+  final _scroll = ScrollController();
   late final _store = widget.localStore ?? TourLocalStore();
   TourDocument _doc = TourDocument.empty();
   Map<String, dynamic> _space = {};
@@ -438,6 +442,17 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   }
 
   Future<void> _mark(TourScene scene, TourPoint point) async {
+    if (scene.isHorizontalPanorama) {
+      setState(
+        () => point.data.addAll({
+          'yaw': null,
+          'pitch': null,
+          'needs_review': false,
+        }),
+      );
+      await _local();
+      return;
+    }
     final position = await pickPanoramaPosition(
       context,
       widget.controller.tourRepository!,
@@ -510,6 +525,176 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
     }
   }
 
+  Future<void> _changeStep(int step, {bool sync = false}) async {
+    if (_busy || !_current) return;
+    FocusScope.of(context).unfocus();
+    if (sync) {
+      if (!await _save()) return;
+    } else {
+      await _local(changed: false);
+      if (_localFailure != null) return;
+    }
+    if (_current) {
+      setState(() => _step = step);
+      if (_scroll.hasClients) _scroll.jumpTo(0);
+    }
+  }
+
+  Future<void> _chooseReference(TourPoint point) async {
+    final kind = await showModalBottomSheet<_ReferenceKind>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '¿Qué imagen buscarán?',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_outlined),
+                title: const Text('Usar una imagen del lugar'),
+                subtitle: const Text(
+                  'Elige una foto, cartel u otra imagen que ya esté instalada.',
+                ),
+                onTap: () => Navigator.pop(context, _ReferenceKind.image),
+              ),
+              ListTile(
+                leading: const Icon(Icons.print_outlined),
+                title: const Text('Crear una marca para imprimir'),
+                subtitle: const Text(
+                  'Genera una imagen única para colocar en el lugar.',
+                ),
+                onTap: () => Navigator.pop(context, _ReferenceKind.printable),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (!_current || kind == null) return;
+    await _prepareAR(point, marker: kind == _ReferenceKind.printable);
+  }
+
+  Future<void> _testReference(TourPoint point) async {
+    if (!await _save() || !mounted) return;
+    try {
+      await context.push(
+        '/tours/${_record!.id}/ar?preview=true&point=${point.id}',
+      );
+      if (!_current) return;
+      final record = await widget.controller.tourRepository!.get(
+        _record!.id,
+        edit: true,
+      );
+      if (_current && record != null) {
+        setState(() => _doc = record.document.copy());
+      }
+    } catch (error) {
+      if (_current) setState(() => _error = tourError(error));
+    }
+  }
+
+  Future<void> _pointAction(
+    _PointAction action,
+    TourScene scene,
+    TourPoint point,
+  ) async {
+    if (_busy || !_current) return;
+    try {
+      switch (action) {
+        case _PointAction.edit:
+          final text = await tourTextDialog(
+            context,
+            'Explicación',
+            initial: point.description,
+          );
+          if (!_current || text == null) return;
+          setState(() => point.data['description'] = text);
+          await _local();
+        case _PointAction.mark:
+          await _mark(scene, point);
+        case _PointAction.list:
+          setState(
+            () => point.data.addAll({
+              'yaw': null,
+              'pitch': null,
+              'needs_review': false,
+            }),
+          );
+          await _local();
+        case _PointAction.link:
+          await _link(point);
+        case _PointAction.reference:
+          await _chooseReference(point);
+      }
+    } catch (error) {
+      if (_current) setState(() => _error = tourError(error));
+    }
+  }
+
+  Widget _pointControls(TourScene scene, TourPoint point) => Row(
+    children: [
+      Expanded(
+        child: FilledButton.icon(
+          onPressed: _busy
+              ? null
+              : () => point.ar == null
+                    ? _chooseReference(point)
+                    : _testReference(point),
+          icon: const Icon(Icons.camera_alt_outlined),
+          label: Text(
+            point.ar == null
+                ? core_l10n.AppLocalizations.tr('Añadir imagen RA')
+                : point.ar!['tested_version'] != null &&
+                      point.ar!['tested_version'] ==
+                          point.ar!['reference_version']
+                ? core_l10n.AppLocalizations.tr('Volver a probar RA')
+                : core_l10n.AppLocalizations.tr('Probar RA'),
+          ),
+        ),
+      ),
+      PopupMenuButton<_PointAction>(
+        tooltip: core_l10n.AppLocalizations.tr(
+          'Más opciones de ${point.name}',
+        ),
+        enabled: !_busy,
+        onSelected: (action) => _pointAction(action, scene, point),
+        itemBuilder: (_) => [
+          PopupMenuItem(
+            value: _PointAction.edit,
+            child: Text(core_l10n.AppLocalizations.tr('Editar texto')),
+          ),
+          if (!scene.isHorizontalPanorama)
+            PopupMenuItem(
+              value: _PointAction.mark,
+              enabled: scene.panoramaPath != null,
+              child: Text(core_l10n.AppLocalizations.tr('Ubicar en 360°')),
+            ),
+          PopupMenuItem(
+            value: _PointAction.list,
+            child: Text(
+              core_l10n.AppLocalizations.tr('Mostrar sólo en lista'),
+            ),
+          ),
+          PopupMenuItem(
+            value: _PointAction.link,
+            child: Text(core_l10n.AppLocalizations.tr('Vincular contenido')),
+          ),
+          if (point.ar != null)
+            PopupMenuItem(
+              value: _PointAction.reference,
+              child: Text(
+                core_l10n.AppLocalizations.tr('Cambiar imagen RA'),
+              ),
+            ),
+        ],
+      ),
+    ],
+  );
+
   Future<void> _prepareAR(TourPoint point, {bool marker = false}) async {
     if (!await _save()) return;
     try {
@@ -532,7 +717,15 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         help: core_l10n.AppLocalizations.tr(_l10n.medirImagenInstalada),
       );
       final cm = double.tryParse(width ?? '');
-      if (cm == null || cm <= 0 || cm > 1000) return;
+      if (width == null) return;
+      if (cm == null || !cm.isFinite || cm < 1 || cm > 1000) {
+        if (_current) {
+          setState(
+            () => _error = 'Escribe un ancho entre 1 y 1000 centímetros.',
+          );
+        }
+        return;
+      }
       final path = await widget.controller.tourRepository!.uploadReference(
         _account,
         id,
@@ -547,6 +740,10 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           'tested_version': null,
         },
       );
+      if (!jsonList(_doc.data['ar_order']).contains(point.id)) {
+        jsonList(_doc.data['ar_order']).add(point.id);
+      }
+      if (!await _save() || !_current) return;
       if (marker) {
         await SharePlus.instance.share(
           ShareParams(
@@ -563,10 +760,6 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           ),
         );
       }
-      if (!jsonList(_doc.data['ar_order']).contains(point.id)) {
-        jsonList(_doc.data['ar_order']).add(point.id);
-      }
-      await _save();
     } catch (e) {
       if (_current) setState(() => _error = _editorError(e));
     }
@@ -598,20 +791,26 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       help: core_l10n.AppLocalizations.tr(_l10n.ejemploIndicacion),
     );
     if (!mounted || !_current || instruction == null) return;
-    final position = await pickPanoramaPosition(
-      context,
-      widget.controller.tourRepository!,
-      scene,
-    );
-    if (!mounted || !_current || position == null) return;
+    final position = scene.isHorizontalPanorama
+        ? null
+        : await pickPanoramaPosition(
+            context,
+            widget.controller.tourRepository!,
+            scene,
+          );
+    if (!mounted ||
+        !_current ||
+        (!scene.isHorizontalPanorama && position == null)) {
+      return;
+    }
     setState(
       () => jsonList(scene.data['connections']).add({
         'id': tourId(),
         'target_scene_id': target.id,
         'label': target.name,
         'instruction': instruction,
-        'yaw': position.$1,
-        'pitch': position.$2,
+        'yaw': position?.$1,
+        'pitch': position?.$2,
         'needs_review': false,
       }),
     );
@@ -720,6 +919,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
 
   @override
   void dispose() {
+    _scroll.dispose();
     for (final c in [_title, _name, _location, _lat, _lng, _context]) {
       c.dispose();
     }
@@ -741,7 +941,13 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: TourBackButton(fallback: '/tours', onPressed: _back),
-          title: Text(core_l10n.AppLocalizations.tr(l10n.crearRecorrido360)),
+          title: Text(
+            core_l10n.AppLocalizations.tr(
+              widget.tourId == null
+                  ? l10n.crearRecorrido360
+                  : 'Editar recorrido 360°',
+            ),
+          ),
         ),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
@@ -759,6 +965,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
             : AbsorbPointer(
                 absorbing: _busy,
                 child: ListView(
+                  controller: _scroll,
                   padding: const EdgeInsets.all(20),
                   children: [
                     Wrap(
@@ -780,7 +987,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                             selected: _step == i,
                             onSelected: _busy
                                 ? null
-                                : (_) => setState(() => _step = i),
+                                : (_) => _changeStep(i),
                           ),
                       ],
                     ),
@@ -988,94 +1195,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                     Text(
                                       '${p.link!['title']} · ${_linkStatusLabel(p.link!['status'])}',
                                     ),
-                                  Wrap(
-                                    spacing: 8,
-                                    children: [
-                                      TextButton(
-                                        onPressed: s.panoramaPath == null
-                                            ? null
-                                            : () => _mark(s, p),
-                                        child: Text(core_l10n.AppLocalizations.tr(l10n.marcarEn360)),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          final text = await tourTextDialog(
-                                            context,
-                                            core_l10n.AppLocalizations.tr(l10n.explicacion),
-                                            initial: p.description,
-                                          );
-                                          if (_current && text != null) {
-                                            setState(
-                                              () =>
-                                                  p.data['description'] = text,
-                                            );
-                                            _local();
-                                          }
-                                        },
-                                        child: Text(core_l10n.AppLocalizations.tr(l10n.editarTexto)),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          setState(
-                                            () => p.data.addAll({
-                                              'yaw': null,
-                                              'pitch': null,
-                                              'needs_review': false,
-                                            }),
-                                          );
-                                          _local();
-                                        },
-                                        child: Text(core_l10n.AppLocalizations.tr(l10n.soloEnLista)),
-                                      ),
-                                      TextButton(
-                                        onPressed: () => _link(p),
-                                        child: Text(
-                                          core_l10n.AppLocalizations.tr(l10n.vincularContenidoTitulo),
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed: () => _prepareAR(p),
-                                        child: Text(core_l10n.AppLocalizations.tr(l10n.imagenParaAr)),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            _prepareAR(p, marker: true),
-                                        child: Text(core_l10n.AppLocalizations.tr(l10n.distintivoImprimible)),
-                                      ),
-                                      if (p.ar != null)
-                                        TextButton(
-                                          onPressed: () async {
-                                            if (await _save() &&
-                                                context.mounted) {
-                                              await context.push(
-                                                '/tours/${_record!.id}/ar?preview=true&point=${p.id}',
-                                              );
-                                              if (mounted && _current) {
-                                                final r = await widget
-                                                    .controller
-                                                    .tourRepository!
-                                                    .get(
-                                                      _record!.id,
-                                                      edit: true,
-                                                    );
-                                                if (_current && r != null) {
-                                                  setState(
-                                                    () => _doc = r.document
-                                                        .copy(),
-                                                  );
-                                                }
-                                              }
-                                            }
-                                          },
-                                          child: Text(
-                                            p.ar!['tested_version'] ==
-                                                    p.ar!['reference_version']
-                                                ? core_l10n.AppLocalizations.tr(l10n.volverProbarAr)
-                                                : core_l10n.AppLocalizations.tr(l10n.probarArEnLocal),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
+                                  _pointControls(s, p),
                                 ],
                                 OutlinedButton(
                                   onPressed: () => _addPoint(s),

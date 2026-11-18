@@ -11,9 +11,19 @@ void main() {
   ) async {
     final repo = MissionRepositoryFake();
     await flow.openRoute(tester, repo, '/missions');
-    await flow.tapVisible(tester, find.text('Para mi perfil'));
+    Future<void> selectProfile(String option) async {
+      await flow.tapVisible(tester, find.byTooltip('Filtros'));
+      await flow.tapVisible(
+        tester,
+        find.byKey(const Key('mission-catalog-profile-filter')),
+      );
+      await flow.tapVisible(tester, find.text(option).last);
+      await flow.tapVisible(tester, find.text('Aplicar filtros'));
+    }
+
+    await selectProfile('Para mi perfil');
     expect(repo.lastTarget, sampleProfile.userType);
-    await flow.tapVisible(tester, find.text('Todas'));
+    await selectProfile('Cualquier perfil');
     expect(repo.lastTarget, isNull);
   });
 

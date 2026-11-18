@@ -152,7 +152,7 @@ void main() {
       );
       for (final label
           in width < 600
-              ? ['Inicio', 'Descubrir', 'Mapa', 'Perfil']
+              ? ['Inicio', 'Misiones', 'Mapa', 'Perfil']
               : ['Inicio', 'Explorar', 'Crear', 'Misiones', 'Mapa', 'Perfil']) {
         expect(find.byTooltip(label).hitTestable(), findsOneWidget);
       }

@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:marea/core/localization/app_localizations.dart';
-import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
-import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 import 'package:marea/shared/widgets/marea_tabs.dart';
+import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
+import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/config/app_config.dart';
@@ -39,34 +40,38 @@ String _applicationStatus(String status) =>
       _ => 'Pendiente',
     });
 
-class MissionsScreen extends StatefulWidget {
-  const MissionsScreen({
+class PersonalMissionsScreen extends StatefulWidget {
+  const PersonalMissionsScreen({
     super.key,
     required this.controller,
-    this.initialSection,
+    required this.initialSection,
   });
   final AppSessionController controller;
-  final String? initialSection;
+  final String initialSection;
   @override
-  State<MissionsScreen> createState() => _MissionsScreenState();
+  State<PersonalMissionsScreen> createState() => _PersonalMissionsScreenState();
 }
 
-class _MissionsScreenState extends State<MissionsScreen> {
-  int _tab = 0, _offset = 0, _generation = 0;
+class _PersonalMissionsScreenState extends State<PersonalMissionsScreen> {
+  late int _tab = widget.initialSection == 'applications' ? 2 : 1;
+  int _offset = 0, _generation = 0;
+  UserType? _target;
+  String? _category;
+  String? _applicationFilter;
+  bool _history = false, _savedOnly = false;
   String _query = '';
   final _search = TextEditingController();
-  String? _category;
-  UserType? _target;
-  String? _applicationFilter;
-  bool _history = false, _draftView = false, _savedOnly = false;
+  Timer? _debounce;
+  late bool _draftView = widget.initialSection == 'drafts';
+  bool get _showApplications => _tab == 2;
   final _scroll = ScrollController();
   List<MissionDraft> _drafts = [];
-  Timer? _debounce;
+
   @override
   void dispose() {
-    _debounce?.cancel();
-    _search.dispose();
     _scroll.dispose();
+    _search.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -78,14 +83,6 @@ class _MissionsScreenState extends State<MissionsScreen> {
   @override
   void initState() {
     super.initState();
-    _tab = widget.initialSection == 'own'
-        ? 1
-        : widget.initialSection == 'applications'
-        ? 2
-        : 0;
-    if (widget.initialSection == 'compatible') {
-      _target = widget.controller.profile?.userType;
-    }
     _load();
   }
 
@@ -108,14 +105,34 @@ class _MissionsScreenState extends State<MissionsScreen> {
       }
     });
     try {
-      if (_tab == 1 && _draftView) {
+      if (_tab == 0) {
+        final page = _savedOnly
+            ? await repo.savedMissions(
+                query: _query,
+                category: _category,
+                targetType: _target,
+                offset: _offset,
+              )
+            : await repo.missions(
+                query: _query,
+                category: _category,
+                targetType: _target,
+                offset: _offset,
+              );
+        if (!mounted || generation != _generation) return;
+        setState(() {
+          _offset += page.length;
+          _missions = append ? [..._missions, ...page] : page;
+          _more = page.length == 30;
+        });
+      } else if (_tab == 1 && _draftView) {
         final drafts = await repo.missionDrafts();
         if (!mounted || generation != _generation) return;
         setState(() {
           _drafts = drafts;
           _more = false;
         });
-      } else if (_tab == 2) {
+      } else if (_showApplications) {
         final applications = (await repo.applications())
             .where((a) => a.applicantId == viewer.id)
             .toList();
@@ -130,25 +147,11 @@ class _MissionsScreenState extends State<MissionsScreen> {
           _more = false;
         });
       } else {
-        final page = _tab == 0 && _savedOnly
-            ? await repo.savedMissions(
-                query: _query,
-                category: _category,
-                targetType: _target,
-                offset: _offset,
-              )
-            : await repo.missions(
-                authorId: _tab == 1 ? viewer.id : null,
-                query: _tab == 0 ? _query : '',
-                category: _tab == 0 ? _category : null,
-                targetType: _tab == 0 ? _target : null,
-                scope: _tab == 0
-                    ? 'discover'
-                    : _history
-                    ? 'history'
-                    : 'active',
-                offset: _offset,
-              );
+        final page = await repo.missions(
+          authorId: viewer.id,
+          scope: _history ? 'history' : 'active',
+          offset: _offset,
+        );
         if (!mounted || generation != _generation) return;
         setState(() {
           _offset += page.length;
@@ -290,7 +293,9 @@ class _MissionsScreenState extends State<MissionsScreen> {
         color: AppColors.canvas,
         child: CommunityPage(
           scrollController: _scroll,
-          title: AppLocalizations.tr('Misiones'),
+          title: AppLocalizations.tr(
+            _tab == 2 ? 'Mis candidaturas' : 'Misiones',
+          ),
           onRefresh: () => _load(),
           action: FilledButton.icon(
             onPressed: () async {
@@ -469,7 +474,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
             ],
             if (_error != null)
               CommunityNotice(message: _error!, onRetry: () => _load()),
-            if (_tab == 2) ...[
+            if (_showApplications) ...[
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -491,7 +496,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
               ),
               const SizedBox(height: 16),
             ],
-            if (_tab == 2)
+            if (_showApplications)
               for (final application in applications)
                 MareaCard(
                   child: Column(
@@ -552,7 +557,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
                     ],
                   ),
                 )
-            else if (_tab == 1 && _draftView)
+            else if (_draftView)
               for (final draft in _drafts)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -594,7 +599,9 @@ class _MissionsScreenState extends State<MissionsScreen> {
                     owner: _tab == 1,
                     onTap: () async {
                       await context.push(
-                        '/missions/${mission.id}${_tab == 1 ? '/manage' : ''}',
+                        _tab == 1
+                            ? '/missions/${mission.id}/manage'
+                            : '/missions/${mission.id}',
                       );
                       if (mounted) _load();
                     },
@@ -602,9 +609,9 @@ class _MissionsScreenState extends State<MissionsScreen> {
                 ),
             if (!_loading &&
                 _error == null &&
-                (_tab == 2
+                (_showApplications
                     ? applications.isEmpty
-                    : _tab == 1 && _draftView
+                    : _draftView
                     ? _drafts.isEmpty
                     : visible.isEmpty))
               CommunityNotice(
@@ -635,9 +642,9 @@ class _MissionsScreenState extends State<MissionsScreen> {
                 icon: Icons.explore_outlined,
               ),
             if (_loading &&
-                (_tab == 1 && _draftView
+                (_draftView
                     ? _drafts.isEmpty
-                    : _tab == 2
+                    : _showApplications
                     ? _applications.isEmpty
                     : _missions.isEmpty))
               const Padding(

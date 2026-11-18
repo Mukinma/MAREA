@@ -1,0 +1,17 @@
+digraph estados_tours {
+  graph [rankdir=TB, bgcolor=transparent, nodesep=.36, ranksep=.39];
+  node [shape=box, style="rounded,filled", color="#BBCADA", fillcolor="#F3F5F7", fontcolor="#14263D", fontname="Helvetica", fontsize=12, margin=".17,.11"];
+  edge [color="#64748B", fontcolor="#475569", fontname="Helvetica", fontsize=9.5, arrowsize=.65];
+  queued [label="queued\nEn cola", fillcolor="#E8F0FF"];
+  running [label="processing\nLease de 16 minutos", fillcolor="#14263D", fontcolor=white];
+  ready [label="succeeded\nSalida disponible"];
+  failed [label="failed\nFallo terminal"];
+  cancelled [label="cancelled\nLimpieza pendiente"];
+  {rank=same; ready; failed; cancelled}
+  queued -> running [label=" Reclamar: máximo 2 activos"];
+  running -> queued [label=" Transitorio permitido o lease vencido\nSin guarda activa; intentos < 3", constraint=false];
+  running -> ready [label=" Salidas validadas"];
+  running -> failed [label=" Intentos agotados o fallo terminal"];
+  running -> cancelled [label=" Cancelar"];
+  queued -> cancelled [label=" Cancelar"];
+}

@@ -1,13 +1,14 @@
 import 'dart:async';
+import 'package:go_router/go_router.dart';
 import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/home_feed/models/story.dart';
 import 'package:marea/features/home_feed/presentation/story_viewer.dart';
+import 'package:marea/shared/widgets/marea_surface.dart';
 import 'package:marea/shared/widgets/profile_image.dart';
 
 class StoriesRail extends StatefulWidget {
@@ -97,11 +98,6 @@ class StoriesRailState extends State<StoriesRail> {
     if (viewerId != null) reload();
   }
 
-  Future<void> _create() async {
-    await context.push('/stories/new');
-    if (mounted) await reload();
-  }
-
   Future<void> _view(List<Story> stories) async {
     final repo = widget.controller.storiesRepository;
     if (repo == null || stories.isEmpty) return;
@@ -125,15 +121,14 @@ class StoriesRailState extends State<StoriesRail> {
     required Widget avatar,
     required VoidCallback onTap,
     bool unread = false,
-    bool create = false,
   }) => SizedBox(
-    width: (64 * MediaQuery.textScalerOf(context).scale(11) / 11).clamp(
-      64,
+    width: (84 * MediaQuery.textScalerOf(context).scale(11) / 11).clamp(
+      84,
       128,
     ),
     child: Semantics(
       button: true,
-      label: create ? 'Crear historia' : 'Historias de $label',
+      label: 'Historias de $label',
       value: unread ? 'Sin ver' : null,
       child: InkWell(
         onTap: onTap,
@@ -149,25 +144,23 @@ class StoriesRailState extends State<StoriesRail> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: create
-                        ? Colors.transparent
-                        : unread
-                        ? AppColors.aqua
-                        : AppColors.border,
-                    width: 2,
+                    color: unread ? AppColors.aquaDark : AppColors.border,
+                    width: unread ? 2 : 1,
                   ),
                 ),
                 child: ClipOval(child: avatar),
               ),
               const SizedBox(height: 5),
-              Text(
-                label,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: AppColors.brandNavy,
+              ExcludeSemantics(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.brandNavy,
+                  ),
                 ),
               ),
             ],
@@ -194,58 +187,111 @@ class StoriesRailState extends State<StoriesRail> {
         if (aSeen != bSeen) return aSeen ? 1 : -1;
         return grouped[b]!.last.createdAt.compareTo(grouped[a]!.last.createdAt);
       });
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _circle(
-                label: AppLocalizations.tr('Tu historia'),
-                create: true,
-                onTap: _create,
-                avatar: const ColoredBox(
-                  color: AppColors.mint,
-                  child: Icon(Icons.add, color: AppColors.brandNavy),
-                ),
-              ),
-              for (final id in ids)
-                _circle(
-                  label: id == widget.controller.profile?.id
-                      ? 'Tú'
-                      : _profiles[id]?.fullName ?? 'Usuario',
-                  unread: grouped[id]!.any((s) => !s.seen),
-                  onTap: () => _view(grouped[id]!),
-                  avatar: ProfileImage(
-                    path: _profiles[id]?.avatarPath,
-                    repository: widget.controller.mediaRepository,
-                    fallback: CircleAvatar(
-                      backgroundColor: AppColors.mist,
-                      child: Text(_profiles[id]?.initials ?? 'M'),
+    if (ids.isEmpty && !_loading && _error == null) {
+      if (widget.controller.profile == null) return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: MareaSurface(
+        key: const Key('home-stories-surface'),
+        color: AppColors.surface,
+        radius: 24,
+        clipBehavior: Clip.antiAlias,
+        child: Ink(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+              stops: [0, .56, 1],
+              colors: [AppColors.surface, AppColors.surface, AppColors.mint],
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 16, end: 16),
+                  child: Semantics(
+                    header: true,
+                    child: Text(
+                      AppLocalizations.tr('Historias'),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.brandNavy,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ),
-              if (_loading)
-                const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.controller.profile != null)
+                        _circle(
+                          label: AppLocalizations.tr('Tu historia'),
+                          onTap: () => context.push('/stories/new'),
+                          avatar: const ColoredBox(
+                            color: AppColors.mint,
+                            child: Icon(
+                              Icons.add,
+                              color: AppColors.brandNavy,
+                            ),
+                          ),
+                        ),
+                      for (final id in ids)
+                        _circle(
+                          label: id == widget.controller.profile?.id
+                              ? AppLocalizations.tr('Tú')
+                              : _profiles[id]?.fullName ??
+                                    AppLocalizations.tr('Usuario'),
+                          unread: grouped[id]!.any((s) => !s.seen),
+                          onTap: () => _view(grouped[id]!),
+                          avatar: ProfileImage(
+                            path: _profiles[id]?.avatarPath,
+                            repository: widget.controller.mediaRepository,
+                            fallback: CircleAvatar(
+                              backgroundColor: AppColors.mist,
+                              child: Text(_profiles[id]?.initials ?? 'M'),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-            ],
+                if (ids.isEmpty && _loading)
+                  const Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(16, 10, 16, 6),
+                    child: SizedBox.square(
+                      dimension: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        semanticsLabel: 'Cargando historias',
+                      ),
+                    ),
+                  ),
+                if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: TextButton.icon(
+                      onPressed: reload,
+                      icon: const Icon(Icons.refresh, size: 18),
+                      label: Text(
+                        _error!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
-        if (_error != null)
-          TextButton.icon(
-            onPressed: reload,
-            icon: const Icon(Icons.refresh, size: 18),
-            label: Text(_error!, maxLines: 2, overflow: TextOverflow.ellipsis),
-          ),
-      ],
+      ),
     );
   }
 }

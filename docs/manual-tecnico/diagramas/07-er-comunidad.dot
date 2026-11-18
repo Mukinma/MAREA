@@ -1,0 +1,33 @@
+digraph G {
+  graph [rankdir=TB, bgcolor=transparent, nodesep=.35, ranksep=.46];
+  node [shape=box, style="rounded,filled", color="#BBCADA", fillcolor="#F3F5F7", fontcolor="#14263D", fontname="Helvetica", fontsize=11.5, margin=".14,.10"];
+  edge [color="#64748B", fontcolor="#475569", fontname="Helvetica", fontsize=9.5, arrowsize=.65];
+  auth [label="auth.users
+id PK",fillcolor="#14263D",fontcolor=white];
+  profile [label="profiles
+id PK/FK",fillcolor="#E8F0FF"];
+  post [label="posts
+id · author_id"];
+  mission [label="missions
+id · author_id · capacity"];
+  showcase [label="showcase_items
+id · owner_id"];
+  apply [label="mission_applications
+id · mission_id · applicant_id"];
+  final [label="mission_finalists
+mission_id · application_id"];
+  comment [label="post_comments
+id · post_id · author_id"];
+  photo [label="showcase_images
+PK (item_id,position) · path"];
+  {rank=same;post;mission;showcase} {rank=same;comment;apply;photo}
+  auth -> profile [dir=back,label=" 1 : 0..1"];
+  profile -> post [dir=back,label=" 1 : 0..N"];
+  profile -> mission [dir=back,label=" 1 : 0..N"];
+  profile -> showcase [dir=back,label=" 1 : 0..N"];
+  post -> comment [dir=back,label=" 1 : 0..N"];
+  mission -> apply [dir=back,label=" 1 : 0..N"];
+  showcase -> photo [dir=back,label=" 1 : 0..6"];
+  apply -> final [dir=back,label=" 1 : 0..1"];
+
+}

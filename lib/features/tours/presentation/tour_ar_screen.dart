@@ -47,6 +47,7 @@ class _TourARScreenState extends State<TourARScreen>
   List<Map<String, dynamic>> _references = [];
   DateTime? _recognizedAt;
   int _scanGeneration = 0;
+  String? _scanId;
   final _assetUrls = <String, (DateTime, Future<String>)>{};
   String? _approach;
   bool _supported = false,
@@ -223,9 +224,15 @@ class _TourARScreenState extends State<TourARScreen>
       ];
       _recognizedAt = null;
       _recognized = false;
+      final scanId = tourId();
+      _scanId = scanId;
       _tracking = _events.receiveBroadcastStream().listen(
         (event) {
-          if (!mounted || !_current) return;
+          if (!_canScan(generation, p) ||
+              event is! Map ||
+              event['sessionId'] != scanId) {
+            return;
+          }
           if (event['state'] == 'error') {
             setState(() {
               _error = event['message'] as String? ?? core_l10n.AppLocalizations.tr(_l10n.errorIniciarCamara);
@@ -248,7 +255,7 @@ class _TourARScreenState extends State<TourARScreen>
           setState(() => _recognized = tracking);
         },
         onError: (Object error) {
-          if (mounted && _current) {
+          if (_canScan(generation, p)) {
             setState(() {
               _scanning = false;
               _error = core_l10n.AppLocalizations.tr(_l10n.errorIniciarCamaraAr);
@@ -348,9 +355,10 @@ class _TourARScreenState extends State<TourARScreen>
     }
   }
 
-  void _stop() {
+  Future<void> _stop() async {
     _scanGeneration++;
-    _tracking?.cancel();
+    _scanId = null;
+    final tracking = _tracking;
     _tracking = null;
     _timer?.cancel();
     _timer = null;
@@ -361,6 +369,28 @@ class _TourARScreenState extends State<TourARScreen>
         _recognizedAt = null;
       });
     }
+    await tracking?.cancel();
+  }
+
+  Future<void> _readPoint(TourPoint point) async {
+    await _stop();
+    if (!mounted || !_current) return;
+    final continued = await showTourPoint(context, widget.controller, point);
+    if (continued && _current && !widget.preview) {
+      setState(() => _progress!.visit(point.id));
+      await _saveProgress();
+      if (_current) _next();
+    }
+  }
+
+  Future<void> _skipPoint() async {
+    final point = _point;
+    if (point == null || widget.preview || _busy) return;
+    await _stop();
+    if (!_current) return;
+    setState(() => _progress!.skip(point.id));
+    await _saveProgress();
+    if (_current) _next();
   }
 
   void _choose(TourPoint point) {
@@ -422,12 +452,64 @@ class _TourARScreenState extends State<TourARScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     final point = _point;
+    final completed =
+        !widget.preview &&
+        _points.isNotEmpty &&
+        _points.every(
+          (p) =>
+              _progress!.visited.contains(p.id) ||
+              _progress!.skipped.contains(p.id),
+        );
+    final visited = _progress?.visited.contains(point?.id) ?? false;
     return Scaffold(
       appBar: AppBar(
         leading: TourBackButton(fallback: '/tours/${widget.tourId}'),
         title: Text(
           widget.preview ? core_l10n.AppLocalizations.tr(l10n.probarArEnLocal) : core_l10n.AppLocalizations.tr(l10n.recorrerConCamara),
         ),
+        actions: [
+          if (point != null)
+            PopupMenuButton<String>(
+              tooltip: 'Más opciones',
+              enabled: !_busy,
+              onOpened: () => unawaited(_stop()),
+              onSelected: (value) async {
+                if (_busy) return;
+                switch (value) {
+                  case 'stop':
+                    await _stop();
+                  case 'skip':
+                    await _skipPoint();
+                  case 'scan':
+                    await _scan();
+                  case 'read':
+                    await _readPoint(point);
+                }
+              },
+              itemBuilder: (_) => [
+                if (_scanning)
+                  const PopupMenuItem(
+                    value: 'stop',
+                    child: Text('Volver a la lista'),
+                  ),
+                if (visited && _supported && !_scanning)
+                  const PopupMenuItem(
+                    value: 'scan',
+                    child: Text('Volver a escanear esta imagen'),
+                  ),
+                if (widget.preview || visited || completed)
+                  const PopupMenuItem(
+                    value: 'read',
+                    child: Text('Leer detalle de la parada'),
+                  ),
+                if (!widget.preview && !completed && !visited)
+                  const PopupMenuItem(
+                    value: 'skip',
+                    child: Text('Saltar parada'),
+                  ),
+              ],
+            ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -466,16 +548,22 @@ class _TourARScreenState extends State<TourARScreen>
                             child:
                                 defaultTargetPlatform == TargetPlatform.android
                                 ? AndroidView(
-                                    key: ValueKey(point.id),
+                                    key: ValueKey(_scanId),
                                     viewType: 'marea/tour_ar_view',
-                                    creationParams: {'references': _references},
+                                    creationParams: {
+                                      'references': _references,
+                                      'sessionId': _scanId,
+                                    },
                                     creationParamsCodec:
                                         const StandardMessageCodec(),
                                   )
                                 : UiKitView(
-                                    key: ValueKey(point.id),
+                                    key: ValueKey(_scanId),
                                     viewType: 'marea/tour_ar_view',
-                                    creationParams: {'references': _references},
+                                    creationParams: {
+                                      'references': _references,
+                                      'sessionId': _scanId,
+                                    },
                                     creationParamsCodec:
                                         const StandardMessageCodec(),
                                   ),
@@ -499,7 +587,7 @@ class _TourARScreenState extends State<TourARScreen>
                     ),
                   if (_approach != null) TourNotice(_approach!),
                   Text(point.description),
-                  if (point.ar != null)
+                  if (point.ar != null && !_scanning)
                     FutureBuilder<String>(
                       future: _assetUrl(point.ar!['reference_path'] as String),
                       builder: (c, s) => s.hasData
@@ -514,7 +602,7 @@ class _TourARScreenState extends State<TourARScreen>
                             )
                           : const SizedBox(),
                     ),
-                  if (_supported && !_scanning)
+                  if (_supported && !_scanning && !visited && !completed)
                     FilledButton(
                       onPressed: _busy ? null : _scan,
                       child: Text(core_l10n.AppLocalizations.tr(l10n.escanearImagen)),
@@ -533,23 +621,26 @@ class _TourARScreenState extends State<TourARScreen>
                         core_l10n.AppLocalizations.tr(l10n.guardarPruebaReconocimiento),
                       ),
                     ),
-                  TextButton(
-                    onPressed: () async {
-                      _stop();
-                      final continued = await showTourPoint(
-                        context,
-                        widget.controller,
-                        point,
-                      );
-                      if (continued && _current && !widget.preview) {
-                        setState(() => _progress!.visit(point.id));
-                        await _saveProgress();
-                        if (_current) _next();
-                      }
-                    },
-                    child: Text(core_l10n.AppLocalizations.tr(l10n.leerDetalleParada)),
-                  ),
-                  if (!widget.preview && _progress!.visited.contains(point.id))
+                  if (!widget.preview && !visited && !completed)
+                    if (_scanning || !_supported)
+                      FilledButton(
+                        onPressed: _busy ? null : () => _readPoint(point),
+                        child: Text(
+                          core_l10n.AppLocalizations.tr(
+                            l10n.leerDetalleParada,
+                          ),
+                        ),
+                      )
+                    else
+                      TextButton(
+                        onPressed: _busy ? null : () => _readPoint(point),
+                        child: Text(
+                          core_l10n.AppLocalizations.tr(
+                            l10n.leerDetalleParada,
+                          ),
+                        ),
+                      ),
+                  if (!widget.preview && visited && !completed)
                     FilledButton(
                       onPressed: _next,
                       child: Text(core_l10n.AppLocalizations.tr(l10n.siguienteParada)),
@@ -575,14 +666,10 @@ class _TourARScreenState extends State<TourARScreen>
                       child: Text(core_l10n.AppLocalizations.tr(l10n.saltarParada)),
                     ),
                 ],
-                if (!widget.preview &&
-                    _points.isNotEmpty &&
-                    _points.every(
-                      (p) =>
-                          _progress!.visited.contains(p.id) ||
-                          _progress!.skipped.contains(p.id),
-                    )) ...[
-                  TourNotice(core_l10n.AppLocalizations.tr(l10n.terminasteRecorrido)),
+                if (completed) ...[
+                  TourNotice(
+                    core_l10n.AppLocalizations.tr(l10n.terminasteRecorrido),
+                  ),
                   FilledButton(
                     onPressed: () {
                       _stop();
@@ -590,7 +677,7 @@ class _TourARScreenState extends State<TourARScreen>
                     },
                     child: Text(core_l10n.AppLocalizations.tr(l10n.volverPerfil)),
                   ),
-                  OutlinedButton(
+                  TextButton(
                     onPressed: () {
                       _stop();
                       context.push('/tours/${_tour!.id}');
@@ -600,25 +687,37 @@ class _TourARScreenState extends State<TourARScreen>
                     ),
                   ),
                 ],
-                const SizedBox(height: 16),
-                Text(
-                  core_l10n.AppLocalizations.tr(l10n.listaParadas),
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                for (final p in _points)
-                  ListTile(
-                    title: Text(p.name),
-                    subtitle: Text(
-                      _progress?.visited.contains(p.id) == true
-                          ? core_l10n.AppLocalizations.tr(l10n.visitada)
-                          : _progress?.skipped.contains(p.id) == true
-                          ? core_l10n.AppLocalizations.tr(l10n.saltada)
-                          : core_l10n.AppLocalizations.tr(l10n.pendiente),
+                if (_points.length > 1 && !_scanning)
+                  ...[
+                  TourNotice(
+                    core_l10n.AppLocalizations.tr(
+                      l10n.instruccionBuscarImagen,
                     ),
-                    selected: p.id == point?.id,
-                    onTap: () => _choose(p),
                   ),
-                TourNotice(core_l10n.AppLocalizations.tr(l10n.instruccionBuscarImagen)),
+                  ExpansionTile(
+                    title: Text(
+                      core_l10n.AppLocalizations.tr(l10n.listaParadas),
+                    ),
+                    subtitle: Text(
+                      core_l10n.AppLocalizations.tr('${_points.length} paradas'),
+                    ),
+                    children: [
+                      for (final p in _points)
+                        ListTile(
+                          title: Text(p.name),
+                          subtitle: Text(
+                            _progress?.visited.contains(p.id) == true
+                                ? core_l10n.AppLocalizations.tr(l10n.visitada)
+                                : _progress?.skipped.contains(p.id) == true
+                                ? core_l10n.AppLocalizations.tr(l10n.saltada)
+                                : core_l10n.AppLocalizations.tr(l10n.pendiente),
+                          ),
+                          selected: p.id == point?.id,
+                          onTap: () => _choose(p),
+                        ),
+                    ],
+                  ),
+                  ],
               ],
             ),
     );

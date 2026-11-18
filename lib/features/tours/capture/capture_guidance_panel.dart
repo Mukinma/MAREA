@@ -3,12 +3,15 @@ import 'package:marea/l10n/app_localizations.dart';
 import 'package:marea/l10n/app_localizations_es.dart';
 import '../models/tour_models.dart';
 import 'capture_plan.dart';
+import 'capture_cube.dart';
+import 'capture_cube_guide.dart';
 
 import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
+
 /// Guidance and shutter stay visible while the camera content scrolls.
 class CaptureGuidancePanel extends StatelessWidget {
   const CaptureGuidancePanel({
-    required this.target,
+    this.target,
     required this.yaw,
     required this.pitch,
     required this.fresh,
@@ -16,16 +19,50 @@ class CaptureGuidancePanel extends StatelessWidget {
     required this.steady,
     required this.busy,
     required this.onTake,
+    this.automatic = false,
+    this.paused = false,
+    this.showAngles = false,
+    this.onTogglePause,
+    this.cubeGuide,
+    this.guideIndex = 0,
     super.key,
   });
 
-  final CaptureTarget target;
+  final CaptureTarget? target;
   final double yaw, pitch;
   final bool fresh, aimed, steady, busy;
   final VoidCallback onTake;
+  final bool automatic, paused, showAngles;
+  final VoidCallback? onTogglePause;
+  final CaptureCubeGuide? cubeGuide;
+  final int guideIndex;
+  CaptureCubeStep? get _cubeStep =>
+      cubeGuide != null && guideIndex < cubeGuide!.steps.length
+      ? cubeGuide!.steps[guideIndex]
+      : null;
 
   String instruction(AppLocalizations l10n) {
     if (busy) return core_l10n.AppLocalizations.tr(l10n.guardandoToma);
+    if (!automatic && cubeGuide != null) {
+      return _cubeStep?.instruction(first: guideIndex == 0) ??
+          core_l10n.AppLocalizations.tr('Puedes tomar más fotos.');
+    }
+    if (!automatic) {
+      return core_l10n.AppLocalizations.tr(
+        'Gira despacio y toma fotos alrededor de ti.',
+      );
+    }
+    if (paused) {
+      return core_l10n.AppLocalizations.tr(
+        'Captura en pausa. Continúa cuando estés listo.',
+      );
+    }
+    final target = this.target;
+    if (target == null) {
+      return core_l10n.AppLocalizations.tr(
+        'Mueve la cámara despacio alrededor de ti.',
+      );
+    }
     if (!fresh || !yaw.isFinite || !pitch.isFinite) {
       return core_l10n.AppLocalizations.tr(l10n.esperandoOrientacionMover);
     }
@@ -34,8 +71,27 @@ class CaptureGuidancePanel extends StatelessWidget {
           ? core_l10n.AppLocalizations.tr(l10n.posicionListaAceptar)
           : core_l10n.AppLocalizations.tr(l10n.mantenerTelefonoEstableMomento);
     }
+    if (target.pitch.abs() >= 85) {
+      final position = target.pitch > 0
+          ? 'al techo, con la pantalla hacia abajo'
+          : 'al piso, con la pantalla hacia arriba';
+      return 'Apunta la cámara trasera $position. '
+          'Quédate quieto: la foto se toma sola.';
+    }
+    if (pitch.abs() > 75) {
+      return 'Primero apunta la cámara al frente. Después seguiremos con el giro.';
+    }
     final turn = normalizeYaw(target.yaw - yaw);
     final tilt = target.pitch - pitch;
+    if (!showAngles) {
+      if (turn.abs() >= 3) {
+        return 'Gira despacio hacia la ${turn > 0 ? 'derecha' : 'izquierda'}.';
+      }
+      if (tilt.abs() >= 3) {
+        return 'Inclina la cámara hacia ${tilt > 0 ? 'arriba' : 'abajo'}.';
+      }
+      return 'Ajusta ligeramente el encuadre hasta alinear la cámara.';
+    }
     final directions = <String>[];
     if (tilt.abs() >= 3) {
       directions.add(
@@ -65,44 +121,185 @@ class CaptureGuidancePanel extends StatelessWidget {
         : directions.join('. ');
   }
 
+  IconData get _directionIcon {
+    if (busy) return Icons.hourglass_top_rounded;
+    if (!automatic) return Icons.rotate_right_rounded;
+    if (paused) return Icons.pause_circle_outline;
+    final target = this.target;
+    if (target == null) return Icons.rotate_right_rounded;
+    if (!fresh || !yaw.isFinite || !pitch.isFinite) {
+      return Icons.explore_outlined;
+    }
+    if (aimed) return steady ? Icons.check_rounded : Icons.pan_tool_outlined;
+    if (target.pitch.abs() >= 85) {
+      return target.pitch > 0
+          ? Icons.arrow_upward_rounded
+          : Icons.arrow_downward_rounded;
+    }
+    if (pitch.abs() > 75) return Icons.stay_current_portrait;
+    final turn = normalizeYaw(target.yaw - yaw);
+    if (turn.abs() >= 3) {
+      return turn > 0 ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded;
+    }
+    return target.pitch > pitch
+        ? Icons.arrow_upward_rounded
+        : Icons.arrow_downward_rounded;
+  }
+
+  String get _angleDetails {
+    final target = this.target;
+    final actual =
+        'Actual: giro ${yaw.round()}° · inclinación ${pitch.round()}°';
+    return target == null
+        ? actual
+        : '$actual\n'
+              'Objetivo: giro ${target.yaw.round()}° · inclinación ${target.pitch.round()}°';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     return Material(
       elevation: 8,
       color: Theme.of(context).colorScheme.surface,
-      child: SafeArea(
-        top: false,
-        minimum: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              instruction(l10n),
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            if (fresh && yaw.isFinite && pitch.isFinite) ...[
-              const SizedBox(height: 4),
-              Text(
-                core_l10n.AppLocalizations.tr(
-                  l10n.lecturaOrientacion(
-                    yaw.round(),
-                    pitch.round(),
-                    target.yaw.round(),
-                    target.pitch.round(),
+      child: LayoutBuilder(
+        builder: (context, constraints) => ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: constraints.maxHeight * .6),
+          child: SafeArea(
+            top: false,
+            minimum: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ExcludeSemantics(
+                              child: !automatic && cubeGuide != null
+                                  ? SizedBox(
+                                      width:
+                                          MediaQuery.textScalerOf(
+                                                context,
+                                              ).scale(1) >
+                                              1.5
+                                          ? 64
+                                          : 92,
+                                      height:
+                                          MediaQuery.textScalerOf(
+                                                context,
+                                              ).scale(1) >
+                                              1.5
+                                          ? 64
+                                          : 92,
+                                      child: CaptureCube(
+                                        step: _cubeStep,
+                                        completed: _cubeStep == null,
+                                      ),
+                                    )
+                                  : Icon(
+                                      _directionIcon,
+                                      size: 32,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (!automatic && cubeGuide != null) ...[
+                                    Text(
+                                      _cubeStep == null
+                                          ? core_l10n.AppLocalizations.tr(
+                                              'Guía recorrida',
+                                            )
+                                          : '${_cubeStep!.faceLabel} · ${_cubeStep!.zoneLabel}',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleSmall,
+                                    ),
+                                    Text(
+                                      _cubeStep == null
+                                          ? core_l10n.AppLocalizations.tr(
+                                              'Referencia: el centro',
+                                            )
+                                          : core_l10n.AppLocalizations.tr(
+                                              'Paso ${guideIndex + 1} de ${cubeGuide!.steps.length} · desde el centro',
+                                            ),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
+                                  ] else
+                                    Text(
+                                      instruction(l10n),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleSmall,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (!automatic && cubeGuide != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            instruction(l10n),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                        if (showAngles) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            fresh && yaw.isFinite && pitch.isFinite
+                                ? _angleDetails
+                                : core_l10n.AppLocalizations.tr(
+                                    'Giro — · inclinación —',
+                                  ),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-            const SizedBox(height: 8),
-            FilledButton.icon(
-              onPressed: !busy && fresh && aimed && steady ? onTake : null,
-              icon: const Icon(Icons.camera_alt_outlined),
-              label: Text(core_l10n.AppLocalizations.tr(l10n.aceptarToma)),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: busy
+                      ? null
+                      : automatic
+                      ? onTogglePause
+                      : onTake,
+                  icon: Icon(
+                    automatic
+                        ? paused
+                              ? Icons.play_arrow_rounded
+                              : Icons.pause_rounded
+                        : Icons.camera_alt_outlined,
+                  ),
+                  label: Text(
+                    automatic
+                        ? paused
+                              ? core_l10n.AppLocalizations.tr(
+                                  'Continuar captura',
+                                )
+                              : core_l10n.AppLocalizations.tr('Pausar captura')
+                        : core_l10n.AppLocalizations.tr('Tomar foto'),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

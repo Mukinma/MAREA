@@ -1,0 +1,13 @@
+{
+  "inicio_utc": "2026-11-12T00:12:30Z",
+  "duracion_segundos": 2.52,
+  "comando": "flutter test --no-pub --reporter expanded test/features/auth/mobile_intro_test.dart",
+  "codigo_salida": 1,
+  "alcance": "widgets con repositorios simulados; copia temporal",
+  "resultado": {
+    "aprobadas": 2,
+    "omitidas": 0,
+    "fallidas": 7
+  },
+  "log_sha256": "995f0dd0b6dcf2ed830d9bc3b459a7d12a567c9c2736e3cde197e2979646d04a"
+}

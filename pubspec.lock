@@ -9,14 +9,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.77"
-  animated_stack_widget:
-    dependency: transitive
-    description:
-      name: animated_stack_widget
-      sha256: ce4788dd158768c9d4388354b6fb72600b78e041a37afc4c279c63ecafcb9408
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.4"
   app_links:
     dependency: transitive
     description:
@@ -73,6 +65,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
+  benchmark:
+    dependency: transitive
+    description:
+      name: benchmark
+      sha256: cb3eeea01e3f054df76ee9775ca680f3afa5f19f39b2bb426ba78ba27654493b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -193,14 +193,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
-  dart_earcut:
-    dependency: transitive
-    description:
-      name: dart_earcut
-      sha256: e485001bfc05dcbc437d7bfb666316182e3522d4c3f9668048e004d0eb2ce43b
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.0"
   dart_jsonwebtoken:
     dependency: transitive
     description:
@@ -209,14 +201,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
-  dart_polylabel2:
+  dart_sort_queue:
     dependency: transitive
     description:
-      name: dart_polylabel2
-      sha256: "7eeab15ce72894e4bdba6a8765712231fc81be0bd95247de4ad9966abc57adc6"
+      name: dart_sort_queue
+      sha256: f3353ba8b4850e072d3368757f62edb79af34a9703c3e3df9c59342721f5f5b1
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "0.0.2+3"
   dbus:
     dependency: transitive
     description:
@@ -467,30 +459,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_map:
-    dependency: "direct main"
-    description:
-      name: flutter_map
-      sha256: "9bbe5472f66ae648d2ca2efbce97fcaa04e71261fabd3e062f26728222d7f767"
-      url: "https://pub.dev"
-    source: hosted
-    version: "8.3.2"
-  flutter_map_marker_cluster:
-    dependency: "direct main"
-    description:
-      name: flutter_map_marker_cluster
-      sha256: "04a20d9b1c3a18b67cc97c1240f75361ab98449b735ab06f2534ece0d0794733"
-      url: "https://pub.dev"
-    source: hosted
-    version: "8.2.2"
-  flutter_map_marker_popup:
-    dependency: transitive
-    description:
-      name: flutter_map_marker_popup
-      sha256: "546aa5b5e36705cf7471fa205a3ffb56fb5ae5a10171bd7e32b0fed0109d892a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "8.1.2"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -589,6 +557,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.5"
+  geotypes:
+    dependency: transitive
+    description:
+      name: geotypes
+      sha256: "5bedf57de92283133dd221e363812ef50eaaba414f0823b1974ef7d84b86991f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   go_router:
     dependency: "direct main"
     description:
@@ -829,6 +805,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  mapbox_maps_flutter:
+    dependency: "direct main"
+    description:
+      name: mapbox_maps_flutter
+      sha256: f65c20ea6590e1c28f56f4045919b79710de07a8acf109dec92d9d07ac6ac60a
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.34.2"
+  mapbox_maps_flutter_mobile:
+    dependency: transitive
+    description:
+      name: mapbox_maps_flutter_mobile
+      sha256: "8c43f4394fc77b37f74f58bfec094c176dc0d8bf3199bbbfaf573d672b429640"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.34.2"
+  mapbox_maps_flutter_platform_interface:
+    dependency: "direct dev"
+    description:
+      name: mapbox_maps_flutter_platform_interface
+      sha256: "2019616aa8289f217433b75404af10685a84a06865d4ed2c9d36476b543dcc71"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.34.2"
+  mapbox_maps_flutter_web:
+    dependency: transitive
+    description:
+      name: mapbox_maps_flutter_web
+      sha256: bf3bc977280f2d3516adc6aa154cf11b767ec396fbb530a81f31a934310e8b86
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.34.2"
   matcher:
     dependency: transitive
     description:
@@ -853,14 +861,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.0"
-  mgrs_dart:
-    dependency: transitive
-    description:
-      name: mgrs_dart
-      sha256: "385e7168ecc77eb545220223c49eef8ab249da7bf57f22781c40a04d23fb196f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
   mime:
     dependency: transitive
     description:
@@ -869,14 +869,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
-  nested:
-    dependency: transitive
-    description:
-      name: nested
-      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   objective_c:
     dependency: transitive
     description:
@@ -1013,6 +1005,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  pointer_interceptor:
+    dependency: "direct main"
+    description:
+      name: pointer_interceptor
+      sha256: "9ad8889f36a417649ad7578fdb6df967157208cb90f69facd043660424020710"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.1+3"
+  pointer_interceptor_ios:
+    dependency: transitive
+    description:
+      name: pointer_interceptor_ios
+      sha256: "03c5fa5896080963ab4917eeffda8d28c90f22863a496fb5ba13bc10943e40e4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.1+1"
+  pointer_interceptor_platform_interface:
+    dependency: transitive
+    description:
+      name: pointer_interceptor_platform_interface
+      sha256: "0597b0560e14354baeb23f8375cd612e8bd4841bf8306ecb71fcd0bb78552506"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.0+1"
+  pointer_interceptor_web:
+    dependency: transitive
+    description:
+      name: pointer_interceptor_web
+      sha256: "460b600e71de6fcea2b3d5f662c92293c049c4319e27f0829310e5a953b3ee2a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.3"
   pointycastle:
     dependency: transitive
     description:
@@ -1037,22 +1061,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.9.1"
-  proj4dart:
-    dependency: transitive
-    description:
-      name: proj4dart
-      sha256: ddcedc1f7876e62717de43ab3491e2829bdad0b028261805f94aa080967e5859
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
-  provider:
-    dependency: transitive
-    description:
-      name: provider
-      sha256: "4e82183fa20e5ca25703ead7e05de9e4cceed1fbd1eadc1ac3cb6f565a09f272"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.1.5+1"
   pub_semver:
     dependency: transitive
     description:
@@ -1061,6 +1069,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+  rbush:
+    dependency: transitive
+    description:
+      name: rbush
+      sha256: "48b683421b4afb43a642f82c6aa31911e54f3069143d31c7d33cbe329df13403"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   realtime_client:
     dependency: transitive
     description:
@@ -1149,14 +1165,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
-  simple_sparse_list:
-    dependency: transitive
-    description:
-      name: simple_sparse_list
-      sha256: aa648fd240fa39b49dcd11c19c266990006006de6699a412de485695910fbc1f
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1234,6 +1242,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.17.2"
+  sweepline_intersections:
+    dependency: transitive
+    description:
+      name: sweepline_intersections
+      sha256: a665c707200a4f07140a4029b41a7c4883beb3f04322cd8e08ebf650f69e1176
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   term_glyph:
     dependency: transitive
     description:
@@ -1258,6 +1274,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  turf:
+    dependency: transitive
+    description:
+      name: turf
+      sha256: "607db17ebb5ed83c00d822059e2542094abf6dc76fa1365dceddfee1d9492c5f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.14"
+  turf_equality:
+    dependency: transitive
+    description:
+      name: turf_equality
+      sha256: f0f44ffe389547941358e0d3d4a747db2bd56115b32ff1cede5e5bdf3126a3e2
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
+  turf_pip:
+    dependency: transitive
+    description:
+      name: turf_pip
+      sha256: ba4fd414baffd5d7b30880658ad6db82461c49ec023f8ffd0c23d398ad8b14be
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   typed_data:
     dependency: transitive
     description:
@@ -1266,14 +1306,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  unicode:
-    dependency: transitive
-    description:
-      name: unicode
-      sha256: a6f7bcfc8ea1d5ce1f6c0b1c39117a9919f4953edd9fd7a64090a9796c499b57
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.9"
   url_launcher:
     dependency: "direct main"
     description:
@@ -1394,14 +1426,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.4.0"
-  wkt_parser:
-    dependency: transitive
-    description:
-      name: wkt_parser
-      sha256: "8a555fc60de3116c00aad67891bcab20f81a958e4219cc106e3c037aa3937f13"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   xdg_directories:
     dependency: transitive
     description:
@@ -1411,7 +1435,7 @@ packages:
     source: hosted
     version: "1.1.0"
   xml:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: xml
       sha256: "67f0aff7be013d107995e9b75bf4e7f2c3ef2dfdb2c8e68024bba0a7fd5756a4"

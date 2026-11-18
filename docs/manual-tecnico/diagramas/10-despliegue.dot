@@ -1,0 +1,23 @@
+digraph G {
+  graph [rankdir=TB, bgcolor=transparent, nodesep=.35, ranksep=.46];
+  node [shape=box, style="rounded,filled", color="#BBCADA", fillcolor="#F3F5F7", fontcolor="#14263D", fontname="Helvetica", fontsize=11.5, margin=".14,.10"];
+  edge [color="#64748B", fontcolor="#475569", fontname="Helvetica", fontsize=9.5, arrowsize=.65];
+  web [label="Hosting estático
+Web / fallback index.html"];
+  mobile [label="Android / iOS
+Cliente instalado"];
+  supa [label="Proyecto Supabase
+Auth / PostgreSQL / Storage / Edge",fillcolor="#14263D",fontcolor=white];
+  cron [label="pg_cron / Vault
+Dentro del proyecto Supabase"];
+  cloud [label="Cloud Run Job
+Worker 360°",fillcolor="#E8F0FF"];
+  local [label="Runner local / Docker
+Alternativa de procesamiento"];
+  {rank=same;web;mobile} {rank=same;cron;cloud;local}
+  web -> supa [label=" HTTPS"];mobile -> supa [label=" HTTPS"];
+  supa -> cron [dir=back,label=" Invoca funciones"];
+  supa -> cloud [label=" Despacho"];
+  supa -> local [dir=back,style=dashed,label=" RPC / objetos"];
+
+}

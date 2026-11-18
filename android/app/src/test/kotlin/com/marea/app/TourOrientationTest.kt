@@ -14,4 +14,20 @@ class TourOrientationTest {
   assertEquals(180.0,kotlin.math.abs(p[0]),1e-6)
   assertEquals(0.0,p[1],1e-6)
  }
+ @Test fun initialPolarPhotosHaveNoHeadingUntilANonPolarSample() {
+  for(pitch in doubleArrayOf(-90.0,-89.5,89.5,90.0)) {
+   assertNull(TourOrientation.headingOrigin(null,137.0,pitch))
+  }
+  val origin=TourOrientation.headingOrigin(null,42.0,86.0)
+  assertNotNull(origin)
+  assertEquals(42.0,origin!!,1e-6)
+  assertEquals(0.0,TourOrientation.relative(42.0,origin),1e-6)
+ }
+ @Test fun returningToAPolePreservesTheEstablishedHeadingOrigin() {
+  var origin=TourOrientation.headingOrigin(null,-173.0,0.0)
+  for(pitch in doubleArrayOf(-90.0,90.0,0.0)) {
+   origin=TourOrientation.headingOrigin(origin,97.0,pitch)
+   assertEquals(-173.0,origin!!,1e-6)
+  }
+ }
 }

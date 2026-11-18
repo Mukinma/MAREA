@@ -481,7 +481,7 @@ class AppLocalizations {
     'Filtrar Inicio': 'Filter Home',
     'Localizando…': 'Locating…',
     'Mi ubicación': 'My ubicación',
-    'Elegir punto': 'Choose punto',
+    'Elegir punto': 'Choose location',
     'La comunidad no está disponible.': 'The community not está available.',
     'Cargar más': 'Load more',
     'Ver detalles': 'View detalles',
@@ -1027,6 +1027,20 @@ class AppLocalizations {
         'Save posts you are interested in to find them here.',
     'Este espacio está listo para sus primeras publicaciones.':
         'This space is ready for its first posts.',
+    'No hay publicaciones de esta categoría en esta vista.':
+        'There are no posts from this category in this view.',
+    'Aún no hay publicaciones de perfiles que sigues.':
+        'There are no posts from people you follow yet.',
+    'Aún no hay publicaciones en este radio.':
+        'There are no posts within this radius yet.',
+    'Aún no hay publicaciones en tendencias.':
+        'There are no trending posts yet.',
+    'Aún no hay publicaciones para ti.': 'There are no posts for you yet.',
+    'Elige un punto para ver publicaciones cercanas.':
+        'Choose a location to see nearby posts.',
+    'Quitar filtro': 'Remove filter',
+    'Explorar perfiles': 'Explore profiles',
+    'Ver Para ti': 'View For you',
     'Todavía no hay publicaciones con estos filtros. Comparte la primera idea.':
         'There are no posts with these filters yet. Share the first idea.',
     'Publicación guardada.': 'Post saved.',

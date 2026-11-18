@@ -1,0 +1,13 @@
+{
+  "inicio_utc": "2026-11-12T00:12:33Z",
+  "duracion_segundos": 3.14,
+  "comando": "flutter test --no-pub --reporter expanded test/features/home_feed/home_feed_experience_test.dart",
+  "codigo_salida": 1,
+  "alcance": "widgets con repositorios simulados; copia temporal",
+  "resultado": {
+    "aprobadas": 14,
+    "omitidas": 0,
+    "fallidas": 3
+  },
+  "log_sha256": "9cea75c7c00a4d9fa3db800c7ac32df2447f035cf71701deeb89c63c03da0fc2"
+}

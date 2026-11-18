@@ -25,6 +25,7 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
   double _zoom = 1;
   double _minZoom = 1;
   double _maxZoom = 1;
+  double _zoomAtScaleStart = 1;
   String? _error;
   bool _loading = true;
   bool _capturing = false;
@@ -251,8 +252,12 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
     if (camera?.value.isInitialized == true) {
       preview = GestureDetector(
         onDoubleTap: _switchCamera,
+        onScaleStart: (_) => _zoomAtScaleStart = _zoom,
         onScaleUpdate: (details) {
-          final next = (_zoom * details.scale).clamp(_minZoom, _maxZoom);
+          final next = (_zoomAtScaleStart * details.scale).clamp(
+            _minZoom,
+            _maxZoom,
+          );
           camera?.setZoomLevel(next);
           setState(() => _zoom = next);
         },
@@ -303,13 +308,22 @@ class _StoryCameraScreenState extends State<StoryCameraScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _roundButton(Icons.close, () => Navigator.of(context).pop()),
-                  Text(
-                    AppLocalizations.tr('HISTORIA'),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.2,
+                  _roundButton(
+                    Icons.close,
+                    () => Navigator.of(context).pop(),
+                    tooltip: AppLocalizations.tr('Cerrar cámara'),
+                  ),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.tr('HISTORIA'),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.2,
+                      ),
                     ),
                   ),
                   _roundButton(

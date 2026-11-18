@@ -470,6 +470,35 @@ class _BusinessARScreenState extends State<BusinessARScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(core_l10n.AppLocalizations.tr(_l10n.explorarEnRa)),
+        actions: [
+          if (_current && profile != null)
+            PopupMenuButton<String>(
+              tooltip: core_l10n.AppLocalizations.tr('Más opciones de RA'),
+              onOpened: () {
+                unawaited(_stop());
+              },
+              onSelected: (action) async {
+                await _stop();
+                if (!_current || !context.mounted) return;
+                if (action == 'profile') {
+                  await context.push('/people/${widget.ownerId}');
+                } else {
+                  await _load();
+                }
+              },
+              itemBuilder: (_) => [
+                const PopupMenuItem(
+                  value: 'profile',
+                  child: Text('Ver perfil'),
+                ),
+                if (!_supported)
+                  const PopupMenuItem(
+                    value: 'support',
+                    child: Text('Comprobar compatibilidad'),
+                  ),
+              ],
+            ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -678,15 +707,6 @@ class _BusinessARScreenState extends State<BusinessARScreen>
                     TourNotice(
                       core_l10n.AppLocalizations.tr(_l10n.camaraCompatibleAr),
                     ),
-                  if (!_supported)
-                    TextButton(
-                      onPressed: _load,
-                      child: Text(
-                        core_l10n.AppLocalizations.tr(
-                          _l10n.comprobarCompatibilidad,
-                        ),
-                      ),
-                    ),
                   FilledButton.icon(
                     onPressed: _supported && !_busy ? _scan : null,
                     icon: const Icon(Icons.camera_alt_outlined),
@@ -697,10 +717,6 @@ class _BusinessARScreenState extends State<BusinessARScreen>
                             )
                           : core_l10n.AppLocalizations.tr(_l10n.abrirCamara),
                     ),
-                  ),
-                  OutlinedButton(
-                    onPressed: () => context.push('/people/${widget.ownerId}'),
-                    child: Text(core_l10n.AppLocalizations.tr(_l10n.verPerfil)),
                   ),
                 ],
                 if (_error != null)

@@ -30,9 +30,7 @@ void main() {
     tester,
   ) async {
     await AppLocalizations.delegate.load(const Locale('en', 'US'));
-    addTearDown(
-      () => AppLocalizations.delegate.load(const Locale('es', 'MX')),
-    );
+    addTearDown(() => AppLocalizations.delegate.load(const Locale('es', 'MX')));
     final controller = AppSessionController(
       authRepository: FakeAuthRepository(),
       profileRepository: FakeProfileRepository(),
@@ -49,16 +47,11 @@ void main() {
 
     expect(find.text('For you'), findsOneWidget);
     expect(find.text('Nearby'), findsOneWidget);
-    expect(
-      find.text(
-        'There is no content with these filters. Come back later or change the filters.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('There are no posts for you yet.'), findsOneWidget);
     await tester.tap(find.byTooltip('Filter Home'));
     await tester.pumpAndSettle();
     expect(find.text('Filter Home'), findsOneWidget);
-    expect(find.text('Posts'), findsOneWidget);
+    expect(find.text('Category'), findsOneWidget);
   });
 
   testWidgets(
@@ -77,12 +70,13 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Tu historia'), findsOneWidget);
+      expect(find.text('Tu historia'), findsNothing);
       expect(find.text('Para ti'), findsOneWidget);
-      expect(find.textContaining('No hay contenido'), findsOneWidget);
+      expect(find.text('Aún no hay publicaciones para ti.'), findsOneWidget);
       await tester.tap(find.text('Siguiendo'));
       await tester.pumpAndSettle();
       expect(feed.requests.last.mode, HomeFeedMode.following);
+      expect(find.text('Explorar perfiles'), findsOneWidget);
       controller.dispose();
     },
   );

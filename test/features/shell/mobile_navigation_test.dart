@@ -93,7 +93,7 @@ void main() {
     expect(route.value, '/home');
     expect(navigations, isEmpty);
     expect(find.text('Contenido estable'), findsOneWidget);
-    expect(find.byIcon(Icons.search_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.flag_rounded), findsOneWidget);
     expect(find.byIcon(Icons.home_outlined), findsOneWidget);
     expect(feedback.length, 1);
     await gesture.moveBy(const Offset(2, 0));
@@ -113,7 +113,7 @@ void main() {
     await mount(tester);
 
     expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Discover'), findsOneWidget);
+    expect(find.text('Missions'), findsOneWidget);
     expect(find.text('Map'), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
     expect(find.byTooltip('Map'), findsOneWidget);
@@ -183,10 +183,10 @@ void main() {
       tester.getSemantics(tab('map')).flagsCollection.isSelected,
       Tristate.isTrue,
     );
-    final node = tester.getSemantics(tab('discover'));
+    final node = tester.getSemantics(tab('missions'));
     node.owner!.performAction(node.id, SemanticsAction.tap);
     await tester.pumpAndSettle();
-    expect(navigations, ['/map', '/discover']);
+    expect(navigations, ['/map', '/missions']);
     semantics.dispose();
   });
 
@@ -209,12 +209,12 @@ void main() {
     await tester.tap(tab('map'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 60));
-    route.value = '/discover';
+    route.value = '/missions';
     await tester.pumpAndSettle();
     expect(navigations, isEmpty);
     expect(
       center(tester).dx,
-      closeTo(tester.getCenter(tab('discover')).dx, .01),
+      closeTo(tester.getCenter(tab('missions')).dx, .01),
     );
   });
 
@@ -288,31 +288,29 @@ void main() {
     expect(center(tester).dx, closeTo(tester.getCenter(tab('home')).dx, .01));
   });
 
-  testWidgets('legacy paths highlight discover but tapping opens placeholder', (
-    tester,
-  ) async {
-    route.value = '/explore?section=saved';
-    await mount(tester);
-    expect(
-      center(tester).dx,
-      closeTo(tester.getCenter(tab('discover')).dx, .01),
-    );
-    await tester.tap(tab('discover'));
-    await tester.pumpAndSettle();
-    expect(navigations, ['/discover']);
-    route.value = '/missions';
-    await tester.pumpAndSettle();
-    expect(
-      center(tester).dx,
-      closeTo(tester.getCenter(tab('discover')).dx, .01),
-    );
-    route.value = '/create';
-    await tester.pumpAndSettle();
-    expect(getIndicator(), findsNothing);
-    await tester.tap(tab('home'));
-    await tester.pumpAndSettle();
-    expect(route.value, '/home');
-  });
+  testWidgets(
+    'community saved and create routes leave the mission tab unselected',
+    (tester) async {
+      route.value = '/explore?section=saved';
+      await mount(tester);
+      expect(getIndicator(), findsNothing);
+      await tester.tap(tab('missions'));
+      await tester.pumpAndSettle();
+      expect(navigations, ['/missions']);
+      route.value = '/missions';
+      await tester.pumpAndSettle();
+      expect(
+        center(tester).dx,
+        closeTo(tester.getCenter(tab('missions')).dx, .01),
+      );
+      route.value = '/create';
+      await tester.pumpAndSettle();
+      expect(getIndicator(), findsNothing);
+      await tester.tap(tab('home'));
+      await tester.pumpAndSettle();
+      expect(route.value, '/home');
+    },
+  );
 
   testWidgets('reduced motion confirms without waiting for snap', (
     tester,
@@ -333,13 +331,13 @@ void main() {
         tester,
       ) async {
         await mount(tester, width: width, scale: scale);
-        for (final name in ['home', 'discover', 'map', 'profile']) {
+        for (final name in ['home', 'missions', 'map', 'profile']) {
           final rect = tester.getRect(tab(name));
           expect(rect.width, greaterThanOrEqualTo(48));
           expect(rect.height, greaterThanOrEqualTo(48));
           expect(tab(name).hitTestable(), findsOneWidget);
         }
-        for (final label in ['Inicio', 'Descubrir', 'Mapa', 'Perfil']) {
+        for (final label in ['Inicio', 'Misiones', 'Mapa', 'Perfil']) {
           expect(find.text(label).hitTestable(), findsOneWidget);
         }
         expect(tester.takeException(), isNull);

@@ -38,12 +38,40 @@ class CreationChoices extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onSelect,
+    this.homeOnly = false,
   });
   final AppSessionController controller;
   final ValueChanged<String> onSelect;
+  final bool homeOnly;
   @override
   Widget build(BuildContext context) {
     final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
+    final story = (
+      title: core_l10n.AppLocalizations.tr(
+        homeOnly ? 'Historia' : l10n.crearHistoria,
+      ),
+      description: core_l10n.AppLocalizations.tr(
+        homeOnly
+            ? 'Una foto visible durante 24 h.'
+            : l10n.descripcionCrearHistoria,
+      ),
+      path: '/stories/new',
+      icon: homeOnly ? Icons.add_a_photo_outlined : Icons.add_circle_outline,
+      color: AppColors.mint,
+    );
+    final post = (
+      title: core_l10n.AppLocalizations.tr(
+        homeOnly ? 'Publicación' : l10n.publicarEnInicio,
+      ),
+      description: core_l10n.AppLocalizations.tr(
+        homeOnly
+            ? 'Texto o foto en el feed.'
+            : l10n.descripcionPublicarEnInicio,
+      ),
+      path: '/posts/new',
+      icon: Icons.dynamic_feed_outlined,
+      color: AppColors.peach,
+    );
     final choices =
         <
           ({
@@ -54,6 +82,10 @@ class CreationChoices extends StatelessWidget {
             Color color,
           })
         >[
+          if (homeOnly) ...[
+            post,
+            story,
+          ] else ...[
           (
             title: core_l10n.AppLocalizations.tr(l10n.crearHistoria),
             description: core_l10n.AppLocalizations.tr(l10n.descripcionCrearHistoria),
@@ -98,6 +130,7 @@ class CreationChoices extends StatelessWidget {
                   : Icons.design_services_outlined,
               color: AppColors.lavender,
             ),
+            ],
         ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -174,14 +207,18 @@ class CreationChoices extends StatelessWidget {
 
 Future<void> showCreateMenu(
   BuildContext context,
-  AppSessionController controller,
-) async {
+  AppSessionController controller, {
+  bool homeOnly = false,
+}) async {
   final router = GoRouter.of(context);
   final width = MediaQuery.sizeOf(context).width;
   final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
   Widget panel(BuildContext c) => SafeArea(
+    top: !homeOnly,
     child: SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: homeOnly
+          ? const EdgeInsets.fromLTRB(20, 8, 20, 16)
+          : const EdgeInsets.all(24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,7 +227,9 @@ Future<void> showCreateMenu(
             children: [
               Expanded(
                 child: Text(
-                  core_l10n.AppLocalizations.tr(l10n.ponTuIdeaMovimiento),
+                  core_l10n.AppLocalizations.tr(
+                    homeOnly ? l10n.crear : l10n.ponTuIdeaMovimiento,
+                  ),
                   style: const TextStyle(
                     fontSize: 23,
                     fontWeight: FontWeight.w800,
@@ -205,9 +244,10 @@ Future<void> showCreateMenu(
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: homeOnly ? 12 : 20),
           CreationChoices(
             controller: controller,
+            homeOnly: homeOnly,
             onSelect: (path) => Navigator.pop(c, path),
           ),
         ],

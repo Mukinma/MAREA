@@ -64,6 +64,26 @@ void main() {
     return SupabaseCommunityRepository(client);
   }
 
+  test('start date catalog filters and pages on the server', () async {
+    final repo = repository((request) async {
+      expect(request.url.path, '/rest/v1/rpc/list_mission_catalog_by_start');
+      expect(jsonDecode(request.body), {
+        'query_text': 'mural',
+        'category_filter': 'arte',
+        'target_filter': UserType.creator.databaseValue,
+        'page_offset': 30,
+      });
+      return http.Response(jsonEncode([missionRow()]), 200);
+    });
+    final missions = await repo.missionCatalogByStart(
+      query: ' mural ',
+      category: 'arte',
+      targetType: UserType.creator,
+      offset: 30,
+    );
+    expect(missions.single.startsAt, DateTime.utc(2100));
+  });
+
   test('mission listing sends filters and parses server aggregates', () async {
     final repo = repository((request) async {
       expect(request.url.path, '/rest/v1/rpc/list_missions');

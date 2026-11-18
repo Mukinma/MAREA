@@ -1,6 +1,8 @@
+import 'package:marea/core/maps/map_surface.dart';
+import '../support/fake_map_surface.dart';
 // Manual development target. Never import this entry point from lib/main.dart.
 // flutter run -d DEVICE -t test/manual/business_ar_probe.dart
-//   --dart-define=MAP_TILE_URL=http://127.0.0.1:38765/tiles/{z}/{x}/{y}.png
+// Uses the test map boundary to keep the AR laboratory strictly offline.
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -20,11 +22,6 @@ Future<void> main() async {
   if (const String.fromEnvironment('SUPABASE_URL').isNotEmpty ||
       const String.fromEnvironment('SUPABASE_ANON_KEY').isNotEmpty) {
     throw StateError('Ejecuta el laboratorio sin archivos ni claves Supabase.');
-  }
-  if (const String.fromEnvironment('MAP_TILE_URL') != businessARLocalMapUrl) {
-    throw StateError(
-      'Agrega --dart-define=MAP_TILE_URL=$businessARLocalMapUrl',
-    );
   }
   HttpOverrides.global = BusinessARLoopbackOnly();
   final assets = await BusinessARLocalAssets.start();
@@ -56,11 +53,14 @@ Future<void> main() async {
       supportedLocales: const [Locale('es', 'MX')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       routerConfig: router,
-      builder: (context, child) => Banner(
-        message: 'QA LOCAL',
-        location: BannerLocation.topEnd,
-        color: Colors.deepOrange,
-        child: child!,
+      builder: (context, child) => MapSurfaceScope(
+        builder: fakeMapSurfaceBuilder,
+        child: Banner(
+          message: 'QA LOCAL',
+          location: BannerLocation.topEnd,
+          color: Colors.deepOrange,
+          child: child!,
+        ),
       ),
     ),
   );

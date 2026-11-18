@@ -35,10 +35,12 @@ val arLocalTarget = (project.findProperty("target") as? String)
     ?.replace('\\', '/')?.endsWith("test/manual/business_ar_probe.dart") == true
 val arLiveTarget = (project.findProperty("target") as? String)
     ?.replace('\\', '/')?.endsWith("test/manual/business_ar_live_probe.dart") == true
+val proximityQaTarget = (project.findProperty("target") as? String)
+    ?.replace('\\', '/')?.endsWith("test/manual/proximity_probe.dart") == true
 require(!arLiveTarget || (!developmentTarget && firebaseDefines.isEmpty())) {
     "The authorized production pilot uses its own sessions and inbox notifications."
 }
-require(!(arLocalTarget || arLiveTarget || developmentTarget) || gradle.startParameter.taskNames.none {
+require(!(arLocalTarget || arLiveTarget || proximityQaTarget || developmentTarget) || gradle.startParameter.taskNames.none {
     it.contains("release", ignoreCase = true) || it.contains("profile", ignoreCase = true)
 }) { "The AR pilots must only be built in debug mode." }
 
@@ -58,14 +60,16 @@ android {
 
     defaultConfig {
         applicationId = when {
+            proximityQaTarget -> "com.marea.app.proximityqa"
             arLocalTarget -> "com.marea.app.arqa"
             arLiveTarget -> "com.marea.app.pilot"
             developmentTarget -> "com.marea.app.dev"
             else -> "com.marea.app"
         }
         manifestPlaceholders["mareaAppLabel"] = when {
+            proximityQaTarget -> "MAREA Avisos QA"
             arLocalTarget -> "MAREA RA local"
-            arLiveTarget -> "MAREA Prueba RA"
+            arLiveTarget -> "MAREA"
             developmentTarget -> "MAREA Desarrollo"
             else -> "MAREA"
         }
@@ -101,6 +105,9 @@ kotlin {
 }
 
 dependencies {
+    implementation("androidx.credentials:credentials:1.6.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.6.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.2.0")
     implementation("com.google.ar:core:1.56.0")
     testImplementation("junit:junit:4.13.2")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")

@@ -6,8 +6,10 @@ import 'package:panorama_viewer/panorama_viewer.dart';
 import '../data/tour_repository.dart';
 import '../models/tour_models.dart';
 import 'tour_widgets.dart';
+import 'horizontal_panorama.dart';
 
 import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
+
 class TourPanorama extends StatefulWidget {
   const TourPanorama({
     required this.repository,
@@ -29,9 +31,15 @@ class TourPanorama extends StatefulWidget {
 class _TourPanoramaState extends State<TourPanorama> {
   late Future<String>? _url = _load();
   bool _sensors = false;
-  Future<String>? _load() => widget.scene.previewPath == null
-      ? null
-      : widget.repository.assetUrl(widget.scene.previewPath!);
+  Future<String>? _load() {
+    final path = widget.scene.previewPath;
+    if (path == null) return null;
+    final url = widget.repository.assetUrl(path);
+    // Retries may fail before FutureBuilder subscribes in the next frame.
+    url.ignore();
+    return url;
+  }
+
   @override
   void didUpdateWidget(TourPanorama old) {
     super.didUpdateWidget(old);
@@ -46,21 +54,34 @@ class _TourPanoramaState extends State<TourPanorama> {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
     if (_url == null) {
       return Center(
-        child: TourNotice(core_l10n.AppLocalizations.tr(l10n.panoramaNoListoPosicion)),
+        child: TourNotice(
+          core_l10n.AppLocalizations.tr(l10n.panoramaNoListoPosicion),
+        ),
       );
     }
     return FutureBuilder<String>(
       future: _url,
       builder: (c, s) {
+        if (s.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
         if (s.hasError) {
           return Center(
             child: TourNotice(
               tourError(s.error!, l10n: l10n),
-              onRetry: () => setState(() => _url = _load()),
+              onRetry: () => setState(() {
+                _url = _load();
+              }),
             ),
           );
         }
         if (!s.hasData) return Center(child: CircularProgressIndicator());
+        if (widget.scene.isHorizontalPanorama) {
+          return HorizontalPanorama(
+            image: NetworkImage(s.data!),
+            aspectRatio: widget.scene.panoramaAspectRatio,
+          );
+        }
         return ClipRect(
           child: Stack(
             children: [
@@ -134,9 +155,9 @@ class _TourPanoramaState extends State<TourPanorama> {
                 child: IconButton.filled(
                   tooltip: _sensors
                       ? (AppLocalizations.of(context) ?? AppLocalizationsEs())
-                          .mirarArrastrando
+                            .mirarArrastrando
                       : (AppLocalizations.of(context) ?? AppLocalizationsEs())
-                          .mirarMovimientoTelefono,
+                            .mirarMovimientoTelefono,
                   onPressed: kIsWeb
                       ? null
                       : () => setState(() => _sensors = !_sensors),

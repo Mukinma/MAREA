@@ -1,3 +1,4 @@
+import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/home_feed/presentation/follow_button.dart';
 import 'package:marea/features/tours/presentation/tour_management_screen.dart';
 import 'package:marea/core/localization/app_localizations.dart';
@@ -307,7 +308,7 @@ class _ProfileExperienceState extends State<ProfileExperience> {
 
   @override
   Widget build(BuildContext context) => ColoredBox(
-    color: const Color(0xFFF4FBFE),
+    color: AppColors.profileCanvas,
     child: SafeArea(
       top: false,
       bottom: false,

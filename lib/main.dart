@@ -1,9 +1,12 @@
 import 'package:marea/core/localization/app_localizations.dart';
+import 'package:marea/core/config/mapbox_configuration.dart';
 import 'package:marea/features/location/data/location_repository.dart';
 import 'package:marea/features/community/data/mission_social_repository.dart';
 import 'package:marea/features/home_feed/data/home_feed_repository.dart';
 import 'package:marea/features/home_feed/data/stories_repository.dart';
 import 'package:marea/features/tours/data/tour_repository.dart';
+import 'package:marea/features/ar_markers/data/local_marker_repository.dart';
+import 'package:marea/features/ar_markers/data/supabase_marker_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:marea/features/notifications/data/inbox_only_gateway.dart';
 import 'package:marea/features/notifications/data/android_push_gateway.dart';
@@ -34,6 +37,7 @@ Future<void> main() => startMarea();
 
 Future<void> startMarea({bool productionPilot = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
+  initializeMareaMapbox();
   usePathUrlStrategy();
 
   final config = AppConfig.fromEnvironment();
@@ -89,44 +93,53 @@ class _StartupAppState extends State<_StartupApp> {
     final localeController = AppLocaleController();
     await localeController.load();
     final translationService = ContentTranslationService(client);
+    late final AppSessionController controller;
+    controller = AppSessionController(
+      allowCaptureUploads: !widget.productionPilot,
+      authRepository: SupabaseAuthRepository(
+        client,
+        allowGoogleOAuth: !widget.productionPilot,
+      ),
+      push: PushController(
+        SupabaseNotificationPreferencesRepository(client),
+        !widget.productionPilot &&
+                !config.isDevelopment &&
+                !kIsWeb &&
+                defaultTargetPlatform == TargetPlatform.android
+            ? AndroidPushGateway()
+            : InboxOnlyGateway(),
+      ),
+      communityRepository: SupabaseCommunityRepository(client),
+      homeFeedRepository: SupabaseHomeFeedRepository(client),
+      storiesRepository: SupabaseStoriesRepository(client),
+      missionMapRepository: SupabaseMissionMapRepository(client),
+      tourRepository: SupabaseTourRepository(client, config.supabaseUrl),
+      markerRepository: const bool.fromEnvironment('AR_MARKERS_REMOTE')
+          ? SupabaseMarkerRepository(
+              client,
+              currentOwner: () => controller.profile?.id,
+            )
+          : LocalMarkerRepository(currentOwner: () => controller.profile?.id),
+      socialRepository: SupabaseSocialRepository(client),
+      missionSocialRepository: SupabaseMissionSocialRepository(client),
+      locationRepository: SupabaseLocationRepository(client),
+      publicUrl: config.publicUrl,
+      showcaseRepository: SupabaseShowcaseRepository(client),
+      mediaRepository: SupabaseProfileMediaRepository(),
+      profileRepository: SupabaseProfileRepository(client),
+      chatRepository: SupabaseChatRepository(client),
+      translationService: translationService,
+      postContentTranslator: CrossPlatformPostContentTranslator(
+        onDevice: MlKitPostContentTranslator(),
+        cloud: translationService,
+      ),
+      legalRepository: SupabaseLegalRepository(client),
+    );
     return MareaApp(
       development: config.isDevelopment,
       productionPilot: widget.productionPilot,
       localeController: localeController,
-      controller: AppSessionController(
-        authRepository: SupabaseAuthRepository(
-          client,
-          allowGoogleOAuth: !widget.productionPilot,
-        ),
-        push: PushController(
-          SupabaseNotificationPreferencesRepository(client),
-          !widget.productionPilot &&
-                  !config.isDevelopment &&
-                  !kIsWeb &&
-                  defaultTargetPlatform == TargetPlatform.android
-              ? AndroidPushGateway()
-              : InboxOnlyGateway(),
-        ),
-        communityRepository: SupabaseCommunityRepository(client),
-        homeFeedRepository: SupabaseHomeFeedRepository(client),
-        storiesRepository: SupabaseStoriesRepository(client),
-        missionMapRepository: SupabaseMissionMapRepository(client),
-        tourRepository: SupabaseTourRepository(client, config.supabaseUrl),
-        socialRepository: SupabaseSocialRepository(client),
-        missionSocialRepository: SupabaseMissionSocialRepository(client),
-        locationRepository: SupabaseLocationRepository(client),
-        publicUrl: config.publicUrl,
-        showcaseRepository: SupabaseShowcaseRepository(client),
-        mediaRepository: SupabaseProfileMediaRepository(),
-        profileRepository: SupabaseProfileRepository(client),
-        chatRepository: SupabaseChatRepository(client),
-        translationService: translationService,
-        postContentTranslator: CrossPlatformPostContentTranslator(
-          onDevice: MlKitPostContentTranslator(),
-          cloud: translationService,
-        ),
-        legalRepository: SupabaseLegalRepository(client),
-      ),
+      controller: controller,
     );
   }
 

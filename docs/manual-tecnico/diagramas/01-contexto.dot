@@ -1,0 +1,25 @@
+digraph G {
+  graph [rankdir=TB, bgcolor=transparent, nodesep=.35, ranksep=.46];
+  node [shape=box, style="rounded,filled", color="#BBCADA", fillcolor="#F3F5F7", fontcolor="#14263D", fontname="Helvetica", fontsize=11.5, margin=".14,.10"];
+  edge [color="#64748B", fontcolor="#475569", fontname="Helvetica", fontsize=9.5, arrowsize=.65];
+  persona [label="Persona / organizador / revisor
+Usa funciones según sesión y recurso"];
+  app [label="MAREA
+Cliente y servicios de aplicación",fillcolor="#14263D",fontcolor=white,fontsize=15];
+  auth [label="Google OAuth
+Identidad externa"];
+  mail [label="Servicio de correo
+Confirmación y recuperación"];
+  map [label="Mapbox
+Cartografía"];
+  geo [label="Proveedor geográfico
+Nominatim por defecto"];
+  fcm [label="FCM
+Push Android"];
+  run [label="Cloud Run
+Job Python 360°"];
+  {rank=same;auth;mail;map} {rank=same;geo;fcm;run}
+  persona -> app [label=" Interactúa"];
+  app -> auth;app -> mail;app -> map;app -> geo;app -> fcm;app -> run;
+  auth -> geo [style=invis]; mail -> fcm [style=invis];map -> run [style=invis];
+}

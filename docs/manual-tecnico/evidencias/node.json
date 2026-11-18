@@ -1,0 +1,7 @@
+{
+  "inicio_utc": "2026-11-12T00:10:56Z",
+  "duracion_segundos": 2.61,
+  "comando": "node --test tool/traceability/traceability.test.mjs test/tool/backend_contract_test.mjs supabase/functions/geocoding/geocoding_test.mjs supabase/functions/geocoding/lease_test.mjs",
+  "codigo_salida": 0,
+  "alcance": "local; I/O externo simulado"
+}

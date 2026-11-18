@@ -216,6 +216,65 @@ for (const signature of ['save_mission_draft(uuid,jsonb)','publish_mission_draft
  check(await scalar(`select has_function_privilege('authenticated','public.${signature}','EXECUTE')`),true,`${signature} authenticated`);
  check(await scalar(`select has_function_privilege('anon','public.${signature}','EXECUTE')`),false,`${signature} anonymous denied`);
 }
+// Catalog order is tested on an isolated PostgreSQL engine across two raw pages.
+await system();
+await db.exec(await readFile(new URL('../supabase/migrations/20261113023442_mission_catalog_order.sql',import.meta.url),'utf8'));
+const signature = 'public.list_mission_catalog_by_start(text,text,text,integer)';
+check(await scalar(`select has_function_privilege('authenticated','${signature}','EXECUTE')`),true,'catalog executable by authenticated');
+check(await scalar(`select has_function_privilege('anon','${signature}','EXECUTE')`),false,'catalog not executable by anon');
+check(await scalar(`select has_function_privilege('service_role','${signature}','EXECUTE')`),false,'catalog not executable by service_role');
+await db.exec('set role anon');
+await rejects('select * from public.list_mission_catalog_by_start()','anonymous call fails');
+await db.exec('set role authenticated');
+await rejects('select * from public.list_mission_catalog_by_start()','authenticated role without subject fails');
+await login(a);
+const base = {...input,title:'OrdenQA',category:'arte',capacity:1};
+const dates = [2,3,4].map(days=>new Date(Date.now()+days*86400000).toISOString());
+const expected = [];
+for (let i=0;i<34;i++) {
+  const start = dates[2-i%3];
+  const id = await rpc('create_mission',[{...base,starts_at:start,target_type:i%2===0?null:'Artista / creador'}]);
+  expected.push({id,start,unrestricted:i%2===0});
+}
+expected.sort((left,right)=>left.start.localeCompare(right.start)||left.id.localeCompare(right.id));
+const add = (patch={}) => rpc('create_mission',[{...base,...patch}]);
+const hidden = await add();
+const full = await add();
+const closed = await add();
+const cancelled = await add();
+const wrongCategory = await add({category:'musica'});
+const wrongProfile = await add({target_type:'Negocio'});
+await rpc('set_mission_status',[closed,'closed',null]);
+await rpc('set_mission_status',[cancelled,'cancelled','Fin de la convocatoria']);
+await login(admin);
+await rpc('moderate_content',[hidden,'mission',true]);
+await login(c);
+await add();
+await login(b);
+const accepted = await rpc('apply_to_mission',[full,'Puedo participar']);
+const pendingMission = expected.find(item=>item.unrestricted).id;
+await rpc('apply_to_mission',[pendingMission,'Puedo participar']);
+await login(a);
+await rpc('review_application',[accepted,'accepted']);
+await system();
+await db.query('insert into public.account_deletion_requests(user_id) values($1)',[c]);
+const catalog = async (offset=0, search='OrdenQA', category='arte', profile='Artista / creador') => (
+  await db.query('select * from public.list_mission_catalog_by_start($1,$2,$3,$4)',[search,category,profile,offset])
+).rows.map(item=>item.list_mission_catalog_by_start);
+await login(b);
+const first = await catalog();
+const second = await catalog(30);
+check([first.length,second.length,(await catalog(60)).length],[30,4,0],'catalog pages are stable and exhaust');
+check([...first,...second].map(item=>item.id),expected.map(item=>item.id),'catalog filters before ordering by start date and UUID');
+check(first.find(item=>item.id===pendingMission).pending_count,null,'another account cannot see pending applications');
+check((await catalog(0,'unknown')).length,0,'catalog search applies before pagination');
+check((await catalog(0,'OrdenQA','musica')).map(item=>item.id),[wrongCategory],'catalog category limits rows');
+check((await catalog(0,'OrdenQA','arte','Negocio')).some(item=>item.id===wrongProfile),true,'catalog filters for requested profile');
+await login(a);
+check((await catalog()).find(item=>item.id===pendingMission).pending_count,1,'owner sees pending applications');
+await login(admin);
+check((await catalog()).find(item=>item.id===pendingMission).pending_count,1,'moderator sees pending applications');
+check((await catalog()).some(item=>item.id===hidden),false,'hidden catalog rows stay hidden for moderators');
 await system(); await db.exec(`delete from auth.users where id='${a}'`);
 check(await scalar('select count(*)::int from public.mission_drafts'),0,'deletion cascades drafts');
 check(await scalar('select count(*)::int from public.mission_finalists'),0,'deletion cascades finalists');

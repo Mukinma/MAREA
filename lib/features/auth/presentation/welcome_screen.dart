@@ -146,53 +146,49 @@ class WelcomeScreen extends StatelessWidget {
               return OutlinedButton(
                 key: const Key('welcome-google'),
                 onPressed: isBusy ? null : () => _signInWithGoogle(context),
-
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFF172B4D),
                   backgroundColor: Colors.white,
-
                   disabledForegroundColor: const Color(0xFF718096),
-
                   side: const BorderSide(color: Color(0xFFDCE6EC), width: 1.2),
-
                   shape: const StadiumBorder(),
-
                   minimumSize: const Size(double.infinity, 54),
-
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 12,
-                  ),
-
-                  elevation: 0,
                 ),
-
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (isBusy)
-                      const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    else
-                      _googleIcon(),
-
-                    const SizedBox(width: 12),
-
-                    Text(
-                      isBusy ? 'Conectando...' : 'Continuar con Google',
-
+                elevation: 0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isBusy)
+                    const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    )
+                  else
+                    _googleIcon(),
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: Text(
+                      AppLocalizations.tr(
+                        isBusy ? 'Conectando...' : 'Continuar con Google',
+                      ),
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         letterSpacing: -0.2,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
               );
             },
           ),

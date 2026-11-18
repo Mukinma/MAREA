@@ -9,12 +9,7 @@ import 'package:marea/shared/widgets/marea_panel.dart';
 
 enum MobileDestination {
   home('Inicio', '/home', Icons.home_outlined, Icons.home_rounded),
-  discover(
-    'Descubrir',
-    '/discover',
-    Icons.search_outlined,
-    Icons.search_rounded,
-  ),
+  missions('Misiones', '/missions', Icons.flag_outlined, Icons.flag_rounded),
   map('Mapa', '/map', Icons.map_outlined, Icons.map_rounded),
   profile(
     'Perfil',
@@ -29,7 +24,6 @@ enum MobileDestination {
 
   static MobileDestination? forLocation(String location) {
     final path = Uri.parse(location).path;
-    if (path == '/explore' || path == '/missions') return discover;
     for (final destination in values) {
       if (path == destination.path) return destination;
     }
@@ -254,7 +248,7 @@ class _MareaMobileNavigationState extends State<MareaMobileNavigation>
           ),
           textDirection: Directionality.of(context),
           textScaler: scaler,
-        )..layout(maxWidth: math.max(1, cellWidth - 8));
+        )..layout();
         labelHeight = math.max(labelHeight, painter.height);
         painter.dispose();
       }
@@ -380,12 +374,14 @@ class _MareaMobileNavigationState extends State<MareaMobileNavigation>
                                           const SizedBox(height: 4),
                                           SizedBox(
                                             height: labelHeight,
-                                            child: Center(
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
                                               child: Text(
                                                 AppLocalizations.tr(
                                                   destination.label,
                                                 ),
                                                 textAlign: TextAlign.center,
+                                                maxLines: 1,
                                               ),
                                             ),
                                           ),
