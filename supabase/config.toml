@@ -1,5 +1,9 @@
 project_id = "marea"
 
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
 [functions.delete-account]
 verify_jwt = true
 
@@ -20,6 +24,3 @@ verify_jwt = false
 
 [functions.geocoding]
 verify_jwt = false
-
-[functions.translate-content]
-verify_jwt = true

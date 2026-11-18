@@ -22,7 +22,6 @@ import 'package:marea/features/profile/data/profile_repository.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
 import 'package:marea/features/chat/data/chat_repository.dart';
-import 'package:marea/core/localization/content_translation_service.dart';
 import 'package:marea/core/localization/on_device_post_translator.dart';
 
 enum AuthStatus { initializing, authenticated, unauthenticated }
@@ -46,7 +45,6 @@ class AppSessionController extends ChangeNotifier {
     this.locationRepository,
     this.push,
     this.chatRepository,
-    this.translationService,
     this.postContentTranslator,
     this.publicUrl = 'https://marea-azul.netlify.app/',
   }) : _auth = authRepository,
@@ -57,6 +55,12 @@ class AppSessionController extends ChangeNotifier {
   final StoriesRepository? storiesRepository;
   final MissionMapRepository? missionMapRepository;
   final TourRepository? tourRepository;
+  final _tourChanges = ChangeNotifier();
+  Listenable get tourChanges => _tourChanges;
+  void toursChanged() {
+    if (!_disposed) _tourChanges.notifyListeners();
+  }
+
   final MarkerRepository? markerRepository;
   final bool allowCaptureUploads;
   int _markerRevision = 0;
@@ -71,7 +75,6 @@ class AppSessionController extends ChangeNotifier {
   final LocationRepository? locationRepository;
   final PushController? push;
   final ChatRepository? chatRepository;
-  final ContentTranslationService? translationService;
   final PostContentTranslator? postContentTranslator;
   final String publicUrl;
   NotificationsController? _notifications;
@@ -95,7 +98,9 @@ class AppSessionController extends ChangeNotifier {
       _refreshing = false,
       _disposed = false,
       _recovering = false,
+      _recoveryComplete = false,
       _needsLegal = false;
+  bool _needsMfa = false, _securityCheckFailed = false;
   int _generation = 0;
   int _profileRevision = 0;
   int _homeFeedRevision = 0;
@@ -105,24 +110,50 @@ class AppSessionController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // A catalog refresh must keep the router's pending form result intact.
+  final _missionChanges = ChangeNotifier();
+  Listenable get missionChanges => _missionChanges;
+  void missionsChanged() {
+    if (!_disposed) _missionChanges.notifyListeners();
+  }
+
+  final _missionDraftChanges = ChangeNotifier();
+  Listenable get missionDraftChanges => _missionDraftChanges;
+  void missionDraftsChanged() {
+    if (!_disposed) _missionDraftChanges.notifyListeners();
+  }
+
   AppFailure? _failure;
   String? _success;
   Timer? _successTimer;
   int _successRevision = 0;
   LegalPolicy _policy = const LegalPolicy.unavailable();
+  Future<void>? _legalLoad;
   String? _legalError;
   final Map<String, DateTime> _emailCooldowns = {};
   AuthStatus get status => _status;
   Profile? get profile => _profile;
   bool get isBusy => _busy;
   bool get isRecovering => _recovering;
+  bool get isRecoveryComplete => _recoveryComplete;
   bool get needsLegalAcceptance => _needsLegal;
+  bool get needsMfa => _needsMfa || _securityCheckFailed;
+  bool get securityCheckFailed => _securityCheckFailed;
+  bool get supportsAccountSecurity => _security != null;
+  AuthSecurityRepository? get _security {
+    final auth = _auth;
+    return auth is AuthSecurityRepository
+        ? auth as AuthSecurityRepository
+        : null;
+  }
+
   bool get needsOnboarding =>
       _profile != null && _profile!.initialProfileCompletedAt == null;
   AppFailure? get failure => _failure;
   String? get successMessage => _success;
   String? get email => _auth.currentUser?.email;
   LegalPolicy get legalPolicy => _policy;
+  bool get isLoadingLegal => _legalLoad != null;
   String? get legalError => _legalError;
   void _notify() {
     if (!_disposed) notifyListeners();
@@ -134,31 +165,47 @@ class AppSessionController extends ChangeNotifier {
         _unauthenticated();
         return;
       }
-      if (user.recovery) _recovering = true;
+      if (user.recovery) {
+        _recovering = true;
+        unawaited(_rememberRecovery(true));
+      }
       if (!_busy) unawaited(_loadAuthenticated());
     });
     if (_auth.currentUser == null) {
       _unauthenticated();
       unawaited(reloadLegal());
+    } else if (_security != null) {
+      await _loadAuthenticated(loadLegal: true);
     } else {
       await reloadLegal();
       await _loadAuthenticated();
     }
   }
 
-  Future<void> reloadLegal() async {
+  Future<void> reloadLegal() {
+    if (_legalLoad case final pending?) return pending;
+    final loading = Completer<void>();
+    _legalLoad = loading.future;
+    _notify();
+    loading.complete(_loadLegal());
+    return loading.future;
+  }
+
+  Future<void> _loadLegal() async {
     try {
       _policy = await _legal?.loadPolicy() ?? const LegalPolicy.unavailable();
       _legalError = null;
-      if (_auth.currentUser != null && _policy.hasDocuments) {
+      if (_auth.currentUser != null && _policy.hasDocuments && !needsMfa) {
         _needsLegal = !(await _legal!.hasAccepted(_policy));
       }
     } catch (_) {
       _policy = const LegalPolicy.unavailable();
       _legalError =
           'No pudimos cargar los documentos. Puedes reintentar; no crearemos una cuenta sin ellos.';
+    } finally {
+      _legalLoad = null;
+      _notify();
     }
-    _notify();
   }
 
   Future<T?> _run<T>(Future<T> Function() action) async {
@@ -174,6 +221,9 @@ class AppSessionController extends ChangeNotifier {
       return await action();
     } catch (error) {
       _failure = error is AppFailure ? error : AppFailureMapper.from(error);
+      if (_failure?.kind == AppFailureKind.mfaRequired && _security != null) {
+        _gateAccount(mfa: true);
+      }
       return null;
     } finally {
       _busy = false;
@@ -197,6 +247,11 @@ class AppSessionController extends ChangeNotifier {
       await _run(() async {
         _recovering = false;
         await _auth.signInWithGoogle(redirectTo: redirectTo);
+        // A callback that arrives during launch can be ignored by the listener
+        // while this operation owns the session lock.
+        if (_status != AuthStatus.authenticated && _auth.currentUser != null) {
+          await _loadAuthenticated();
+        }
         return true;
       }) ??
       false;
@@ -261,17 +316,27 @@ class AppSessionController extends ChangeNotifier {
             !await _profiles.isUsernameAvailable(input.username)) {
           throw const AppFailure('Este nombre de usuario ya está ocupado.');
         }
-        final generation = _generation;
-        ++_profileRevision;
-        final updated = await _profiles.updateCurrentProfile(input);
-        if (generation != _generation || _auth.currentUser == null) {
-          return false;
-        }
-        _profile = updated;
-        _showSuccess('Perfil actualizado.');
-        return true;
+        return _persistProfile(() => _profiles.updateCurrentProfile(input));
       }) ??
       false;
+
+  Future<bool> updateProfileGoals(String accountId, List<String> goals) async =>
+      await _run(() async {
+        if (_profile?.id != accountId) return false;
+        return _persistProfile(() => _profiles.updateGoals(goals));
+      }) ??
+      false;
+
+  Future<bool> _persistProfile(Future<Profile> Function() update) async {
+    final generation = _generation;
+    ++_profileRevision;
+    final updated = await update();
+    if (generation != _generation || _auth.currentUser == null) return false;
+    _profile = updated;
+    _showSuccess('Perfil actualizado.');
+    return true;
+  }
+
   Future<bool> completeInitialProfile(InitialProfileInput input) async =>
       await _run(() async {
         if (_profile == null || _profile!.initialProfileCompletedAt != null) {
@@ -328,6 +393,7 @@ class AppSessionController extends ChangeNotifier {
   Future<bool> signOut() async =>
       await _run(() async {
         ++_generation;
+        await _rememberRecovery(false);
         await push?.endSession();
         await _auth.signOut();
         _unauthenticated();
@@ -386,6 +452,7 @@ class AppSessionController extends ChangeNotifier {
         _recovering = recovery;
         try {
           await _auth.verifyCode(email: email, code: code, recovery: recovery);
+          if (recovery) await _rememberRecovery(true);
         } catch (_) {
           _recovering = false;
           rethrow;
@@ -409,11 +476,19 @@ class AppSessionController extends ChangeNotifier {
           currentPassword: currentPassword,
           nonce: nonce,
         );
+        _recoveryComplete = _recovering;
         _recovering = false;
+        if (_recoveryComplete) await _rememberRecovery(false);
         _showSuccess('Contraseña actualizada.');
         return true;
       }) ??
       false;
+  void continueAfterRecovery() {
+    if (!_recoveryComplete) return;
+    _recoveryComplete = false;
+    clearFeedback();
+  }
+
   Future<bool> changeEmail(String newEmail, String currentPassword) async =>
       await _run(() async {
         await _auth.changeEmail(newEmail, currentPassword);
@@ -430,6 +505,116 @@ class AppSessionController extends ChangeNotifier {
         return true;
       }) ??
       false;
+
+  Future<void> _rememberRecovery(bool value) async {
+    try {
+      await _security?.rememberRecoveryIntent(value);
+    } catch (_) {
+      // Recovery still continues in memory when local preferences fail.
+    }
+  }
+
+  Future<List<AuthenticatorFactor>> authenticatorFactors() async {
+    final security = _security;
+    if (security == null) return [];
+    try {
+      return await security.authenticatorFactors();
+    } catch (error) {
+      throw error is AppFailure ? error : AppFailureMapper.from(error);
+    }
+  }
+
+  Future<AuthenticatorEnrollment?> enrollAuthenticator() =>
+      _run(() => _security!.enrollAuthenticator());
+
+  Future<bool> verifyAuthenticator(String id, String code) async =>
+      await _run(() async {
+        if (!RegExp(r'^\d{6}$').hasMatch(code.trim())) {
+          throw const AppFailure(
+            'Escribe los seis dígitos de tu autenticador.',
+          );
+        }
+        await _security!.verifyAuthenticator(id, code.trim());
+        if (needsMfa) {
+          await _loadAuthenticated(loadLegal: true);
+          return !needsMfa && _status == AuthStatus.authenticated;
+        }
+        return true;
+      }) ??
+      false;
+
+  Future<bool> removeAuthenticator(
+    String id,
+    String code, {
+    String? verificationFactorId,
+  }) async =>
+      await _run(() async {
+        if (!RegExp(r'^\d{6}$').hasMatch(code.trim())) {
+          throw const AppFailure(
+            'Escribe los seis dígitos de tu autenticador.',
+          );
+        }
+        await _security!.verifyAuthenticator(
+          verificationFactorId ?? id,
+          code.trim(),
+        );
+        await _security!.removeAuthenticator(id);
+        return true;
+      }) ??
+      false;
+
+  Future<bool> signOutOtherSessions() async =>
+      await _run(() async {
+        await _security!.signOutOtherSessions();
+        _showSuccess('Las otras sesiones se cerraron.');
+        return true;
+      }) ??
+      false;
+
+  Future<void> recheckAppSession() async {
+    if (_security == null || _busy || _disposed || _auth.currentUser == null) {
+      return;
+    }
+    if (needsMfa) {
+      if (_securityCheckFailed) await _loadAuthenticated(loadLegal: true);
+      return;
+    }
+    await _verifyAppSession(_generation);
+  }
+
+  void _gateAccount({required bool mfa}) {
+    _status = AuthStatus.authenticated;
+    _needsMfa = mfa;
+    _securityCheckFailed = !mfa;
+    _profile = null;
+    _notifications?.setSession(null);
+    _notify();
+  }
+
+  Future<bool> _verifyAppSession(int generation) async {
+    final security = _security;
+    if (security == null) return true;
+    try {
+      await security.requireAppSession();
+      return generation == _generation && !_disposed;
+    } catch (error) {
+      if (generation != _generation || _disposed) return false;
+      final failure = error is AppFailure
+          ? error
+          : AppFailureMapper.from(error);
+      _failure = failure;
+      if (failure.kind == AppFailureKind.invalidSession) {
+        await _clearInvalidSession(failure);
+      } else {
+        // Invalidate profile reads already in flight when a resume check fails.
+        ++_generation;
+        _gateAccount(mfa: failure.kind == AppFailureKind.mfaRequired);
+        if (!_policy.hasDocuments) unawaited(reloadLegal());
+      }
+      return false;
+    }
+  }
+
   void clearFeedback() {
     _failure = null;
     _successTimer?.cancel();
@@ -463,7 +648,7 @@ class AppSessionController extends ChangeNotifier {
   }
 
   Future<void> refreshProfile() async {
-    if (_status != AuthStatus.authenticated) return;
+    if (_status != AuthStatus.authenticated || needsMfa) return;
     final generation = _generation;
     final profileRevision = _profileRevision;
     try {
@@ -485,17 +670,34 @@ class AppSessionController extends ChangeNotifier {
           await _clearInvalidSession(failure);
           return;
         }
+        if (failure.kind == AppFailureKind.mfaRequired && _security != null) {
+          ++_generation;
+          _gateAccount(mfa: true);
+          return;
+        }
       }
     }
     _notify();
   }
 
-  Future<void> _loadAuthenticated() async {
+  Future<void> _loadAuthenticated({bool loadLegal = false}) async {
     if (_auth.currentUser == null) {
       _unauthenticated();
       return;
     }
     final generation = ++_generation;
+    if (_security case final security?) {
+      try {
+        final restoringRecovery = await security.restoreRecoveryIntent();
+        if (generation != _generation || _disposed) return;
+        _recovering = _recovering || restoringRecovery;
+      } catch (_) {
+        // A live password-recovery callback remains authoritative.
+      }
+      if (!await _verifyAppSession(generation)) return;
+      if (loadLegal || !_policy.hasDocuments) await reloadLegal();
+      if (generation != _generation || _disposed) return;
+    }
     try {
       final next = await _profiles.getCurrentProfile();
       final needsLegal = _policy.hasDocuments && _legal != null
@@ -518,7 +720,13 @@ class AppSessionController extends ChangeNotifier {
         await _clearInvalidSession(failure);
         return;
       }
+      if (failure.kind == AppFailureKind.mfaRequired && _security != null) {
+        _gateAccount(mfa: true);
+        return;
+      }
     }
+    _needsMfa = false;
+    _securityCheckFailed = false;
     _status = AuthStatus.authenticated;
     notifications?.setSession(_profile?.id);
     _notify();
@@ -541,13 +749,19 @@ class AppSessionController extends ChangeNotifier {
     _notifications?.setSession(null);
     _profile = null;
     _recovering = false;
+    _recoveryComplete = false;
     _needsLegal = false;
+    _needsMfa = false;
+    _securityCheckFailed = false;
     _notify();
   }
 
   @override
   void dispose() {
     _disposed = true;
+    _missionChanges.dispose();
+    _missionDraftChanges.dispose();
+    _tourChanges.dispose();
     _notifications?.dispose();
     push?.dispose();
     ++_generation;

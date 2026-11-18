@@ -3,6 +3,7 @@ import 'dart:ui' show PointerDeviceKind;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/auth/presentation/login_screen.dart';
 import 'package:marea/features/auth/presentation/register_screen.dart';
@@ -43,7 +44,7 @@ void main() {
   testWidgets('register explains the public username identity', (tester) async {
     await tester.pumpWidget(testApp(RegisterScreen(controller: controller)));
 
-    expect(find.text('¿Qué perfil quieres crear?'), findsOneWidget);
+    expect(find.text('Tipo de perfil'), findsOneWidget);
     expect(find.byKey(const Key('register-username')), findsNothing);
     await tester.ensureVisible(find.byKey(const Key('register-type-creator')));
     await tester.tap(find.byKey(const Key('register-type-creator')));
@@ -109,7 +110,8 @@ void main() {
     expect(find.text('Editar perfil'), findsOneWidget);
     expect(find.text('Nombre completo'), findsOneWidget);
     expect(find.text('Nombre de usuario'), findsOneWidget);
-    expect(find.text('Tipo de perfil: Artista / creador'), findsOneWidget);
+    expect(find.text('Tipo de perfil'), findsOneWidget);
+    expect(find.text('Artista / creador'), findsOneWidget);
     expect(find.byType(DropdownButtonFormField<UserType>), findsNothing);
     expect(find.text('Sobre mí'), findsOneWidget);
     expect(find.byKey(const ValueKey('edit-field-Sobre mí')), findsOneWidget);
@@ -129,9 +131,9 @@ void main() {
 
     expect(find.byKey(const Key('edit-media')), findsOneWidget);
     expect(find.byKey(const Key('edit-identity')), findsOneWidget);
-    expect(find.byKey(const Key('edit-about')), findsOneWidget);
-    expect(find.byKey(const Key('edit-interests')), findsNothing);
-    expect(find.byKey(const Key('edit-goals')), findsNothing);
+    expect(find.text('Sobre mí'), findsOneWidget);
+    expect(find.text('Me mueve'), findsOneWidget);
+    expect(find.text('Objetivos'), findsNothing);
     expect(
       find.byKey(const Key('edit-save-button')).hitTestable(),
       findsOneWidget,
@@ -140,7 +142,7 @@ void main() {
   });
 
   for (final width in [390.0, 1366.0]) {
-        testWidgets('shell exposes responsive labelled actions at $width', (
+    testWidgets('shell exposes responsive labelled actions at $width', (
       tester,
     ) async {
       tester.view.physicalSize = Size(width, 844);
@@ -230,7 +232,7 @@ void main() {
 
   testWidgets('pulling settings down reloads session data', (tester) async {
     final auth = FakeAuthRepository();
-    final profiles = FakeProfileRepository();
+    final profiles = _RefreshProfiles();
     final refreshController = AppSessionController(
       authRepository: auth,
       profileRepository: profiles,
@@ -248,25 +250,57 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(refreshController.profile?.fullName, 'Ana actualizada');
-  });
-
-  testWidgets('account deletion remains disabled until ELIMINAR is typed', (
-    tester,
-  ) async {
-    await tester.pumpWidget(testApp(SettingsScreen(controller: controller)));
-    await tester.ensureVisible(find.byKey(const Key('open-delete-dialog')));
-    await tester.tap(find.byKey(const Key('open-delete-dialog')));
+    profiles.offline = true;
+    await tester.drag(find.byType(SingleChildScrollView), const Offset(0, 320));
     await tester.pumpAndSettle();
-
-    FilledButton button() =>
-        tester.widget(find.byKey(const Key('confirm-delete-account')));
-
-    expect(button().onPressed, isNull);
-    await tester.enterText(
-      find.byKey(const Key('delete-confirmation')),
-      'ELIMINAR',
-    );
-    await tester.pump();
-    expect(button().onPressed, isNotNull);
+    expect(find.text('No se pudo actualizar el perfil.'), findsOneWidget);
   });
+
+  testWidgets(
+    'account deletion is usable with large text and can be canceled',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetViewInsets);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpWidget(
+        testApp(PersonalDataScreen(controller: controller)),
+      );
+      await tester.ensureVisible(find.byKey(const Key('open-delete-dialog')));
+      await tester.tap(find.byKey(const Key('open-delete-dialog')));
+      await tester.pumpAndSettle();
+
+      FilledButton button() =>
+          tester.widget(find.byKey(const Key('confirm-delete-account')));
+
+      expect(button().onPressed, isNull);
+      tester.view.viewInsets = const FakeViewPadding(bottom: 240);
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('delete-confirmation')));
+      await tester.enterText(
+        find.byKey(const Key('delete-confirmation')),
+        'ELIMINAR',
+      );
+      await tester.pump();
+      expect(button().onPressed, isNotNull);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.text('Cancelar'));
+      await tester.pumpAndSettle();
+      expect(find.text('¿Eliminar tu cuenta?'), findsNothing);
+      expect(controller.status, AuthStatus.authenticated);
+    },
+  );
+}
+
+class _RefreshProfiles extends FakeProfileRepository {
+  bool offline = false;
+
+  @override
+  Future<Profile> getCurrentProfile() async {
+    if (offline) throw const AppFailure('No se pudo actualizar el perfil.');
+    return super.getCurrentProfile();
+  }
 }

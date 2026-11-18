@@ -9,6 +9,8 @@ import 'package:marea/features/showcase/models/showcase.dart';
 import 'package:marea/features/showcase/presentation/showcase_widgets.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/models/community_models.dart';
+import 'package:marea/features/community/data/community_reports_repository.dart';
+import 'package:marea/features/community/models/report_receipt.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/profile/models/profile.dart';
 
@@ -21,12 +23,47 @@ class ModerationScreen extends StatefulWidget {
 
 class _ModerationScreenState extends State<ModerationScreen> {
   final _reports = <ContentReport>[];
+  final _accounts = <ReportedAccount>[];
   bool _loading = true, _more = true;
+  bool _loadingAccounts = false, _moreAccounts = false;
   String? _error;
+  String? _accountError;
   @override
   void initState() {
     super.initState();
     _load(reset: true);
+    _loadAccounts(reset: true);
+  }
+
+  Future<void> _loadAccounts({bool reset = false}) async {
+    final repository = widget.controller.communityRepository;
+    if (_loadingAccounts ||
+        repository is! CommunityReportsRepository ||
+        widget.controller.profile?.role != ProfileRole.admin) {
+      return;
+    }
+    setState(() {
+      _loadingAccounts = true;
+      _accountError = null;
+    });
+    try {
+      final accounts = await (repository as CommunityReportsRepository)
+          .accountReports(offset: reset ? 0 : _accounts.length);
+      if (!mounted) return;
+      setState(() {
+        if (reset) _accounts.clear();
+        _accounts.addAll(accounts);
+        _moreAccounts = accounts.length == CommunityReportsRepository.pageSize;
+      });
+    } catch (error) {
+      if (mounted) setState(() => _accountError = communityError(error));
+    } finally {
+      if (mounted) setState(() => _loadingAccounts = false);
+    }
+  }
+
+  Future<void> _refresh() async {
+    await Future.wait([_load(reset: true), _loadAccounts(reset: true)]);
   }
 
   Future<void> _load({bool reset = false}) async {
@@ -72,7 +109,7 @@ class _ModerationScreenState extends State<ModerationScreen> {
             subtitle: AppLocalizations.tr(
               'Revisa el contenido antes de ocultarlo. Los reportes revisados se conservan para poder restaurarlo.',
             ),
-            onRefresh: _loading ? null : () => _load(reset: true),
+            onRefresh: _loading || _loadingAccounts ? null : _refresh,
             children: [
               if (widget.controller.storiesRepository != null)
                 StoryModeration(
@@ -91,7 +128,40 @@ class _ModerationScreenState extends State<ModerationScreen> {
                   onTap: () => context.push('/tours/requests'),
                 ),
 
-              if (_reports.isEmpty && !_loading && _error == null)
+              if (_accounts.isNotEmpty || _accountError != null)
+                Text(
+                  AppLocalizations.tr('Reportes de cuentas'),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              for (final account in _accounts)
+                _AccountReportCard(
+                  key: ValueKey(account.id),
+                  report: account,
+                  repository:
+                      widget.controller.communityRepository
+                          as CommunityReportsRepository,
+                  onChanged: () => _loadAccounts(reset: true),
+                ),
+              if (_accountError case final error?)
+                CommunityNotice(
+                  message: error,
+                  onRetry: () => _loadAccounts(reset: true),
+                ),
+              if (_loadingAccounts)
+                const Center(child: MareaSkeleton(kind: SkeletonKind.list)),
+              if (_moreAccounts && !_loadingAccounts && _accountError == null)
+                TextButton(
+                  onPressed: _loadAccounts,
+                  child: Text(
+                    AppLocalizations.tr('Cargar más reportes de cuentas'),
+                  ),
+                ),
+              if (_reports.isEmpty &&
+                  _accounts.isEmpty &&
+                  !_loading &&
+                  !_loadingAccounts &&
+                  _error == null &&
+                  _accountError == null)
                 CommunityNotice(
                   message: AppLocalizations.tr('No hay reportes para revisar.'),
                 ),
@@ -113,6 +183,77 @@ class _ModerationScreenState extends State<ModerationScreen> {
                 ),
             ],
           ),
+  );
+}
+
+class _AccountReportCard extends StatefulWidget {
+  const _AccountReportCard({
+    required this.report,
+    required this.repository,
+    required this.onChanged,
+    super.key,
+  });
+  final ReportedAccount report;
+  final CommunityReportsRepository repository;
+  final Future<void> Function() onChanged;
+
+  @override
+  State<_AccountReportCard> createState() => _AccountReportCardState();
+}
+
+class _AccountReportCardState extends State<_AccountReportCard> {
+  bool _busy = false;
+
+  Future<void> _review() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final ok = await runCommunityAction(
+        context,
+        () => widget.repository.markReportReviewed(
+          widget.report.id,
+          account: true,
+        ),
+        success: AppLocalizations.tr('Reporte revisado.'),
+      );
+      if (ok && mounted) await widget.onChanged();
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => MareaCard(
+    child: Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
+        children: [
+          Text(
+            widget.report.reviewed
+                ? 'Revisado'
+                : AppLocalizations.tr('Pendiente de revisión'),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          SelectableText(widget.report.reason),
+          if (widget.report.targetId case final id?)
+            TextButton(
+              onPressed: () => context.push('/people/$id'),
+              child: Text(AppLocalizations.tr('Ver perfil reportado')),
+            )
+          else
+            Text(
+              AppLocalizations.tr('La cuenta reportada ya no está disponible.'),
+            ),
+          if (!widget.report.reviewed)
+            OutlinedButton(
+              onPressed: _busy ? null : _review,
+              child: Text(AppLocalizations.tr('Marcar revisado')),
+            ),
+        ],
+      ),
+    ),
   );
 }
 
@@ -151,11 +292,27 @@ class _ReportCardState extends State<_ReportCard> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            Text(
-              AppLocalizations.trTemplate('Motivo: {reason}', {
-                'reason': report.reason,
-              }),
-            ),
+            Text('Motivo: ${report.reason}'),
+            if (report.state == 'open' && repo is CommunityReportsRepository)
+              OutlinedButton(
+                onPressed: _busy
+                    ? null
+                    : () async {
+                        setState(() => _busy = true);
+                        try {
+                          final ok = await runCommunityAction(
+                            context,
+                            () => (repo as CommunityReportsRepository)
+                                .markReportReviewed(report.id, account: false),
+                            success: AppLocalizations.tr('Reporte revisado.'),
+                          );
+                          if (ok && mounted) await widget.onChanged();
+                        } finally {
+                          if (mounted) setState(() => _busy = false);
+                        }
+                      },
+                child: Text(AppLocalizations.tr('Marcar revisado')),
+              ),
             const Divider(height: 32),
             CommunityLoad<Object?>(
               load: () async => report.showcaseId != null

@@ -53,12 +53,14 @@ class _MareaTabsState extends State<MareaTabs> {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 600;
+    final flat = MareaFlatSurfaces.of(context);
     return SingleChildScrollView(
       controller: _scroll,
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: MareaSurface(
-        inset: true,
+        inset: !flat,
+        color: flat ? AppColors.mist : AppColors.paper,
         radius: 18,
         padding: const EdgeInsets.all(5),
         child: Row(
@@ -69,6 +71,9 @@ class _MareaTabsState extends State<MareaTabs> {
                 child: TextButton(
                   key: option.key == widget.value ? _selected : null,
                   style: TextButton.styleFrom(
+                    side: flat && option.key == widget.value
+                        ? const BorderSide(color: AppColors.actionBlue)
+                        : null,
                     backgroundColor: option.key == widget.value
                         ? AppColors.surface
                         : Colors.transparent,

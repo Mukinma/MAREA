@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:marea/features/notifications/models/notification_destination.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:marea/core/router/app_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
@@ -33,7 +34,10 @@ class MareaApp extends StatefulWidget {
 class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
   late final AppLocaleController _localeController =
       widget.localeController ?? AppLocaleController();
-  late final _router = AppRouter.create(widget.controller);
+  late final _router = AppRouter.create(
+    widget.controller,
+    allowGoogle: !widget.productionPilot,
+  );
   StreamSubscription<String>? _proximityOpened;
   Timer? _proximityTimer;
   String? _proximityAccount;
@@ -46,9 +50,9 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     widget.controller.addListener(_sessionChanged);
     widget.controller.push?.addListener(_pushChanged);
     _localeController.addListener(_localeChanged);
-    unawaited(_localeController.load());
+    if (widget.localeController == null) unawaited(_localeController.load());
+    WidgetsBinding.instance.addObserver(this);
     if (widget.controller.markerRepository != null) {
-      WidgetsBinding.instance.addObserver(this);
       _proximityOpened = NativeProximityBridge.instance.opened.listen(
         (_) => _openProximity(),
       );
@@ -70,9 +74,11 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
         c.profile?.id,
         ready:
             c.status == AuthStatus.authenticated &&
+            !c.needsMfa &&
             !c.needsOnboarding &&
             !c.needsLegalAcceptance &&
-            !c.isRecovering,
+            !c.isRecovering &&
+            !c.isRecoveryComplete,
       ),
     );
     _pushChanged();
@@ -81,10 +87,12 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
 
   bool get _readyForProximity =>
       widget.controller.status == AuthStatus.authenticated &&
+      !widget.controller.needsMfa &&
       widget.controller.profile != null &&
       !widget.controller.needsOnboarding &&
       !widget.controller.needsLegalAcceptance &&
-      !widget.controller.isRecovering;
+      !widget.controller.isRecovering &&
+      !widget.controller.isRecoveryComplete;
 
   Future<void> _syncProximity() async {
     final c = widget.controller;
@@ -116,6 +124,7 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      unawaited(widget.controller.recheckAppSession());
       if (widget.controller.markerRepository != null && _readyForProximity) {
         unawaited(
           NativeProximityBridge.instance
@@ -199,9 +208,11 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     final c = widget.controller;
     if (c.profile == null ||
         c.status != AuthStatus.authenticated ||
+        c.needsMfa ||
         c.needsOnboarding ||
         c.needsLegalAcceptance ||
-        c.isRecovering) {
+        c.isRecovering ||
+        c.isRecoveryComplete) {
       return;
     }
     final notice = c.push?.takePending(c.profile!.id);
@@ -256,7 +267,7 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     widget.controller.removeListener(_sessionChanged);
     widget.controller.push?.removeListener(_pushChanged);
     _localeController.removeListener(_localeChanged);
-    _localeController.dispose();
+    if (widget.localeController == null) _localeController.dispose();
     _router.dispose();
     widget.controller.dispose();
     super.dispose();
@@ -269,7 +280,6 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      key: ValueKey(_localeController.locale.toLanguageTag()),
       title: widget.productionPilot
           ? 'MAREA · Prueba RA'
           : widget.development
@@ -279,7 +289,9 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
       supportedLocales: AppLocaleController.supportedLocales,
       localizationsDelegates: [
         AppLocalizations.delegate,
-        ...generated_l10n.AppLocalizations.localizationsDelegates,
+        if (_localeController.locale.languageCode == 'es')
+          generated_l10n.AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
       ],
       localeResolutionCallback: (locale, supportedLocales) {
         if (locale == null) return const Locale('es', 'MX');

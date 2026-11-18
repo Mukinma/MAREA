@@ -34,6 +34,7 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
   int _generation = 0;
   PushNotice? _pending;
   NotificationPreferences preferences = const NotificationPreferences();
+  bool preferencesLoaded = false;
   PushPermission permissionStatus = PushPermission.unavailable;
   bool busy = false, configured = false;
   String? error;
@@ -54,6 +55,7 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
     if (lostSession) _queueReset(revoke: false);
     final generation = ++_generation;
     preferences = const NotificationPreferences();
+    preferencesLoaded = false;
     error = null;
     busy = userId != null && ready;
     _seen.clear();
@@ -72,6 +74,7 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
       final loaded = await repository.load();
       if (!_current(generation)) return;
       preferences = loaded;
+      preferencesLoaded = true;
       await _recordActivity(generation);
       if (!_current(generation)) return;
       _activityTimer = Timer.periodic(const Duration(minutes: 15), (_) {
@@ -132,22 +135,44 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> _present(ForegroundNotice message) async {
     if (_disposed ||
         !_ready ||
+        !preferencesLoaded ||
         _userId != message.notice.recipientId ||
         permissionStatus != PushPermission.granted) {
       return;
     }
-    if (message.kind == 'marea_message'
-        ? !preferences.mareaMessages
-        : !preferences.activity) {
-      return;
-    }
+    final generation = _generation;
     final key = '${message.notice.notificationId}:${message.version}';
     if (!_seen.add(key)) return;
     if (_seen.length > 200) _seen.remove(_seen.first);
     try {
-      await gateway.present(message);
+      var category =
+          message.category ?? NotificationCategory.fromEvent(message.kind);
+      if (category == null && message.kind == 'marea_message') {
+        // An older worker sent both chat and editorial reminders under the
+        // same kind. Resolve the event only if the inbox row still matches.
+        final event = await repository.notification(
+          message.notice.notificationId,
+        );
+        if (event == null ||
+            event.recipientId != message.notice.recipientId ||
+            event.isUnread == false ||
+            event.createdAt != DateTime.tryParse(message.version)) {
+          return;
+        }
+        category = NotificationCategory.fromEvent(
+          event.kind.databaseValue,
+          eventKey: event.eventKey,
+        );
+      }
+      if (!_current(generation) ||
+          permissionStatus != PushPermission.granted ||
+          category == null ||
+          !preferences.isEnabled(category)) {
+        return;
+      }
+      await gateway.present(message.withCategory(category));
     } catch (_) {
-      _seen.remove(key);
+      if (_current(generation)) _seen.remove(key);
     }
   }
 
@@ -173,6 +198,7 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
       final p = await repository.load();
       if (!_current(generation)) return;
       preferences = p;
+      preferencesLoaded = true;
       await _recordActivity(generation);
       if (!_current(generation) || !configured) return;
       permissionStatus = requestPermission
@@ -192,17 +218,22 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  Future<void> save(NotificationPreferences next) async {
-    if (_userId == null || !_ready || busy) return;
+  Future<void> setCategory(NotificationCategory category, bool enabled) async {
+    if (_userId == null || !_ready || busy || !preferencesLoaded) return;
     final generation = _generation;
+    final before = preferences;
+    preferences = before.withCategory(category, enabled);
     busy = true;
     error = null;
     _notify();
     try {
-      await repository.save(next);
-      if (_current(generation)) preferences = next;
+      final saved = await repository.setCategory(category, enabled);
+      if (_current(generation)) preferences = saved;
     } catch (_) {
-      if (_current(generation)) error = 'No pudimos guardar tus preferencias.';
+      if (_current(generation)) {
+        preferences = before;
+        error = 'No pudimos guardar tus preferencias.';
+      }
     } finally {
       if (generation == _generation) {
         busy = false;
@@ -258,6 +289,7 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
       await _deviceWork?.timeout(const Duration(seconds: 5));
     } catch (_) {}
     preferences = const NotificationPreferences();
+    preferencesLoaded = false;
     busy = false;
     _notify();
   }

@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
+import 'package:marea/features/shell/presentation/marea_create_action.dart';
 import 'package:marea/features/tours/data/tour_local_store.dart';
 import 'package:marea/features/tours/data/tour_repository.dart';
 import 'package:marea/features/tours/models/tour_models.dart';
 import 'package:marea/features/tours/presentation/tour_editor_screen.dart';
+import 'package:marea/features/tours/presentation/tour_management_screen.dart';
 import '../../support/fakes.dart';
 
 Map<String, dynamic> clone(Map<String, dynamic> v) =>
@@ -56,6 +59,13 @@ class EditorialRepo implements TourRepository {
       'ar_order': [],
     },
   };
+  @override
+  Future<List<TourRecord>> list({
+    String? owner,
+    double? latitude,
+    double? longitude,
+  }) async => saves == 0 ? [] : [TourRecord(clone(data))];
+
   @override
   Future<TourRecord?> get(String id, {bool edit = false}) async =>
       TourRecord(clone(data));
@@ -128,6 +138,64 @@ class PointEditorRepo extends EditorialRepo {
 }
 
 void main() {
+  testWidgets('a new tour created from the shared menu updates the list', (
+    tester,
+  ) async {
+    final repo = EditorialRepo(), controller = await session(repo);
+    final router = GoRouter(
+      initialLocation: '/tours',
+      routes: [
+        GoRoute(
+          path: '/tours',
+          builder: (_, _) => MareaCreationPage(
+            controller: controller,
+            child: TourManagementScreen(controller: controller),
+          ),
+        ),
+        GoRoute(
+          path: '/tours/new',
+          builder: (_, _) => TourEditorScreen(
+            controller: controller,
+            localStore: MemoryDrafts(),
+          ),
+        ),
+      ],
+    );
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Crear'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Crear recorrido 360°'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Título del recorrido'),
+      'Nuevo recorrido',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Nombre del local'),
+      'Nuestro taller',
+    );
+    final save = find.text('Guardar borrador');
+    await tester.scrollUntilVisible(
+      save,
+      180,
+      scrollable: find
+          .descendant(
+            of: find.byType(TourEditorScreen),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(repo.saves, 1);
+    await tester.tap(find.byTooltip('Volver'));
+    await tester.pumpAndSettle();
+    expect(find.text('Nuevo recorrido'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    router.dispose();
+    controller.dispose();
+  });
   testWidgets(
     'offline reopening restores accepted local edits and back preserves them',
     (tester) async {

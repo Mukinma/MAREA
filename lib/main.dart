@@ -23,7 +23,6 @@ import 'package:marea/app.dart';
 import 'package:marea/core/config/app_config.dart';
 import 'package:marea/core/localization/app_locale_controller.dart';
 import 'package:marea/core/session/app_session_controller.dart';
-import 'package:marea/core/localization/content_translation_service.dart';
 import 'package:marea/core/localization/on_device_post_translator.dart';
 import 'package:marea/features/auth/data/auth_repository.dart';
 import 'package:marea/features/auth/presentation/configuration_screen.dart';
@@ -92,7 +91,6 @@ class _StartupAppState extends State<_StartupApp> {
     final client = Supabase.instance.client;
     final localeController = AppLocaleController();
     await localeController.load();
-    final translationService = ContentTranslationService(client);
     late final AppSessionController controller;
     controller = AppSessionController(
       allowCaptureUploads: !widget.productionPilot,
@@ -128,11 +126,7 @@ class _StartupAppState extends State<_StartupApp> {
       mediaRepository: SupabaseProfileMediaRepository(),
       profileRepository: SupabaseProfileRepository(client),
       chatRepository: SupabaseChatRepository(client),
-      translationService: translationService,
-      postContentTranslator: CrossPlatformPostContentTranslator(
-        onDevice: MlKitPostContentTranslator(),
-        cloud: translationService,
-      ),
+      postContentTranslator: LocalPostContentTranslator.shared,
       legalRepository: SupabaseLegalRepository(client),
     );
     return MareaApp(

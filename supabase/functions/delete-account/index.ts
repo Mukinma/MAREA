@@ -1,5 +1,6 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { clearTourStorage } from "./tour-storage.ts";
+import { checkAppSession } from "../_shared/app-session.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -42,6 +43,8 @@ Deno.serve(async (request) => {
   if (userError || !data.user) {
     return jsonResponse(401, { error: "unauthorized" });
   }
+  const denial = await checkAppSession(userClient);
+  if (denial) return jsonResponse(denial.status, { error: denial.error });
 
   const adminClient = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },

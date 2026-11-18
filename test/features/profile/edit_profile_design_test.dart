@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
 import 'package:marea/features/profile/presentation/edit_profile_screen.dart';
+import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 
 import '../../support/fakes.dart';
 
@@ -36,7 +37,9 @@ void main() {
         ),
         GoRoute(
           path: '/profile/edit',
-          builder: (_, _) => EditProfileScreen(controller: controller),
+          builder: (_, _) => ProfileFlatStyle(
+            child: EditProfileScreen(controller: controller),
+          ),
         ),
       ],
     );
@@ -45,15 +48,35 @@ void main() {
       MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
     );
     await tester.pumpAndSettle();
+    final editor = find.byType(EditProfileScreen);
+    final relief = find.descendant(
+      of: editor,
+      matching: find.byWidgetPredicate((widget) {
+        if (widget is CustomPaint) {
+          return widget.foregroundPainter.runtimeType.toString() == '_InsetRelief';
+        }
+        return widget is DecoratedBox &&
+            widget.decoration is BoxDecoration &&
+            ((widget.decoration as BoxDecoration).boxShadow?.isNotEmpty ?? false);
+      }),
+    );
+    expect(relief, findsNothing);
     expect(
       tester
-          .widget<TextFormField>(
-            find.byKey(const ValueKey('edit-field-Nombre completo')),
+          .widget<TextField>(
+            find.descendant(
+              of: find.byKey(const ValueKey('edit-field-Nombre completo')),
+              matching: find.byType(TextField),
+            ),
           )
           .controller!
           .text,
       sampleProfile.fullName,
     );
+    expect(find.text('Guardar'), findsNothing);
+    expect(find.text('Guardar cambios'), findsOneWidget);
+    expect(find.text('Tipo de perfil'), findsOneWidget);
+    expect(find.byTooltip('Añadir intereses'), findsNothing);
     await tester.ensureVisible(find.text('Editar intereses'));
     await tester.tap(find.text('Editar intereses'));
     await tester.pumpAndSettle();

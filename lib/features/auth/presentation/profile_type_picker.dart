@@ -12,10 +12,10 @@ extension AccessProfile on UserType {
     UserType.business => 'Negocio',
   };
   String get shortDescription => switch (this) {
-    UserType.general => 'Descubre y conecta',
-    UserType.creator => 'Comparte tu trabajo',
-    UserType.entrepreneur => 'Presenta tus productos y servicios',
-    UserType.business => 'Ofrece servicios, espacios y eventos',
+    UserType.general => 'Explora y conecta con tu comunidad.',
+    UserType.creator => 'Comparte tu trabajo y colabora.',
+    UserType.entrepreneur => 'Da a conocer tu marca y lo que ofreces.',
+    UserType.business => 'Muestra tus servicios y dónde encontrarte.',
   };
   String get nameLabel => switch (this) {
     UserType.general => 'Tu nombre',
@@ -56,62 +56,138 @@ class ProfileTypePicker extends StatelessWidget {
   Widget build(BuildContext context) => RadioGroup<UserType>(
     groupValue: value,
     onChanged: enabled ? onChanged : (_) {},
-    child: LayoutBuilder(
-      builder: (context, bounds) {
-        final columns =
-            bounds.maxWidth >= 480 &&
-                MediaQuery.textScalerOf(context).scale(1) <= 1.3
-            ? 2
-            : 1;
-        return Wrap(
-          spacing: 16,
-          runSpacing: 16,
-          children: [
-            for (final type in UserType.values)
-              SizedBox(
-                width: (bounds.maxWidth - (columns - 1) * 16) / columns,
-                child: MareaSurface(
-                  color: value == type ? AppColors.mint : AppColors.paper,
-                  inset: value == type,
-                  radius: 20,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: value == type
-                            ? AppColors.actionBlue
-                            : AppColors.softBorder,
-                        width: value == type ? 2 : 1,
+    child: Column(
+      spacing: 8,
+      children: [
+        for (final type in UserType.values)
+          _ProfileTypeOption(
+            key: Key('register-type-${type.name}'),
+            type: type,
+            enabled: enabled,
+          ),
+      ],
+    ),
+  );
+}
+
+class _ProfileTypeOption extends StatefulWidget {
+  const _ProfileTypeOption({
+    required this.type,
+    required this.enabled,
+    super.key,
+  });
+
+  final UserType type;
+  final bool enabled;
+
+  @override
+  State<_ProfileTypeOption> createState() => _ProfileTypeOptionState();
+}
+
+class _ProfileTypeOptionState extends State<_ProfileTypeOption> {
+  final _focus = FocusNode();
+
+  @override
+  void dispose() {
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => MergeSemantics(
+    child: RawRadio<UserType>(
+      value: widget.type,
+      focusNode: _focus,
+      autofocus: false,
+      toggleable: false,
+      enabled: widget.enabled,
+      mouseCursor: WidgetStateMouseCursor.clickable,
+      groupRegistry: RadioGroup.maybeOf<UserType>(context),
+      builder: (context, state) {
+        final focused = state.states.contains(WidgetState.focused);
+        final hovered = state.states.contains(WidgetState.hovered);
+        final selected = state.value == true;
+        return Container(
+          constraints: const BoxConstraints(minHeight: 64),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.mint
+                : hovered || focused
+                ? AppColors.mist
+                : AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: focused
+                  ? AppColors.actionBlue
+                  : selected
+                  ? AppColors.aquaDark
+                  : AppColors.border,
+              width: focused ? 2 : 1,
+              strokeAlign: BorderSide.strokeAlignInside,
+            ),
+          ),
+          child: Row(
+            children: [
+              AccessProfileIcon(type: widget.type),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(
+                      AppLocalizations.tr(widget.type.label),
+                      style: const TextStyle(
+                        color: AppColors.brandNavy,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    child: RadioListTile<UserType>(
-                      key: Key('register-type-${type.name}'),
-                      value: type,
-                      enabled: enabled,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      secondary: ProfileTypeIcon(type: type),
-                      title: Text(
-                        AppLocalizations.tr(type.label),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 15,
-                        ),
-                      ),
-                      subtitle: Text(
-                        AppLocalizations.tr(type.shortDescription),
-                        style: const TextStyle(fontSize: 12),
+                    Text(
+                      AppLocalizations.tr(widget.type.shortDescription),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-          ],
+              const SizedBox(width: 8),
+              ExcludeSemantics(
+                child: Icon(
+                  selected
+                      ? Icons.check_circle_rounded
+                      : Icons.radio_button_unchecked_rounded,
+                  color: selected
+                      ? AppColors.aquaDark
+                      : AppColors.textSecondary,
+                  size: 22,
+                ),
+              ),
+            ],
+          ),
         );
       },
+    ),
+  );
+}
+
+class AccessProfileIcon extends StatelessWidget {
+  const AccessProfileIcon({required this.type, super.key});
+
+  final UserType type;
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: type.tint,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(type.icon, color: AppColors.brandNavy, size: 20),
     ),
   );
 }

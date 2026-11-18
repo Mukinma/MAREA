@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:marea/shared/widgets/marea_skeleton.dart';
+import 'package:marea/features/auth/presentation/splash_screen.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marea/app.dart';
@@ -201,7 +201,7 @@ void main() {
     );
 
     await tester.pumpWidget(MareaApp(controller: controller));
-    expect(find.byType(MareaSkeleton), findsOneWidget);
+    expect(find.byType(SplashScreen), findsOneWidget);
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('welcome-register')), findsOneWidget);

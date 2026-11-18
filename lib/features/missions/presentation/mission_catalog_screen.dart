@@ -64,12 +64,14 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    widget.session.missionChanges.addListener(_catalog.refresh);
     _catalog.start();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    widget.session.missionChanges.removeListener(_catalog.refresh);
     _catalog.dispose();
     _search.dispose();
     _scroll.dispose();
@@ -136,15 +138,6 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
     },
   );
 
-  Future<void> _createMission() async {
-    FocusScope.of(context).unfocus();
-    final id = await context.push<String>('/missions/new');
-    if (!mounted || id == null) return;
-    final refreshed = _catalog.refresh();
-    await _openMission(id);
-    await refreshed;
-  }
-
   MissionBookmark? _bookmark(String id) {
     if (!_catalog.canSave) return null;
     return (
@@ -167,27 +160,12 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
     if (mounted) await _catalog.refreshMission(id);
   }
 
-  Widget _catalogActions() => Wrap(
-    spacing: 6,
-    children: [
-      TextButton.icon(
-        onPressed: () => _open('/missions', parameters: {'section': 'saved'}),
-        icon: const Icon(Icons.bookmark_border_rounded, size: 18),
-        label: const Text('Guardadas'),
-      ),
-      TextButton.icon(
-        onPressed: _createMission,
-        icon: const Icon(Icons.add_rounded, size: 19),
-        label: const Text('Crear misión'),
-      ),
-    ],
-  );
-
   Widget _searchBar() => MissionCatalogSearchBar(
     text: _search,
     onChanged: _catalog.type,
     onSubmitted: (value) => _catalog.type(value, immediate: true),
     onFilters: _filters,
+    onSaved: () => _open('/missions', parameters: {'section': 'saved'}),
     activeFilterCount:
         (_catalog.target != null ? 1 : 0) +
         (_catalog.showNearby &&
@@ -365,8 +343,7 @@ class _MissionCatalogScreenState extends State<MissionCatalogScreen>
                             ),
                           ),
                         if (!hideEmptyResults)
-                          _box(_catalogToolbar(context), top: 14),
-                        _box(_catalogActions(), bottom: 6),
+                          _box(_catalogToolbar(context), top: 16, bottom: 8),
                       ],
                       SliverPadding(
                         padding: const EdgeInsets.symmetric(

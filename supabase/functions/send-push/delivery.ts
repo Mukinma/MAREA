@@ -3,13 +3,16 @@ export type PushJob = {
   recipientId: string;
   token: string;
   kind: string;
+  category?: string;
   eventVersion: string;
   title: string;
   body: string;
   ttlSeconds?: number;
 };
 export function buildFcmMessage(job: PushJob) {
-  const marea = job.kind === "marea_message";
+  const marea = job.category === undefined
+    ? job.kind === "marea_message"
+    : job.category === "reminders";
   return {
     message: {
       token: job.token,
@@ -18,6 +21,7 @@ export function buildFcmMessage(job: PushJob) {
         notification_id: job.notificationId,
         recipient_id: job.recipientId,
         kind: job.kind,
+        ...(job.category === undefined ? {} : { category: job.category }),
         event_version: job.eventVersion,
       },
       android: {

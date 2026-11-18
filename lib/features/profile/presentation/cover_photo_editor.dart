@@ -4,6 +4,8 @@ import 'dart:ui' as ui;
 import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/core/errors/app_failure.dart';
+import 'package:marea/core/theme/app_radius.dart';
+import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
 import 'package:marea/features/profile/presentation/profile_waves.dart';
 
@@ -63,10 +65,9 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
     } catch (_) {
       if (mounted) {
         setState(
-          () => _error =
-              AppLocalizations.tr(
-                'No pudimos abrir esta imagen. Prueba con otra fotografía.',
-              ),
+          () => _error = AppLocalizations.tr(
+            'No pudimos abrir esta imagen. Prueba con otra fotografía.',
+          ),
         );
       }
     }
@@ -120,7 +121,7 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
       if (mounted) {
         setState(
           () => _error = error is AppFailure
-              ? AppLocalizations.tr(error.message)
+              ? error.message
               : AppLocalizations.tr(
                   'No pudimos preparar tu portada. Prueba otra fotografía.',
                 ),
@@ -134,140 +135,126 @@ class _CoverPhotoEditorState extends State<CoverPhotoEditor> {
   }
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            AppLocalizations.tr('Ajustar foto de portada'),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            AppLocalizations.tr(
-              'Arrastra la foto para encuadrarla. Pellizca o usa los botones para acercarla.',
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (_image == null && _error == null)
-            const Center(child: CircularProgressIndicator()),
-          if (_image != null)
-            LayoutBuilder(
-              builder: (context, constraints) => GestureDetector(
-                key: const Key('cover-photo-crop'),
-                onScaleStart: (details) {
-                  _startZoom = _zoom;
-                  final rect = _rect;
-                  _startPosition = Offset(
-                    rect.center.dx / _image!.width,
-                    rect.center.dy / _image!.height,
-                  );
-                  _startFocal = details.localFocalPoint;
-                },
-                onScaleUpdate: (details) {
-                  final zoom = (_startZoom * details.scale).clamp(1.0, 4.0);
-                  final source = coverPhotoRect(
-                    Size(_image!.width.toDouble(), _image!.height.toDouble()),
-                    zoom,
-                    _startPosition,
-                  );
-                  final delta = details.localFocalPoint - _startFocal;
-                  setState(() {
-                    _zoom = zoom;
-                    _position = Offset(
-                      (_startPosition.dx -
-                              delta.dx *
-                                  source.width /
-                                  constraints.maxWidth /
-                                  _image!.width)
-                          .clamp(0.0, 1.0),
-                      (_startPosition.dy -
-                              delta.dy *
-                                  source.height /
-                                  (constraints.maxWidth / 2) /
-                                  _image!.height)
-                          .clamp(0.0, 1.0),
-                    );
-                  });
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: AspectRatio(
-                    aspectRatio: 2,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        CustomPaint(
-                          painter: _CoverPhotoPainter(_image!, _rect),
-                        ),
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          height: constraints.maxWidth * .32,
-                          child: ProfileWaves(colors: widget.waveColors),
-                        ),
-                      ],
+  Widget build(BuildContext context) => ProfileSheetContent(
+    title: AppLocalizations.tr('Ajustar foto de portada'),
+    children: [
+      Text(
+        AppLocalizations.tr(
+          'Arrastra la foto para encuadrarla. Pellizca o usa los botones para acercarla.',
+        ),
+      ),
+      if (_image == null && _error == null)
+        const Center(child: CircularProgressIndicator()),
+      if (_image != null)
+        LayoutBuilder(
+          builder: (context, constraints) => GestureDetector(
+            key: const Key('cover-photo-crop'),
+            onScaleStart: (details) {
+              _startZoom = _zoom;
+              final rect = _rect;
+              _startPosition = Offset(
+                rect.center.dx / _image!.width,
+                rect.center.dy / _image!.height,
+              );
+              _startFocal = details.localFocalPoint;
+            },
+            onScaleUpdate: (details) {
+              final zoom = (_startZoom * details.scale).clamp(1.0, 4.0);
+              final source = coverPhotoRect(
+                Size(_image!.width.toDouble(), _image!.height.toDouble()),
+                zoom,
+                _startPosition,
+              );
+              final delta = details.localFocalPoint - _startFocal;
+              setState(() {
+                _zoom = zoom;
+                _position = Offset(
+                  (_startPosition.dx -
+                          delta.dx *
+                              source.width /
+                              constraints.maxWidth /
+                              _image!.width)
+                      .clamp(0.0, 1.0),
+                  (_startPosition.dy -
+                          delta.dy *
+                              source.height /
+                              (constraints.maxWidth / 2) /
+                              _image!.height)
+                      .clamp(0.0, 1.0),
+                );
+              });
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.medium),
+              child: AspectRatio(
+                aspectRatio: 2,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CustomPaint(painter: _CoverPhotoPainter(_image!, _rect)),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      height: constraints.maxWidth * .32,
+                      child: ProfileWaves(colors: widget.waveColors),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
-          Wrap(
-            alignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              IconButton(
-                tooltip: AppLocalizations.tr('Alejar foto'),
-                onPressed: _image == null || _exporting || _zoom <= 1
-                    ? null
-                    : () =>
-                          setState(() => _zoom = (_zoom - .25).clamp(1.0, 4.0)),
-                icon: const Icon(Icons.remove),
-              ),
-              TextButton(
-                onPressed: _exporting
-                    ? null
-                    : () => setState(() {
-                        _zoom = 1;
-                        _position = const Offset(.5, .5);
-                      }),
-                child: Text(AppLocalizations.tr('Restablecer encuadre')),
-              ),
-              IconButton(
-                tooltip: AppLocalizations.tr('Acercar foto'),
-                onPressed: _image == null || _exporting || _zoom >= 4
-                    ? null
-                    : () =>
-                          setState(() => _zoom = (_zoom + .25).clamp(1.0, 4.0)),
-                icon: const Icon(Icons.add),
-              ),
-            ],
           ),
-          if (_error != null)
-            Text(
-              _error!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-          const SizedBox(height: 12),
-          FilledButton(
-            onPressed: _image == null || _exporting ? null : _usePhoto,
-            child: Text(
-              _exporting
-                  ? AppLocalizations.tr('Preparando foto…')
-                  : AppLocalizations.tr('Usar foto'),
-            ),
+        ),
+      Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          IconButton(
+            tooltip: AppLocalizations.tr('Alejar foto'),
+            onPressed: _image == null || _exporting || _zoom <= 1
+                ? null
+                : () => setState(() => _zoom = (_zoom - .25).clamp(1.0, 4.0)),
+            icon: const Icon(Icons.remove),
           ),
           TextButton(
-            onPressed: _exporting ? null : () => Navigator.pop(context),
-            child: Text(AppLocalizations.tr('Cancelar')),
+            onPressed: _exporting
+                ? null
+                : () => setState(() {
+                    _zoom = 1;
+                    _position = const Offset(.5, .5);
+                  }),
+            child: Text(AppLocalizations.tr('Restablecer encuadre')),
+          ),
+          IconButton(
+            tooltip: AppLocalizations.tr('Acercar foto'),
+            onPressed: _image == null || _exporting || _zoom >= 4
+                ? null
+                : () => setState(() => _zoom = (_zoom + .25).clamp(1.0, 4.0)),
+            icon: const Icon(Icons.add),
           ),
         ],
       ),
-    ),
+      if (_error case final error?)
+        Semantics(
+          liveRegion: true,
+          child: Text(
+            error,
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+        ),
+      FilledButton(
+        onPressed: _image == null || _exporting ? null : _usePhoto,
+        child: Text(
+          _exporting
+              ? AppLocalizations.tr('Preparando foto…')
+              : AppLocalizations.tr('Usar foto'),
+        ),
+      ),
+      TextButton(
+        onPressed: _exporting ? null : () => Navigator.pop(context),
+        child: Text(AppLocalizations.tr('Cancelar')),
+      ),
+    ],
   );
 }
 

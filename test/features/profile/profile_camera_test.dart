@@ -65,30 +65,27 @@ void main() {
         name: 'avatar.png',
         mimeType: 'image/png',
       );
+      final preview = find.byWidgetPredicate(
+        (widget) => widget is ProfileImage && widget.preview != null,
+      );
       await tester.runAsync(() async {
         await tester.tap(action);
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+        final deadline = DateTime.now().add(const Duration(seconds: 5));
+        while (preview.evaluate().isEmpty && DateTime.now().isBefore(deadline)) {
+          await tester.pump();
+          await Future<void>.delayed(const Duration(milliseconds: 20));
+        }
       });
       await tester.pumpAndSettle();
       expect(gallery.calls, 2);
-      expect(
-        tester
-            .widgetList<ProfileImage>(find.byType(ProfileImage))
-            .where((image) => image.preview != null),
-        hasLength(1),
-      );
+      expect(preview, findsOneWidget);
       expect(find.text('Guardar cambios'), findsOneWidget);
 
       gallery.result = null;
       await tester.tap(action);
       await tester.pumpAndSettle();
       expect(gallery.calls, 3);
-      expect(
-        tester
-            .widgetList<ProfileImage>(find.byType(ProfileImage))
-            .where((image) => image.preview != null),
-        hasLength(1),
-      );
+      expect(preview, findsOneWidget);
       final cover = find.byKey(const Key('edit-cover-action'));
       await tester.ensureVisible(cover);
       await tester.tap(cover);

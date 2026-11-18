@@ -214,6 +214,7 @@ class MapSurfaceOptions {
     this.onLoaded,
     this.onClusterTap,
     this.preset = MapVisualPreset.context,
+    this.captureGestures = false,
   });
   final MapVisualPreset preset;
   final MapSurfaceController controller;
@@ -225,6 +226,7 @@ class MapSurfaceOptions {
   final ValueChanged<String>? onError;
   final VoidCallback? onLoaded;
   final VoidCallback? onClusterTap;
+  final bool captureGestures;
 }
 
 typedef MapSurfaceBuilder = Widget Function(BuildContext, MapSurfaceOptions);

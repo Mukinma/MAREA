@@ -66,14 +66,11 @@ Future<void> _tapAsync(WidgetTester tester, Finder finder) async {
   await tester.ensureVisible(finder);
   await tester.runAsync(() async {
     await tester.tap(finder);
-    await Future<void>.delayed(const Duration(milliseconds: 150));
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
   });
-  for (var i = 0; i < 3; i++) {
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
-    );
-  }
   await tester.pumpAndSettle();
 }
 
@@ -359,6 +356,7 @@ void main() {
       await tester.tap(find.byKey(const Key('edit-cover-action')));
       await tester.pumpAndSettle();
       await _tapAsync(tester, find.text('Galería'));
+      await tester.ensureVisible(find.text('Cancelar'));
       await tester.tap(find.text('Cancelar'));
       await tester.pumpAndSettle();
       expect(

@@ -7,6 +7,7 @@ abstract interface class ProfileRepository {
   Future<Profile> getCurrentProfile();
   Future<Profile> completeInitialProfile(InitialProfileInput input);
   Future<Profile> updateCurrentProfile(ProfileUpdateInput input);
+  Future<Profile> updateGoals(List<String> goals);
 }
 
 class SupabaseProfileRepository implements ProfileRepository {
@@ -69,11 +70,18 @@ class SupabaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  Future<Profile> updateCurrentProfile(ProfileUpdateInput input) async {
+  Future<Profile> updateCurrentProfile(ProfileUpdateInput input) =>
+      _update(input.toJson());
+
+  @override
+  Future<Profile> updateGoals(List<String> goals) =>
+      _update({'goals': ProfilePreferences.normalizeGoals(goals)});
+
+  Future<Profile> _update(Map<String, dynamic> fields) async {
     try {
       final row = await _client
           .from('profiles')
-          .update(input.toJson())
+          .update(fields)
           .eq('id', _currentUserId)
           .select()
           .single();

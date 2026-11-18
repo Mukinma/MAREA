@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/features/community/models/community_models.dart';
+import 'package:marea/features/community/models/report_receipt.dart';
+import 'package:marea/features/community/data/community_reports_repository.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -91,7 +93,8 @@ abstract interface class CommunityRepository {
   Future<void> removeMissionImage(String path);
 }
 
-class SupabaseCommunityRepository implements CommunityRepository {
+class SupabaseCommunityRepository
+    implements CommunityRepository, CommunityReportsRepository {
   SupabaseCommunityRepository(this._client);
   final SupabaseClient _client;
   static const pageSize = 30;
@@ -568,6 +571,51 @@ class SupabaseCommunityRepository implements CommunityRepository {
         .order('id', ascending: false)
         .range(max(0, offset), max(0, offset) + pageSize - 1);
     return rows.map(ContentReport.fromJson).toList();
+  });
+
+  @override
+  Future<void> reportAccount(String profileId, String reason) => _run(() async {
+    final description = reason.trim();
+    if (profileId == _userId || description.length < 5 || description.length > 500) {
+      throw const AppFailure('Describe el motivo usando entre 5 y 500 caracteres.');
+    }
+    await _client.rpc('report_profile', params: {
+      'target_profile': profileId,
+      'reason_text': description,
+    });
+  });
+
+  @override
+  Future<List<ReportReceipt>> myReports({int offset = 0}) => _run(() async {
+    final start = max(0, offset);
+    final rows = await _client
+        .from('report_receipts')
+        .select('id, kind, state, target_unavailable, created_at')
+        .eq('reporter_id', _userId)
+        .order('created_at', ascending: false)
+        .order('id', ascending: false)
+        .range(start, start + CommunityReportsRepository.pageSize - 1);
+    return rows.map(ReportReceipt.fromJson).toList();
+  });
+
+  @override
+  Future<List<ReportedAccount>> accountReports({int offset = 0}) => _run(() async {
+    final start = max(0, offset);
+    final rows = await _client
+        .from('profile_reports')
+        .select('id, target_profile_id, reason, state')
+        .order('created_at', ascending: false)
+        .order('id', ascending: false)
+        .range(start, start + CommunityReportsRepository.pageSize - 1);
+    return rows.map(ReportedAccount.fromJson).toList();
+  });
+
+  @override
+  Future<void> markReportReviewed(String id, {required bool account}) => _run(() async {
+    await _client.rpc('mark_report_reviewed', params: {
+      'report_uuid': id,
+      'is_account': account,
+    });
   });
 
   @override

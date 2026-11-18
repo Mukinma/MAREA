@@ -43,7 +43,7 @@ class FeaturedMissionCard extends StatelessWidget {
       ],
     );
     final description = Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 12, 9),
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 12, 12, 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,9 +61,9 @@ class FeaturedMissionCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           _MissionTitle(info.title, featured: true),
-          const SizedBox(height: 7),
+          const SizedBox(height: 8),
           _MissionSchedule(info: info),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Align(
             alignment: AlignmentDirectional.centerEnd,
             child: FilledButton(
@@ -502,14 +502,14 @@ class _CategoryTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visual = CategoryVisuals.forProfileInterest(category);
+    final visual = CategoryVisuals.forMission(category);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: visual.color,
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         child: Text(
           communityCategories[category] ?? category,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -527,7 +527,7 @@ class _CategoryTag extends StatelessWidget {
 TextStyle? _metadataStyle(BuildContext context) => Theme.of(context)
     .textTheme
     .bodySmall
-    ?.copyWith(color: _metadataColor, height: 1.2, letterSpacing: 0);
+    ?.copyWith(color: _metadataColor, height: 1.3, letterSpacing: 0);
 
 class _MissionLocation extends StatelessWidget {
   const _MissionLocation(this.info);
@@ -592,8 +592,8 @@ class _MissionSchedule extends StatelessWidget {
   Widget build(BuildContext context) {
     final style = _metadataStyle(context);
     return Wrap(
-      spacing: 8,
-      runSpacing: 3,
+      spacing: 10,
+      runSpacing: 4,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Row(
@@ -705,7 +705,7 @@ class _MissionCoverState extends State<_MissionCover> {
 
   @override
   Widget build(BuildContext context) {
-    final visual = CategoryVisuals.forProfileInterest(widget.mission.category);
+    final visual = CategoryVisuals.forMission(widget.mission.category);
     final fallback = ColoredBox(
       color: visual.color,
       child: Align(

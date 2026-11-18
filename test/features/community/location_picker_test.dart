@@ -93,8 +93,9 @@ Future<void> _open(
   WidgetTester tester, {
   PostLocationSelection? initial,
   ValueChanged<PostLocationSelection?>? onSelection,
+  Size size = const Size(1000, 1000),
 }) async {
-  tester.view.physicalSize = const Size(1000, 1000);
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -132,6 +133,28 @@ Future<void> _search(WidgetTester tester, String query) async {
 }
 
 void main() {
+  testWidgets(
+    'the compact map retains gestures and search works with the keyboard',
+    (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      addTearDown(tester.view.resetViewInsets);
+      await _open(tester, size: const Size(320, 600));
+      expect(
+        tester
+            .widget<FakeMapSurface>(find.byType(FakeMapSurface))
+            .options
+            .captureGestures,
+        isTrue,
+      );
+      tester.view.viewInsets = const FakeViewPadding(bottom: 250);
+      await tester.enterText(find.byType(TextField), 'Manzanillo');
+      await tester.pumpAndSettle();
+      expect(find.byTooltip('Buscar').hitTestable(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets(
     'opening and choosing a map point never requests GPS permission',
     (tester) async {

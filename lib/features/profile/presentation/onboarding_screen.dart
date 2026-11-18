@@ -1,13 +1,11 @@
 import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/features/auth/presentation/access_layout.dart';
 import 'package:marea/features/auth/presentation/profile_type_picker.dart';
 import 'package:marea/features/profile/models/profile.dart';
-import 'package:marea/shared/widgets/auth_layout.dart';
 import 'package:marea/shared/widgets/primary_button.dart';
-import 'package:marea/shared/widgets/session_feedback.dart';
 
 class PreferenceChips extends StatelessWidget {
   const PreferenceChips({
@@ -53,47 +51,49 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   UserType? _type;
+
+  Future<void> _confirm() async {
+    final controller = widget.controller;
+    final profile = controller.profile;
+    final type = _type;
+    if (controller.isBusy || profile == null || type == null) return;
+    await controller.completeInitialProfile(
+      InitialProfileInput(
+        userType: type,
+        interests: profile.interests,
+        goals: profile.goals,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: widget.controller,
-    builder: (context, _) => AuthLayout(
-      register: true,
+    builder: (context, _) => AccessLayout(
+      title: AppLocalizations.tr('Elige tu perfil'),
+      description: AppLocalizations.tr(
+        'Elige cómo quieres participar en Marea. El tipo de perfil queda fijo al confirmar.',
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            AppLocalizations.tr('Elige tu perfil'),
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 24),
           ProfileTypePicker(
             value: _type,
             enabled: !widget.controller.isBusy,
             onChanged: (v) => setState(() => _type = v),
           ),
-          const SizedBox(height: 16),
-          Text(
-            AppLocalizations.tr('El tipo de perfil queda fijo.'),
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-          ),
-          SessionFeedback(controller: widget.controller),
+          if (widget.controller.failure?.message case final message?) ...[
+            const SizedBox(height: 16),
+            AccessFeedback(message: message),
+          ],
           const SizedBox(height: 24),
           PrimaryButton(
             label: AppLocalizations.tr('Confirmar y entrar'),
+            loadingLabel: AppLocalizations.tr('Confirmando perfil…'),
             isLoading: widget.controller.isBusy,
-            onPressed: _type == null
+            onPressed: _type == null || widget.controller.isBusy
                 ? null
-                : () async {
-                    final before = widget.controller.profile!;
-                    final ok = await widget.controller.completeInitialProfile(
-                      InitialProfileInput(
-                        userType: _type!,
-                        interests: before.interests,
-                        goals: before.goals,
-                      ),
-                    );
-                    if (ok && context.mounted) context.go('/home');
-                  },
+                : _confirm,
           ),
           TextButton(
             onPressed: widget.controller.isBusy

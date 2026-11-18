@@ -34,7 +34,7 @@ void main() {
       tester.widget<PrimaryButton>(find.byType(PrimaryButton)).onPressed,
       isNotNull,
     );
-    expect(find.text('El tipo de perfil queda fijo.'), findsOneWidget);
+    expect(find.textContaining('El tipo de perfil queda fijo'), findsOneWidget);
     expect(find.text('Ahora no'), findsNothing);
   });
   testWidgets(

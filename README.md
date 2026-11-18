@@ -54,6 +54,26 @@ un cliente contra un esquema desactualizado. Ver [gate de despliegue](tool/READM
 
 Los tokens visuales están documentados en [`docs/design-system.md`](docs/design-system.md). Los assets provisionales de mascota permanecen desacoplados hasta su aprobación; logo y estados actuales usan recursos vectoriales propios del código.
 
+### Publicar los nuevos ajustes de cuenta
+
+Ensaya la migración del orden del catálogo de misiones y las cuatro de
+Configuración del 18 de noviembre de 2026. El historial de producción registra
+`034_profile_wave_colors.sql` y `035_profile_public_interests.sql`. Las variantes
+históricas de esos números se reconcilian mediante las migraciones de historias
+ya aplicadas. El ensayo y la simulación de producción deben enumerar las cinco
+migraciones previstas. Las migraciones de AR y panoramas siguen su propia entrega.
+
+Tras aplicar las migraciones, despliega `send-push`, `delete-account`,
+`profile-media` y `geocoding`. Ejecuta `node tool/check_backend_contract.mjs`
+y verifica Google, la inscripción TOTP y los avisos de Android con cuentas de
+prueba. Los avisos existentes siguen activos durante la transición. Cada
+instalación se vincula a su sesión al abrir MAREA. Al revocar una sesión, se
+suspenden las instalaciones aún sin vincular de esa cuenta.
+
+El idioma se elige desde Configuración. La traducción de publicaciones y misiones
+se ejecuta con ML Kit en Android e iOS y con las APIs locales en navegadores
+compatibles. ML Kit requiere iOS 15.5 o posterior.
+
 ## Crear y configurar Supabase
 
 La configuración del backend se realiza con la CLI o desde el panel de

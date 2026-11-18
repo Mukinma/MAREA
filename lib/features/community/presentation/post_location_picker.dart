@@ -5,6 +5,8 @@ import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/shared/widgets/marea_panel.dart';
 
 import 'package:flutter/material.dart';
+import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/theme/app_radius.dart';
 import 'package:marea/core/maps/map_surface.dart';
 import 'package:marea/core/maps/location_map.dart';
 import 'package:marea/core/maps/map_overlay.dart';
@@ -159,13 +161,9 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
       point.longitude >= -180 &&
       point.longitude <= 180;
 
-  String _pointLabel(LatLng point) => AppLocalizations.trTemplate(
-    'Ubicación seleccionada ({latitude}, {longitude})',
-    {
-      'latitude': point.latitude.toStringAsFixed(6),
-      'longitude': point.longitude.toStringAsFixed(6),
-    },
-  );
+  String _pointLabel(LatLng point) =>
+      'Ubicación seleccionada (${point.latitude.toStringAsFixed(6)}, '
+      '${point.longitude.toStringAsFixed(6)})';
 
   String _boundedLabel(String label) {
     final trimmed = label.trim();
@@ -251,9 +249,7 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
   }
 
   String _locationErrorMessage(Object error) {
-    if (error is DeviceLocationFailure) {
-      return AppLocalizations.tr(error.message);
-    }
+    if (error is DeviceLocationFailure) return error.message;
     final code = error is StateError ? error.message.toString() : '';
     final details = error.toString().toLowerCase();
     if (code == 'location_disabled') {
@@ -321,213 +317,252 @@ class _PostLocationPickerState extends State<_PostLocationPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.sizeOf(context).height * .88,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 12, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    AppLocalizations.tr('Elegir ubicación'),
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-                  ),
-                ),
-                IconButton(
-                  tooltip: AppLocalizations.tr('Cerrar'),
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _search,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (_) => _findPlaces(),
-                    onChanged: (_) {
-                      ++_searchGeneration;
-                      setState(() {
-                        _results = [];
-                        _searching = false;
-                        _message = null;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.tr(
-                        'Buscar lugar o dirección',
-                      ),
-                      prefixIcon: Icon(Icons.search),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton.filledTonal(
-                  tooltip: AppLocalizations.tr(
-                    _searching ? 'Buscando…' : 'Buscar',
-                  ),
-                  onPressed: _searching ? null : _findPlaces,
-                  icon: const Icon(Icons.arrow_forward),
-                ),
-              ],
-            ),
-          ),
-          if (_results.isNotEmpty)
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 150),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _results.length,
-                itemBuilder: (_, index) {
-                  final result = _results[index];
-                  return ListTile(
-                    dense: true,
-                    leading: const Icon(Icons.place_outlined),
-                    title: Text(result.label, maxLines: 2),
-                    onTap: () {
-                      final point = LatLng(
-                        result.coordinates.latitude,
-                        result.coordinates.longitude,
-                      );
-                      _selectPoint(
-                        point,
-                        label: result.label,
-                        city: result.city,
-                      );
-                      _moveMap(point);
-                    },
-                  );
-                },
-              ),
-            ),
-          if (_message != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  _message!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ),
-            ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Stack(
-                  children: [
-                    LocationMap(
-                      controller: _mapController,
-                      ornamentBottom: 72,
-                      point: _point,
-                      initialZoom: widget.initial == null ? 5 : 15,
-                      onReady: () => _mapReady = true,
-                      onTap: _selectPoint,
-                      onGesture: () => ++_cameraGestureGeneration,
-                    ),
-                    Positioned(
-                      right: 12,
-                      bottom: 12,
-                      child: MapOverlay(
-                        child: FloatingActionButton.small(
-                          heroTag: 'post-location-current',
-                          onPressed: _locating ? null : _useCurrentLocation,
-                          tooltip: AppLocalizations.tr(
-                            'Usar mi ubicación actual',
-                          ),
-                          child: _locating
-                              ? const MareaSkeleton(kind: SkeletonKind.list)
-                              : const Icon(Icons.my_location),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final largeText = MediaQuery.textScalerOf(context).scale(16) > 21;
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: SizedBox(
+          height: screenHeight * .88,
+          child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  _label.isEmpty
-                      ? AppLocalizations.tr('Toca el mapa para elegir un punto')
-                      : _label,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                if (_cityLookupFailed)
-                  TextButton.icon(
-                    onPressed: () => _resolvePoint(
-                      _geocodingPoint(),
-                      ++_selectionGeneration,
-                    ),
-                    icon: const Icon(Icons.refresh),
-                    label: Text(AppLocalizations.tr('Reintentar ubicación')),
-                  ),
-                const SizedBox(height: 4),
-                SegmentedButton<PostLocationPrecision>(
-                  segments: [
-                    ButtonSegment(
-                      value: PostLocationPrecision.exact,
-                      label: Text(AppLocalizations.tr('Exacta')),
-                      icon: Icon(Icons.gps_fixed),
-                    ),
-                    ButtonSegment(
-                      value: PostLocationPrecision.approximate,
-                      label: Text(AppLocalizations.tr('Aproximada')),
-                      icon: Icon(Icons.location_searching),
-                    ),
-                  ],
-                  selected: {_precision},
-                  onSelectionChanged: (value) {
-                    final generation = ++_selectionGeneration;
-                    setState(() {
-                      _precision = value.first;
-                      _city = null;
-                    });
-                    _resolvePoint(
-                      _geocodingPoint(),
-                      generation,
-                      replaceLabel: false,
-                    );
-                  },
-                ),
-                const SizedBox(height: 8),
-                FilledButton.icon(
-                  onPressed: _label.isEmpty
-                      ? null
-                      : () => Navigator.pop(
-                          context,
-                          PostLocationSelection(
-                            label:
-                                _precision == PostLocationPrecision.approximate
-                                ? AppLocalizations.tr('Zona aproximada')
-                                : _label,
-                            coordinates: _coordinates(),
-                            city: _city,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 12, 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Semantics(
+                          header: true,
+                          child: Text(
+                            AppLocalizations.tr('Elegir ubicación'),
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
-                  icon: const Icon(Icons.check),
-                  label: Text(AppLocalizations.tr('Usar esta ubicación')),
+                      ),
+                      IconButton(
+                        tooltip: 'Cerrar',
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _search,
+                          textInputAction: TextInputAction.search,
+                          onSubmitted: (_) => _findPlaces(),
+                          onChanged: (_) {
+                            ++_searchGeneration;
+                            setState(() {
+                              _results = [];
+                              _searching = false;
+                              _message = null;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            labelText: AppLocalizations.tr(
+                              'Buscar lugar o dirección',
+                            ),
+                            prefixIcon: Icon(Icons.search),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton.filledTonal(
+                        style: IconButton.styleFrom(
+                          minimumSize: const Size(48, 48),
+                        ),
+                        tooltip: _searching
+                            ? AppLocalizations.tr('Buscando…')
+                            : 'Buscar',
+                        onPressed: _searching ? null : _findPlaces,
+                        icon: const Icon(Icons.arrow_forward),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_results.isNotEmpty)
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 150),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _results.length,
+                      itemBuilder: (_, index) {
+                        final result = _results[index];
+                        return ListTile(
+                          dense: true,
+                          leading: const Icon(Icons.place_outlined),
+                          title: Text(result.label, maxLines: 2),
+                          onTap: () {
+                            FocusScope.of(context).unfocus();
+                            final point = LatLng(
+                              result.coordinates.latitude,
+                              result.coordinates.longitude,
+                            );
+                            _selectPoint(
+                              point,
+                              label: result.label,
+                              city: result.city,
+                            );
+                            _moveMap(point);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                if (_message != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        _message!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  height: (screenHeight * .39).clamp(164.0, 430.0),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.medium),
+                      child: Stack(
+                        children: [
+                          LocationMap(
+                            controller: _mapController,
+                            ornamentBottom: 72,
+                            captureGestures: true,
+                            point: _point,
+                            initialZoom: widget.initial == null ? 5 : 15,
+                            onReady: () => _mapReady = true,
+                            onTap: _selectPoint,
+                            onGesture: () => ++_cameraGestureGeneration,
+                          ),
+                          Positioned(
+                            right: 12,
+                            bottom: 12,
+                            child: MapOverlay(
+                              child: FloatingActionButton(
+                                backgroundColor: AppColors.surface,
+                                foregroundColor: AppColors.actionBlue,
+                                heroTag: 'post-location-current',
+                                onPressed: _locating
+                                    ? null
+                                    : _useCurrentLocation,
+                                tooltip: AppLocalizations.tr(
+                                  'Usar mi ubicación actual',
+                                ),
+                                child: _locating
+                                    ? const MareaSkeleton(
+                                        kind: SkeletonKind.list,
+                                      )
+                                    : const Icon(Icons.my_location),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        _label.isEmpty
+                            ? AppLocalizations.tr(
+                                'Toca el mapa para elegir un punto',
+                              )
+                            : _label,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      if (_cityLookupFailed)
+                        TextButton.icon(
+                          onPressed: () => _resolvePoint(
+                            _geocodingPoint(),
+                            ++_selectionGeneration,
+                          ),
+                          icon: const Icon(Icons.refresh),
+                          label: Text(
+                            AppLocalizations.tr('Reintentar ubicación'),
+                          ),
+                        ),
+                      const SizedBox(height: 4),
+                      SegmentedButton<PostLocationPrecision>(
+                        direction: largeText ? Axis.vertical : Axis.horizontal,
+                        segments: const [
+                          ButtonSegment(
+                            value: PostLocationPrecision.exact,
+                            label: Text('Exacta'),
+                            icon: Icon(Icons.gps_fixed),
+                          ),
+                          ButtonSegment(
+                            value: PostLocationPrecision.approximate,
+                            label: Text('Aproximada'),
+                            icon: Icon(Icons.location_searching),
+                          ),
+                        ],
+                        selected: {_precision},
+                        onSelectionChanged: (value) {
+                          final generation = ++_selectionGeneration;
+                          setState(() {
+                            _precision = value.first;
+                            _city = null;
+                          });
+                          _resolvePoint(
+                            _geocodingPoint(),
+                            generation,
+                            replaceLabel: false,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      FilledButton.icon(
+                        onPressed: _label.isEmpty
+                            ? null
+                            : () => Navigator.pop(
+                                context,
+                                PostLocationSelection(
+                                  label:
+                                      _precision ==
+                                          PostLocationPrecision.approximate
+                                      ? AppLocalizations.tr('Zona aproximada')
+                                      : _label,
+                                  coordinates: _coordinates(),
+                                  city: _city,
+                                ),
+                              ),
+                        icon: const Icon(Icons.check),
+                        label: Text(
+                          AppLocalizations.tr('Usar esta ubicación'),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -568,7 +603,7 @@ class _PostLocationViewer extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(AppLocalizations.tr('Cerrar')),
+          child: const Text('Cerrar'),
         ),
       ],
     );

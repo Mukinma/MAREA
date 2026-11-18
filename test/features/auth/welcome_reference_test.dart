@@ -10,7 +10,7 @@ void main() {
       testWidgets(
         'welcome keeps account actions reachable at $width / $scale',
         (tester) async {
-          tester.view.physicalSize = Size(width, 1000);
+          tester.view.physicalSize = Size(width, width < 600 ? 844 : 1000);
           tester.view.devicePixelRatio = 1;
           addTearDown(tester.view.resetPhysicalSize);
           addTearDown(tester.view.resetDevicePixelRatio);
@@ -47,8 +47,30 @@ void main() {
             findsOneWidget,
           );
           expect(find.textContaining('Conecta con artistas'), findsOneWidget);
+          final artwork = find.byWidgetPredicate(
+            (widget) =>
+                widget is Image &&
+                widget.image is AssetImage &&
+                (widget.image as AssetImage).assetName ==
+                    'assets/onboarding/bienvenida.webp',
+          );
+          expect(artwork, findsOneWidget);
+          final logo = find.byWidgetPredicate(
+            (widget) =>
+                widget is Image &&
+                widget.image is AssetImage &&
+                (widget.image as AssetImage).assetName ==
+                    'assets/brand/MAREA_LOGOTIPO.png',
+          );
+          expect(tester.getCenter(logo).dx, closeTo(width / 2, .01));
           expect(find.textContaining('Google'), findsNothing);
           expect(tester.takeException(), isNull);
+          if (scale == 1) {
+            expect(
+              find.byKey(const Key('welcome-register')).hitTestable(),
+              findsOneWidget,
+            );
+          }
           await tester.ensureVisible(find.byKey(const Key('welcome-register')));
           await tester.tap(find.byKey(const Key('welcome-register')));
           await tester.pumpAndSettle();

@@ -169,8 +169,9 @@ void main() {
             ),
           ),
           GoRoute(
-            path: '/profile',
-            builder: (_, _) => const Scaffold(body: Text('Perfil guardado')),
+            path: '/settings',
+            builder: (_, _) =>
+                const Scaffold(body: Text('Regresó a Configuración')),
           ),
         ],
       );
@@ -179,17 +180,22 @@ void main() {
         MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Arte'));
+      expect(find.text('Objetivos'), findsOneWidget);
+      expect(find.text('Arte'), findsNothing);
+      profiles.value = profiles.value.copyWith(
+        bio: 'Cambió en otro dispositivo',
+      );
       await tester.ensureVisible(find.text('Conocer y colaborar'));
       await tester.tap(find.text('Conocer y colaborar'));
       await tester.ensureVisible(find.byKey(const Key('setup-save')));
       await tester.tap(find.byKey(const Key('setup-save')));
       await tester.pumpAndSettle();
-      expect(profiles.value.interests, isEmpty);
+      expect(profiles.value.interests, ['arte']);
       expect(profiles.value.goals, isEmpty);
+      expect(profiles.value.bio, 'Cambió en otro dispositivo');
       expect(profiles.value.setupStep, 1);
       expect(profiles.value.userType, UserType.general);
-      expect(find.text('Perfil guardado'), findsOneWidget);
+      expect(find.text('Regresó a Configuración'), findsOneWidget);
       controller.clearFeedback();
     },
   );

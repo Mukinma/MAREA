@@ -15,6 +15,7 @@ class MissionCatalogSearchBar extends StatelessWidget {
     required this.onChanged,
     required this.onSubmitted,
     required this.onFilters,
+    required this.onSaved,
     required this.activeFilterCount,
     super.key,
   });
@@ -22,7 +23,7 @@ class MissionCatalogSearchBar extends StatelessWidget {
   final TextEditingController text;
   final ValueChanged<String> onChanged;
   final ValueChanged<String> onSubmitted;
-  final VoidCallback onFilters;
+  final VoidCallback onFilters, onSaved;
   final int activeFilterCount;
 
   @override
@@ -102,6 +103,15 @@ class MissionCatalogSearchBar extends StatelessWidget {
               child: const Icon(Icons.tune_rounded),
             ),
           ),
+        ),
+        IconButton(
+          tooltip: 'Misiones guardadas',
+          onPressed: onSaved,
+          style: IconButton.styleFrom(
+            minimumSize: const Size.square(48),
+            foregroundColor: AppColors.brandNavy,
+          ),
+          icon: const Icon(Icons.bookmark_border_rounded),
         ),
       ],
     ),
@@ -282,19 +292,8 @@ class _CategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final category = this.category;
-    final visual = CategoryVisuals.forProfileInterest(category ?? 'otros');
+    final visual = CategoryVisuals.forMission(category);
     final label = communityCategories[category] ?? 'Todas';
-    final isAll = category == null;
-    final onlyLabel = selected && !isAll;
-    final foreground = selected && isAll ? Colors.white : AppColors.brandNavy;
-    final fill = isAll
-        ? (selected ? AppColors.brandNavy : AppColors.surface)
-        : (selected
-              ? Color.alphaBlend(
-                  visual.accent.withValues(alpha: .35),
-                  visual.color,
-                )
-              : visual.color);
     final radius = BorderRadius.circular(AppRadius.medium);
     final extraHeight = (MediaQuery.textScalerOf(context).scale(12) - 12).clamp(
       0.0,
@@ -309,14 +308,11 @@ class _CategoryTile extends StatelessWidget {
             ? Duration.zero
             : const Duration(milliseconds: 160),
         decoration: BoxDecoration(
-          color: fill,
+          color: visual.color,
           borderRadius: radius,
           border: Border.all(
-            color: onlyLabel
-                ? visual.accent
-                : isAll && !selected
-                ? AppColors.border
-                : Colors.transparent,
+            color: selected ? visual.accent : Colors.transparent,
+            width: 2,
           ),
         ),
         child: Material(
@@ -333,18 +329,12 @@ class _CategoryTile extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (!onlyLabel) ...[
-                    Icon(
-                      isAll ? Icons.explore_outlined : visual.icon,
-                      size: 19,
-                      color: foreground,
-                    ),
-                    const SizedBox(height: 2),
-                  ],
+                  Icon(visual.icon, size: 19, color: AppColors.brandNavy),
+                  const SizedBox(height: 2),
                   Text(
                     label,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: foreground,
+                      color: AppColors.brandNavy,
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0,

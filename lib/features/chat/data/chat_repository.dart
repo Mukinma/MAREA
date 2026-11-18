@@ -15,7 +15,13 @@ abstract interface class ChatRepository {
   Stream<void> changes(String conversationId);
 }
 
-class SupabaseChatRepository implements ChatRepository {
+abstract interface class ChatPrivacyRepository {
+  Future<ChatPrivacySettings> privacySettings();
+  Future<void> setRequestAudience(ChatRequestAudience audience);
+  Future<void> block(String targetId, bool blocked);
+}
+
+class SupabaseChatRepository implements ChatRepository, ChatPrivacyRepository {
   SupabaseChatRepository(this.client);
   final SupabaseClient client;
   Future<T> _run<T>(Future<T> Function() operation) async {
@@ -27,12 +33,15 @@ class SupabaseChatRepository implements ChatRepository {
             (error.message.contains('request_chat') ||
                 error.message.contains('chat_'))) {
           throw const AppFailure(
-            'El chat todavía no está habilitado en este servicio. '
-            'Aplica la migración 022_private_chat.sql y vuelve a intentarlo.',
+            'Esta función de chat todavía no está disponible. Inténtalo más tarde.',
           );
         }
         final message = switch (error.message) {
           'chat_blocked' => 'Este chat está bloqueado.',
+          'chat_request_not_allowed' =>
+            'Esta cuenta no está recibiendo solicitudes de chat.',
+          'chat_target_unavailable' => 'Esta cuenta ya no está disponible.',
+          'chat_action_unavailable' => 'Esta solicitud ya no está disponible.',
           'chat_unavailable' => 'Este chat ya no está disponible.',
           'invalid_chat_message' => 'Escribe entre 1 y 2.000 caracteres.',
           _ => null,
@@ -42,6 +51,23 @@ class SupabaseChatRepository implements ChatRepository {
       throw AppFailureMapper.from(error);
     }
   }
+
+  @override
+  Future<ChatPrivacySettings> privacySettings() => _run(() async {
+    final result = await client.rpc('get_chat_privacy');
+    return ChatPrivacySettings.fromJson(
+      Map<String, dynamic>.from(result as Map),
+    );
+  });
+
+  @override
+  Future<void> setRequestAudience(ChatRequestAudience audience) =>
+      _run(() async {
+        await client.rpc(
+          'set_chat_request_audience',
+          params: {'audience': audience.name},
+        );
+      });
 
   @override
   Future<List<ChatConversation>> conversations() => _run(() async {

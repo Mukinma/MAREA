@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:marea/shared/widgets/marea_surface.dart';
 
 class MareaTextField extends StatelessWidget {
@@ -19,6 +20,9 @@ class MareaTextField extends StatelessWidget {
     this.maxLength,
     this.onFieldSubmitted,
     this.onChanged,
+    this.helperText,
+    this.inputFormatters,
+    this.outlined = false,
   });
 
   final TextEditingController controller;
@@ -36,32 +40,38 @@ class MareaTextField extends StatelessWidget {
   final int? maxLength;
   final ValueChanged<String>? onFieldSubmitted;
   final ValueChanged<String>? onChanged;
+  final String? helperText;
+  final List<TextInputFormatter>? inputFormatters;
+  final bool outlined;
 
   @override
   Widget build(BuildContext context) {
-    return MareaSurface(
-      inset: true,
-      radius: 16,
-      child: TextFormField(
-        enabled: enabled,
-        controller: controller,
-        validator: validator,
-        keyboardType: keyboardType,
-        textInputAction: textInputAction,
-        autofillHints: autofillHints,
-        obscureText: obscureText,
-        maxLines: maxLines,
-        maxLength: maxLength,
-        onFieldSubmitted: onFieldSubmitted,
-        onChanged: onChanged,
-        decoration: InputDecoration(
-          filled: false,
-          labelText: label,
-          hintText: hint,
-          prefixText: prefixText,
-          suffixIcon: suffixIcon,
-        ),
+    final useOutline = outlined || MareaFlatSurfaces.of(context);
+    final field = TextFormField(
+      enabled: enabled,
+      controller: controller,
+      validator: validator,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      autofillHints: autofillHints,
+      obscureText: obscureText,
+      maxLines: maxLines,
+      maxLength: maxLength,
+      onFieldSubmitted: onFieldSubmitted,
+      onChanged: onChanged,
+      inputFormatters: inputFormatters,
+      decoration: InputDecoration(
+        filled: useOutline,
+        labelText: label,
+        hintText: hint,
+        helperText: helperText,
+        floatingLabelBehavior: useOutline ? FloatingLabelBehavior.always : null,
+        prefixText: prefixText,
+        suffixIcon: suffixIcon,
       ),
     );
+    return useOutline
+        ? field
+        : MareaSurface(inset: true, radius: 16, child: field);
   }
 }

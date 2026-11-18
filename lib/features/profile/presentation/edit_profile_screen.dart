@@ -1,31 +1,34 @@
-import 'package:marea/shared/widgets/marea_tabs.dart';
-
 import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/profile/presentation/profile_waves.dart';
 import 'package:marea/features/profile/presentation/wave_color_editor.dart';
 import 'package:marea/features/profile/presentation/cover_photo_editor.dart';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/theme/app_radius.dart';
 import 'package:marea/core/theme/app_spacing.dart';
+import 'package:marea/core/theme/category_visuals.dart';
 import 'package:marea/core/utils/form_validators.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/profile/data/profile_media_repository.dart';
-import 'package:marea/features/profile/presentation/profile_sections.dart';
+import 'package:marea/features/profile/presentation/onboarding_screen.dart';
+import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
 import 'package:marea/features/community/presentation/post_location_picker.dart';
 import 'package:marea/features/community/models/community_models.dart';
 
+import 'package:marea/shared/widgets/marea_panel.dart';
+import 'package:marea/shared/widgets/marea_tabs.dart';
+import 'package:marea/shared/widgets/marea_text_field.dart';
 import 'package:marea/shared/widgets/social_avatar.dart';
 import 'package:marea/shared/widgets/profile_image.dart';
 import 'package:marea/shared/widgets/session_feedback.dart';
-import 'package:marea/l10n/app_localizations.dart' as gen;
-import 'package:marea/l10n/app_localizations_es.dart' as gen;
-import 'package:marea/core/localization/app_localizations.dart';
 
-enum _CoverChoice { gallery, styles }
+enum _CoverChoice { gallery, styles, remove }
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({
@@ -42,30 +45,8 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  gen.AppLocalizations get _l10n =>
-      gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
-  String _tr(String value) => AppLocalizations.tr(value);
-
-  String _weekdayLabel(String weekday) => switch (weekday) {
-    'mon' => _tr(_l10n.lunes),
-    'tue' => _tr(_l10n.martes),
-    'wed' => _tr(_l10n.miercoles),
-    'thu' => _tr(_l10n.jueves),
-    'fri' => _tr(_l10n.viernes),
-    'sat' => _tr(_l10n.sabado),
-    'sun' => _tr(_l10n.domingo),
-    _ => weekday,
-  };
-
-  String _coverLabel(String cover) => switch (cover) {
-    'marea' => _tr(_l10n.marea),
-    'lavanda' => _tr(_l10n.lavanda),
-    'durazno' => _tr(_l10n.durazno),
-    'menta' => _tr(_l10n.menta),
-    _ => cover,
-  };
-
   final _form = GlobalKey<FormState>();
+  final _feedback = GlobalKey();
   late String _section =
       widget.initialSection == 'professional' &&
           widget.controller.profile?.userType != UserType.general
@@ -84,7 +65,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         text:
             _original?.businessHours.containsKey(day) == true &&
                 _original?.businessHours[day] == null
-            ? AppLocalizations.tr('cerrado')
+            ? 'cerrado'
             : _original?.businessHours[day],
       ),
   };
@@ -104,7 +85,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _coverPath = _original?.coverPath;
   Uint8List? _avatarBytes, _coverBytes;
   late final Set<String> _interests = {...?_original?.interests};
-  bool _saving = false, _allowPop = false;
+  bool _saving = false, _allowPop = false, _discarding = false;
+  bool get _busy => _saving || widget.controller.isBusy;
   String? _error;
   late final ProfileMediaRepository _media =
       widget.mediaRepository ??
@@ -125,7 +107,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     businessHours: {
       for (final day in _hours.keys)
         if (_hours[day]!.text.trim().isNotEmpty)
-          day: _isClosedHours(_hours[day]!.text)
+          day: _hours[day]!.text.trim().toLowerCase() == 'cerrado'
               ? null
               : _hours[day]!.text.trim(),
     },
@@ -141,11 +123,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           !_interests.containsAll(_original.interests)) ||
       jsonEncode(_draft?.toUpdateJson()) !=
           jsonEncode(_original.toUpdateJson());
-
-  bool _isClosedHours(String value) =>
-      const {'cerrado', 'closed'}.contains(value.trim().toLowerCase());
-  String? _translatedError(String? error) =>
-      error == null ? null : _tr(error);
   @override
   void initState() {
     super.initState();
@@ -182,27 +159,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _leave() async {
-    if (_saving) return;
+    if (_busy || _discarding) return;
     if (_dirty) {
+      _discarding = true;
       final discard = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(_tr(_l10n.descartarCambios)),
-          content: Text(_tr(_l10n.cambiosNoGuardados)),
+          scrollable: true,
+          backgroundColor: AppColors.surface,
+          surfaceTintColor: Colors.transparent,
+          title: Text(AppLocalizations.tr('¿Descartar tus cambios?')),
+          content: Text(
+            AppLocalizations.tr(
+              'Si sales ahora, perderás los cambios de esta edición.',
+            ),
+          ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(_tr(_l10n.seguirEditando)),
-            ),
-            TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text(_tr(_l10n.descartar)),
+              child: const Text('Descartar'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(AppLocalizations.tr('Seguir editando')),
             ),
           ],
         ),
       );
+      _discarding = false;
       if (discard != true || !mounted) return;
     }
+    _returnToOrigin();
+  }
+
+  void _returnToOrigin() {
     setState(() => _allowPop = true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.canPop() ? context.pop() : context.go('/profile');
@@ -211,72 +201,74 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _chooseCoverPhoto() async {
     FocusScope.of(context).unfocus();
-    final choice = await showModalBottomSheet<_CoverChoice>(
+    final choice = await showMareaBottomSheet<_CoverChoice>(
       context: context,
-      builder: (ctx) => SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      isScrollControlled: true,
+      builder: (ctx) => ProfileSheetContent(
+        title: AppLocalizations.tr('Cambiar foto de portada'),
+        children: [
+          ProfileMenuSection(
             children: [
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  _tr(_l10n.cambiarFotoPortada),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library_outlined),
-                title: Text(_tr(_l10n.galeria)),
+              ProfileMenuRow(
+                icon: Icons.photo_library_outlined,
+                title: AppLocalizations.tr('Galería'),
                 onTap: () => Navigator.pop(ctx, _CoverChoice.gallery),
               ),
-              ListTile(
-                leading: const Icon(Icons.landscape_outlined),
-                title: Text(_tr(_l10n.estilosMarea)),
+              ProfileMenuRow(
+                icon: Icons.landscape_outlined,
+                title: AppLocalizations.tr('Estilos de MAREA'),
                 onTap: () => Navigator.pop(ctx, _CoverChoice.styles),
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(_tr(_l10n.cancelar)),
-              ),
-              const SizedBox(height: 12),
+              if (_coverPath != null || _coverBytes != null)
+                ProfileMenuRow(
+                  icon: Icons.delete_outline_rounded,
+                  title: AppLocalizations.tr('Quitar portada'),
+                  destructive: true,
+                  chevron: false,
+                  onTap: () => Navigator.pop(ctx, _CoverChoice.remove),
+                ),
             ],
           ),
-        ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppLocalizations.tr('Cancelar')),
+          ),
+        ],
       ),
     );
     if (choice == null || !mounted) return;
-    if (choice == _CoverChoice.styles) {
-      await _chooseCover();
-    } else {
-      await _pick(false, source: ProfilePhotoSource.gallery);
+    switch (choice) {
+      case _CoverChoice.styles:
+        await _chooseCover();
+      case _CoverChoice.gallery:
+        await _pick(false);
+      case _CoverChoice.remove:
+        setState(() {
+          _coverPath = null;
+          _coverBytes = null;
+        });
     }
   }
 
-  Future<void> _pick(
-    bool avatar, {
-    ProfilePhotoSource source = ProfilePhotoSource.gallery,
-  }) async {
+  Future<void> _pick(bool avatar) async {
+    if (_busy) return;
+    FocusScope.of(context).unfocus();
+    widget.controller.clearFeedback();
     setState(() {
       _saving = true;
       _error = null;
     });
     try {
-      var bytes = await ProfileImagePicker.pick(avatar: avatar, source: source);
+      var bytes = await ProfileImagePicker.pick(avatar: avatar);
       if (!avatar && bytes != null && mounted) {
         final selected = bytes;
-        bytes = await showModalBottomSheet<Uint8List>(
+        bytes = await showMareaBottomSheet<Uint8List>(
           context: context,
           isScrollControlled: true,
-          useSafeArea: true,
-          builder: (_) => SingleChildScrollView(
-            child: CoverPhotoEditor(
-              bytes: selected,
-              waveColors: _waveColors ?? ProfileWaves.defaultColors,
-            ),
+          constraints: const BoxConstraints(maxWidth: 560),
+          builder: (_) => CoverPhotoEditor(
+            bytes: selected,
+            waveColors: _waveColors ?? ProfileWaves.defaultColors,
           ),
         );
       }
@@ -293,9 +285,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         setState(
           () => _error = e is AppFailure
-              ? _tr(e.message)
-              : _tr(_l10n.errorAbrirFotos),
+              ? e.message
+              : AppLocalizations.tr(
+                  'No pudimos abrir tus fotos. Inténtalo nuevamente.',
+                ),
         );
+        _revealFeedback();
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -303,7 +298,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _save() async {
-    if (_saving || widget.controller.isBusy || _draft == null) return;
+    if (_busy || _draft == null) return;
     final invalid = _form.currentState!.validateGranularly();
     if (invalid.isNotEmpty) {
       final field = invalid.first;
@@ -320,12 +315,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Scrollable.ensureVisible(
             field.context,
             alignment: .15,
-            duration: const Duration(milliseconds: 200),
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 200),
           );
         }
       });
       return;
     }
+    FocusScope.of(context).unfocus();
+    widget.controller.clearFeedback();
     setState(() {
       _saving = true;
       _error = null;
@@ -347,7 +346,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       saved = await widget.controller.updateProfile(
         draft.updateWith(interests: _interests.toList()),
       );
-      if (!saved) return;
+      if (!saved) {
+        if (mounted) _revealFeedback();
+        return;
+      }
       for (final old in [
         _original?.avatarPath,
         _original?.coverPath,
@@ -360,22 +362,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           }
         }
       }
-      if (mounted) {
-        setState(() => _allowPop = true);
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            context.canPop() ? context.pop() : context.go('/profile');
-          }
-        });
-      }
+      if (mounted) _returnToOrigin();
     } catch (e) {
       if (mounted) {
         setState(
-          () =>
-              _error = e is AppFailure
-                  ? _tr(e.message)
-                  : _tr(_l10n.errorGuardarImagenes),
+          () => _error = e is AppFailure
+              ? e.message
+              : AppLocalizations.tr(
+                  'No pudimos guardar las imágenes. Tus cambios siguen aquí para reintentar.',
+                ),
         );
+        _revealFeedback();
       }
     } finally {
       if (!saved) {
@@ -391,135 +388,150 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Widget _mediaEditor() => SizedBox(
+  void _revealFeedback() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_feedback.currentContext case final context?) {
+        Scrollable.ensureVisible(context);
+      }
+    });
+  }
+
+  Widget _mediaEditor() => ProfileFormSection(
     key: const Key('edit-media'),
-    height: MediaQuery.textScalerOf(context).scale(12) > 18 ? 186 : 146,
-    child: Stack(
-      children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 94,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                ProfileImage(
-                  path: _coverPath,
-                  preview: _coverBytes,
-                  repository: _media,
-                  fallback: ProfileCover(preset: _preset),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: 65,
-                  child: ProfileWaves(
-                    colors: _waveColors ?? ProfileWaves.defaultColors,
+    children: [
+      LayoutBuilder(
+        builder: (context, constraints) => SizedBox(
+          height: (constraints.maxWidth * .42).clamp(144.0, 220.0),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                bottom: 30,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _coverPreview(),
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        height: 64,
+                        child: ProfileWaves(
+                          colors: _waveColors ?? ProfileWaves.defaultColors,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          left: 14,
-          top: 54,
-          width: 88,
-          height: 88,
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: ClipOval(
-              child: ProfileImage(
-                path: _avatarPath,
-                preview: _avatarBytes,
-                repository: _media,
-                fallback: SocialAvatar(
-                  initials: _draft?.initials ?? 'M',
-                  size: 80,
+              ),
+              Positioned(
+                left: 12,
+                bottom: 0,
+                width: 84,
+                height: 84,
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(
+                    color: AppColors.surface,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: ClipOval(
+                      child: ProfileImage(
+                        path: _avatarPath,
+                        preview: _avatarBytes,
+                        repository: _media,
+                        fallback: SocialAvatar(
+                          initials: _draft?.initials ?? 'M',
+                          size: 76,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
-        Positioned(
-          left: 110,
-          right: 0,
-          top: 94,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              key: const Key('edit-avatar-action'),
-              onPressed: _saving ? null : () => _pick(true),
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF009FC2),
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                textStyle: const TextStyle(
-                  fontFamily: 'NunitoSans',
-                  fontSize: 12,
-                ),
-              ),
-              icon: const Icon(Icons.photo_camera_outlined, size: 16),
-              label: Text(_tr(_l10n.cambiarFotoPerfil)),
-            ),
+      ),
+      Wrap(
+        spacing: AppSpacing.xs,
+        children: [
+          TextButton.icon(
+            key: const Key('edit-avatar-action'),
+            onPressed: _busy ? null : () => _pick(true),
+            icon: const Icon(Icons.photo_camera_outlined, size: 19),
+            label: Text(AppLocalizations.tr('Cambiar foto de perfil')),
           ),
-        ),
-      ],
-    ),
+          if (_avatarPath != null || _avatarBytes != null)
+            TextButton(
+              onPressed: _busy
+                  ? null
+                  : () => setState(() {
+                      _avatarPath = null;
+                      _avatarBytes = null;
+                    }),
+              child: Text(AppLocalizations.tr('Quitar foto')),
+            ),
+        ],
+      ),
+      ProfileMenuSection(
+        children: [
+          ProfileMenuRow(
+            key: const Key('edit-cover-action'),
+            icon: Icons.add_photo_alternate_outlined,
+            title: AppLocalizations.tr('Cambiar foto de portada'),
+            subtitle: AppLocalizations.tr('Galería o estilos de MAREA'),
+            onTap: _busy ? null : _chooseCoverPhoto,
+          ),
+          ProfileMenuRow(
+            icon: Icons.waves_rounded,
+            title: AppLocalizations.tr('Personalizar olitas'),
+            subtitle: AppLocalizations.tr('Colores de tu portada'),
+            onTap: _busy ? null : _customizeWaves,
+          ),
+        ],
+      ),
+    ],
+  );
+
+  Widget _coverPreview() => ProfileImage(
+    path: _coverPath,
+    preview: _coverBytes,
+    repository: _media,
+    fallback: ProfileCover(preset: _preset),
   );
 
   Future<void> _editInterests() async {
     FocusScope.of(context).unfocus();
-    final selected = {..._interests};
-    final result = await showModalBottomSheet<Set<String>>(
+    var selected = {..._interests};
+    final result = await showMareaBottomSheet<Set<String>>(
       context: context,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, update) => SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  _tr(_l10n.meMueve),
-                  style: Theme.of(ctx).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final entry in ProfilePreferences.interests.entries)
-                      FilterChip(
-                        label: Text(
-                          localizedProfileInterestLabel(context, entry.key),
-                        ),
-                        selected: selected.contains(entry.key),
-                        onSelected: (value) => update(() {
-                          value
-                              ? selected.add(entry.key)
-                              : selected.remove(entry.key);
-                        }),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: () => Navigator.pop(ctx, selected),
-                  child: Text(_tr(_l10n.listo)),
-                ),
-              ],
+        builder: (ctx, update) => ProfileSheetContent(
+          title: AppLocalizations.tr('Me mueve'),
+          children: [
+            Text(
+              AppLocalizations.tr(
+                'Elige los intereses que quieres mostrar en tu perfil.',
+              ),
             ),
-          ),
+            PreferenceChips(
+              catalog: ProfilePreferences.interests,
+              selected: selected,
+              onChanged: (values) => update(() => selected = values),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, selected),
+              child: Text(AppLocalizations.tr('Listo')),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(AppLocalizations.tr('Cancelar')),
+            ),
+          ],
         ),
       ),
     );
@@ -534,20 +546,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _customizeWaves() async {
     FocusScope.of(context).unfocus();
-    final colors = await showModalBottomSheet<List<int>>(
+    final colors = await showMareaBottomSheet<List<int>>(
       context: context,
       isScrollControlled: true,
-      useSafeArea: true,
-      builder: (context) => FractionallySizedBox(
+      builder: (_) => FractionallySizedBox(
         heightFactor: .94,
         child: WaveColorEditor(
           colors: _waveColors ?? ProfileWaves.defaultColors,
-          cover: ProfileImage(
-            path: _coverPath,
-            preview: _coverBytes,
-            repository: _media,
-            fallback: ProfileCover(preset: _preset),
-          ),
+          cover: _coverPreview(),
         ),
       ),
     );
@@ -555,24 +561,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _chooseCover() async {
-    FocusScope.of(context).unfocus();
-    final value = await showModalBottomSheet<String>(
+    final value = await showMareaBottomSheet<String>(
       context: context,
-      builder: (ctx) => SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      isScrollControlled: true,
+      builder: (ctx) => ProfileSheetContent(
+        title: AppLocalizations.tr('Estilos de MAREA'),
+        children: [
+          ProfileMenuSection(
             children: [
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Text(_tr(_l10n.estilosMarea)),
-              ),
               for (final entry in ProfilePreferences.covers.entries)
                 ListTile(
-                  title: Text(_coverLabel(entry.key)),
-                  leading: ClipOval(
+                  minTileHeight: 56,
+                  selected:
+                      _coverPath == null &&
+                      _coverBytes == null &&
+                      _preset == entry.key,
+                  selectedTileColor: AppColors.mist,
+                  title: Text(entry.value),
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadius.small),
                     child: SizedBox(
-                      width: 32,
+                      width: 48,
                       height: 32,
                       child: ProfileCover(preset: entry.key),
                     ),
@@ -581,17 +590,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _coverPath == null &&
                           _coverBytes == null &&
                           _preset == entry.key
-                      ? const Icon(Icons.check)
+                      ? const Icon(Icons.check_rounded)
                       : null,
                   onTap: () => Navigator.pop(ctx, entry.key),
                 ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(_tr(_l10n.cancelar)),
-              ),
             ],
           ),
-        ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppLocalizations.tr('Cancelar')),
+          ),
+        ],
       ),
     );
     if (value != null && mounted) {
@@ -604,6 +613,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _chooseLocation() async {
+    FocusScope.of(context).unfocus();
     final value = await showCommunityLocationPicker(
       context,
       repository: widget.controller.locationRepository,
@@ -622,193 +632,176 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Widget _summaryField(
-    String label,
-    String value, {
-    VoidCallback? onTap,
-  }) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _interestsSection() => ProfileFormSection(
+    title: AppLocalizations.tr('Me mueve'),
     children: [
-      Text(
-        label,
-        style: const TextStyle(fontSize: 14, color: Color(0xFF07345C)),
-      ),
-      const SizedBox(height: 8),
-      Material(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: Color(0xFFD5E7F1)),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF07345C)),
-            ),
+      if (_interests.isEmpty)
+        Text(
+          AppLocalizations.tr(
+            'Elige los intereses que quieres mostrar en tu perfil.',
           ),
+        )
+      else
+        Wrap(
+          spacing: AppSpacing.xs,
+          runSpacing: AppSpacing.xs,
+          children: [
+            for (final interest in _interests) _interestChip(interest),
+          ],
+        ),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton.icon(
+          onPressed: _busy ? null : _editInterests,
+          icon: const Icon(Icons.edit_outlined, size: 19),
+          label: Text(AppLocalizations.tr('Editar intereses')),
         ),
       ),
     ],
   );
 
-  static ({IconData icon, Color foreground, Color background}) _interestStyle(
-    String interest,
-  ) => switch (interest) {
-    'musica' => (
-      icon: Icons.music_note_outlined,
-      foreground: const Color(0xFF7044E8),
-      background: const Color(0xFFEDE4FF),
-    ),
-    'arte' => (
-      icon: Icons.palette_outlined,
-      foreground: const Color(0xFFFA624E),
-      background: const Color(0xFFFFE6DE),
-    ),
-    'moda' => (
-      icon: Icons.checkroom_outlined,
-      foreground: const Color(0xFFEC3884),
-      background: const Color(0xFFFFE4EF),
-    ),
-    'digital' => (
-      icon: Icons.devices_outlined,
-      foreground: const Color(0xFF1463ED),
-      background: const Color(0xFFDEEEFF),
-    ),
-    'gastronomia' => (
-      icon: Icons.restaurant_outlined,
-      foreground: const Color(0xFFE88B14),
-      background: const Color(0xFFFFF4D9),
-    ),
-    'escritura' => (
-      icon: Icons.edit_outlined,
-      foreground: const Color(0xFFE88B14),
-      background: const Color(0xFFFFF4D9),
-    ),
-    'fotografia' => (
-      icon: Icons.camera_alt_outlined,
-      foreground: const Color(0xFF168D91),
-      background: const Color(0xFFDFF3F3),
-    ),
-    'diseno' => (
-      icon: Icons.design_services_outlined,
-      foreground: const Color(0xFF398569),
-      background: const Color(0xFFE4F3E9),
-    ),
-    _ => (
-      icon: Icons.palette_outlined,
-      foreground: const Color(0xFFFA624E),
-      background: const Color(0xFFFFE6DE),
-    ),
-  };
+  Widget _interestChip(String interest) {
+    final visual = CategoryVisuals.forProfileInterest(interest);
+    return Chip(
+      avatar: ExcludeSemantics(
+        child: Icon(visual.icon, size: 18, color: AppColors.brandNavy),
+      ),
+      backgroundColor: visual.color,
+      side: BorderSide.none,
+      label: Text(ProfilePreferences.interests[interest] ?? interest),
+    );
+  }
 
-  Widget _preferences() => Column(
+  Widget _identityFields() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
+    spacing: AppSpacing.lg,
     children: [
-      ListTile(
-        key: const Key('edit-cover-action'),
-        contentPadding: EdgeInsets.zero,
-        leading: const Icon(Icons.add_photo_alternate_outlined),
-        title: Text(_tr(_l10n.cambiarFotoPortada)),
-        subtitle: Text(_tr(_l10n.elegirFotoOPreset)),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: _saving ? null : _chooseCoverPhoto,
-      ),
-      ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: SizedBox(
-          width: 48,
-          height: 32,
-          child: ProfileWaves(
-            colors: _waveColors ?? ProfileWaves.defaultColors,
-          ),
-        ),
-        title: Text(_tr(_l10n.personalizarOlitas)),
-        subtitle: Text(_tr(_l10n.coloresIndependientesFoto)),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: _saving ? null : _customizeWaves,
-      ),
-      const SizedBox(height: 8),
-      Row(
+      _mediaEditor(),
+      ProfileFormSection(
+        key: const Key('edit-identity'),
+        title: AppLocalizations.tr('Tu información pública'),
         children: [
-          Expanded(
-            child: Text(
-              _tr(_l10n.meMueve),
-              style: const TextStyle(fontSize: 14),
-            ),
+          MareaTextField(
+            key: const ValueKey('edit-field-Nombre completo'),
+            controller: _name,
+            label: AppLocalizations.tr('Nombre completo'),
+            textInputAction: TextInputAction.next,
+            validator: FormValidators.fullName,
           ),
-          Flexible(
-            flex: 2,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: _editInterests,
-                child: Text(
-                  _tr(_l10n.editarIntereses),
-                  textAlign: TextAlign.end,
+          MareaTextField(
+            key: const ValueKey('edit-field-Nombre de usuario'),
+            controller: _username,
+            label: AppLocalizations.tr('Nombre de usuario'),
+            prefixText: '@',
+            textInputAction: TextInputAction.next,
+            validator: FormValidators.username,
+          ),
+          MareaTextField(
+            key: const ValueKey('edit-field-Sobre mí'),
+            controller: _bio,
+            label: AppLocalizations.tr('Sobre mí'),
+            hint: AppLocalizations.tr('¿Qué haces y qué te mueve?'),
+            maxLength: 160,
+            maxLines: 3,
+            validator: FormValidators.bio,
+          ),
+          MareaTextField(
+            key: const ValueKey('edit-field-Sitio web'),
+            controller: _website,
+            label: AppLocalizations.tr('Sitio web'),
+            hint: 'https://tusitio.com',
+            keyboardType: TextInputType.url,
+            validator: ProfilePreferences.websiteError,
+          ),
+          ProfileMenuSection(
+            children: [
+              ProfileMenuRow(
+                icon: Icons.badge_outlined,
+                title: AppLocalizations.tr('Tipo de perfil'),
+                subtitle: _profile.userType.databaseValue,
+                onTap: null,
+              ),
+              if (_profile.userType != UserType.business)
+                ProfileMenuRow(
+                  icon: Icons.location_on_outlined,
+                  title: AppLocalizations.tr('Ubicación'),
+                  subtitle:
+                      _location ?? AppLocalizations.tr('Añadir ubicación'),
+                  onTap: _busy ? null : _chooseLocation,
                 ),
-              ),
-            ),
+            ],
           ),
         ],
       ),
-      Wrap(
-        spacing: 6,
-        runSpacing: 6,
-        children: [
-          IconButton.outlined(
-            onPressed: _editInterests,
-            tooltip: _tr(_l10n.anadirIntereses),
-            icon: const Icon(Icons.add, size: 18),
-          ),
-          for (final interest in _interests)
-            Chip(
-              avatar: Icon(
-                _interestStyle(interest).icon,
-                size: 16,
-                color: _interestStyle(interest).foreground,
-              ),
-              backgroundColor: _interestStyle(interest).background,
-              side: BorderSide.none,
-              shape: const StadiumBorder(),
-              visualDensity: VisualDensity.compact,
-              labelStyle: const TextStyle(fontSize: 11),
-              label: Text(localizedProfileInterestLabel(context, interest)),
-            ),
-        ],
+      _interestsSection(),
+    ],
+  );
+
+  Widget _professionalFields() => ProfileFormSection(
+    key: const Key('edit-professional'),
+    title: AppLocalizations.tr('Información profesional'),
+    children: [
+      MareaTextField(
+        key: const ValueKey('edit-field-Enlace de contacto'),
+        controller: _contact,
+        label: AppLocalizations.tr('Enlace de contacto'),
+        hint: AppLocalizations.tr('https://wa.me/... o tu página de contacto'),
+        keyboardType: TextInputType.url,
+        validator: ProfilePreferences.websiteError,
       ),
-      if (_avatarPath != null ||
-          _avatarBytes != null ||
-          _coverPath != null ||
-          _coverBytes != null)
-        ExpansionTile(
-          tilePadding: EdgeInsets.zero,
-          title: Text(
-            _tr(_l10n.opcionesImagenes),
-            style: const TextStyle(fontSize: 14),
-          ),
-          children: [
-            if (_avatarPath != null || _avatarBytes != null)
-              TextButton(
-                onPressed: () => setState(() {
-                  _avatarPath = null;
-                  _avatarBytes = null;
-                }),
-                child: Text(_tr(_l10n.quitarFoto)),
-              ),
-            if (_coverPath != null || _coverBytes != null)
-              TextButton(
-                onPressed: () => setState(() {
-                  _coverPath = null;
-                  _coverBytes = null;
-                }),
-                child: Text(_tr(_l10n.quitarPortada)),
-              ),
-          ],
+      if (_profile.userType == UserType.creator)
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(AppLocalizations.tr('Disponible para colaborar')),
+          value: _collaboration,
+          onChanged: _busy
+              ? null
+              : (value) => setState(() => _collaboration = value),
         ),
+      if (_profile.userType == UserType.business) ...[
+        ProfileMenuRow(
+          icon: Icons.location_on_outlined,
+          title: AppLocalizations.tr('Ubicación del negocio'),
+          subtitle: _location ?? AppLocalizations.tr('Añadir ubicación'),
+          onTap: _busy ? null : _chooseLocation,
+        ),
+        if (_location != null)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: _busy
+                  ? null
+                  : () => setState(() {
+                      _location = null;
+                      _coordinates = null;
+                    }),
+              icon: const Icon(Icons.close_rounded),
+              label: Text(AppLocalizations.tr('Quitar ubicación')),
+            ),
+          ),
+        Text(
+          AppLocalizations.tr('Horarios semanales · hora local del negocio'),
+        ),
+        Text(
+          AppLocalizations.tr(
+            'Usa 09:00-18:00. Escribe «cerrado» para un día sin atención o déjalo vacío para ocultarlo.',
+          ),
+        ),
+        for (final day in ProfilePreferences.weekdays.entries)
+          MareaTextField(
+            key: ValueKey('edit-field-${day.value}'),
+            controller: _hours[day.key]!,
+            label: day.value,
+            hint: AppLocalizations.tr('09:00-18:00 o cerrado'),
+            validator: (value) => ProfilePreferences.hoursError({
+              day.key: value?.trim().isEmpty ?? true
+                  ? null
+                  : value!.trim().toLowerCase() == 'cerrado'
+                  ? null
+                  : value.trim(),
+            }),
+          ),
+      ],
     ],
   );
 
@@ -816,413 +809,99 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     key: _form,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.md,
       children: [
-        if (_error != null) ...[
-          _EditorNotice(message: _error!, error: true),
-          const SizedBox(height: AppSpacing.md),
-        ],
-        SessionFeedback(controller: widget.controller),
-        const SizedBox(height: 12),
-        Visibility(
-          maintainState: true,
-          visible: _section == 'identity',
-          child: Column(
-            children: [
-              _EditorSection(
-                key: const Key('edit-identity'),
-
-                children: [
-                  _EditorField(
-                    controller: _name,
-                    label: _tr(_l10n.nombreCompleto),
-                    textInputAction: TextInputAction.next,
-                    validator: (value) =>
-                        _translatedError(FormValidators.fullName(value)),
+        Column(
+          key: _feedback,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_error case final error?)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                child: Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    error,
+                    style: const TextStyle(color: AppColors.error),
                   ),
-                  _summaryField(
-                    _tr(_l10n.tipoPerfil),
-                    localizedProfileUserTypeLabel(context, _profile.userType),
-                  ),
-                  _summaryField(
-                    _tr(_l10n.ubicacion),
-                    _location ?? _tr(_l10n.agregarUbicacion),
-                    onTap: _chooseLocation,
-                  ),
-                ],
+                ),
               ),
-              const SizedBox(height: AppSpacing.lg),
-              _EditorSection(
-                key: const Key('edit-about'),
-
-                children: [
-                  _EditorField(
-                    controller: _bio,
-                    label: _tr(_l10n.sobreMi),
-                    hint: _tr(_l10n.hintSobreMi),
-                    maxLength: 160,
-                    maxLines: 3,
-                    validator: (value) =>
-                        _translatedError(FormValidators.bio(value)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _preferences(),
-              const SizedBox(height: 24),
-              _EditorSection(
-                title: _tr(_l10n.masInformacion),
-                children: [
-                  _EditorField(
-                    controller: _username,
-                    label: _tr(_l10n.nombreUsuario),
-                    prefixText: '@',
-                    textInputAction: TextInputAction.next,
-                    validator: (value) =>
-                        _translatedError(FormValidators.username(value)),
-                  ),
-                  Text(
-                    AppLocalizations.trTemplate(
-                      'Tipo de perfil: {type}',
-                      {
-                        'type': localizedProfileUserTypeLabel(
-                          context,
-                          _profile.userType,
-                        ),
-                      },
-                    ),
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  Text(_tr(_l10n.elegidoAlCrearPerfil)),
-                  _EditorField(
-                    controller: _website,
-                    label: _tr(_l10n.sitioWeb),
-                    hint: 'https://tusitio.com',
-                    keyboardType: TextInputType.url,
-                    validator: (value) => _translatedError(
-                      ProfilePreferences.websiteError(value),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            if (widget.controller.failure != null)
+              SessionFeedback(controller: widget.controller),
+          ],
         ),
         if (_profile.userType != UserType.general)
           MareaTabs(
             options: {
-              'identity': _tr(_l10n.identidad),
-              'professional': _tr(_l10n.profesional),
+              'identity': AppLocalizations.tr('Identidad'),
+              'professional': AppLocalizations.tr('Profesional'),
             },
             value: _section,
             onChanged: (value) {
+              if (_busy) return;
               FocusScope.of(context).unfocus();
               setState(() => _section = value);
             },
           ),
+        Visibility(
+          maintainState: true,
+          visible: _section == 'identity',
+          child: _identityFields(),
+        ),
         if (_profile.userType != UserType.general)
           Visibility(
             maintainState: true,
             visible: _section == 'professional',
-            child: _EditorSection(
-              key: const Key('edit-professional'),
-              title: _tr(_l10n.informacionProfesional),
-              children: [
-                _EditorField(
-                  controller: _contact,
-                  label: _tr(_l10n.enlaceContacto),
-                  hint: _tr(_l10n.hintEnlaceContacto),
-                  keyboardType: TextInputType.url,
-                  validator: (value) => _translatedError(
-                    ProfilePreferences.websiteError(value),
-                  ),
-                ),
-                if (_profile.userType == UserType.creator)
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(_tr(_l10n.disponibleColaborar)),
-                    value: _collaboration,
-                    onChanged: (v) => setState(() => _collaboration = v),
-                  ),
-                if (_profile.userType == UserType.business) ...[
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(_tr(_l10n.ubicacionNegocio)),
-                    subtitle: Text(_location ?? _tr(_l10n.sinUbicacion)),
-                    trailing: IconButton(
-                      tooltip: _tr(_l10n.quitarUbicacion),
-                      icon: const Icon(Icons.clear),
-                      onPressed: () => setState(() {
-                        _location = null;
-                        _coordinates = null;
-                      }),
-                    ),
-                    onTap: () async {
-                      final value = await showCommunityLocationPicker(
-                        context,
-                        repository: widget.controller.locationRepository,
-                        initial: _location == null || _coordinates == null
-                            ? null
-                            : PostLocationSelection(
-                                label: _location!,
-                                coordinates: _coordinates!,
-                              ),
-                      );
-                      if (value != null && mounted) {
-                        setState(() {
-                          _location = value.label;
-                          _coordinates = value.coordinates;
-                        });
-                      }
-                    },
-                  ),
-                  Text(_tr(_l10n.horariosSemanales)),
-                  Text(_tr(_l10n.horariosInstruccion)),
-                  for (final day in ProfilePreferences.weekdays.entries)
-                    _EditorField(
-                      controller: _hours[day.key]!,
-                      label: _weekdayLabel(day.key),
-                      hint: _tr(_l10n.horarioEjemplo),
-                      validator: (value) => _translatedError(
-                        ProfilePreferences.hoursError({
-                          day.key: value?.trim().isEmpty ?? true
-                              ? null
-                              : _isClosedHours(value!)
-                              ? null
-                              : value.trim(),
-                        }),
-                      ),
-                    ),
-                ],
-              ],
-            ),
+            child: _professionalFields(),
           ),
-        const SizedBox(height: 24),
       ],
     ),
   );
+
   @override
   Widget build(BuildContext context) {
+    AppLocalizations.of(context);
     if (_original == null) {
-      return Scaffold(
-        appBar: AppBar(title: Text(_tr(_l10n.editarPerfil))),
-        body: Center(
-          child: TextButton(
-            onPressed: () => context.go('/profile'),
-            child: Text(_tr(_l10n.errorCargarPerfil)),
+      return ProfilePage(
+        title: AppLocalizations.tr('Editar perfil'),
+        body: ProfilePageFrame(
+          child: Text(
+            AppLocalizations.tr(
+              'No pudimos cargar tu perfil. Regresa para reintentar.',
+            ),
           ),
         ),
       );
     }
-    return PopScope(
-      canPop: _allowPop || (!_dirty && !_saving),
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _leave();
-      },
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF4FBFE),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFF4FBFE),
-          titleSpacing: 0,
-          title: Text(
-            _tr(_l10n.editarPerfil),
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-          ),
-          leading: Padding(
-            padding: const EdgeInsets.all(8),
-            child: BackButton(
-              onPressed: _leave,
-              style: IconButton.styleFrom(backgroundColor: Colors.white),
+    return ListenableBuilder(
+      listenable: widget.controller,
+      builder: (context, _) => PopScope(
+        canPop: _allowPop || (!_dirty && !_busy),
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _leave();
+        },
+        child: ProfilePage(
+          title: AppLocalizations.tr('Editar perfil'),
+          onBack: _leave,
+          body: AbsorbPointer(
+            absorbing: _busy,
+            child: SingleChildScrollView(
+              child: ProfilePageFrame(child: _formSections()),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: _dirty && !_saving ? _save : null,
-              child: Text(_tr(_l10n.guardar)),
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
-        body: AbsorbPointer(
-          absorbing: _saving,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 680),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.md,
-                      AppSpacing.sm,
-                      AppSpacing.md,
-                      0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _mediaEditor(),
-                        const SizedBox(height: AppSpacing.lg),
-                        _formSections(),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              16,
-              12,
-              16,
-              20 + MediaQuery.viewInsetsOf(context).bottom,
-            ),
-            child: Center(
-              heightFactor: 1,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 680),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    key: const Key('edit-save-button'),
-                    onPressed: _dirty && !_saving && !widget.controller.isBusy
-                        ? _save
-                        : null,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF08BFC1),
-                      foregroundColor: const Color(0xFF07345C),
-                      disabledBackgroundColor: const Color(0xFF08BFC1),
-                      disabledForegroundColor: const Color(0xFF07345C),
-                      shape: const StadiumBorder(),
-                      minimumSize: const Size(48, 56),
-                    ),
-                    icon: const Icon(Icons.check_rounded, size: 20),
-                    label: Text(
-                      _saving || widget.controller.isBusy
-                          ? _tr(_l10n.guardando)
-                          : _tr(_l10n.guardarCambios),
-                    ),
-                  ),
-                ),
-              ),
+          action: FilledButton.icon(
+            key: const Key('edit-save-button'),
+            onPressed: _dirty && !_busy ? _save : null,
+            icon: const Icon(Icons.check_rounded, size: 20),
+            label: Text(
+              _busy
+                  ? AppLocalizations.tr('Guardando…')
+                  : AppLocalizations.tr('Guardar cambios'),
+              textAlign: TextAlign.center,
             ),
           ),
         ),
       ),
     );
   }
-}
-
-class _EditorSection extends StatelessWidget {
-  const _EditorSection({required this.children, this.title, super.key});
-  final List<Widget> children;
-  final String? title;
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      if (title != null) ...[
-        Text(
-          title!,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 16),
-      ],
-      for (var i = 0; i < children.length; i++) ...[
-        if (i > 0) const SizedBox(height: 16),
-        children[i],
-      ],
-    ],
-  );
-}
-
-class _EditorField extends StatelessWidget {
-  const _EditorField({
-    required this.controller,
-    required this.label,
-    this.hint,
-    this.validator,
-    this.maxLines = 1,
-    this.maxLength,
-    this.prefixText,
-    this.keyboardType,
-    this.textInputAction,
-  });
-  final TextEditingController controller;
-  final String label;
-  final String? hint, prefixText;
-  final String? Function(String?)? validator;
-  final int maxLines;
-  final int? maxLength;
-  final TextInputType? keyboardType;
-  final TextInputAction? textInputAction;
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Text(
-        label,
-        style: const TextStyle(fontSize: 14, color: Color(0xFF07345C)),
-      ),
-      const SizedBox(height: 8),
-      Semantics(
-        label: label,
-        child: TextFormField(
-          key: ValueKey('edit-field-$label'),
-          controller: controller,
-          validator: validator,
-          maxLines: maxLines,
-          maxLength: maxLength,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          style: const TextStyle(
-            fontSize: 14,
-            height: 1.45,
-            color: Color(0xFF07345C),
-          ),
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixText: prefixText,
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            floatingLabelStyle: const TextStyle(
-              fontSize: 16,
-              color: Color(0xFF07345C),
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            counterText: '',
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 16,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFD5E7F1)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFF009FC2)),
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-class _EditorNotice extends StatelessWidget {
-  const _EditorNotice({required this.message, required this.error});
-  final String message;
-  final bool error;
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.all(12),
-    child: Text(
-      message,
-      style: TextStyle(color: error ? AppColors.error : AppColors.success),
-    ),
-  );
 }

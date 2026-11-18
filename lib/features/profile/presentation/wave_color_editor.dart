@@ -1,5 +1,7 @@
 import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/theme/app_radius.dart';
 import 'package:marea/features/profile/presentation/profile_waves.dart';
 
 /// Edits a local draft. Only the caller's existing profile save persists it.
@@ -25,7 +27,7 @@ class _ColorCircle extends StatelessWidget {
       color: Color(color),
       shape: BoxShape.circle,
       border: Border.all(
-        color: selected ? const Color(0xFF07345C) : const Color(0xFF9AAAB8),
+        color: selected ? AppColors.brandNavy : AppColors.border,
         width: selected ? 3 : 1,
       ),
     ),
@@ -64,79 +66,84 @@ class _VisualColorDialogState extends State<_VisualColorDialog> {
     widget.onChanged(color.toColor().toARGB32());
   }
 
-  Widget _field({required bool lightness}) => LayoutBuilder(
-    builder: (context, constraints) {
-      final width = constraints.maxWidth;
-      final height = lightness ? 48.0 : 176.0;
-      void choose(Offset position) {
-        final x = (position.dx / width).clamp(0.0, 1.0);
-        final y = (position.dy / height).clamp(0.0, 1.0);
-        _change(
-          lightness
-              ? _color.withValue(x)
-              : _color
-                    .withHue(x * 360)
-                    .withSaturation(1 - y)
-                    .withValue(_color.value == 0 ? 1 : _color.value),
-        );
-      }
+  Widget _field({required bool lightness}) {
+    final height = lightness ? 48.0 : 176.0;
+    return SizedBox(
+      height: height,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          void choose(Offset position) {
+            final x = (position.dx / width).clamp(0.0, 1.0);
+            final y = (position.dy / height).clamp(0.0, 1.0);
+            _change(
+              lightness
+                  ? _color.withValue(x)
+                  : _color
+                        .withHue(x * 360)
+                        .withSaturation(1 - y)
+                        .withValue(_color.value == 0 ? 1 : _color.value),
+            );
+          }
 
-      return Semantics(
-        label: lightness
-            ? AppLocalizations.tr('Elegir un color más claro o más oscuro')
-            : AppLocalizations.tr('Elegir cualquier color'),
-        child: GestureDetector(
-          key: ValueKey(
-            lightness ? 'wave-color-lightness' : 'wave-color-field',
-          ),
-          onTapDown: (details) => choose(details.localPosition),
-          onPanStart: (details) => choose(details.localPosition),
-          onPanUpdate: (details) => choose(details.localPosition),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: SizedBox(
-              height: height,
-              width: double.infinity,
-              child: CustomPaint(
-                painter: _ColorFieldPainter(
-                  color: _color,
-                  lightness: lightness,
+          return Semantics(
+            label: lightness
+                ? AppLocalizations.tr('Elegir un color más claro o más oscuro')
+                : AppLocalizations.tr('Elegir cualquier color'),
+            child: GestureDetector(
+              key: ValueKey(
+                lightness ? 'wave-color-lightness' : 'wave-color-field',
+              ),
+              onTapDown: (details) => choose(details.localPosition),
+              onPanStart: (details) => choose(details.localPosition),
+              onPanUpdate: (details) => choose(details.localPosition),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: CustomPaint(
+                    painter: _ColorFieldPainter(
+                      color: _color,
+                      lightness: lightness,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      );
-    },
-  );
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => AlertDialog(
+    scrollable: true,
+    backgroundColor: AppColors.surface,
+    surfaceTintColor: Colors.transparent,
     title: Text(AppLocalizations.tr('Más colores')),
     content: SizedBox(
       width: 320,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: 56,
-              child: ProfileWaves(
-                colors: List.of(widget.colors)
-                  ..[widget.layer] = _color.toColor().toARGB32(),
-              ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            height: 56,
+            child: ProfileWaves(
+              colors: List.of(widget.colors)
+                ..[widget.layer] = _color.toColor().toARGB32(),
             ),
-            const SizedBox(height: 12),
-            Text(AppLocalizations.tr('Toca o desliza para elegir')),
-            const SizedBox(height: 8),
-            _field(lightness: false),
-            const SizedBox(height: 16),
-            Text(AppLocalizations.tr('Más oscuro o más claro')),
-            const SizedBox(height: 8),
-            _field(lightness: true),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          Text(AppLocalizations.tr('Toca o desliza para elegir')),
+          const SizedBox(height: 8),
+          _field(lightness: false),
+          const SizedBox(height: 16),
+          Text(AppLocalizations.tr('Más oscuro o más claro')),
+          const SizedBox(height: 8),
+          _field(lightness: true),
+        ],
       ),
     ),
     actions: [
@@ -227,11 +234,10 @@ class _ColorFieldPainter extends CustomPainter {
 class _WaveColorEditorState extends State<WaveColorEditor> {
   late List<int> _colors = List.of(widget.colors);
   int _layer = 0;
-  static const _waveNames = [
-    'Color de la ola superior',
-    'Color de la ola inferior',
+  static final _waveNames = [
+    AppLocalizations.tr('Color de la ola superior'),
+    AppLocalizations.tr('Color de la ola inferior'),
   ];
-  String _waveLabel(int index) => AppLocalizations.tr(_waveNames[index]);
   static final _palette = <int>[
     ...ProfileWaves.defaultColors,
     for (final hue in [
@@ -285,13 +291,11 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Material(
-            color: _layer == i ? const Color(0xFFE1F7F7) : Colors.white,
+            color: _layer == i ? AppColors.mist : AppColors.surface,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
               side: BorderSide(
-                color: _layer == i
-                    ? const Color(0xFF009FAC)
-                    : const Color(0xFFD9E5F0),
+                color: _layer == i ? AppColors.actionBlue : AppColors.border,
                 width: _layer == i ? 2 : 1,
               ),
             ),
@@ -300,14 +304,14 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
               selected: _layer == i,
               leading: _ColorCircle(color: _colors[i], selected: false),
               title: Text(
-                _waveLabel(i),
+                _waveNames[i],
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               trailing: _layer == i
-                  ? const Icon(Icons.check_circle, color: Color(0xFF087F80))
+                  ? const Icon(Icons.check_circle, color: AppColors.actionBlue)
                   : null,
               onTap: () => setState(() => _layer = i),
             ),
@@ -326,9 +330,7 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
         children: [
           for (final color in {..._palette, _colors[_layer]})
             Semantics(
-              label: AppLocalizations.trTemplate('Elegir {color}', {
-                'color': _waveLabel(_layer).toLowerCase(),
-              }),
+              label: 'Elegir ${_waveNames[_layer].toLowerCase()}',
               button: true,
               selected: _colors[_layer] == color,
               child: InkResponse(
@@ -373,9 +375,12 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    AppLocalizations.tr('Personalizar olitas'),
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  child: Semantics(
+                    header: true,
+                    child: Text(
+                      AppLocalizations.tr('Personalizar olitas'),
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -392,7 +397,10 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
               borderRadius: BorderRadius.circular(16),
               child: SizedBox(
                 key: const Key('wave-live-preview'),
-                height: 156,
+                height: (MediaQuery.sizeOf(context).height * .24).clamp(
+                  76.0,
+                  156.0,
+                ),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -401,7 +409,7 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      height: 110,
+                      height: 72,
                       child: ProfileWaves(colors: _colors),
                     ),
                   ],
@@ -416,8 +424,8 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _manualColors(),
-                  Text(
-                    AppLocalizations.tr('Combinaciones'),
+                  const Text(
+                    'Combinaciones',
                     style: TextStyle(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 8),
@@ -461,9 +469,11 @@ class _WaveColorEditorState extends State<WaveColorEditor> {
                                       child: ProfileWaves(colors: entry.value),
                                     ),
                                     Text(
-                                      AppLocalizations.tr(entry.key),
+                                      entry.key,
                                       textAlign: TextAlign.center,
-                                      style: const TextStyle(fontSize: 11),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
                                     ),
                                   ],
                                 ),

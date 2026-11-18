@@ -474,172 +474,192 @@ class _MissionFeedCardState extends State<MissionFeedCard> {
       ),
       iconAlignment: IconAlignment.start,
     );
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        clipBehavior: Clip.antiAlias,
+    return Align(
+      alignment: Alignment.topCenter,
+      heightFactor: 1,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 712),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => context.push('/people/${mission.authorId}'),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 48),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: ClipOval(
-                                child: ProfileImage(
-                                  path: widget.author?.avatarPath,
-                                  repository: controller.mediaRepository,
-                                  fallback: CircleAvatar(
-                                    backgroundColor: AppColors.mint,
-                                    child: Text(widget.author?.initials ?? 'M'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () =>
+                              context.push('/people/${mission.authorId}'),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(minHeight: 48),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: ClipOval(
+                                    child: ProfileImage(
+                                      path: widget.author?.avatarPath,
+                                      repository: controller.mediaRepository,
+                                      fallback: CircleAvatar(
+                                        backgroundColor: AppColors.mint,
+                                        child: Text(
+                                          widget.author?.initials ?? 'M',
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    widget.author?.fullName ??
-                                        mission.organizerName ??
-                                        'MAREA',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 13,
-                                    ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        widget.author?.fullName ??
+                                            mission.organizerName ??
+                                            'MAREA',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      Text(
+                                        AppLocalizations.trTemplate(
+                                          '{date} · Misión',
+                                          {
+                                            'date': missionDate(
+                                              mission.createdAt,
+                                            ),
+                                          },
+                                        ),
+                                        style: const TextStyle(
+                                          color: AppColors.textSecondary,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    AppLocalizations.trTemplate(
-                                      '{date} · Misión',
-                                      {'date': missionDate(mission.createdAt)},
-                                    ),
-                                    style: const TextStyle(
-                                      color: AppColors.textSecondary,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
+                      PopupMenuButton<String>(
+                        tooltip: AppLocalizations.tr('Opciones de misión'),
+                        icon: const Icon(Icons.more_horiz),
+                        onSelected: (value) => value == 'save'
+                            ? _save(!_saved)
+                            : value == 'manage'
+                            ? _collaborate()
+                            : _open(),
+                        itemBuilder: (_) => [
+                          PopupMenuItem(
+                            value: 'open',
+                            child: Text(AppLocalizations.tr('Ver detalles')),
+                          ),
+                          if (own)
+                            PopupMenuItem(
+                              value: 'manage',
+                              child: Text(
+                                AppLocalizations.tr('Gestionar misión'),
+                              ),
+                            ),
+                          PopupMenuItem(
+                            value: 'save',
+                            child: Text(
+                              _saved ? 'Quitar guardado' : 'Guardar misión',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  PopupMenuButton<String>(
-                    tooltip: AppLocalizations.tr('Opciones de misión'),
-                    icon: const Icon(Icons.more_horiz),
-                    onSelected: (value) => value == 'save'
-                        ? _save(!_saved)
-                        : value == 'manage'
-                        ? _collaborate()
-                        : _open(),
-                    itemBuilder: (_) => [
-                      PopupMenuItem(
-                        value: 'open',
-                        child: Text(AppLocalizations.tr('Ver detalles')),
+                  const SizedBox(height: 2),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      FutureBuilder<String>(
+                        future: _url,
+                        builder: (_, s) =>
+                            mission.imagePath == null ||
+                                _imageFailed ||
+                                s.hasError
+                            ? _textHero(translated['title'] ?? mission.title)
+                            : _photoHero(
+                                s.data,
+                                title: translated['title'] ?? mission.title,
+                              ),
                       ),
-                      if (own)
-                        PopupMenuItem(
-                          value: 'manage',
-                          child: Text(AppLocalizations.tr('Gestionar misión')),
+                      const SizedBox(height: 9),
+                      Text(
+                        translated['body'] ?? mission.body,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          height: 1.3,
+                          color: AppColors.textPrimary,
                         ),
-                      PopupMenuItem(
-                        value: 'save',
-                        child: Text(
-                          _saved ? 'Quitar guardado' : 'Guardar misión',
+                      ),
+                      MissionTranslationAction(
+                        content: translationContent,
+                        showModelHint: false,
+                        onChanged: (value) =>
+                            setState(() => _translatedMission = value),
+                      ),
+                      const SizedBox(height: 6),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.mist,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            communityCategories[mission.category] ?? 'Otros',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppColors.brandNavy,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
+                  if (controller.missionSocialRepository != null &&
+                      controller.communityRepository != null)
+                    MissionSocialActions(
+                      mission: mission,
+                      repository: controller.missionSocialRepository!,
+                      community: controller.communityRepository!,
+                      config: AppConfig.fromValues(
+                        supabaseUrl: '',
+                        supabaseAnonKey: '',
+                        publicUrl: controller.publicUrl,
+                      ),
+                      viewerId: controller.profile?.id,
+                      moderator: controller.profile?.role == ProfileRole.admin,
+                      stats: widget.stats,
+                      onStats: widget.onStats,
+                      trailingCTA: cta,
+                    )
+                  else
+                    Align(alignment: Alignment.centerRight, child: cta),
                 ],
               ),
-              const SizedBox(height: 2),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  FutureBuilder<String>(
-                    future: _url,
-                    builder: (_, s) =>
-                        mission.imagePath == null || _imageFailed || s.hasError
-                        ? _textHero(translated['title'] ?? mission.title)
-                        : _photoHero(
-                            s.data,
-                            title: translated['title'] ?? mission.title,
-                          ),
-                  ),
-                  const SizedBox(height: 9),
-                  Text(
-                    translated['body'] ?? mission.body,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      height: 1.3,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  MissionTranslationAction(
-                    content: translationContent,
-                    onChanged: (value) =>
-                        setState(() => _translatedMission = value),
-                  ),
-                  const SizedBox(height: 6),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.mist,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        communityCategories[mission.category] ?? 'Otros',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: AppColors.brandNavy,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              if (controller.missionSocialRepository != null &&
-                  controller.communityRepository != null)
-                MissionSocialActions(
-                  mission: mission,
-                  repository: controller.missionSocialRepository!,
-                  community: controller.communityRepository!,
-                  config: AppConfig.fromValues(
-                    supabaseUrl: '',
-                    supabaseAnonKey: '',
-                    publicUrl: controller.publicUrl,
-                  ),
-                  viewerId: controller.profile?.id,
-                  moderator: controller.profile?.role == ProfileRole.admin,
-                  stats: widget.stats,
-                  onStats: widget.onStats,
-                  trailingCTA: cta,
-                )
-              else
-                Align(alignment: Alignment.centerRight, child: cta),
-            ],
+            ),
           ),
         ),
       ),

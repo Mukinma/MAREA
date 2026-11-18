@@ -9,6 +9,8 @@ import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/home_feed/data/stories_repository.dart';
 import 'package:marea/features/home_feed/models/story.dart';
+import 'package:marea/features/shell/presentation/marea_create_action.dart';
+import 'package:marea/features/showcase/presentation/create_screen.dart';
 
 class StoryViewer extends StatefulWidget {
   const StoryViewer({
@@ -38,7 +40,9 @@ class _StoryViewerState extends State<StoryViewer>
   bool _holding = false,
       _paused = false,
       _background = false,
+      _covered = false,
       _profileOpen = false,
+      _creationOpen = false,
       _menuOpen = false,
       _loaded = false,
       _busy = false;
@@ -49,7 +53,9 @@ class _StoryViewerState extends State<StoryViewer>
       _holding ||
       _paused ||
       _background ||
+      _covered ||
       _profileOpen ||
+      _creationOpen ||
       _menuOpen ||
       !_loaded ||
       _busy;
@@ -69,6 +75,13 @@ class _StoryViewerState extends State<StoryViewer>
     _expiry = Timer.periodic(const Duration(milliseconds: 500), (_) {
       if (mounted && !_story.isAvailableAt(widget.batch.now)) _move(1);
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _covered = ModalRoute.isCurrentOf(context) == false;
+    _sync();
   }
 
   @override
@@ -119,7 +132,15 @@ class _StoryViewerState extends State<StoryViewer>
   }
 
   void _move(int direction) {
-    if (!mounted || _busy || _profileOpen || _menuOpen || _background) return;
+    if (!mounted ||
+        _busy ||
+        _covered ||
+        _profileOpen ||
+        _creationOpen ||
+        _menuOpen ||
+        _background) {
+      return;
+    }
     var next = _index + direction;
     while (next >= 0 &&
         next < widget.stories.length &&
@@ -158,8 +179,21 @@ class _StoryViewerState extends State<StoryViewer>
     }
   }
 
+  Future<void> _create() async {
+    _creationOpen = true;
+    _sync();
+    try {
+      await showCreateMenu(context, widget.controller);
+    } finally {
+      if (mounted) {
+        _creationOpen = false;
+        _sync();
+      }
+    }
+  }
+
   Future<void> _action(String action) async {
-    _busy = true;
+    setState(() => _busy = true);
     _sync();
     try {
       if (action == 'delete') {
@@ -372,6 +406,15 @@ class _StoryViewerState extends State<StoryViewer>
                                         ),
                                       ),
                                     ),
+                                    if (GoRouter.maybeOf(context) != null &&
+                                        canOpenCreateMenu(widget.controller))
+                                      MareaCreateAction(
+                                        selected: false,
+                                        expanded: false,
+                                        stacked: false,
+                                        enabled: !_busy,
+                                        onTap: _create,
+                                      ),
                                     PopupMenuButton<String>(
                                       tooltip: AppLocalizations.tr('Acciones'),
                                       enabled: !_busy,

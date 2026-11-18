@@ -29,11 +29,13 @@ La pantalla se reinicia cuando cambia la cuenta. Los selectores y subidas en cur
 
 ## Diseño y accesibilidad
 
-Logo original, Nunito Sans local, azul marino/aqua y Paper cálido. Superficies elevadas, campos con relieve interior, botón principal azul sólido y selección con borde además de color. Bienvenida con ilustración vectorial protagonista; formulario compacto y decoración lateral discreta en escritorio desde 1024 px.
+Logo original centrado arriba, Nunito Sans local, azul marino y aqua sobre el fondo claro de la app. Los formularios comparten encabezado, campos blancos con borde, botones y avisos. La selección de perfil se distingue por color, borde y marca de selección. La bienvenida conserva la ilustración original de la mascota y el texto «Tu ciudad también crea». Desde 1024 px, la ilustración y las acciones se muestran en dos columnas.
 
-En móvil los formularios son desplazables dentro de SafeArea y respetan el teclado. La selección usa RadioGroup, etiquetas accesibles y una columna cuando aumenta el texto. Contraseñas tienen acción accesible de mostrar/ocultar; los errores y estados del código conservan anuncios semánticos. Las láminas generadas son referencias: los controles Flutter son nativos, no imágenes de formularios.
+La primera apertura en iOS y Android muestra cuatro escenas con la mascota, navegación táctil y una opción visible para saltar. Los formularios son desplazables dentro de `SafeArea` y respetan el teclado. La selección usa `RadioGroup` y etiquetas accesibles. Los errores y estados del código tienen anuncios semánticos. Si el acceso empezó desde un enlace protegido, el enrutador recupera el destino permitido después de completar los pasos requeridos.
 
 ## Contrato de servidor
+
+Para usar el selector nativo de Google en Android, compila con `--dart-define=GOOGLE_WEB_CLIENT_ID=<ID OAuth web>`. Copia el ID completo del cliente web configurado en el proveedor Google de Supabase. El ID ya trae el sufijo `.apps.googleusercontent.com`. Registra en Google Cloud un cliente Android con el paquete y la huella SHA-1 de la variante instalada. Si el ID falta, tiene un formato inválido o Android no dispone del selector, el navegador abre Google solicitando la selección explícita de cuenta. Cerrar el selector devuelve a MAREA sin iniciar sesión.
 
 Aplicar **`supabase/migrations/007_minimal_registration.sql`** después de 001–006, antes de publicar este cliente.
 
@@ -62,7 +64,7 @@ Para inspeccionar las pantallas con datos de prueba:
 flutter run -d web-server -t test/browser/access_experience_probe.dart --web-port 7365
 ```
 
-Parámetros de la vista de prueba: `?screen=welcome`, `login`, `register`, `check-email`, `recover-password`, `reset-password`, `password-updated`, `profile/setup` o `profile/preferences`; `type=general|creator|entrepreneur|business` y `step=0..3`. Este entrypoint pertenece a pruebas; producción sigue usando `lib/main.dart`.
+Parámetros de la vista de prueba: `?screen=welcome`, `intro`, `login`, `register`, `check-email`, `email-code`, `recover-password`, `reset-password`, `password-updated`, `legal/accept`, `onboarding`, `terms`, `privacy`, `profile/setup` o `profile/preferences`. `email` permite usar una dirección ficticia en la pantalla de código. `type=general|creator|entrepreneur|business` y `step=0..3` sirven para la guía opcional. La vista de prueba usa repositorios ficticios y producción entra por `lib/main.dart`.
 
 ### Resultado local — 28 de septiembre de 2026
 

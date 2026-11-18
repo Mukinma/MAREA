@@ -2,6 +2,7 @@ enum AppFailureKind {
   general,
   emailNotConfirmed,
   invalidSession,
+  mfaRequired,
   usernameTaken,
   emailAlreadyUsed,
   weakPassword,
@@ -22,6 +23,18 @@ abstract final class AppFailureMapper {
 
   static AppFailure fromMessage(String rawMessage) {
     final message = rawMessage.toLowerCase();
+    if (message.contains('mfa_required') ||
+        message.contains('insufficient_aal')) {
+      return const AppFailure(
+        'Completa la verificación en dos pasos para continuar.',
+        kind: AppFailureKind.mfaRequired,
+      );
+    }
+    if (message.contains('mfa_verification_failed') ||
+        message.contains('mfa_challenge_expired') ||
+        message.contains('invalid totp')) {
+      return const AppFailure('El código es incorrecto o venció.');
+    }
     if (message.contains('pgrst202') ||
         message.contains('pgrst204') ||
         message.contains('42703')) {

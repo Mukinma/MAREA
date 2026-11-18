@@ -1,20 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:marea/core/localization/app_localizations.dart';
-import 'package:marea/core/localization/content_translation_service.dart';
 import 'package:marea/core/localization/on_device_post_translator.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/models/post_social.dart';
 import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/features/community/data/community_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../support/test_app.dart';
 import 'package:marea/features/community/presentation/reaction_button.dart';
 
@@ -92,47 +87,6 @@ Widget card(
 );
 
 void main() {
-  test(
-    'post translation falls back to the cloud when on-device is unavailable',
-    () async {
-      final requests = <String>[];
-      final client = SupabaseClient(
-        'https://test.supabase.co',
-        'anon',
-        authOptions: const AuthClientOptions(autoRefreshToken: false),
-        httpClient: MockClient((request) async {
-          expect(request.url.path, '/functions/v1/translate-content');
-          final text = (jsonDecode(request.body) as Map)['text'] as String;
-          requests.add(text);
-          return http.Response(
-            jsonEncode({
-              'text': text == 'Pieza' ? 'Artwork' : 'A description.',
-            }),
-            200,
-            headers: {'content-type': 'application/json'},
-          );
-        }),
-      );
-      addTearDown(client.dispose);
-      final translator = CrossPlatformPostContentTranslator(
-        onDevice: _UnsupportedPostContentTranslator(),
-        cloud: ContentTranslationService(client),
-      );
-
-      expect(translator.isSupported, isTrue);
-      final translated = await translator.translate(
-        title: 'Pieza',
-        body: 'Descripción',
-        targetLanguage: 'en',
-      );
-
-      expect(translated.title, 'Artwork');
-      expect(translated.body, 'A description.');
-      expect(translated.alreadyInTargetLanguage, isFalse);
-      expect(requests, containsAll(['Pieza', 'Descripción']));
-    },
-  );
-
   testWidgets('post translation is opt-in and keeps the original available', (
     tester,
   ) async {

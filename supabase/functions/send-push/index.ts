@@ -71,6 +71,7 @@ type ClaimedJob = {
   notification_id: string;
   recipient_id: string;
   kind: string;
+  category?: string;
   event_version: string;
   token: string;
   title: string;
@@ -141,6 +142,7 @@ Deno.serve(async (request) => {
                       notificationId: job.notification_id,
                       recipientId: job.recipient_id,
                       kind: job.kind,
+                      category: job.category,
                       eventVersion: job.event_version,
                       token: job.token,
                       title: job.title,

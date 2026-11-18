@@ -8,6 +8,7 @@ import 'package:marea/l10n/app_localizations.dart' as gen;
 import 'package:marea/l10n/app_localizations_es.dart' as gen;
 
 import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
+
 class CommunityPage extends StatelessWidget {
   const CommunityPage({
     required this.title,
@@ -107,7 +108,10 @@ class CommunityNotice extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (onRetry != null)
-              TextButton(onPressed: onRetry, child: Text(core_l10n.AppLocalizations.tr(l10n.reintentar))),
+              TextButton(
+                onPressed: onRetry,
+                child: Text(core_l10n.AppLocalizations.tr(l10n.reintentar)),
+              ),
           ],
         ),
       ),
@@ -138,22 +142,26 @@ Future<bool> runCommunityAction(
   }
 }
 
-String communityError(Object error) =>
-    core_l10n.AppLocalizations.tr(
-      error is AppFailure ? error.message : AppFailureMapper.from(error).message,
-    );
+String communityError(Object error) => core_l10n.AppLocalizations.tr(
+  error is AppFailure ? error.message : AppFailureMapper.from(error).message,
+);
 
 Future<String?> askCommunityText(
   BuildContext context, {
   required String title,
   required String label,
   int maxLength = 1000,
+  bool flat = false,
 }) async {
   // The controller is disposed with the dialog, after its closing animation.
   return showDialog<String>(
     context: context,
-    builder: (_) =>
-        _TextDialog(title: title, label: label, maxLength: maxLength),
+    builder: (_) => _TextDialog(
+      title: title,
+      label: label,
+      maxLength: maxLength,
+      flat: flat,
+    ),
   );
 }
 
@@ -162,9 +170,11 @@ class _TextDialog extends StatefulWidget {
     required this.title,
     required this.label,
     required this.maxLength,
+    required this.flat,
   });
   final String title, label;
   final int maxLength;
+  final bool flat;
   @override
   State<_TextDialog> createState() => _TextDialogState();
 }
@@ -181,6 +191,8 @@ class _TextDialogState extends State<_TextDialog> {
   Widget build(BuildContext context) {
     final l10n = gen.AppLocalizations.of(context) ?? gen.AppLocalizationsEs();
     return AlertDialog(
+      elevation: widget.flat ? 0 : null,
+      scrollable: true,
       title: Text(widget.title),
       content: SizedBox(
         width: 440,
@@ -215,8 +227,12 @@ Future<bool> confirmCommunityDelete(BuildContext context) async {
   return await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(core_l10n.AppLocalizations.tr(l10n.confirmarEliminarPublicacion)),
-          content: Text(core_l10n.AppLocalizations.tr(l10n.eliminarPublicacionAdvertencia)),
+          title: Text(
+            core_l10n.AppLocalizations.tr(l10n.confirmarEliminarPublicacion),
+          ),
+          content: Text(
+            core_l10n.AppLocalizations.tr(l10n.eliminarPublicacionAdvertencia),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),

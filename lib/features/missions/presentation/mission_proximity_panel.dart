@@ -43,7 +43,7 @@ class MissionProximityPanel extends StatelessWidget {
             actions: [MissionCatalogMapButton(onPressed: onMap)],
           ),
         ),
-        const SizedBox(height: 3),
+        const SizedBox(height: 8),
         if (missions.isEmpty)
           Padding(padding: _insets, child: _state())
         else
@@ -112,7 +112,13 @@ class MissionProximityPanel extends StatelessWidget {
 
   Widget _state() {
     if (catalog.nearbyWaiting) {
-      return const SizedBox(height: 42, child: MareaSkeleton(compact: true));
+      return const DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.all(Radius.circular(AppRadius.medium)),
+        ),
+        child: SizedBox(height: 84, child: MareaSkeleton()),
+      );
     }
     if (catalog.nearError case final error?) {
       return MissionCatalogNotice(

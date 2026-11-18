@@ -2,6 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/theme/app_depth.dart';
 
+/// Keeps the account experience flat, including descendant modal routes.
+class MareaFlatSurfaces extends InheritedTheme {
+  const MareaFlatSurfaces({required super.child, super.key});
+
+  static bool of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<MareaFlatSurfaces>() != null;
+
+  @override
+  Widget wrap(BuildContext context, Widget child) =>
+      MareaFlatSurfaces(child: child);
+
+  @override
+  bool updateShouldNotify(MareaFlatSurfaces oldWidget) => false;
+}
+
 /// Tactile chrome that retains Material ink, keyboard focus and semantics.
 class MareaSurface extends StatelessWidget {
   const MareaSurface({
@@ -27,7 +42,7 @@ class MareaSurface extends StatelessWidget {
     decoration: BoxDecoration(
       color: color,
       borderRadius: BorderRadius.circular(radius),
-      boxShadow: inset
+      boxShadow: inset || MareaFlatSurfaces.of(context)
           ? null
           : shadows ?? (floating ? AppDepth.floating : AppDepth.raised),
     ),
@@ -36,7 +51,9 @@ class MareaSurface extends StatelessWidget {
       borderRadius: BorderRadius.circular(radius),
       clipBehavior: clipBehavior,
       child: CustomPaint(
-        foregroundPainter: inset ? _InsetRelief(radius) : null,
+        foregroundPainter: inset && !MareaFlatSurfaces.of(context)
+            ? _InsetRelief(radius)
+            : null,
         child: Padding(padding: padding, child: child),
       ),
     ),

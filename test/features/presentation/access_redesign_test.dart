@@ -55,7 +55,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, '/password-updated');
     expect(find.text('Contraseña actualizada'), findsOneWidget);
-    await tester.tap(find.text('Entrar'));
+    await tester.tap(find.text('Entrar a Marea'));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, '/home');
     controller.clearFeedback();
@@ -79,6 +79,12 @@ void main() {
         addTearDown(auth.close);
         final router = GoRouter(
           initialLocation: '/check-email',
+          refreshListenable: controller,
+          redirect: (_, state) =>
+              state.uri.path == '/check-email' &&
+                  controller.status == AuthStatus.authenticated
+              ? '/home'
+              : null,
           routes: [
             GoRoute(
               path: '/check-email',
@@ -149,7 +155,7 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('register-name')), findsNothing);
-    expect(find.text('¿Qué perfil quieres crear?'), findsOneWidget);
+    expect(find.text('Tipo de perfil'), findsOneWidget);
   });
 
   testWidgets('an occupied username stays inline on the identity step', (
@@ -257,7 +263,6 @@ void main() {
           'Taller Brisa',
         );
         await tester.ensureVisible(find.text('Continuar'));
-        await tester.ensureVisible(find.text('Continuar'));
         await tester.tap(find.text('Continuar'));
         await tester.pumpAndSettle();
         await tester.enterText(
@@ -268,11 +273,25 @@ void main() {
           find.byKey(const Key('register-password')),
           'test-password-123',
         );
+        await tester.pumpAndSettle();
         await tester.ensureVisible(find.byKey(const Key('accept-terms')));
         await tester.tap(find.byKey(const Key('accept-terms')));
+        await tester.pumpAndSettle();
+        expect(
+          tester
+              .widget<CheckboxListTile>(find.byKey(const Key('accept-terms')))
+              .value,
+          isTrue,
+        );
         await tester.ensureVisible(find.byKey(const Key('confirm-adult')));
         await tester.tap(find.byKey(const Key('confirm-adult')));
-        await tester.pump();
+        await tester.pumpAndSettle();
+        expect(
+          tester
+              .widget<CheckboxListTile>(find.byKey(const Key('confirm-adult')))
+              .value,
+          isTrue,
+        );
         await tester.ensureVisible(find.byKey(const Key('register-continue')));
         auth.rejection = type == UserType.general
             ? 'User already registered'

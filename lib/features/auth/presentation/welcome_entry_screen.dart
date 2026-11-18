@@ -11,10 +11,12 @@ class WelcomeEntryScreen extends StatefulWidget {
   const WelcomeEntryScreen({
     required this.store,
     required this.controller,
+    this.allowGoogle = true,
     super.key,
   });
   final MobileIntroStore store;
   final AppSessionController controller;
+  final bool allowGoogle;
 
   @override
   State<WelcomeEntryScreen> createState() => _WelcomeEntryScreenState();
@@ -61,7 +63,10 @@ class _WelcomeEntryScreenState extends State<WelcomeEntryScreen> {
   @override
   Widget build(BuildContext context) {
     if (!_mobile || _seen == true || _completedThisVisit) {
-      return WelcomeScreen(controller: widget.controller);
+      return WelcomeScreen(
+        controller: widget.controller,
+        allowGoogle: widget.allowGoogle,
+      );
     }
     if (_seen == null) return const SplashScreen();
     return MobileIntroScreen(onComplete: _finish);

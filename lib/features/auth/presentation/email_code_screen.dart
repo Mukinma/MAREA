@@ -1,16 +1,17 @@
 import 'dart:async';
-import 'package:marea/l10n/app_localizations.dart';
-import 'package:marea/l10n/app_localizations_es.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:marea/core/session/app_session_controller.dart';
-import 'package:marea/core/utils/form_validators.dart';
-import 'package:marea/shared/widgets/auth_layout.dart';
-import 'package:marea/shared/widgets/marea_text_field.dart';
-import 'package:marea/shared/widgets/primary_button.dart';
-import 'package:marea/shared/widgets/session_feedback.dart';
 
-import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
+import 'package:marea/core/localization/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:marea/core/errors/app_failure.dart';
+import 'package:marea/core/session/app_session_controller.dart';
+import 'package:marea/core/theme/app_colors.dart';
+import 'package:marea/core/theme/app_spacing.dart';
+import 'package:marea/core/utils/form_validators.dart';
+import 'package:marea/features/auth/presentation/access_layout.dart';
+import 'package:marea/features/auth/presentation/access_navigation.dart';
+import 'package:marea/shared/widgets/primary_button.dart';
+
 class EmailCodeScreen extends StatefulWidget {
   const EmailCodeScreen({
     required this.controller,
@@ -18,35 +19,47 @@ class EmailCodeScreen extends StatefulWidget {
     this.email,
     super.key,
   });
+
   final AppSessionController controller;
   final bool recovery;
   final String? email;
+
   @override
   State<EmailCodeScreen> createState() => _EmailCodeScreenState();
 }
 
+enum _CodeAction { send, verify }
+
 class _EmailCodeScreenState extends State<EmailCodeScreen> {
-  final _form = GlobalKey<FormState>();
-  late final TextEditingController _email = TextEditingController(
-    text: widget.email,
-  );
+  final _emailForm = GlobalKey<FormState>();
+  final _codeForm = GlobalKey<FormState>();
+  late final _email = TextEditingController(text: widget.email?.trim());
   final _code = TextEditingController();
   Timer? _timer;
-  bool _codeStep = false;
   String? _destination;
   bool _requestAccepted = false;
+  _CodeAction? _pending;
+  String? _sendError;
+  String? _verifyError;
+
+  bool get _busy => _pending != null || widget.controller.isBusy;
+
+  int get _cooldown => widget.controller.emailCooldown(
+    _destination ?? _email.text.trim(),
+    recovery: widget.recovery,
+  );
+
   @override
   void initState() {
     super.initState();
-    final initialEmail = widget.email?.trim() ?? '';
-    _codeStep =
-        !widget.recovery &&
+    final initialEmail = _email.text;
+    if (!widget.recovery &&
         FormValidators.email(initialEmail) == null &&
-        widget.controller.emailCooldown(initialEmail, recovery: false) > 0;
-    if (_codeStep) _destination = initialEmail;
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() {});
-    });
+        _cooldown > 0) {
+      _destination = initialEmail;
+      _requestAccepted = true;
+    }
+    _watchCooldown();
   }
 
   @override
@@ -57,205 +70,283 @@ class _EmailCodeScreenState extends State<EmailCodeScreen> {
     super.dispose();
   }
 
+  void _watchCooldown() {
+    _timer?.cancel();
+    if (_cooldown == 0) return;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+      if (_cooldown == 0) timer.cancel();
+    });
+  }
+
+  String _failureMessage(String fallback) {
+    final failure = widget.controller.failure;
+    return failure?.kind == AppFailureKind.general
+        ? failure!.message
+        : fallback;
+  }
+
   Future<void> _send() async {
-    if (widget.controller.isBusy) return;
-    final destination = _destination ?? _email.text.trim();
-    final error = FormValidators.email(destination);
-    if (error != null) {
-      _form.currentState!.validate();
-      return;
-    }
+    if (_busy || _cooldown > 0) return;
+    final destination = _destination;
+    if (destination == null && !_emailForm.currentState!.validate()) return;
+    final email = destination ?? _email.text.trim();
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _pending = _CodeAction.send;
+      _sendError = null;
+      _verifyError = null;
+    });
     final ok = await widget.controller.sendCode(
-      destination,
+      email,
       recovery: widget.recovery,
     );
-    if (ok && mounted) {
-      setState(() {
-        _destination = destination;
-        _email.text = destination;
+    if (!mounted) return;
+    setState(() {
+      _pending = null;
+      if (ok) {
+        _destination = email;
+        _email.text = email;
         _code.clear();
-        _codeStep = true;
         _requestAccepted = true;
-      });
-    }
+      } else {
+        _sendError = _failureMessage(
+          AppLocalizations.tr(
+            'No pudimos solicitar el código. Inténtalo de nuevo en unos minutos.',
+          ),
+        );
+      }
+    });
+    _watchCooldown();
+  }
+
+  void _clearSendError() {
+    _watchCooldown();
+    setState(() => _sendError = null);
+    if (widget.controller.failure != null) widget.controller.clearFeedback();
+  }
+
+  void _enterCode() {
+    if (_busy || !_emailForm.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
+    widget.controller.clearFeedback();
+    setState(() {
+      _destination = _email.text.trim();
+      _requestAccepted = false;
+      _sendError = null;
+    });
   }
 
   void _changeEmail() {
+    FocusScope.of(context).unfocus();
     widget.controller.clearFeedback();
     setState(() {
       _destination = null;
       _code.clear();
-      _codeStep = false;
       _requestAccepted = false;
+      _sendError = null;
+      _verifyError = null;
     });
+    _watchCooldown();
+  }
+
+  void _back() {
+    if (_destination != null) {
+      _changeEmail();
+      return;
+    }
+    FocusScope.of(context).unfocus();
+    widget.controller.clearFeedback();
+    context.goWithAccessEmail('/login', email: _email.text.trim());
   }
 
   Future<void> _verify() async {
-    if (widget.controller.isBusy || !_form.currentState!.validate()) return;
+    if (_busy || !_codeForm.currentState!.validate()) return;
+    final destination = _destination!;
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _pending = _CodeAction.verify;
+      _verifyError = null;
+      _sendError = null;
+    });
     final ok = await widget.controller.verifyCode(
-      _destination!,
+      destination,
       _code.text,
       recovery: widget.recovery,
     );
-    if (ok && mounted) {
-      context.go(
-        widget.recovery
-            ? '/reset-password'
-            : widget.controller.needsLegalAcceptance
-            ? '/legal/accept'
-            : widget.controller.needsOnboarding
-            ? '/onboarding'
-            : '/home',
-      );
-    }
+    if (!mounted) return;
+    setState(() {
+      _pending = null;
+      if (!ok) {
+        _verifyError = _failureMessage(
+          AppLocalizations.tr(
+            'No pudimos verificar el código. Revisa el correo y vuelve a intentarlo.',
+          ),
+        );
+      }
+    });
   }
 
   @override
-  Widget build(BuildContext context) => AuthLayout(
-    child: AnimatedBuilder(
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
       animation: widget.controller,
       builder: (context, _) {
-        final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
-        final cooldown = widget.controller.emailCooldown(
-          _destination ?? _email.text,
-          recovery: widget.recovery,
-        );
-        return Form(
-          key: _form,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: widget.controller.isBusy
-                      ? null
-                      : () {
-                          widget.controller.clearFeedback();
-                          context.go('/login');
-                        },
-                  icon: const Icon(Icons.arrow_back_rounded),
-                  label: Text(core_l10n.AppLocalizations.tr(l10n.iniciarSesion)),
-                ),
-              ),
-              Text(
-                _codeStep
-                    ? (widget.recovery
-                          ? core_l10n.AppLocalizations.tr(l10n.verificaCodigo)
-                          : core_l10n.AppLocalizations.tr(l10n.verificaCorreo))
-                    : widget.recovery
-                    ? core_l10n.AppLocalizations.tr(l10n.recuperaTuAcceso)
-                    : core_l10n.AppLocalizations.tr(l10n.verificaCorreo),
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _codeStep
-                    ? core_l10n.AppLocalizations.tr(l10n.escribeCodigoRecibiste)
-                    : widget.recovery
-                    ? core_l10n.AppLocalizations.tr(l10n.escribeCorreoCuenta)
-                    : core_l10n.AppLocalizations.tr(l10n.usaCorreoRegistro),
-              ),
-              const SizedBox(height: 24),
-              if (!_codeStep)
-                MareaTextField(
-                  key: const Key('code-destination'),
-                  enabled: !widget.controller.isBusy,
-                  controller: _email,
-                  label: core_l10n.AppLocalizations.tr(l10n.correo),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: FormValidators.email,
-                  onChanged: (_) {
-                    widget.controller.clearFeedback();
-                    setState(() {});
-                  },
-                ),
-              if (_codeStep) ...[
-                Text(core_l10n.AppLocalizations.tr(l10n.correo), style: Theme.of(context).textTheme.labelLarge),
-                const SizedBox(height: 4),
-                Text(
-                  _destination!,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton(
-                    onPressed: widget.controller.isBusy ? null : _changeEmail,
-                    child: Text(core_l10n.AppLocalizations.tr(l10n.usarOtroCorreo)),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                MareaTextField(
-                  key: const Key('email-code'),
-                  enabled: !widget.controller.isBusy,
-                  controller: _code,
-                  label: core_l10n.AppLocalizations.tr(l10n.codigo),
-                  keyboardType: TextInputType.number,
-                  autofillHints: const [AutofillHints.oneTimeCode],
-                  textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _verify(),
-                  validator: (value) =>
-                      RegExp(r'^\d{6,10}$').hasMatch(value?.trim() ?? '')
-                      ? null
-                      : core_l10n.AppLocalizations.tr(l10n.errorCodigoCorreo),
-                ),
-              ],
-              SessionFeedback(controller: widget.controller),
-              if (_requestAccepted && widget.controller.failure == null) ...[
-                const SizedBox(height: 16),
-                Text(core_l10n.AppLocalizations.tr(l10n.revisaTuCorreo)),
-              ],
-              const SizedBox(height: 24),
-              PrimaryButton(
-                label: _codeStep
-                    ? core_l10n.AppLocalizations.tr(l10n.verificarCodigo)
-                    : cooldown > 0
-                    ? core_l10n.AppLocalizations.tr(
-                        l10n.solicitarCodigoEn(cooldown),
-                      )
-                    : core_l10n.AppLocalizations.tr(l10n.enviarCodigo),
-                isLoading: widget.controller.isBusy,
-                onPressed: _codeStep
-                    ? _verify
-                    : cooldown == 0
-                    ? _send
-                    : null,
-              ),
-              if (_codeStep)
-                TextButton(
-                  onPressed: cooldown == 0 && !widget.controller.isBusy
-                      ? _send
-                      : null,
-                  child: Text(
-                    cooldown > 0
-                        ? core_l10n.AppLocalizations.tr(l10n.reenviarEn(cooldown))
-                        : core_l10n.AppLocalizations.tr(l10n.reenviarCodigo),
-                  ),
-                ),
-              if (!_codeStep)
-                TextButton(
-                  onPressed: widget.controller.isBusy
-                      ? null
-                      : () {
-                          if (!_form.currentState!.validate()) return;
-                          widget.controller.clearFeedback();
-                          setState(() {
-                            _destination = _email.text.trim();
-                            _codeStep = true;
-                          });
-                        },
-                  child: Text(core_l10n.AppLocalizations.tr(l10n.yaTengoCodigo)),
-                ),
-              const SizedBox(height: 12),
-              Text(
-                _codeStep
-                    ? core_l10n.AppLocalizations.tr(l10n.codigoNoLlego)
-                    : core_l10n.AppLocalizations.tr(l10n.recibirasCodigo),
-              ),
-            ],
+        final destination = _destination;
+        final cooldown = _cooldown;
+        return AccessLayout(
+          title: widget.recovery
+              ? destination == null
+                    ? AppLocalizations.tr('Recupera tu acceso')
+                    : AppLocalizations.tr('Verifica el código')
+              : AppLocalizations.tr('Verifica tu correo'),
+          description: destination != null
+              ? AppLocalizations.tr(
+                  'Escribe el código del correo. Si no lo encuentras, revisa spam.',
+                )
+              : widget.recovery
+              ? AppLocalizations.tr(
+                  'Recibirás un código si hay una cuenta con ese correo.',
+                )
+              : AppLocalizations.tr('Usa el correo con el que te registraste.'),
+          showBack: true,
+          onBack: _busy ? null : _back,
+          step: destination == null ? 1 : 2,
+          totalSteps: widget.recovery ? 3 : 2,
+          child: AutofillGroup(
+            onDisposeAction: AutofillContextAction.cancel,
+            child: destination == null
+                ? _requestForm(cooldown)
+                : _verifyForm(context, destination, cooldown),
           ),
         );
       },
-    ),
-  );
+    );
+  }
+
+  Widget _requestForm(int cooldown) {
+    return Form(
+      key: _emailForm,
+      autovalidateMode: AutovalidateMode.onUserInteractionIfError,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AccessTextField(
+            key: const Key('code-destination'),
+            enabled: !_busy,
+            controller: _email,
+            label: AppLocalizations.tr('Correo'),
+            hint: 'tu@correo.com',
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.done,
+            autofillHints: const [AutofillHints.email],
+            validator: (value) => FormValidators.email(value?.trim()),
+            onChanged: (_) => _clearSendError(),
+            onFieldSubmitted: (_) => _send(),
+          ),
+          if (_sendError case final error?) ...[
+            const SizedBox(height: AppSpacing.sm),
+            AccessFeedback(message: error),
+          ],
+          const SizedBox(height: AppSpacing.xl),
+          PrimaryButton(
+            label: cooldown > 0
+                ? 'Solicitar de nuevo en ${cooldown}s'
+                : AppLocalizations.tr('Enviar código'),
+            loadingLabel: AppLocalizations.tr('Enviando código…'),
+            isLoading: _pending == _CodeAction.send,
+            onPressed: _busy || cooldown > 0 ? null : _send,
+          ),
+          TextButton(
+            onPressed: _busy ? null : _enterCode,
+            child: Text(AppLocalizations.tr('Ya tengo un código')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _verifyForm(BuildContext context, String destination, int cooldown) {
+    final textTheme = Theme.of(context).textTheme;
+    return Form(
+      key: _codeForm,
+      autovalidateMode: AutovalidateMode.onUserInteractionIfError,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            AppLocalizations.tr('Correo'),
+            style: textTheme.labelLarge?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(destination, style: textTheme.titleMedium),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: _busy ? null : _changeEmail,
+              child: Text(AppLocalizations.tr('Usar otro correo')),
+            ),
+          ),
+          if (_requestAccepted) ...[
+            AccessFeedback(
+              message: AppLocalizations.tr(
+                'Si el correo corresponde a tu cuenta, recibirás el código.',
+              ),
+              error: false,
+            ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+          AccessTextField(
+            key: const Key('email-code'),
+            enabled: !_busy,
+            controller: _code,
+            label: AppLocalizations.tr('Código'),
+            helperText: AppLocalizations.tr('Puedes pegar el código completo.'),
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            autofillHints: const [AutofillHints.oneTimeCode],
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (_) => _verify(),
+            validator: (value) => RegExp(r'^\d{6,10}$').hasMatch(value ?? '')
+                ? null
+                : AppLocalizations.tr(
+                    'Escribe el código del correo (6 a 10 dígitos).',
+                  ),
+            onChanged: (_) {
+              if (_verifyError == null) return;
+              setState(() => _verifyError = null);
+              widget.controller.clearFeedback();
+            },
+          ),
+          if (_verifyError case final error?) ...[
+            const SizedBox(height: AppSpacing.sm),
+            AccessFeedback(message: error),
+          ],
+          const SizedBox(height: AppSpacing.xl),
+          PrimaryButton(
+            label: AppLocalizations.tr('Verificar código'),
+            loadingLabel: AppLocalizations.tr('Verificando código…'),
+            isLoading: _pending == _CodeAction.verify,
+            onPressed: _busy ? null : _verify,
+          ),
+          if (_sendError case final error?) ...[
+            const SizedBox(height: AppSpacing.sm),
+            AccessFeedback(message: error),
+          ],
+          TextButton(
+            onPressed: _busy || cooldown > 0 ? null : _send,
+            child: Text(
+              _pending == _CodeAction.send
+                  ? AppLocalizations.tr('Reenviando código…')
+                  : cooldown > 0
+                  ? 'Reenviar en ${cooldown}s'
+                  : AppLocalizations.tr('Reenviar código'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -54,11 +54,11 @@ El pulido visual conserva todos los colores originales de marca y añade un neut
 - Tablet: `600–1023 px`, navegación superior adaptativa.
 - Desktop: `>=1024 px`, navegación superior; autenticación en composición dividida.
 - Inicio limita el feed a 760 px; el perfil, a 1200 px; las páginas de comunidad, a 960 px. Las fichas del perfil usan dos columnas cuando caben tarjetas de al menos 160 px, y una en espacios menores. Portafolio/Catálogo/Servicios y Publicaciones conservan contenido y desplazamiento al cambiar de pestaña; los perfiles públicos también ofrecen Misiones.
-- Edición de perfil separa Identidad y Profesional, conserva sus campos y abre la sección del primer error. Las secciones ocultas no reciben foco. Las barras de guardar quedan sobre el teclado. Configuración, seguridad y fichas reutilizan las superficies y secciones neumórficas sin duplicar encabezados ni agregar texto decorativo.
+- Edición de perfil separa Identidad y Profesional, conserva sus campos y abre la sección del primer error. Las secciones ocultas no reciben foco. Las barras de guardar quedan sobre el teclado. Configuración, Edición de perfil y sus modales usan tarjetas y campos planos. Los bordes y el color distinguen foco, selección y error.
 - Herramientas del perfil abre un panel desplazable sobre la navegación global: publicación, misión y colaboraciones compatibles para todos; obra, producto o servicio según capacidades, guía y datos profesionales. Moderación mantiene su acceso directo para administradores. El acceso profesional abre esa pestaña del editor.
 - Misiones ofrece un acceso rápido a convocatorias compatibles (incluye las abiertas a todos), filtros por respuesta de postulación y tarjetas sin portada decorativa cuando no hay fotografía. El detalle explica la restricción concreta y las condiciones de gestión del organizador.
 - Texto ampliado: se ocultan etiquetas de navegación que no caben; permanecen los nombres accesibles y los controles de al menos 48 px.
 
 ## Mascota
 
-Es una voz contextual: bienvenida, guía, ayuda, vacío y celebración. No aparece en perfil normal, edición, configuración, loading rutinario ni eliminación. Los assets provisionales deben aprobarse antes de integrarse y se mantendrán reemplazables sin modificar widgets o arquitectura.
+Es una voz contextual para bienvenida, guía, ayuda, vacío y celebración. En Configuración, Mareadín aparece solo en la tarjeta informativa de Mis datos personales. Los recursos de mascota se pueden reemplazar sin modificar la navegación.

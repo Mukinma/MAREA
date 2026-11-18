@@ -53,11 +53,13 @@ class MissionTranslationAction extends StatefulWidget {
     required this.content,
     required this.onChanged,
     this.translator,
+    this.showModelHint = true,
   });
 
   final Map<String, String> content;
   final ValueChanged<Map<String, String>?> onChanged;
   final PostContentTranslator? translator;
+  final bool showModelHint;
 
   @override
   State<MissionTranslationAction> createState() =>
@@ -65,10 +67,8 @@ class MissionTranslationAction extends StatefulWidget {
 }
 
 class _MissionTranslationActionState extends State<MissionTranslationAction> {
-  static final _onDeviceTranslator = LocalPostContentTranslator();
-
   PostContentTranslator get _translator =>
-      widget.translator ?? _onDeviceTranslator;
+      widget.translator ?? LocalPostContentTranslator.shared;
 
   Map<String, String>? _translatedContent;
   String? _targetLanguage, _error;
@@ -207,7 +207,7 @@ class _MissionTranslationActionState extends State<MissionTranslationAction> {
               fontSize: 12,
             ),
           ),
-        if (available)
+        if (available && (widget.showModelHint || _translating))
           Text(
             AppLocalizations.tr(
               'La primera traducción descarga un modelo; después funciona sin conexión.',

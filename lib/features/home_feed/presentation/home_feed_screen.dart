@@ -414,35 +414,28 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         null,
       ),
     };
-    return MareaSurface(
-      color: AppColors.surface,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          Icon(icon, color: AppColors.aquaDark, size: 28),
-          const SizedBox(height: 8),
-          Text(AppLocalizations.tr(message), textAlign: TextAlign.center),
-          if (action != null)
-            TextButton(
-              onPressed: onAction,
-              child: Text(AppLocalizations.tr(action)),
-            ),
-        ],
-      ),
+    return _FeedNotice(
+      icon: icon,
+      message: message,
+      action: action,
+      onAction: onAction,
     );
   }
 
   Widget _footer() {
     if (_loading) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 12),
+      return const MareaSurface(
+        color: AppColors.surface,
+        radius: 20,
         child: MareaSkeleton(kind: SkeletonKind.post),
       );
     }
     if (_error != null) {
-      return CommunityNotice(
+      return _FeedNotice(
+        icon: Icons.error_outline_rounded,
         message: _error!,
-        onRetry: () => _load(reset: _cursor == null),
+        action: 'Reintentar',
+        onAction: () => _load(reset: _cursor == null),
       );
     }
     if (_cursor != null) {
@@ -543,4 +536,56 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       ),
     );
   }
+}
+
+class _FeedNotice extends StatelessWidget {
+  const _FeedNotice({
+    required this.icon,
+    required this.message,
+    required this.action,
+    required this.onAction,
+  });
+
+  final IconData icon;
+  final String message;
+  final String? action;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) => MareaSurface(
+    color: AppColors.surface,
+    radius: 20,
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+    child: Column(
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppColors.mint,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(9),
+            child: Icon(icon, color: AppColors.aquaDark, size: 24),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Semantics(
+          liveRegion: true,
+          child: Text(
+            AppLocalizations.tr(message),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.brandNavy,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        if (action case final label?)
+          TextButton(
+            onPressed: onAction,
+            child: Text(AppLocalizations.tr(label)),
+          ),
+      ],
+    ),
+  );
 }

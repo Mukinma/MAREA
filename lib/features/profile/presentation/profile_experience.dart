@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/models/community_models.dart';
+import 'package:marea/features/community/data/community_reports_repository.dart';
+import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
 import 'package:marea/features/community/presentation/notifications_panel.dart';
 import 'package:marea/features/profile/presentation/profile_identity.dart';
@@ -46,6 +48,44 @@ class _ProfileExperienceState extends State<ProfileExperience> {
   String? _conversationStatus;
   bool _conversationIsIncoming = false;
   bool _chatBusy = false;
+  bool _reporting = false;
+
+  Future<void> _reportAccount() async {
+    final repository = widget.controller.communityRepository;
+    if (_reporting || _owner || repository is! CommunityReportsRepository) {
+      return;
+    }
+    final target = widget.profile.id;
+    final reporter = widget.controller.profile?.id;
+    if (reporter == null || reporter == target) return;
+    setState(() => _reporting = true);
+    try {
+      final reason = await askCommunityText(
+        context,
+        title: 'Reportar cuenta',
+        label: 'Motivo del reporte',
+        maxLength: 500,
+        flat: true,
+      );
+      if (!mounted ||
+          reason == null ||
+          widget.controller.profile?.id != reporter ||
+          widget.profile.id != target) {
+        return;
+      }
+      await runCommunityAction(
+        context,
+        () => (repository as CommunityReportsRepository).reportAccount(
+          target,
+          reason,
+        ),
+        success:
+            'Recibimos tu reporte. Puedes consultarlo en Ayuda y reportes.',
+      );
+    } finally {
+      if (mounted) setState(() => _reporting = false);
+    }
+  }
 
   @override
   void initState() {
@@ -458,6 +498,19 @@ class _ProfileExperienceState extends State<ProfileExperience> {
                     ),
                   ),
                 ],
+                if (!_owner &&
+                    widget.controller.profile != null &&
+                    widget.controller.profile?.id != widget.profile.id &&
+                    widget.controller.communityRepository
+                        is CommunityReportsRepository)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: _reporting ? null : _reportAccount,
+                      icon: const Icon(Icons.flag_outlined, size: 20),
+                      label: const Text('Reportar cuenta'),
+                    ),
+                  ),
               ],
             );
             return SingleChildScrollView(
