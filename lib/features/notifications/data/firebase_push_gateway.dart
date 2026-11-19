@@ -8,33 +8,25 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import '../models/notification_destination.dart';
 import '../models/notification_preferences.dart';
+import 'push_configuration.dart';
 import 'push_gateway.dart';
-
-FirebaseOptions? firebaseOptionsFromEnvironment() {
-  const apiKey = String.fromEnvironment('FIREBASE_API_KEY');
-  const appId = String.fromEnvironment('FIREBASE_APP_ID');
-  const sender = String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID');
-  const project = String.fromEnvironment('FIREBASE_PROJECT_ID');
-  if ([apiKey, appId, sender, project].any((v) => v.isEmpty)) return null;
-  return const FirebaseOptions(
-    apiKey: apiKey,
-    appId: appId,
-    messagingSenderId: sender,
-    projectId: project,
-  );
-}
+import 'web_push_stub.dart'
+    if (dart.library.js_interop) 'web_push_browser.dart'
+    as web_push;
 
 @pragma('vm:entry-point')
 Future<void> mareaBackgroundMessage(RemoteMessage message) async {
-  // FCM displays background notification payloads. Do not display them again.
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(options: firebaseOptionsFromEnvironment());
-  }
+  // FCM displays background alert payloads. No duplicate local alert is needed.
 }
 
-class AndroidPushGateway implements PushGateway {
+class FirebasePushGateway implements PushGateway {
+  FirebasePushGateway(this.configuration);
+
+  final PushConfiguration configuration;
+  bool get _ios => !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
   final _opened = StreamController<PushNotice>.broadcast();
   final _received = StreamController<ForegroundNotice>.broadcast();
   final _tokens = StreamController<String>.broadcast();
@@ -78,25 +70,30 @@ class AndroidPushGateway implements PushGateway {
     if (_initialized) return true;
     var phase = 'firebase';
     try {
-      if (Firebase.apps.isEmpty) {
-        await Firebase.initializeApp(options: firebaseOptionsFromEnvironment());
+      final app = await Firebase.initializeApp(options: configuration.options);
+      if (app.options.appId != configuration.options.appId ||
+          app.options.projectId != configuration.options.projectId) {
+        return false;
       }
       _messaging = FirebaseMessaging.instance;
-      FirebaseMessaging.onBackgroundMessage(mareaBackgroundMessage);
-      phase = 'local_notifications';
-      await _local.initialize(
-        settings: const InitializationSettings(
-          android: AndroidInitializationSettings('ic_marea_notification'),
-        ),
-        onDidReceiveNotificationResponse: (r) => _openPayload(r.payload),
-      );
-      final android = _local
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >();
-      phase = 'channels';
-      await android?.createNotificationChannel(_channel);
-      await android?.createNotificationChannel(_mareaChannel);
+      if (kIsWeb) {
+        if (!await _messaging!.isSupported()) {
+          _messaging = null;
+          return false;
+        }
+        web_push.listen(_openPayload);
+      } else {
+        FirebaseMessaging.onBackgroundMessage(mareaBackgroundMessage);
+        phase = 'local_notifications';
+        await _initializeNativeAlerts();
+        if (_ios) {
+          await _messaging!.setForegroundNotificationPresentationOptions(
+            alert: false,
+            badge: false,
+            sound: false,
+          );
+        }
+      }
       _subscriptions.add(_messaging!.onTokenRefresh.listen(_tokens.add));
       _subscriptions.add(
         FirebaseMessaging.onMessageOpenedApp.listen((m) => _openData(m.data)),
@@ -113,9 +110,13 @@ class AndroidPushGateway implements PushGateway {
                 category: NotificationCategory.fromPayload(
                   message.data['category'],
                 ),
-                title: message.notification?.title ?? 'MAREA',
+                title:
+                    message.notification?.title ??
+                    message.data['title']?.toString() ??
+                    'MAREA',
                 body:
                     message.notification?.body ??
+                    message.data['body']?.toString() ??
                     'Hay novedades en tu comunidad.',
               ),
             );
@@ -125,9 +126,11 @@ class AndroidPushGateway implements PushGateway {
       phase = 'initial_message';
       final initial = await _messaging!.getInitialMessage();
       if (initial != null) _openData(initial.data);
-      final launch = await _local.getNotificationAppLaunchDetails();
-      if (launch?.didNotificationLaunchApp == true) {
-        _openPayload(launch?.notificationResponse?.payload);
+      if (!kIsWeb) {
+        final launch = await _local.getNotificationAppLaunchDetails();
+        if (launch?.didNotificationLaunchApp == true) {
+          _openPayload(launch?.notificationResponse?.payload);
+        }
       }
       _initialized = true;
       return true;
@@ -147,18 +150,42 @@ class AndroidPushGateway implements PushGateway {
     }
   }
 
+  Future<void> _initializeNativeAlerts() async {
+    await _local.initialize(
+      settings: const InitializationSettings(
+        android: AndroidInitializationSettings('ic_marea_notification'),
+        iOS: DarwinInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+        ),
+      ),
+      onDidReceiveNotificationResponse: (r) => _openPayload(r.payload),
+    );
+    final android = _local
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    await android?.createNotificationChannel(_channel);
+    await android?.createNotificationChannel(_mareaChannel);
+  }
+
   @override
   Future<PushPermission> permission() async {
     if (_messaging == null) return PushPermission.unavailable;
     final settings = await _messaging!.getNotificationSettings();
-    return settings.authorizationStatus == AuthorizationStatus.authorized ||
-            settings.authorizationStatus == AuthorizationStatus.provisional
-        ? PushPermission.granted
-        : PushPermission.denied;
+    return switch (settings.authorizationStatus) {
+      AuthorizationStatus.authorized ||
+      AuthorizationStatus.provisional => PushPermission.granted,
+      AuthorizationStatus.notDetermined => PushPermission.notDetermined,
+      AuthorizationStatus.denied => PushPermission.denied,
+    };
   }
 
   @override
   Future<PushPermission> promptOnce() async {
+    // Browsers require a user gesture before presenting their permission prompt.
+    if (kIsWeb) return permission();
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool('marea.push.permissionAsked') == true) {
       return permission();
@@ -175,13 +202,44 @@ class AndroidPushGateway implements PushGateway {
   }
 
   @override
-  Future<void> openSettings() => const MethodChannel(
-    'marea/notifications',
-  ).invokeMethod<void>('openSettings');
+  Future<void> openSettings() async {
+    if (_ios) {
+      await Geolocator.openAppSettings();
+    } else if (!kIsWeb) {
+      await const MethodChannel(
+        'marea/notifications',
+      ).invokeMethod<void>('openSettings');
+    }
+  }
+
   @override
   Future<String?> token() async {
     if (await permission() != PushPermission.granted) return null;
     await _messaging?.setAutoInitEnabled(true);
+    if (kIsWeb) {
+      final options = configuration.options;
+      final path = Uri(
+        path: 'push/firebase-messaging-sw.js',
+        queryParameters: {
+          'apiKey': options.apiKey,
+          'appId': options.appId,
+          'messagingSenderId': options.messagingSenderId,
+          'projectId': options.projectId,
+        },
+      );
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('marea.push.tokenRequested', true);
+      return _messaging?.getToken(
+        vapidKey: configuration.vapidKey,
+        serviceWorkerScriptPath: web_push.absoluteWorkerUrl(path.toString()),
+      );
+    }
+    // APNs registration is asynchronous. onTokenRefresh also handles its arrival.
+    if (_ios && await _messaging?.getAPNSToken() == null) return null;
+    if (_ios) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('marea.push.tokenRequested', true);
+    }
     return _messaging?.getToken();
   }
 
@@ -202,13 +260,34 @@ class AndroidPushGateway implements PushGateway {
   @override
   Future<void> present(ForegroundNotice message) async {
     final marea = message.category == NotificationCategory.reminders;
+    final payload = jsonEncode({
+      'notification_id': message.notice.notificationId,
+      'recipient_id': message.notice.recipientId,
+    });
+    if (kIsWeb) {
+      await web_push.show(message.title, message.body, payload, marea);
+      return;
+    }
     final channel = marea ? _mareaChannel : _channel;
     // A stable tag replaces retries of the same event in the Android tray.
     await _local.show(
-      id: 0,
+      id: _ios
+          ? int.parse(
+                  message.notice.notificationId.substring(0, 8),
+                  radix: 16,
+                ) &
+                0x3fffffff
+          : 0,
       title: message.title,
       body: message.body,
       notificationDetails: NotificationDetails(
+        iOS: DarwinNotificationDetails(
+          presentSound: !marea,
+          threadIdentifier: message.category?.name,
+          interruptionLevel: marea
+              ? InterruptionLevel.passive
+              : InterruptionLevel.active,
+        ),
         android: AndroidNotificationDetails(
           channel.id,
           channel.name,
@@ -220,10 +299,7 @@ class AndroidPushGateway implements PushGateway {
           onlyAlertOnce: true,
         ),
       ),
-      payload: jsonEncode({
-        'notification_id': message.notice.notificationId,
-        'recipient_id': message.notice.recipientId,
-      }),
+      payload: payload,
     );
   }
 
@@ -233,9 +309,20 @@ class AndroidPushGateway implements PushGateway {
     await prefs.remove('marea.push.installation');
     try {
       await _messaging?.setAutoInitEnabled(false);
-      await _messaging?.deleteToken();
+      final requested = prefs.getBool('marea.push.tokenRequested') == true;
+      // deleteToken would create a default browser worker or require an APNs
+      // token even when this installation has never been able to subscribe.
+      if (requested ||
+          !kIsWeb && (!_ios || await _messaging?.getAPNSToken() != null)) {
+        await _messaging?.deleteToken();
+      }
+      await prefs.remove('marea.push.tokenRequested');
     } finally {
-      await _local.cancelAll();
+      if (kIsWeb) {
+        await web_push.clear();
+      } else {
+        await _local.cancelAll();
+      }
     }
   }
 
@@ -244,6 +331,7 @@ class AndroidPushGateway implements PushGateway {
     for (final s in _subscriptions) {
       await s.cancel();
     }
+    if (kIsWeb) web_push.stopListening();
     await _opened.close();
     await _received.close();
     await _tokens.close();

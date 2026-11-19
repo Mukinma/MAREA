@@ -1,6 +1,6 @@
 import 'package:marea/features/community/models/post_social.dart';
 
-/// Both the in-app inbox and Android open the same destination.
+/// The inbox and remote notices resolve the same authenticated destination.
 String notificationDestination(SocialNotification n) {
   if (n.kind == NotificationKind.mareaMessage) {
     if (n.eventKey?.startsWith('chat_request:') != true) {

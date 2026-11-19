@@ -16,49 +16,31 @@ import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
 
-class ExploreScreen extends StatefulWidget {
-  const ExploreScreen({
+class CommunityCollectionScreen extends StatefulWidget {
+  const CommunityCollectionScreen({
     required this.controller,
-    this.initialSection,
+    required this.section,
     this.initialCategory,
-    this.discoverOnly = false,
     super.key,
   });
   final AppSessionController controller;
-  final String? initialSection, initialCategory;
-  final bool discoverOnly;
+  final String section;
+  final String? initialCategory;
   @override
-  State<ExploreScreen> createState() => _ExploreScreenState();
+  State<CommunityCollectionScreen> createState() => _CommunityCollectionScreenState();
 }
 
-class _ExploreScreenState extends State<ExploreScreen> {
+class _CommunityCollectionScreenState extends State<CommunityCollectionScreen> {
   final _search = TextEditingController();
-  String _query = '', _section = 'posts', _savedSection = 'posts';
+  String _query = '', _savedSection = 'posts';
+  String get _section => widget.section;
   String? _category;
   ShowcaseKind? _kind;
-
-  String get _initialSection => switch (widget.initialSection) {
-    'people' => 'people',
-    'saved' => 'saved',
-    _ => 'posts',
-  };
 
   @override
   void initState() {
     super.initState();
-    _section = _initialSection;
     _category = widget.initialCategory;
-  }
-
-  @override
-  void didUpdateWidget(ExploreScreen old) {
-    super.didUpdateWidget(old);
-    if (old.initialSection != widget.initialSection) {
-      _section = _initialSection;
-    }
-    if (old.initialCategory != widget.initialCategory) {
-      _category = widget.initialCategory;
-    }
   }
 
   @override
@@ -69,7 +51,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) => CommunityPage(
-    title: AppLocalizations.tr(_section == 'saved' ? 'Guardados' : 'Explorar'),
+    title: AppLocalizations.tr(switch (_section) { 'saved' => 'Guardados', 'people' => 'Personas', _ => 'Fichas' }),
     children: [
       MareaSurface(
         inset: true,
@@ -83,7 +65,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             labelText: AppLocalizations.tr(
               _section == 'people'
                   ? 'Buscar nombre o usuario'
-                  : _section == 'showcases'
+                  : _section == 'showcases' || (_section == 'saved' && _savedSection == 'showcases')
                   ? 'Buscar fichas por título'
                   : 'Buscar por título',
             ),
@@ -95,17 +77,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
             ),
           ),
         ),
-      ),
-      const SizedBox(height: 20),
-      MareaTabs(
-        options: {
-          'posts': AppLocalizations.tr('Publicaciones'),
-          'people': AppLocalizations.tr('Personas'),
-          'showcases': AppLocalizations.tr('Fichas'),
-          'saved': AppLocalizations.tr('Guardados'),
-        },
-        value: _section,
-        onChanged: (value) => setState(() => _section = value),
       ),
       const SizedBox(height: 20),
       if (_section == 'saved') ...[
@@ -160,8 +131,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
             ],
           ),
-        if (_section != 'showcases' &&
-            (_section != 'saved' || _savedSection == 'posts')) ...[
+        if (_section == 'saved' && _savedSection == 'posts') ...[
           if (_section == 'saved')
             Text(
               AppLocalizations.tr('Publicaciones guardadas'),
@@ -172,7 +142,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
             query: _query,
             category: _category,
             savedOnly: _section == 'saved',
-            discoverOnly: widget.discoverOnly && _section == 'posts',
             showHeading: false,
           ),
         ],
@@ -324,12 +293,10 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
     location: '/people/${widget.profileId}',
     controller: widget.controller,
     child: Scaffold(
-      appBar: _profile == null
-          ? AppBar(
-              leading: const ProfileBackButton(fallback: '/explore'),
-              title: Text(AppLocalizations.tr('Perfil')),
-            )
-          : null,
+      appBar: AppBar(
+        leading: const ProfileBackButton(fallback: '/search/people'),
+        title: Text(AppLocalizations.tr('Perfil')),
+      ),
       body: _profile == null
           ? _loading
                 ? const Center(child: MareaSkeleton(kind: SkeletonKind.list))

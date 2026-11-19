@@ -12,7 +12,7 @@ import 'package:marea/features/community/data/social_repository.dart';
 import 'package:marea/features/community/models/post_social.dart';
 import 'package:marea/features/community/presentation/social_panels.dart';
 import 'package:marea/features/home_feed/models/home_feed_models.dart';
-import 'package:marea/features/community/presentation/explore_screen.dart';
+import 'package:marea/features/community/presentation/community_collection_screen.dart';
 import 'package:marea/features/community/presentation/mission_management_screen.dart';
 import 'package:marea/features/community/presentation/post_composer_screen.dart';
 import 'package:marea/features/profile/models/profile.dart';
@@ -246,6 +246,23 @@ Future<void> _backWithAppBar(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('legacy discovery links redirect to live collections', (tester) async {
+    final router = await _open(tester, _CommunityFake(), '/home');
+    for (final entry in {
+      '/explore': '/home',
+      '/explore?section=people': '/search/people',
+      '/explore?section=showcases': '/search/showcases',
+      '/explore?section=saved': '/profile/saved',
+      '/explore?from=discover&category=otros': '/search/posts?category=otros&from=discover',
+      '/discover?section=saved': '/missions?section=saved',
+    }.entries) {
+      router.go(entry.key);
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.toString(), entry.value);
+      expect(find.byTooltip('Explorar'), findsNothing);
+    }
+  });
+
   testWidgets('Home search carries category and returns to the same results', (
     tester,
   ) async {
@@ -450,9 +467,9 @@ void main() {
       await _tap(tester, find.byTooltip('Acciones'));
       await _tap(tester, find.text('Guardar'));
       expect(repo.savedPosts, contains('post-1'));
-      router.go('/explore');
+      router.go('/explore?section=saved');
       await tester.pumpAndSettle();
-      await _tap(tester, find.text('Guardados'));
+      expect(router.routeInformationProvider.value.uri.path, '/profile/saved');
       expect(find.text('Proyecto original'), findsOneWidget);
       await _tap(tester, find.byTooltip('Acciones'));
       await _tap(tester, find.text('Quitar guardado'));

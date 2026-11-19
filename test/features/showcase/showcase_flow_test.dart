@@ -229,7 +229,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Fichas guardadas'), findsOneWidget);
     expect(find.text('Servicio guardable'), findsOneWidget);
-    await tap(tester, find.text('Fichas').first);
+    router.go('/search/showcases');
+    await tester.pumpAndSettle();
     await tester.enterText(
       find.widgetWithText(TextField, 'Buscar fichas por título'),
       'Sin coincidencias',

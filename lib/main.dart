@@ -9,7 +9,8 @@ import 'package:marea/features/ar_markers/data/local_marker_repository.dart';
 import 'package:marea/features/ar_markers/data/supabase_marker_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:marea/features/notifications/data/inbox_only_gateway.dart';
-import 'package:marea/features/notifications/data/android_push_gateway.dart';
+import 'package:marea/features/notifications/data/firebase_push_gateway.dart';
+import 'package:marea/features/notifications/data/push_configuration.dart';
 import 'package:marea/features/notifications/data/push_controller.dart';
 import 'package:marea/features/notifications/data/notification_preferences_repository.dart';
 import 'package:marea/features/community/data/social_repository.dart';
@@ -91,6 +92,12 @@ class _StartupAppState extends State<_StartupApp> {
     final client = Supabase.instance.client;
     final localeController = AppLocaleController();
     await localeController.load();
+    final pushConfiguration = PushConfiguration.forBuild(
+      development: config.isDevelopment,
+      pilot: widget.productionPilot,
+      web: kIsWeb,
+      platform: defaultTargetPlatform,
+    );
     late final AppSessionController controller;
     final deviceMarkers = LocalMarkerRepository(
       currentOwner: () => controller.profile?.id,
@@ -106,12 +113,9 @@ class _StartupAppState extends State<_StartupApp> {
       ),
       push: PushController(
         SupabaseNotificationPreferencesRepository(client),
-        !widget.productionPilot &&
-                !config.isDevelopment &&
-                !kIsWeb &&
-                defaultTargetPlatform == TargetPlatform.android
-            ? AndroidPushGateway()
-            : InboxOnlyGateway(),
+        pushConfiguration == null
+            ? InboxOnlyGateway()
+            : FirebasePushGateway(pushConfiguration),
       ),
       communityRepository: SupabaseCommunityRepository(client),
       homeFeedRepository: SupabaseHomeFeedRepository(client),

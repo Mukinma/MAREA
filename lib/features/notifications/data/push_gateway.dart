@@ -1,7 +1,7 @@
 import '../models/notification_destination.dart';
 import '../models/notification_preferences.dart';
 
-enum PushPermission { unavailable, denied, granted }
+enum PushPermission { unavailable, notDetermined, denied, granted }
 
 class ForegroundNotice {
   const ForegroundNotice({

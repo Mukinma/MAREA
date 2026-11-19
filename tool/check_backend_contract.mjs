@@ -1,7 +1,8 @@
+import {contractTarget} from './parity/lab.mjs';
 // Read-only gate against the already linked project. The CLI owns credentials.
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-const query = spawnSync('supabase',['db','query','--linked','--output','json','--file',fileURLToPath(new URL('./backend_contract.sql',import.meta.url))], {encoding:'utf8'});
+const query = spawnSync('supabase',['db','query',...contractTarget(),'--output','json','--file',fileURLToPath(new URL('./backend_contract.sql',import.meta.url))], {encoding:'utf8'});
 if (query.status !== 0) {
   console.error('Backend contract could not be checked. Verify CLI access and apply the required migrations before building.');
   process.exit(1);

@@ -27,28 +27,7 @@ class AppShell extends StatelessWidget {
   final Widget child;
   final RefreshCallback? onRefresh;
   final bool returnToMissions;
-  static const _destinations = [
-    _Destination('Inicio', '/home', Icons.home_outlined, Icons.home_rounded),
-    _Destination(
-      'Explorar',
-      '/explore',
-      Icons.search_rounded,
-      Icons.search_rounded,
-    ),
-    _Destination(
-      'Misiones',
-      '/missions',
-      Icons.flag_outlined,
-      Icons.flag_rounded,
-    ),
-    _Destination('Mapa', '/map', Icons.map_outlined, Icons.map_rounded),
-    _Destination(
-      'Perfil',
-      '/profile',
-      Icons.person_outline_rounded,
-      Icons.person_rounded,
-    ),
-  ];
+  static const _destinations = MobileDestination.values;
   void _navigate(BuildContext context, String path) {
     if (returnToMissions && path == '/missions' && context.canPop()) {
       context.pop();
@@ -56,7 +35,6 @@ class AppShell extends StatelessWidget {
       context.go(path);
     }
   }
-
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, bounds) {
@@ -314,7 +292,7 @@ class AppShell extends StatelessWidget {
   List<Widget> _utilities(BuildContext context) => [
     IconButton(
       tooltip: AppLocalizations.tr('Guardados'),
-      onPressed: () => context.go('/explore?section=saved'),
+      onPressed: () => context.go('/profile/saved'),
       icon: Icon(
         Icons.bookmark_border_rounded,
         semanticLabel: AppLocalizations.tr('Guardados'),
@@ -366,7 +344,7 @@ class _NavigationItem extends StatelessWidget {
     required this.showLabel,
     required this.onTap,
   });
-  final _Destination destination;
+  final MobileDestination destination;
   final bool selected, showLabel;
   final VoidCallback onTap;
   @override
@@ -401,7 +379,7 @@ class _NavigationItem extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      selected ? destination.selectedIcon : destination.icon,
+                      selected ? destination.activeIcon : destination.icon,
                       size: 23,
                       color: selected
                           ? AppColors.brandNavy
@@ -431,10 +409,4 @@ class _NavigationItem extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Destination {
-  const _Destination(this.label, this.path, this.icon, this.selectedIcon);
-  final String label, path;
-  final IconData icon, selectedIcon;
 }

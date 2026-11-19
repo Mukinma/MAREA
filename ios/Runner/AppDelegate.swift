@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import UserNotifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -8,11 +9,34 @@ import UIKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    UNUserNotificationCenter.current().delegate = self
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
+                                       withCompletionHandler completion: @escaping (UNNotificationPresentationOptions) -> Void) {
+    if notification.request.identifier.hasPrefix(ProximityAlerts.prefix) {
+      completion([.banner, .list, .sound])
+    } else {
+      super.userNotificationCenter(center, willPresent: notification, withCompletionHandler: completion)
+    }
+  }
+
+  override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
+                                       withCompletionHandler completion: @escaping () -> Void) {
+    if response.notification.request.identifier.hasPrefix(ProximityAlerts.prefix) {
+      ProximityAlerts.shared.opened(response)
+      completion()
+    } else {
+      super.userNotificationCenter(center, didReceive: response, withCompletionHandler: completion)
+    }
   }
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MareaProximity") {
+      ProximityAlerts.shared.register(registrar)
+    }
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MareaTours") { tours = TourNative(registrar: registrar) }
   }
 }

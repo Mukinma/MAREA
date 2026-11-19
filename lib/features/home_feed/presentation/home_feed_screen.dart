@@ -402,7 +402,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         Icons.people_outline_rounded,
         'Aún no hay publicaciones de perfiles que sigues.',
         'Explorar perfiles',
-        () => context.push('/explore?section=people'),
+        () => context.push('/search/people'),
       ),
       (HomeFeedMode.nearby, _, _) => (
         Icons.place_outlined,

@@ -9,25 +9,49 @@ export type PushJob = {
   body: string;
   ttlSeconds?: number;
 };
-export function buildFcmMessage(job: PushJob) {
+export function buildFcmMessage(job: PushJob, now = Date.now()) {
   const marea = job.category === undefined
     ? job.kind === "marea_message"
     : job.category === "reminders";
+  const ttl = job.ttlSeconds ?? (marea ? 1800 : 86400);
+  const data = {
+    notification_id: job.notificationId,
+    recipient_id: job.recipientId,
+    kind: job.kind,
+    ...(job.category === undefined ? {} : { category: job.category }),
+    event_version: job.eventVersion,
+  };
   return {
     message: {
       token: job.token,
-      notification: { title: job.title, body: job.body },
-      data: {
-        notification_id: job.notificationId,
-        recipient_id: job.recipientId,
-        kind: job.kind,
-        ...(job.category === undefined ? {} : { category: job.category }),
-        event_version: job.eventVersion,
+      data,
+      apns: {
+        headers: {
+          "apns-push-type": "alert",
+          "apns-priority": marea ? "5" : "10",
+          "apns-expiration": String(Math.floor(now / 1000) + ttl),
+          "apns-collapse-id": job.notificationId,
+        },
+        payload: {
+          aps: {
+            alert: { title: job.title, body: job.body },
+            "thread-id": job.category ?? job.kind,
+            ...(marea ? { "interruption-level": "passive" } : { sound: "default" }),
+          },
+        },
+      },
+      // Web is data-only, so the service worker can own the click and display
+      // precisely one notification. Platform data overrides the common data.
+      webpush: {
+        headers: { TTL: String(ttl), Urgency: marea ? "low" : "high" },
+        data: { ...data, title: job.title, body: job.body },
       },
       android: {
         priority: marea ? "normal" : "high",
-        ttl: `${job.ttlSeconds ?? (marea ? 1800 : 86400)}s`,
+        ttl: `${ttl}s`,
         notification: {
+          title: job.title,
+          body: job.body,
           tag: job.notificationId,
           icon: "ic_marea_notification",
           channel_id: marea ? "marea_messages" : "marea_activity",

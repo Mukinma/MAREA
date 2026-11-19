@@ -46,6 +46,15 @@ Deno.test("grouped chat uses high priority and the activity channel", () => {
   );
   assertEquals(result.message.android.notification.default_sound, true);
   assertEquals(result.message.android.ttl, "86400s");
+  assertEquals(result.message.apns.headers["apns-push-type"], "alert");
+  assertEquals(result.message.apns.headers["apns-collapse-id"], "n");
+  assertEquals(result.message.apns.payload.aps.alert.body, "Nuevo mensaje");
+  assertEquals(result.message.apns.payload.aps.sound, "default");
+  assertEquals(result.message.webpush.headers.Urgency, "high");
+  assertEquals(result.message.webpush.data, {
+    ...result.message.data, title: "MAREA", body: "Nuevo mensaje",
+  });
+  assertEquals("notification" in result.message, false);
 });
 Deno.test("editorial reminders retain their existing quiet channel", () => {
   const result = buildFcmMessage({
@@ -58,7 +67,7 @@ Deno.test("editorial reminders retain their existing quiet channel", () => {
     title: "MAREA",
     body: "Un recordatorio",
     ttlSeconds: 42,
-  });
+  }, 1000000);
   assertEquals(result.message.data.category, "reminders");
   assertEquals(result.message.android.priority, "normal");
   assertEquals(
@@ -67,6 +76,10 @@ Deno.test("editorial reminders retain their existing quiet channel", () => {
   );
   assertEquals(result.message.android.notification.default_sound, false);
   assertEquals(result.message.android.ttl, "42s");
+  assertEquals(result.message.apns.headers["apns-expiration"], "1042");
+  assertEquals(result.message.apns.payload.aps["interruption-level"], "passive");
+  assertEquals(result.message.apns.payload.aps.sound, undefined);
+  assertEquals(result.message.webpush.headers, { TTL: "42", Urgency: "low" });
 });
 Deno.test("invalid tokens are retired but temporary server failures retry", () => {
   assertEquals(

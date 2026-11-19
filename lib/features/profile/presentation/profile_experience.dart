@@ -1,14 +1,8 @@
 import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/home_feed/presentation/follow_button.dart';
-import 'package:marea/features/profile/models/profile.dart';
-import 'package:marea/features/profile/presentation/profile_form_widgets.dart';
-import 'package:marea/features/profile/presentation/profile_visits.dart';
-import 'package:marea/shared/widgets/marea_panel.dart';
+import 'package:marea/features/tours/presentation/tour_management_screen.dart';
 import 'package:marea/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:marea/features/home_feed/data/home_feed_repository.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/models/community_models.dart';
@@ -20,6 +14,7 @@ import 'package:marea/features/profile/presentation/profile_identity.dart';
 import 'package:marea/features/profile/presentation/profile_tools_sheet.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
 import 'package:marea/shared/widgets/marea_refresh_indicator.dart';
+import 'package:marea/shared/widgets/marea_surface.dart';
 import 'package:marea/features/profile/presentation/profile_sections.dart';
 import 'package:marea/features/profile/presentation/profile_content_sections.dart';
 
@@ -45,9 +40,6 @@ class ProfileExperience extends StatefulWidget {
 class _ProfileExperienceState extends State<ProfileExperience> {
   final _scroll = ScrollController();
   final _postsKey = GlobalKey();
-  late Future<ProfileFollowCounts?>? _counts = _loadCounts();
-  bool _coverPastStatusBar = false;
-
   bool get _owner =>
       widget.owner && widget.controller.profile?.id == widget.profile.id;
   int _chatGeneration = 0;
@@ -56,7 +48,6 @@ class _ProfileExperienceState extends State<ProfileExperience> {
   String? _conversationStatus;
   bool _conversationIsIncoming = false;
   bool _chatBusy = false;
-  bool _chatLoading = true;
   bool _reporting = false;
 
   Future<void> _reportAccount() async {
@@ -88,9 +79,8 @@ class _ProfileExperienceState extends State<ProfileExperience> {
           target,
           reason,
         ),
-        success: AppLocalizations.tr(
-          'Recibimos tu reporte. Puedes consultarlo en Ayuda y reportes.',
-        ),
+        success:
+            'Recibimos tu reporte. Puedes consultarlo en Ayuda y reportes.',
       );
     } finally {
       if (mounted) setState(() => _reporting = false);
@@ -100,7 +90,6 @@ class _ProfileExperienceState extends State<ProfileExperience> {
   @override
   void initState() {
     super.initState();
-    _scroll.addListener(_updateStatusBar);
     _loadIncomingRequest();
   }
 
@@ -109,12 +98,10 @@ class _ProfileExperienceState extends State<ProfileExperience> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.profile.id != widget.profile.id ||
         oldWidget.controller != widget.controller) {
-      _counts = _loadCounts();
       _conversationId = null;
       _conversationStatus = null;
       _conversationIsIncoming = false;
       _chatBusy = false;
-      _chatLoading = true;
       _loadIncomingRequest();
     }
   }
@@ -147,10 +134,6 @@ class _ProfileExperienceState extends State<ProfileExperience> {
       }
     } catch (_) {
       // The profile remains usable when chat status cannot be loaded.
-    } finally {
-      if (mounted && generation == _chatGeneration) {
-        setState(() => _chatLoading = false);
-      }
     }
   }
 
@@ -160,68 +143,9 @@ class _ProfileExperienceState extends State<ProfileExperience> {
     super.dispose();
   }
 
-  Future<ProfileFollowCounts?>? _loadCounts() {
-    final repository = widget.controller.homeFeedRepository;
-    return repository is ProfileFollowCountsRepository &&
-            widget.controller.profile != null
-        ? (repository as ProfileFollowCountsRepository).followCounts(
-            widget.profile.id,
-          )
-        : null;
-  }
-
-  Widget _followCounts() => FutureBuilder<ProfileFollowCounts?>(
-    future: _counts,
-    builder: (context, snapshot) {
-      final counts = snapshot.data;
-      if (counts == null) return const SizedBox.shrink();
-      final format = NumberFormat.decimalPattern(
-        Localizations.localeOf(context).toLanguageTag(),
-      );
-      Widget count(int value, String label) => Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: format.format(value),
-              style: const TextStyle(
-                color: AppColors.brandNavy,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            TextSpan(text: ' ${AppLocalizations.tr(label)}'),
-          ],
-        ),
-        style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
-      );
-      return Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: Wrap(
-          spacing: 16,
-          runSpacing: 6,
-          children: [
-            count(
-              counts.followers,
-              counts.followers == 1 ? 'seguidor' : 'seguidores',
-            ),
-            count(counts.following, 'seguidos'),
-          ],
-        ),
-      );
-    },
-  );
-
-  void _updateStatusBar() {
-    final past = _scroll.offset >= 78;
-    if (past != _coverPastStatusBar) setState(() => _coverPastStatusBar = past);
-  }
-
   Future<void> _refresh() async {
     await widget.onRefresh();
-    if (!mounted) return;
-    setState(() {
-      _counts = _loadCounts();
-      _revision++;
-    });
+    if (mounted) setState(() => _revision++);
   }
 
   Future<void> _open(String route) async {
@@ -233,25 +157,92 @@ class _ProfileExperienceState extends State<ProfileExperience> {
     if (mounted) setState(() => _revision++);
   }
 
+  Widget _shortcuts(bool wide) {
+    final actions = <(IconData, String, VoidCallback)>[
+      (
+        Icons.dashboard_customize_outlined,
+        AppLocalizations.tr('Herramientas'),
+        _menu,
+      ),
+      (
+        Icons.bookmark_border,
+        AppLocalizations.tr('Guardados'),
+        () => context.go('/profile/saved'),
+      ),
+      (
+        Icons.flag_outlined,
+        AppLocalizations.tr('Mis misiones'),
+        () => context.go('/missions?section=own'),
+      ),
+      (
+        Icons.assignment_outlined,
+        AppLocalizations.tr('Mis postulaciones'),
+        () => context.go('/missions?section=applications'),
+      ),
+      if (widget.admin)
+        (
+          Icons.shield_outlined,
+          AppLocalizations.tr('Moderación'),
+          () => _open('/moderation'),
+        ),
+    ];
+    return MareaSurface(
+      radius: 20,
+      padding: const EdgeInsets.all(6),
+      child: wide
+          ? Column(
+              children: [
+                for (final a in actions)
+                  ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                    leading: Icon(a.$1, size: 20),
+                    title: Text(a.$2, style: const TextStyle(fontSize: 14)),
+                    trailing: const Icon(Icons.chevron_right, size: 20),
+                    onTap: a.$3,
+                  ),
+              ],
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final a in actions)
+                  Expanded(
+                    child: TextButton(
+                      onPressed: a.$3,
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 3,
+                          vertical: 8,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(a.$1, size: 20),
+                          const SizedBox(height: 4),
+                          Text(
+                            a.$2,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 11, height: 1.2),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+    );
+  }
+
   Future<void> _menu() async {
     final route = await showProfileTools(
       context,
       profile: widget.profile,
       controller: widget.controller,
       admin: _owner && widget.admin,
-      messageLabel: !_owner && widget.controller.chatRepository != null
-          ? _messageLabel
-          : null,
-      messageEnabled: _canMessage,
     );
     if (!mounted || route == null) return;
-    if (route == '#message') {
-      await _messageProfile();
-    } else if (route == '#report') {
-      await _reportAccount();
-    } else if (route == '#settings') {
-      await _open('/settings');
-    } else if (route == '#showcase') {
+    if (route == '#showcase') {
       await _allShowcase();
     } else if (route == '#missions') {
       await _allMissions();
@@ -267,7 +258,7 @@ class _ProfileExperienceState extends State<ProfileExperience> {
       }
     } else if (_owner) {
       if (route.startsWith('/missions?') ||
-          route.startsWith('/explore?') ||
+          route == '/profile/saved' ||
           route == '/map') {
         context.go(route);
       } else {
@@ -305,7 +296,7 @@ class _ProfileExperienceState extends State<ProfileExperience> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (profile.userType.showcaseKinds.isNotEmpty)
+        if (profile.userType.showcaseKinds.isNotEmpty) ...[
           ProfileShowcasePreview(
             key: ValueKey((profile.id, _revision, 'showcase')),
             controller: widget.controller,
@@ -314,6 +305,8 @@ class _ProfileExperienceState extends State<ProfileExperience> {
             onOpen: _open,
             onSeeAll: _allShowcase,
           ),
+          const SizedBox(height: 14),
+        ],
         ProfileMissionsPreview(
           key: ValueKey((profile.id, _revision, 'missions')),
           controller: widget.controller,
@@ -321,368 +314,250 @@ class _ProfileExperienceState extends State<ProfileExperience> {
           onOpen: _open,
           onSeeAll: _allMissions,
         ),
+        const SizedBox(height: 20),
+        ProfileSectionHeading(
+          key: _postsKey,
+          title: AppLocalizations.tr('Publicaciones'),
+        ),
+        if (_owner)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: () => _open('/posts/new'),
+              icon: const Icon(Icons.add),
+              label: Text(AppLocalizations.tr('Agregar publicación')),
+            ),
+          ),
         if (widget.controller.communityRepository != null)
           PostsFeed(
             key: ValueKey((profile.id, _revision, 'posts')),
             controller: widget.controller,
             authorId: profile.id,
             showHeading: false,
-            showRefresh: false,
-            showEmpty: false,
-            profilePresentation: true,
-            sectionHeader: Padding(
-              key: _postsKey,
-              padding: const EdgeInsets.only(top: 22, bottom: 8),
-              child: ProfileSectionHeading(
-                title: AppLocalizations.tr('Publicaciones'),
-                action: _owner ? 'Agregar publicación' : null,
-                onAction: _owner ? () => _open('/posts/new') : null,
-              ),
-            ),
-            alwaysShowSectionHeader: _owner,
           ),
-      ],
-    );
-  }
-
-  bool get _hasTourManagement =>
-      widget.controller.tourRepository != null &&
-      widget.profile.userType != UserType.general;
-
-  bool get _canManageExperiences =>
-      _owner &&
-      (_hasTourManagement || widget.controller.markerRepository != null);
-
-  Future<void> _manageExperiences() async {
-    final routes = [
-      if (_hasTourManagement)
-        (Icons.panorama_photosphere_outlined, 'Tus recorridos 360°', '/tours'),
-      if (widget.controller.markerRepository != null)
-        (Icons.image_search_outlined, 'Tus marcadores RA', '/ar-markers'),
-    ];
-    if (routes.length == 1) {
-      await _open(routes.single.$3);
-      return;
-    }
-    final route = await showMareaBottomSheet<String>(
-      context: context,
-      useSafeArea: true,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final (icon, label, route) in routes)
-              ListTile(
-                leading: Icon(icon),
-                title: Text(AppLocalizations.tr(label)),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => Navigator.pop(context, route),
-              ),
-            const SizedBox(height: 12),
-          ],
-        ),
-      ),
-    );
-    if (mounted && route != null && _owner) await _open(route);
-  }
-
-  static final _coverPill = FilledButton.styleFrom(
-    backgroundColor: AppColors.profileCanvas,
-    foregroundColor: AppColors.brandNavy,
-    minimumSize: const Size(48, 48),
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    shape: const StadiumBorder(),
-    textStyle: const TextStyle(
-      fontFamily: 'NunitoSans',
-      fontSize: 13,
-      fontWeight: FontWeight.w800,
-    ),
-    iconSize: 17,
-  );
-
-  bool get _canMessage => !_chatBusy && !_chatLoading && !_awaitingReply;
-  String get _messageLabel => _awaitingReply
-      ? 'Solicitud enviada'
-      : _incomingChat
-      ? 'Aceptar solicitud'
-      : 'Mensaje';
-
-  bool get _incomingChat =>
-      _conversationStatus == 'pending' && _conversationIsIncoming;
-  bool get _awaitingReply =>
-      _conversationStatus == 'pending' && !_conversationIsIncoming;
-
-  Future<void> _messageProfile() async {
-    final repository = widget.controller.chatRepository;
-    final account = widget.controller.profile?.id;
-    if (repository == null || account == null || _chatBusy || _awaitingReply) {
-      return;
-    }
-    final target = widget.profile.id;
-    final conversationId = _conversationId;
-    final accepting = _incomingChat && conversationId != null;
-    bool isCurrent() =>
-        mounted &&
-        widget.profile.id == target &&
-        widget.controller.profile?.id == account;
-
-    if (_conversationStatus == 'accepted' && conversationId != null) {
-      await context.push('/messages/$conversationId');
-      return;
-    }
-
-    setState(() => _chatBusy = true);
-    try {
-      if (accepting) {
-        await repository.accept(conversationId);
-        if (!mounted || !isCurrent()) return;
-        setState(() {
-          _conversationStatus = 'accepted';
-          _conversationIsIncoming = false;
-        });
-        await context.push('/messages/$conversationId');
-      } else {
-        final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(AppLocalizations.tr('Enviar solicitud de chat')),
-            content: Text(
-              AppLocalizations.trTemplate(
-                'Podrás escribirle a {name} cuando acepte tu solicitud.',
-                {'name': widget.profile.fullName},
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(AppLocalizations.tr('Cancelar')),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(AppLocalizations.tr('Enviar solicitud')),
-              ),
-            ],
+        if (widget.controller.tourRepository != null)
+          ProfileTourCard(
+            key: ValueKey((profile.id, _revision, 'tours')),
+            controller: widget.controller,
+            profileId: profile.id,
           ),
-        );
-        if (confirmed != true || !isCurrent()) return;
-        final id = await repository.request(target);
-        if (!isCurrent()) return;
-        setState(() {
-          _conversationId = id;
-          _conversationStatus = 'pending';
-          _conversationIsIncoming = false;
-        });
-      }
-    } catch (error) {
-      if (mounted && isCurrent()) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(communityError(error))));
-      }
-    } finally {
-      if (isCurrent()) setState(() => _chatBusy = false);
-    }
-  }
-
-  Widget? _profileActions() {
-    final feed = widget.controller.homeFeedRepository;
-    final chat = widget.controller.chatRepository;
-    if (!_owner &&
-        (widget.controller.profile?.id == widget.profile.id ||
-            (feed == null && chat == null))) {
-      return null;
-    }
-
-    return Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      alignment: WrapAlignment.end,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        if (_owner)
-          FilledButton.tonalIcon(
-            style: _coverPill,
-            onPressed: () => _open('/profile/edit'),
-            icon: const Icon(Icons.photo_camera_outlined),
-            label: Text(AppLocalizations.tr('Editar perfil')),
-          )
-        else ...[
-          if (feed != null)
-            FollowButton(
-              repository: feed,
-              authorId: widget.profile.id,
-              onChanged: () {
-                setState(() {
-                  _counts = _loadCounts();
-                });
-                widget.controller.refreshHomeFeed();
-              },
-              style: _coverPill,
-              compact: true,
-            ),
-          if (chat != null)
-            IconButton(
-              tooltip: AppLocalizations.tr(_messageLabel),
-              onPressed: _canMessage ? _messageProfile : null,
-              style: IconButton.styleFrom(
-                backgroundColor: AppColors.profileCanvas,
-                foregroundColor: AppColors.brandNavy,
-                disabledBackgroundColor: AppColors.profileCanvas,
-                disabledForegroundColor: AppColors.textSecondary,
-                minimumSize: const Size(48, 48),
-              ),
-              icon: Badge(
-                isLabelVisible: _incomingChat,
-                backgroundColor: AppColors.aquaDark,
-                child: Icon(
-                  _awaitingReply
-                      ? Icons.schedule_outlined
-                      : Icons.chat_bubble_outline_rounded,
-                  size: 20,
-                ),
-              ),
-            ),
-        ],
+        if (_owner) ...[const SizedBox(height: 12), _shortcuts(false)],
       ],
     );
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final inset = constraints.maxWidth < 600 && widget.feedback == null
-          ? MediaQuery.paddingOf(context).top
-          : 0.0;
-      final statusStyle = _coverPastStatusBar
-          ? SystemUiOverlayStyle.dark
-          : SystemUiOverlayStyle.light;
-      return ColoredBox(
-        color: AppColors.profileCanvas,
-        child: Stack(
-          children: [
-            SafeArea(top: inset == 0, bottom: false, child: _body(inset)),
-            if (inset > 0)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: inset,
-                child: IgnorePointer(
-                  child: AnnotatedRegion<SystemUiOverlayStyle>(
-                    value: statusStyle.copyWith(
-                      statusBarColor: Colors.transparent,
+  Widget build(BuildContext context) => ColoredBox(
+    color: AppColors.profileCanvas,
+    child: SafeArea(
+      top: false,
+      bottom: false,
+      child: MareaRefreshIndicator(
+        onRefresh: _refresh,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final wide = constraints.maxWidth >= 1024;
+            final identity = Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ProfileIdentity(
+                  profile: widget.profile,
+                  controller: widget.controller,
+                  wide: wide,
+                  onSettings: () => _open('/settings'),
+                  settingsTooltip: _owner
+                      ? AppLocalizations.tr('Configuración')
+                      : AppLocalizations.tr('Configuración de tu cuenta'),
+                  onMenu: _menu,
+                  editAction: _owner
+                      ? TextButton.icon(
+                          icon: const Icon(Icons.edit_outlined, size: 16),
+                          onPressed: () => _open('/profile/edit'),
+                          label: Text(AppLocalizations.tr('Editar perfil')),
+                          style: TextButton.styleFrom(
+                            textStyle: const TextStyle(
+                              fontFamily: 'NunitoSans',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: const Size(48, 40),
+                            backgroundColor: Colors.white,
+                            foregroundColor: const Color(0xFF07345C),
+                            shape: const StadiumBorder(),
+                          ),
+                        )
+                      : null,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: ProfileStatisticsCard(),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ProfileAbout(profile: widget.profile, owner: _owner),
+                ),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ProfileInterests(
+                    profile: widget.profile,
+                    onEdit: _owner ? () => _open('/profile/edit') : null,
+                  ),
+                ),
+                if (!_owner &&
+                    widget.controller.homeFeedRepository != null &&
+                    widget.controller.profile?.id != widget.profile.id) ...[
+                  const SizedBox(height: 12),
+                  FollowButton(
+                    repository: widget.controller.homeFeedRepository!,
+                    authorId: widget.profile.id,
+                    onChanged: widget.controller.refreshHomeFeed,
+                  ),
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    onPressed: _chatBusy
+                        ? null
+                        : () async {
+                            final chat = widget.controller.chatRepository;
+                            if (chat == null) return;
+                            setState(() => _chatBusy = true);
+                            try {
+                              final accepting =
+                                  _conversationStatus == 'pending' &&
+                                  _conversationIsIncoming;
+                              final viewing =
+                                  _conversationStatus == 'accepted' &&
+                                  _conversationId != null;
+                              if (viewing) {
+                                if (context.mounted) {
+                                  context.push('/messages/$_conversationId');
+                                }
+                                return;
+                              }
+                              if (accepting) {
+                                await chat.accept(_conversationId!);
+                                if (mounted) {
+                                  setState(
+                                    () => _conversationStatus = 'accepted',
+                                  );
+                                }
+                              } else {
+                                final id = await chat.request(
+                                  widget.profile.id,
+                                );
+                                if (mounted) {
+                                  setState(() {
+                                    _conversationId = id;
+                                    _conversationStatus = 'pending';
+                                    _conversationIsIncoming = false;
+                                  });
+                                }
+                              }
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        accepting
+                                            ? AppLocalizations.tr(
+                                                'Solicitud aceptada. Ya pueden conversar.',
+                                              )
+                                            : AppLocalizations.tr(
+                                                'Solicitud enviada. Podrás escribir cuando la otra persona acepte.',
+                                              ),
+                                      ),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                              }
+                            } catch (error) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      AppLocalizations.tr(error.toString()),
+                                    ),
+                                  ),
+                                );
+                              }
+                            } finally {
+                              if (mounted) setState(() => _chatBusy = false);
+                            }
+                          },
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    label: Text(
+                      _conversationStatus == 'accepted'
+                          ? AppLocalizations.tr('Ver mensajes')
+                          : _conversationStatus == 'pending' &&
+                                _conversationIsIncoming
+                          ? AppLocalizations.tr('Aceptar solicitud')
+                          : AppLocalizations.tr('Solicitar chat'),
                     ),
-                    child: ColoredBox(
-                      color: _coverPastStatusBar
-                          ? AppColors.profileCanvas
-                          : const Color(0x40101D30),
+                  ),
+                ],
+                if (!_owner &&
+                    widget.controller.profile != null &&
+                    widget.controller.profile?.id != widget.profile.id &&
+                    widget.controller.communityRepository
+                        is CommunityReportsRepository)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: _reporting ? null : _reportAccount,
+                      icon: const Icon(Icons.flag_outlined, size: 20),
+                      label: const Text('Reportar cuenta'),
                     ),
+                  ),
+              ],
+            );
+            return SingleChildScrollView(
+              key: const Key('profile-scroll'),
+              controller: _scroll,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(
+                wide ? 24 : 0,
+                wide ? 24 : 0,
+                wide ? 24 : 0,
+                112 + MediaQuery.paddingOf(context).bottom,
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1200),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (widget.feedback != null) ...[
+                        widget.feedback!,
+                        const SizedBox(height: 12),
+                      ],
+                      if (wide)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(width: 300, child: identity),
+                            const SizedBox(width: 24),
+                            Expanded(child: _content()),
+                          ],
+                        )
+                      else ...[
+                        identity,
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: _content(),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
-          ],
+            );
+          },
         ),
-      );
-    },
-  );
-
-  Widget _body(double inset) => MareaRefreshIndicator(
-    onRefresh: _refresh,
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        final wide = constraints.maxWidth >= 1024;
-        final identity = Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ProfileIdentity(
-              profile: widget.profile,
-              controller: widget.controller,
-              wide: wide,
-              topInset: inset,
-              followCounts: _followCounts(),
-              leading: _owner
-                  ? null
-                  : ProfileBackButton(
-                      fallback: '/explore',
-                      style: IconButton.styleFrom(
-                        backgroundColor: const Color(0x8C132B4B),
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(48, 48),
-                      ),
-                    ),
-              onSettings: _owner ? () => _open('/settings') : null,
-              onMenu: _menu,
-              actions: _profileActions(),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ProfileVisits(
-                key: ValueKey((
-                  widget.profile.id,
-                  _revision,
-                  widget.controller.markerRevision,
-                )),
-                controller: widget.controller,
-                profileId: widget.profile.id,
-                onManage: _canManageExperiences ? _manageExperiences : null,
-                onOpen: (route) async {
-                  await context.push<void>(route);
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ProfileAbout(
-                profile: widget.profile,
-                onEdit: _owner ? () => _open('/profile/edit') : null,
-              ),
-            ),
-          ],
-        );
-        return SingleChildScrollView(
-          key: const Key('profile-scroll'),
-          controller: _scroll,
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(
-            wide ? 24 : 0,
-            wide ? 24 : 0,
-            wide ? 24 : 0,
-            24,
-          ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1200),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (widget.feedback != null) ...[
-                    widget.feedback!,
-                    const SizedBox(height: 12),
-                  ],
-                  if (wide)
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(width: 300, child: identity),
-                        const SizedBox(width: 24),
-                        Expanded(child: _content()),
-                      ],
-                    )
-                  else ...[
-                    identity,
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: _content(),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+      ),
     ),
   );
 }

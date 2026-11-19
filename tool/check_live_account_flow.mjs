@@ -1,25 +1,16 @@
 // Explicit opt-in: creates five temporary, email-confirmed users, tests actual
 // user JWTs/RLS/Storage/Edge Functions, and removes ONLY those users/files.
-// Uses administrative credentials in memory through the logged-in CLI. Never
+// Uses administrative credentials in memory through local CLI status. Never
 // sends email or prints passwords, keys, tokens, or existing user data.
-import {readFile} from 'node:fs/promises';
-import {spawnSync} from 'node:child_process';
+import {liveTarget} from './parity/lab.mjs';
 import {randomBytes, randomUUID} from 'node:crypto';
 import {deflateSync} from 'node:zlib';
 import assert from 'node:assert/strict';
 if (!process.argv.includes('--run')) {
-  console.log('Usage: node tool/check_live_account_flow.mjs --run (temporary users; real remote writes)');
+  console.log('Usage: node tool/check_live_account_flow.mjs --run (temporary users; disposable local writes)');
   process.exit(0);
 }
-const config = JSON.parse(await readFile(new URL('../config/supabase.production.json',import.meta.url),'utf8'));
-const base = config.SUPABASE_URL;
-const ref = new URL(base).hostname.split('.')[0];
-const keysResult = spawnSync('supabase',['projects','api-keys','--project-ref',ref,'--output','json'],{encoding:'utf8'});
-if (keysResult.status !== 0) throw new Error('Administrative CLI access unavailable');
-const keys = JSON.parse(keysResult.stdout);
-const admin = keys.find(key => key.name === 'service_role')?.api_key;
-if (!admin) throw new Error('Administrative key unavailable');
-const publicKey = config.SUPABASE_ANON_KEY;
+const {base, publicKey, admin} = liveTarget();
 const run = randomBytes(4).toString('hex');
 const users = [];
 const files = [];

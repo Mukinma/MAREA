@@ -47,61 +47,63 @@ class NotificationSettings extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: AppSpacing.xl,
       children: [
-        if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android)
-          ProfileMenuSection(
-            title: AppLocalizations.tr('En este dispositivo'),
-            children: [
-              ProfileMenuRow(
-                icon: Icons.notifications_outlined,
-                title: AppLocalizations.tr('Permiso de notificaciones'),
-                subtitle: !controller.configured
-                    ? AppLocalizations.tr(
-                        'Los avisos en este dispositivo aún no están disponibles',
-                      )
-                    : controller.permissionStatus == PushPermission.granted
-                    ? AppLocalizations.tr('Permitidas por Android')
-                    : AppLocalizations.tr(
-                        'Activa el permiso de notificaciones en Android',
-                      ),
-                onTap: null,
+        ProfileMenuSection(
+          title: AppLocalizations.tr('En este dispositivo'),
+          children: [
+            ProfileMenuRow(
+              icon: Icons.notifications_outlined,
+              title: AppLocalizations.tr('Permiso de notificaciones'),
+              subtitle: AppLocalizations.tr(
+                !controller.configured
+                    ? 'Los avisos en este dispositivo aún no están disponibles'
+                    : switch (controller.permissionStatus) {
+                        PushPermission.granted => 'Avisos permitidos',
+                        PushPermission.denied when kIsWeb =>
+                          'Habilita las notificaciones en los permisos de este sitio.',
+                        _ => 'Activa las notificaciones en este dispositivo.',
+                      },
               ),
-              if (controller.configured &&
-                  controller.permissionStatus != PushPermission.granted)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton(
-                      onPressed: controller.busy
-                          ? null
-                          : controller.gateway.openSettings,
-                      child: Text(
-                        AppLocalizations.tr('Abrir ajustes de Android'),
+              onTap: null,
+            ),
+            if (controller.configured &&
+                (controller.permissionStatus == PushPermission.notDetermined ||
+                    !kIsWeb &&
+                        controller.permissionStatus == PushPermission.denied))
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: controller.busy
+                        ? null
+                        : controller.permissionStatus ==
+                              PushPermission.notDetermined
+                        ? () => controller.refresh(requestPermission: true)
+                        : controller.gateway.openSettings,
+                    child: Text(
+                      AppLocalizations.tr(
+                        controller.permissionStatus ==
+                                PushPermission.notDetermined
+                            ? 'Permitir notificaciones'
+                            : 'Abrir ajustes del dispositivo',
                       ),
                     ),
                   ),
                 ),
-            ],
-          ),
+              ),
+          ],
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: AppSpacing.sm,
           children: [
             Text(
               AppLocalizations.tr(
-                'Elige qué avisos llegan a tu teléfono. Puedes consultar toda '
-                'tu actividad en la bandeja de MAREA.',
+                'Elige qué avisos quieres recibir. Tu actividad también está en la bandeja de MAREA.',
               ),
             ),
-            if (kIsWeb || defaultTargetPlatform != TargetPlatform.android)
-              Text(
-                AppLocalizations.tr(
-                  'Tu configuración se aplica a los dispositivos Android '
-                  'donde tienes activados los avisos de MAREA.',
-                ),
-              ),
             ProfileMenuSection(
-              title: AppLocalizations.tr('Avisos del teléfono'),
+              title: AppLocalizations.tr('Tipos de avisos'),
               children: [
                 for (final MapEntry(key: category, value: (title, description))
                     in _choices.entries)
@@ -133,7 +135,7 @@ class NotificationSettings extends StatelessWidget {
                     Semantics(
                       liveRegion: true,
                       child: Text(
-                        error,
+                        AppLocalizations.tr(error),
                         style: const TextStyle(color: AppColors.error),
                       ),
                     ),

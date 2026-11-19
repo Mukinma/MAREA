@@ -141,6 +141,23 @@ class AppLocalizations {
     'Abrir ajustes de Android': 'Open Android settings',
     'Abrir permisos del teléfono': 'Open phone permissions',
     'Activar avisos': 'Turn on alerts',
+    'A 20 metros o menos': 'Within 20 meters',
+    'Ver marcador': 'View marker',
+    'Activa los avisos para ver misiones y marcadores a 20 metros mientras esta pestaña esté visible. Al cerrar la pestaña se detiene el seguimiento.':
+        'Turn on alerts for missions and markers within 20 meters while this tab is visible. Closing the tab stops monitoring.',
+    'Este navegador necesita una conexión segura y acceso a la ubicación para activar los avisos.':
+        'This browser needs a secure connection and location access to turn on alerts.',
+    'No pudimos obtener tu ubicación. Revisa los permisos del sitio y vuelve a intentarlo.':
+        'We could not get your location. Check the site permissions and try again.',
+    'Avisos activos en esta pestaña.': 'Alerts are on in this tab.',
+    'En Ajustes permite la ubicación precisa y las notificaciones. Después vuelve y activa los avisos.':
+        'Allow precise location and notifications in Settings, then return and turn on alerts.',
+    'Con ubicación precisa, MAREA te avisa de misiones y marcadores a 20 metros mientras usas la app. Con el permiso «Siempre» también puede avisarte en segundo plano. Si cierras la app por completo, vuelve a abrirla para reanudar los avisos.':
+        'With precise location, MAREA alerts you to missions and markers within 20 meters while you use the app. Choose Always to also receive alerts in the background. If you quit the app, open it again to resume alerts.',
+    'Los avisos cercanos no están disponibles en este dispositivo.':
+        'Nearby alerts are unavailable on this device.',
+    'Permitir avisos en segundo plano': 'Allow background alerts',
+    'Avisos activos para {count} lugares cargados.': 'Alerts are on for {count} loaded places.',
     'Activar verificación': 'Turn on verification',
     'Agregar autenticador de respaldo': 'Add backup authenticator',
     'Al activar este autenticador se cerrarán las sesiones en otros dispositivos.':
@@ -317,6 +334,17 @@ class AppLocalizations {
         'We could not verify the code. Check your email and try again.',
     'Ocultar clave': 'Hide setup key',
     'Perdí acceso a mi autenticador': 'I lost access to my authenticator',
+    'Avisos permitidos': 'Notifications allowed',
+    'Habilita las notificaciones en los permisos de este sitio.':
+        'Allow notifications in the permissions for this site.',
+    'Activa las notificaciones en este dispositivo.': 'Enable notifications on this device.',
+    'Permitir notificaciones': 'Allow notifications',
+    'Abrir ajustes del dispositivo': 'Open device settings',
+    'Elige qué avisos quieres recibir. Tu actividad también está en la bandeja de MAREA.':
+        'Choose which notifications you want to receive. Your activity is also in the MAREA inbox.',
+    'Tipos de avisos': 'Notification types',
+    'No pudimos registrar este dispositivo. Puedes reintentar.':
+        'We couldn’t register this device. Try again.',
     'Permiso de notificaciones': 'Notification permission',
     'Permisos y alertas por proximidad':
         'Location permissions and proximity alerts',

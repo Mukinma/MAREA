@@ -1,14 +1,17 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:marea/core/config/app_config.dart';
 import 'package:marea/core/errors/app_failure.dart';
 import 'package:marea/core/session/app_session_controller.dart';
+import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/core/utils/form_validators.dart';
-import 'package:marea/features/auth/presentation/access_navigation.dart';
 import 'package:marea/features/auth/presentation/access_layout.dart';
+import 'package:marea/features/auth/presentation/access_navigation.dart';
+import 'package:marea/features/auth/presentation/intro_waves.dart';
+import 'package:marea/shared/widgets/primary_button.dart';
+
+import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -28,24 +31,145 @@ class LoginScreen extends StatefulWidget {
 
 enum _SignInMethod { password, google }
 
+class _LoginHeader extends StatelessWidget {
+  const _LoginHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 54,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Opacity(opacity: 0, child: Text('Iniciar sesión')),
+          Image.asset(
+            'assets/brand/MAREA_LOGOTIPO.png',
+            width: 190,
+            height: 48,
+            fit: BoxFit.contain,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LoginMascot extends StatelessWidget {
+  const _LoginMascot();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 154,
+      height: 138,
+      child: CustomPaint(painter: _LoginMascotPainter()),
+    );
+  }
+}
+
+class _LoginMascotPainter extends CustomPainter {
+  const _LoginMascotPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final scale = size.width / 154;
+    canvas.scale(scale);
+
+    final navy = const Color(0xFF074C9A);
+    final blue = const Color(0xFF0877DF);
+    final cyan = const Color(0xFF16BFD1);
+
+    canvas.drawOval(Rect.fromLTWH(34, 54, 112, 78), Paint()..color = blue);
+    canvas.drawOval(
+      Rect.fromLTWH(46, 18, 76, 82),
+      Paint()..color = const Color(0xFF126FE0),
+    );
+
+    final beak = Path()
+      ..moveTo(82, 74)
+      ..cubicTo(82, 58, 104, 52, 116, 64)
+      ..cubicTo(128, 76, 118, 92, 102, 94)
+      ..cubicTo(89, 96, 82, 86, 82, 74)
+      ..close();
+    canvas.drawPath(beak, Paint()..color = navy);
+
+    canvas.drawCircle(const Offset(94, 63), 12, Paint()..color = Colors.white);
+    canvas.drawCircle(
+      const Offset(97, 65),
+      6,
+      Paint()..color = const Color(0xFF11254C),
+    );
+
+    canvas.drawOval(
+      const Rect.fromLTWH(74, 78, 28, 18),
+      Paint()..color = const Color(0xFFE84A6A),
+    );
+
+    canvas.drawOval(
+      const Rect.fromLTWH(50, 64, 26, 50),
+      Paint()..color = const Color(0xFF0877DF),
+    );
+
+    final leftFin = Path()
+      ..moveTo(50, 82)
+      ..cubicTo(36, 82, 28, 72, 20, 58)
+      ..cubicTo(13, 46, 3, 50, 8, 62)
+      ..lineTo(24, 98)
+      ..close();
+    canvas.drawPath(leftFin, Paint()..color = blue);
+
+    final rightFin = Path()
+      ..moveTo(114, 108)
+      ..cubicTo(128, 104, 146, 108, 150, 118)
+      ..cubicTo(154, 128, 138, 132, 124, 128)
+      ..close();
+    canvas.drawPath(rightFin, Paint()..color = blue);
+
+    final crest = Path()
+      ..moveTo(94, 24)
+      ..cubicTo(94, 10, 100, 2, 108, 0)
+      ..cubicTo(116, 10, 112, 24, 104, 32)
+      ..close();
+    canvas.drawPath(crest, Paint()..color = cyan);
+
+    final leftSpray = Path()
+      ..moveTo(32, 52)
+      ..lineTo(18, 38)
+      ..moveTo(38, 42)
+      ..lineTo(34, 24)
+      ..moveTo(44, 48)
+      ..lineTo(54, 34);
+    canvas.drawPath(
+      leftSpray,
+      Paint()
+        ..color = cyan
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 8
+        ..strokeCap = StrokeCap.round,
+    );
+
+    final foot = Path()
+      ..moveTo(48, 124)
+      ..cubicTo(38, 132, 34, 138, 44, 142)
+      ..cubicTo(58, 144, 68, 138, 68, 128)
+      ..close();
+    canvas.drawPath(foot, Paint()..color = navy);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _messengerKey = GlobalKey<ScaffoldMessengerState>();
-
-  late final _emailController =
-      TextEditingController(text: widget.email);
+  late final _emailController = TextEditingController(text: widget.email);
   final _passwordController = TextEditingController();
-
   bool _obscurePassword = true;
   _SignInMethod? _pending;
   AppFailure? _passwordFailure;
 
-  static const _blue = Color(0xFF064BD5);
-  static const _navy = Color(0xFF071D49);
-  static const _muted = Color(0xFF72829A);
-
-  bool get _busy =>
-      _pending != null || widget.controller.isBusy;
+  bool get _busy => _pending != null || widget.controller.isBusy;
 
   @override
   void dispose() {
@@ -68,525 +192,57 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submit() async {
     if (_busy || !_formKey.currentState!.validate()) return;
-
     FocusScope.of(context).unfocus();
     _messengerKey.currentState?.removeCurrentSnackBar();
-
     setState(() {
       _pending = _SignInMethod.password;
       _passwordFailure = null;
     });
-
     final ok = await widget.controller.signIn(
       email: _emailController.text.trim(),
       password: _passwordController.text,
     );
-
     if (!mounted) return;
-
     if (ok) TextInput.finishAutofillContext();
-
     final failure = ok ? null : widget.controller.failure;
-    final needsConfirmation =
-        failure?.kind == AppFailureKind.emailNotConfirmed;
-
+    final needsConfirmation = failure?.kind == AppFailureKind.emailNotConfirmed;
     setState(() {
       _pending = null;
-      _passwordFailure =
-          needsConfirmation ? failure : null;
+      _passwordFailure = needsConfirmation ? failure : null;
     });
-
     if (failure != null) {
       widget.controller.clearFeedback();
-
       if (!needsConfirmation) {
         final message = switch (failure.message) {
           'No pudimos conectarnos. Inténtalo nuevamente.' ||
-          'Espera un momento antes de volver a intentarlo.' =>
-            failure.message,
-          _ =>
-            'Revisa tu correo y contraseña e inténtalo de nuevo.',
+          'Espera un momento antes de volver a intentarlo.' => failure.message,
+          _ => 'Revisa tu correo y contraseña e inténtalo de nuevo.',
         };
-
-        final messenger = _messengerKey.currentState;
-        if (messenger != null) {
-          showAccessAlert(messenger, message);
-        }
+        showAccessAlert(_messengerKey.currentState!, message);
       }
     }
   }
 
   Future<void> _signInWithGoogle() async {
     if (_busy || !widget.allowGoogle) return;
-
     FocusScope.of(context).unfocus();
     _messengerKey.currentState?.removeCurrentSnackBar();
-
     setState(() {
       _pending = _SignInMethod.google;
       _passwordFailure = null;
     });
-
     final ok = await widget.controller.signInWithGoogle(
       redirectTo: kIsWeb
           ? Uri.base.origin
           : AppConfig.fromEnvironment().mobileOAuthRedirect,
     );
-
     if (!mounted) return;
-
     setState(() => _pending = null);
-
     final failure = ok ? null : widget.controller.failure;
-
     if (failure != null) {
       widget.controller.clearFeedback();
-      final messenger = _messengerKey.currentState;
-      if (messenger != null) {
-        showAccessAlert(messenger, failure.message);
-      }
+      showAccessAlert(_messengerKey.currentState!, failure.message);
     }
-  }
-
-  InputDecoration _decoration(
-    String hint,
-    IconData icon, {
-    Widget? suffix,
-  }) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: const TextStyle(
-        color: _muted,
-        fontSize: 14,
-      ),
-      prefixIcon: Icon(icon, color: _muted, size: 21),
-      suffixIcon: suffix,
-      filled: true,
-      fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 17,
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
-        borderSide: const BorderSide(
-          color: Color(0xFFDCE5EF),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
-        borderSide: const BorderSide(
-          color: Color(0xFFDCE5EF),
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
-        borderSide: const BorderSide(
-          color: _blue,
-          width: 1.5,
-        ),
-      ),
-    );
-  }
-
-  Widget _fieldLabel(String label) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: _navy,
-          fontWeight: FontWeight.w800,
-          fontSize: 14,
-        ),
-      ),
-    );
-  }
-
-  Widget _header() {
-    return SizedBox(
-      height: 280,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFE6FAFF),
-                    Color(0xFFD8F2FF),
-                    Color(0xFFEEF8FF),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          Positioned(
-            top: 14,
-            left: 15,
-            child: Material(
-              color: Colors.white,
-              shape: const CircleBorder(),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: _navy,
-                  size: 18,
-                ),
-                onPressed:
-                    _busy ? null : () => _go('/welcome'),
-              ),
-            ),
-          ),
-
-          Positioned(
-            top: 14,
-            left: 85,
-            right: 85,
-            child: Center(
-              child: Image.asset(
-                'assets/brand/MAREA_LOGOTIPO.png',
-                height: 46,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-
-          const Positioned(
-            left: 26,
-            top: 91,
-            right: 95,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '¡Hola de nuevo!',
-                  style: TextStyle(
-                    color: _navy,
-                    fontSize: 27,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.7,
-                  ),
-                ),
-                SizedBox(height: 9),
-                Text(
-                  'Tu ciudad te está esperando.\n'
-                  'Inicia sesión y sigue explorando\n'
-                  'todo lo que está cerca de ti.',
-                  style: TextStyle(
-                    color: Color(0xFF60758B),
-                    fontSize: 13,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Mascota de MAREA corregida.
-          Positioned(
-            right: 8,
-            bottom: 25,
-            width: 155,
-            child: Image.asset(
-              'assets/auth_design/mascota_login.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: -1,
-            height: 42,
-            child: CustomPaint(
-              painter: _LoginWavePainter(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _blueButton() {
-    return SizedBox(
-      height: 54,
-      child: ElevatedButton(
-        onPressed: _busy ? null : _submit,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _blue,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: const Color(0xFF8FAEEB),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        child: _pending == _SignInMethod.password
-            ? const SizedBox(
-                height: 22,
-                width: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-            : const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Iniciar sesión',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Icon(Icons.arrow_forward, size: 21),
-                ],
-              ),
-      ),
-    );
-  }
-
-  Widget _googleButton() {
-    return SizedBox(
-      height: 54,
-      child: OutlinedButton(
-        onPressed: _busy ? null : _signInWithGoogle,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: _navy,
-          side: const BorderSide(
-            color: Color(0xFFD6E3EF),
-            width: 1.5,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        child: _pending == _SignInMethod.google
-            ? const SizedBox(
-                height: 22,
-                width: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/onboarding/google_g.png',
-                    width: 24,
-                    height: 24,
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'Continuar con Google',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-      ),
-    );
-  }
-
-  Widget _formContent() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(27, 13, 27, 22),
-      child: AutofillGroup(
-        onDisposeAction: AutofillContextAction.cancel,
-        child: Form(
-          key: _formKey,
-          autovalidateMode:
-              AutovalidateMode.onUserInteractionIfError,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _fieldLabel('Correo electrónico'),
-              TextFormField(
-                key: const Key('login-email'),
-                controller: _emailController,
-                enabled: !_busy,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                autofillHints: const [
-                  AutofillHints.username,
-                  AutofillHints.email,
-                ],
-                decoration: _decoration(
-                  'tu@correo.com',
-                  Icons.mail_outline,
-                ),
-                validator: (value) =>
-                    FormValidators.email(value?.trim()),
-                onChanged: (_) => _clearPasswordFailure(),
-              ),
-
-              const SizedBox(height: 18),
-
-              _fieldLabel('Contraseña'),
-              TextFormField(
-                key: const Key('login-password'),
-                controller: _passwordController,
-                enabled: !_busy,
-                obscureText: _obscurePassword,
-                textInputAction: TextInputAction.done,
-                autofillHints: const [AutofillHints.password],
-                decoration: _decoration(
-                  'Introduce tu contraseña',
-                  Icons.lock_outline,
-                  suffix: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                      color: _muted,
-                    ),
-                    onPressed: _busy
-                        ? null
-                        : () => setState(() {
-                            _obscurePassword =
-                                !_obscurePassword;
-                          }),
-                  ),
-                ),
-                validator: (value) =>
-                    (value ?? '').isEmpty
-                        ? 'Escribe una contraseña.'
-                        : null,
-                onChanged: (_) => _clearPasswordFailure(),
-                onFieldSubmitted: (_) => _submit(),
-              ),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _busy
-                      ? null
-                      : () => _go(
-                            '/recover-password',
-                            email: _emailController.text.trim(),
-                          ),
-                  child: const Text(
-                    '¿Olvidaste tu contraseña?',
-                    style: TextStyle(
-                      color: _blue,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ),
-
-              if (_passwordFailure != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Confirma tu correo para entrar a MAREA.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: _navy),
-                      ),
-                      TextButton(
-                        onPressed: _busy
-                            ? null
-                            : () => _go(
-                                  '/check-email',
-                                  email:
-                                      _emailController.text.trim(),
-                                ),
-                        child: const Text('Confirmar mi correo'),
-                      ),
-                    ],
-                  ),
-                ),
-
-              const SizedBox(height: 10),
-              _blueButton(),
-
-              if (widget.allowGoogle) ...[
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 19),
-                  child: Row(
-                    children: [
-                      Expanded(child: Divider()),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                        ),
-                        child: Text(
-                          'o continúa con',
-                          style: TextStyle(
-                            color: _muted,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                      Expanded(child: Divider()),
-                    ],
-                  ),
-                ),
-                _googleButton(),
-              ],
-
-              const SizedBox(height: 25),
-
-              Container(
-                height: 64,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFFDAF7FF),
-                      Color(0xFFF5FCFF),
-                      Color(0xFFE1F7FF),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(32),
-                  ),
-                ),
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    const Text(
-                      '¿Aún no tienes cuenta?',
-                      style: TextStyle(
-                        color: _muted,
-                        fontSize: 13,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed:
-                          _busy ? null : () => _go('/register'),
-                      child: const Text(
-                        'Crea tu cuenta',
-                        style: TextStyle(
-                          color: _blue,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -594,66 +250,399 @@ class _LoginScreenState extends State<LoginScreen> {
     return AnimatedBuilder(
       animation: widget.controller,
       builder: (context, _) {
-        return ScaffoldMessenger(
-          key: _messengerKey,
+        final theme = Theme.of(context);
+        final border = OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: const BorderSide(color: AppColors.border),
+        );
+        final loginTheme = theme.copyWith(
+          inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+            fillColor: AppColors.surface,
+            contentPadding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+            border: border,
+            enabledBorder: border,
+            focusedBorder: border.copyWith(
+              borderSide: const BorderSide(
+                color: AppColors.actionBlue,
+                width: 2,
+              ),
+            ),
+          ),
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: theme.outlinedButtonTheme.style?.copyWith(
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+              ),
+              minimumSize: const WidgetStatePropertyAll(Size(48, 68)),
+            ),
+          ),
+          filledButtonTheme: FilledButtonThemeData(
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF005CB8),
+              foregroundColor: Colors.white,
+              shape: const StadiumBorder(),
+              minimumSize: const Size(48, 68),
+            ),
+          ),
+        );
+
+        final content = Theme(
+          data: loginTheme,
           child: Scaffold(
-            backgroundColor: const Color(0xFFF6FBFF),
+            key: const ValueKey('login-mockup-screen'),
+            backgroundColor: const Color(0xFFF7FCFF),
             body: SafeArea(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 430,
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        _header(),
-                        _formContent(),
-                      ],
+              bottom: false,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final narrow = constraints.maxWidth < 600;
+                  final horizontal = narrow
+                      ? 24.0
+                      : (constraints.maxWidth - 520).clamp(24.0, 80.0) / 2;
+
+                  return SingleChildScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.viewInsetsOf(context).bottom > 0
+                          ? 24
+                          : 0,
                     ),
-                  ),
-                ),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 520),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(
+                                  horizontal,
+                                  18,
+                                  horizontal,
+                                  0,
+                                ),
+                                child: const _LoginHeader(),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(
+                                  horizontal,
+                                  20,
+                                  horizontal,
+                                  0,
+                                ),
+                                child: SizedBox(
+                                  height: 154,
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Positioned(
+                                        left: 0,
+                                        right: 150,
+                                        top: 0,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '¡Hola de nuevo!',
+                                              style: theme
+                                                  .textTheme
+                                                  .headlineMedium
+                                                  ?.copyWith(
+                                                    fontSize: 34,
+                                                    height: 1.08,
+                                                    color: AppColors.brandNavy,
+                                                  ),
+                                            ),
+                                            const SizedBox(height: 14),
+                                            Text(
+                                              'Tu ciudad te está esperando.\nInicia sesión y sigue explorando\ntodo lo que está cerca de ti.',
+                                              style: theme.textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                    color:
+                                                        AppColors.textSecondary,
+                                                    fontSize: 17,
+                                                    height: 1.38,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Positioned(
+                                        right: -4,
+                                        bottom: -4,
+                                        child: const IgnorePointer(
+                                          child: _LoginMascot(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 26),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: horizontal,
+                                ),
+                                child: AutofillGroup(
+                                  onDisposeAction: AutofillContextAction.cancel,
+                                  child: Form(
+                                    key: _formKey,
+                                    autovalidateMode: AutovalidateMode
+                                        .onUserInteractionIfError,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        AccessTextField(
+                                          key: const Key('login-email'),
+                                          enabled: !_busy,
+                                          controller: _emailController,
+                                          label: core_l10n.AppLocalizations.tr(
+                                            'Correo',
+                                          ),
+                                          hint: 'tu@correo.com',
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          textInputAction: TextInputAction.next,
+                                          autofillHints: const [
+                                            AutofillHints.username,
+                                            AutofillHints.email,
+                                          ],
+                                          validator: (value) =>
+                                              FormValidators.email(
+                                                value?.trim(),
+                                              ),
+                                          onChanged: (_) =>
+                                              _clearPasswordFailure(),
+                                        ),
+                                        const SizedBox(height: 18),
+                                        AccessTextField(
+                                          key: const Key('login-password'),
+                                          enabled: !_busy,
+                                          controller: _passwordController,
+                                          label: core_l10n.AppLocalizations.tr(
+                                            'Contraseña',
+                                          ),
+                                          obscureText: _obscurePassword,
+                                          textInputAction: TextInputAction.done,
+                                          autofillHints: const [
+                                            AutofillHints.password,
+                                          ],
+                                          validator: (value) =>
+                                              (value ?? '').isEmpty
+                                              ? core_l10n.AppLocalizations.tr(
+                                                  'Escribe una contraseña.',
+                                                )
+                                              : null,
+                                          onChanged: (_) =>
+                                              _clearPasswordFailure(),
+                                          onFieldSubmitted: (_) => _submit(),
+                                          suffixIcon: IconButton(
+                                            tooltip: _obscurePassword
+                                                ? core_l10n.AppLocalizations.tr(
+                                                    'Mostrar contraseña',
+                                                  )
+                                                : core_l10n.AppLocalizations.tr(
+                                                    'Ocultar contraseña',
+                                                  ),
+                                            onPressed: _busy
+                                                ? null
+                                                : () => setState(
+                                                    () => _obscurePassword =
+                                                        !_obscurePassword,
+                                                  ),
+                                            icon: Icon(
+                                              _obscurePassword
+                                                  ? Icons.visibility_outlined
+                                                  : Icons
+                                                        .visibility_off_outlined,
+                                            ),
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              minimumSize: const Size(48, 44),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 4,
+                                                  ),
+                                            ),
+                                            onPressed: _busy
+                                                ? null
+                                                : () => _go(
+                                                    '/recover-password',
+                                                    email: _emailController.text
+                                                        .trim(),
+                                                  ),
+                                            child: Text(
+                                              core_l10n.AppLocalizations.tr(
+                                                'Olvidé mi contraseña',
+                                              ),
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        if (_passwordFailure != null) ...[
+                                          AccessFeedback(
+                                            message: core_l10n.AppLocalizations.tr(
+                                              'Confirma tu correo para entrar a Marea.',
+                                            ),
+                                            error: false,
+                                            action: TextButton(
+                                              onPressed: _busy
+                                                  ? null
+                                                  : () => _go(
+                                                      '/check-email',
+                                                      email: _emailController
+                                                          .text
+                                                          .trim(),
+                                                    ),
+                                              child: Text(
+                                                core_l10n.AppLocalizations.tr(
+                                                  'Confirmar mi correo',
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                        ],
+                                        SizedBox(
+                                          height: 68,
+                                          child: PrimaryButton(
+                                            label:
+                                                core_l10n.AppLocalizations.tr(
+                                                  'Iniciar sesión',
+                                                ),
+                                            loadingLabel:
+                                                core_l10n.AppLocalizations.tr(
+                                                  'Iniciando sesión…',
+                                                ),
+                                            isLoading:
+                                                _pending ==
+                                                _SignInMethod.password,
+                                            onPressed: _busy ? null : _submit,
+                                          ),
+                                        ),
+                                        if (widget.allowGoogle) ...[
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            child: Row(
+                                              spacing: 12,
+                                              children: [
+                                                Expanded(child: Divider()),
+                                                Text(
+                                                  'o continúa con',
+                                                  style: TextStyle(
+                                                    color:
+                                                        AppColors.textSecondary,
+                                                  ),
+                                                ),
+                                                Expanded(child: Divider()),
+                                              ],
+                                            ),
+                                          ),
+                                          AccessGoogleButton(
+                                            key: const Key('login-google'),
+                                            isLoading:
+                                                _pending ==
+                                                _SignInMethod.google,
+                                            onPressed: _busy
+                                                ? null
+                                                : _signInWithGoogle,
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              SizedBox(
+                                height: 100,
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                    Positioned(
+                                      left: 0,
+                                      right: 0,
+                                      top: -28,
+                                      height: 88,
+                                      child: IgnorePointer(
+                                        child: CustomPaint(
+                                          painter: const IntroWavesPainter(),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 0,
+                                      height: 56,
+                                      child: DecoratedBox(
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFEAF7FF),
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.topCenter,
+                                          child: Wrap(
+                                            alignment: WrapAlignment.center,
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            children: [
+                                              const Text(
+                                                '¿Aún no tienes cuenta?',
+                                                style: TextStyle(
+                                                  color:
+                                                      AppColors.textSecondary,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: _busy
+                                                    ? null
+                                                    : () => _go('/register'),
+                                                child: const Text(
+                                                  'Crear cuenta',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w800,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
         );
+        return ScaffoldMessenger(key: _messengerKey, child: content);
       },
     );
   }
-}
-
-class _LoginWavePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path()
-      ..moveTo(0, size.height * 0.30)
-      ..cubicTo(
-        size.width * 0.25,
-        size.height * 1.2,
-        size.width * 0.35,
-        size.height * 0.0,
-        size.width * 0.60,
-        size.height * 0.45,
-      )
-      ..cubicTo(
-        size.width * 0.78,
-        size.height * 0.8,
-        size.width * 0.88,
-        size.height * 0.05,
-        size.width,
-        size.height * 0.30,
-      )
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-
-    canvas.drawPath(
-      path,
-      Paint()..color = const Color(0xFFF6FBFF),
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) =>
-      false;
 }

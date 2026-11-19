@@ -14,11 +14,13 @@ class PostSearchScreen extends StatefulWidget {
   const PostSearchScreen({
     required this.controller,
     this.initialCategory,
+    this.discoverOnly = false,
     super.key,
   });
 
   final AppSessionController controller;
   final String? initialCategory;
+  final bool discoverOnly;
 
   @override
   State<PostSearchScreen> createState() => _PostSearchScreenState();
@@ -35,14 +37,14 @@ class _PostSearchScreenState extends State<PostSearchScreen> {
   int _generation = 0, _offset = 0;
   bool _loading = false, _paging = false, _more = false;
 
-  bool get _browsing => _query.isEmpty && _category == null;
+  bool get _browsing => _query.isEmpty && _category == null && !widget.discoverOnly;
   bool get _shortQuery => _query.isNotEmpty && _query.runes.length < 2;
 
   @override
   void initState() {
     super.initState();
     _category = widget.initialCategory;
-    if (_category != null) _search();
+    if (!_browsing) _search();
   }
 
   @override
@@ -97,6 +99,7 @@ class _PostSearchScreenState extends State<PostSearchScreen> {
         query: _query,
         category: _category,
         visibleOnly: true,
+        discoverOnly: widget.discoverOnly,
         offset: _offset,
       );
       if (!current()) return;
@@ -421,6 +424,17 @@ class _PostSearchScreenState extends State<PostSearchScreen> {
         icon: const Icon(Icons.arrow_back_rounded),
       ),
       title: Text(AppLocalizations.tr('Buscar')),
+      actions: [
+        PopupMenuButton<String>(
+          tooltip: AppLocalizations.tr('Buscar'),
+          icon: const Icon(Icons.more_vert),
+          itemBuilder: (_) => [
+            PopupMenuItem(value: '/search/people', child: Text(AppLocalizations.tr('Personas'))),
+            PopupMenuItem(value: '/search/showcases', child: Text(AppLocalizations.tr('Fichas'))),
+          ],
+          onSelected: (path) => context.push(path),
+        ),
+      ],
     ),
     body: SafeArea(
       top: false,

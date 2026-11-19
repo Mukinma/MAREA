@@ -1,7 +1,8 @@
-// Opt-in hosted verification. Creates only three temporary .invalid users and
+import {liveTarget} from './parity/lab.mjs';
+// Opt-in local verification. Creates only three temporary .invalid users and
 // resources belonging to them. Never modifies or prints existing account data.
 // Administrative credentials and temporary passwords/tokens stay in memory.
-import {readFile,writeFile,mkdtemp,rm} from 'node:fs/promises';
+import {writeFile,mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -13,16 +14,9 @@ if(!process.argv.includes('--run')){
  console.log('Requires deployed migrations 001–013. Creates and cleans three temporary users; completion check waits up to 16 seconds.');
  process.exit(0);
 }
+const {base, publicKey, admin} = liveTarget();
 const gate=spawnSync(process.execPath,[fileURLToPath(new URL('./check_backend_contract.mjs',import.meta.url))],{encoding:'utf8'});
 if(gate.status!==0)throw Error('Backend contract is not ready; apply migrations before running live mission verification.');
-const config=JSON.parse(await readFile(new URL('../config/supabase.production.json',import.meta.url),'utf8'));
-const base=config.SUPABASE_URL,publicKey=config.SUPABASE_ANON_KEY;
-const ref=new URL(base).hostname.split('.')[0];
-const keyResult=spawnSync('supabase',['projects','api-keys','--project-ref',ref,'--output','json'],{encoding:'utf8'});
-if(keyResult.status!==0)throw Error('Administrative CLI unavailable');
-const keys=JSON.parse(keyResult.stdout);
-const admin=(Array.isArray(keys)?keys:keys.rows)?.find(k=>k.name==='service_role')?.api_key;
-if(!admin)throw Error('Administrative credentials unavailable');
 const users=[],media=[];
 const checkpoint=await mkdtemp(join(tmpdir(),'marea-missions-live-'));
 let checks=0;
