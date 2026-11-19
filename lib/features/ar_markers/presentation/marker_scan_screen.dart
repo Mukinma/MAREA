@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/session/app_session_controller.dart';
+import 'package:marea/features/community/models/community_models.dart';
+import 'package:marea/features/community/presentation/post_location_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../tours/models/business_ar_target.dart';
@@ -17,6 +20,7 @@ class MarkerScanScreen extends StatefulWidget {
     required this.controller,
     required this.repository,
     required this.markerId,
+    this.publicVisit = false,
     this.cameraBuilder,
     this.scanController,
     super.key,
@@ -24,6 +28,7 @@ class MarkerScanScreen extends StatefulWidget {
   final AppSessionController controller;
   final MarkerRepository repository;
   final String markerId;
+  final bool publicVisit;
   final Widget Function(Map<String, dynamic>)? cameraBuilder;
   final MarkerScanController? scanController;
   @override
@@ -40,9 +45,24 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
         accountId: _account,
         markerId: widget.markerId,
         currentAccount: () => widget.controller.profile?.id,
+        publicVisit: widget.publicVisit,
       );
   bool get _current => mounted && widget.controller.profile?.id == _account;
   String? _reportedReference;
+  bool _checking = false;
+  String get _fallback {
+    if (!widget.publicVisit) {
+      return identical(
+            widget.repository,
+            widget.controller.deviceMarkerRepository,
+          )
+          ? '/ar-markers?device=1'
+          : '/ar-markers';
+    }
+    final marker = _scan.marker;
+    return marker == null ? '/explore' : '/people/${marker.ownerId}';
+  }
+
   static const _cardSize = Size(230, 110);
   @override
   void initState() {
@@ -56,7 +76,8 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
   void _changed() {
     if (mounted) setState(() {});
     final marker = _scan.marker;
-    if (_current &&
+    if (!widget.publicVisit &&
+        _current &&
         marker?.isTested == true &&
         _reportedReference != marker!.referenceVersion) {
       _reportedReference = marker.referenceVersion;
@@ -73,13 +94,23 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
     if (state != AppLifecycleState.resumed) unawaited(_scan.stop());
   }
 
-  Future<void> _content() async {
+  Future<void> _content({bool map = false, bool withoutCamera = false}) async {
     final seen = _scan.marker;
-    if (!_current || seen == null || _scan.quad == null) return;
+    if (!_current ||
+        _checking ||
+        seen == null ||
+        (!withoutCamera && _scan.quad == null)) {
+      return;
+    }
+    setState(() => _checking = true);
     await _scan.stop();
-    if (!_current) return;
     try {
-      final current = await widget.repository.get(_account, seen.id);
+      if (!_current) return;
+      final repository = widget.repository;
+      final current =
+          widget.publicVisit && repository is MarkerPublicationRepository
+          ? await repository.getPublic(_account, seen.id)
+          : await repository.get(_account, seen.id);
       if (!_current) return;
       if (current == null ||
           current.referenceVersion != seen.referenceVersion) {
@@ -87,12 +118,24 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
         return;
       }
       if (!mounted) return;
-      await showModalBottomSheet<void>(
-        context: context,
-        isScrollControlled: true,
-        showDragHandle: true,
-        builder: (_) => _MarkerContent(marker: current),
-      );
+      if (map && current.hasPreciseLocation) {
+        await showPostLocationViewer(
+          context,
+          label: current.name,
+          coordinates: PostCoordinates(
+            latitude: current.latitude!,
+            longitude: current.longitude!,
+            precision: PostLocationPrecision.exact,
+          ),
+        );
+      } else if (!map) {
+        await showModalBottomSheet<void>(
+          context: context,
+          isScrollControlled: true,
+          showDragHandle: true,
+          builder: (_) => _MarkerContent(marker: current),
+        );
+      }
     } catch (_) {
       if (_current && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -101,6 +144,8 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
           ),
         );
       }
+    } finally {
+      if (mounted) setState(() => _checking = false);
     }
   }
 
@@ -116,12 +161,16 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('Reconocer marcador'),
+      title: Text(
+        AppLocalizations.tr(
+          widget.publicVisit ? 'Escanear marcador' : 'Reconocer marcador',
+        ),
+      ),
       leading: TourBackButton(
-        fallback: '/ar-markers',
+        fallback: _fallback,
         onPressed: () async {
           await _scan.stop();
-          if (context.mounted) leaveTour(context, '/ar-markers');
+          if (context.mounted) leaveTour(context, _fallback);
         },
       ),
     ),
@@ -136,14 +185,21 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
             children: [
               if (_scan.loading) const LinearProgressIndicator(),
               if (_scan.error != null)
-                TourNotice(_scan.error!, onRetry: _scan.load),
+                TourNotice(
+                  AppLocalizations.tr(_scan.error!),
+                  onRetry: _scan.load,
+                ),
               if (_scan.marker != null) ...[
                 Text(
                   _scan.marker!.name,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 12),
-                const Text('Busca esta imagen y apúntale con la cámara.'),
+                Text(
+                  AppLocalizations.tr(
+                    'Busca esta imagen y apúntale con la cámara.',
+                  ),
+                ),
                 if (_scan.image != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -155,20 +211,50 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
                     ),
                   ),
                 if (_scan.marker!.isLocal)
-                  const Text('Marcador guardado en este dispositivo.'),
-                if (_scan.marker!.isTested)
-                  const Text('Reconocimiento comprobado para esta imagen.'),
+                  Text(
+                    AppLocalizations.tr(
+                      'Marcador guardado en este dispositivo.',
+                    ),
+                  ),
+                if (!widget.publicVisit && _scan.marker!.isTested)
+                  Text(
+                    AppLocalizations.tr(
+                      'Reconocimiento comprobado para esta imagen.',
+                    ),
+                  ),
                 if (!_scan.supported && !_scan.loading)
-                  const TourNotice(
-                    'Este dispositivo no ofrece reconocimiento RA compatible.',
+                  TourNotice(
+                    AppLocalizations.tr(
+                      'Este dispositivo no ofrece reconocimiento RA compatible.',
+                    ),
                   ),
                 FilledButton.icon(
-                  onPressed: _scan.loading || !_scan.supported
+                  onPressed: _scan.loading || _checking || !_scan.supported
                       ? null
                       : _scan.start,
                   icon: const Icon(Icons.camera_alt_outlined),
-                  label: const Text('Abrir cámara'),
+                  label: Text(AppLocalizations.tr('Abrir cámara')),
                 ),
+                if (widget.publicVisit)
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      TextButton(
+                        onPressed: _checking || _scan.loading
+                            ? null
+                            : () => _content(withoutCamera: true),
+                        child: Text(AppLocalizations.tr('Ver información')),
+                      ),
+                      if (_scan.marker!.hasPreciseLocation)
+                        TextButton.icon(
+                          onPressed: _checking || _scan.loading
+                              ? null
+                              : () => _content(map: true, withoutCamera: true),
+                          icon: const Icon(Icons.place_outlined),
+                          label: Text(AppLocalizations.tr('Ver en mapa')),
+                        ),
+                    ],
+                  ),
               ],
             ],
           ),
@@ -220,7 +306,7 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
                             borderRadius: BorderRadius.circular(16),
                             color: Colors.white,
                             child: InkWell(
-                              onTap: _content,
+                              onTap: () => _content(),
                               child: Padding(
                                 padding: const EdgeInsets.all(12),
                                 child: Column(
@@ -235,7 +321,11 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
                                       ),
                                     ),
                                     const Spacer(),
-                                    const Text('Toca para abrir el menú'),
+                                    Text(
+                                      AppLocalizations.tr(
+                                        'Toca para abrir el menú',
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -256,14 +346,16 @@ class _MarkerScanScreenState extends State<MarkerScanScreen>
         child: Column(
           children: [
             Text(
-              _scan.quad == null
-                  ? 'Encuadra la imagen para reconocerla.'
-                  : 'Imagen reconocida.',
+              AppLocalizations.tr(
+                _scan.quad == null
+                    ? 'Encuadra la imagen para reconocerla.'
+                    : 'Imagen reconocida.',
+              ),
             ),
             if (_scan.error != null) Text(_scan.error!),
             TextButton(
               onPressed: _scan.stop,
-              child: const Text('Cerrar cámara'),
+              child: Text(AppLocalizations.tr('Cerrar cámara')),
             ),
           ],
         ),
@@ -292,7 +384,7 @@ class _MarkerContent extends StatelessWidget {
           if (marker.menuUrl != null)
             FilledButton.icon(
               icon: const Icon(Icons.restaurant_menu),
-              label: const Text('Abrir menú'),
+              label: Text(AppLocalizations.tr('Abrir menú')),
               onPressed: () async {
                 final uri = Uri.tryParse(marker.menuUrl!);
                 if (uri == null ||

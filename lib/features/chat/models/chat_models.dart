@@ -53,18 +53,21 @@ class ChatConversation {
     this.lastMessageAt,
     this.otherName = 'Usuario',
     this.otherUsername = '',
+    this.otherAvatarPath,
     this.lastMessageBody,
   });
   final String id, requesterId, recipientId, status, otherName, otherUsername;
   final DateTime createdAt;
   final DateTime? lastMessageAt;
   final String? lastMessageBody;
+  final String? otherAvatarPath;
   bool get pending => status == 'pending';
   bool get accepted => status == 'accepted';
   factory ChatConversation.fromJson(
     Map<String, dynamic> j, {
     String? otherName,
     String? otherUsername,
+    String? otherAvatarPath,
   }) => ChatConversation(
     id: j['id'] as String,
     requesterId: j['requester_id'] as String,
@@ -76,6 +79,7 @@ class ChatConversation {
         : DateTime.parse(j['last_message_at'] as String),
     otherName: otherName ?? 'Usuario',
     otherUsername: otherUsername ?? '',
+    otherAvatarPath: otherAvatarPath,
     lastMessageBody: j['last_message_body'] as String?,
   );
   ChatConversation copyWithLastMessage(String? body) => ChatConversation(
@@ -87,6 +91,7 @@ class ChatConversation {
     lastMessageAt: lastMessageAt,
     otherName: otherName,
     otherUsername: otherUsername,
+    otherAvatarPath: otherAvatarPath,
     lastMessageBody: body,
   );
 }

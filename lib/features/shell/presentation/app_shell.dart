@@ -186,7 +186,8 @@ class AppShell extends StatelessWidget {
           statusBarBrightness: Brightness.light,
         ),
         child: Scaffold(
-          extendBody: true,
+          extendBody: !profileLayout,
+          backgroundColor: profileLayout ? AppColors.profileCanvas : null,
           body: SafeArea(
             top: false,
             bottom: false,
@@ -323,7 +324,7 @@ class AppShell extends StatelessWidget {
     if (controller?.chatRepository != null)
       IconButton(
         tooltip: AppLocalizations.tr('Mensajes'),
-        onPressed: () => context.go('/messages'),
+        onPressed: () => context.push('/messages'),
         icon: Icon(
           Icons.chat_bubble_outline_rounded,
           semanticLabel: AppLocalizations.tr('Mensajes'),

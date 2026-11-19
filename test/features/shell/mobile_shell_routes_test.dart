@@ -8,6 +8,7 @@ import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/core/theme/app_theme.dart';
 import 'package:marea/features/chat/data/chat_repository.dart';
 import 'package:marea/features/chat/models/chat_models.dart';
+import 'package:marea/features/chat/presentation/chat_screen.dart';
 import 'package:marea/features/missions/presentation/mission_catalog_screen.dart';
 import 'package:marea/features/shell/presentation/app_shell.dart';
 import '../../support/fakes.dart';
@@ -83,10 +84,23 @@ void main() {
         lessThanOrEqualTo(810),
       );
       final semantics = tester.ensureSemantics();
+      router.go('/home');
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Mensajes'));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/messages');
+      expect(find.byType(ChatInboxScreen), findsOneWidget);
+      expect(find.text('Mensajes'), findsOneWidget);
+      expect(find.byTooltip('Mensajes').hitTestable(), findsNothing);
+      expect(find.byKey(const Key('mobile-dock')).hitTestable(), findsNothing);
+      expect(find.byTooltip('Crear').hitTestable(), findsNothing);
+      await tester.tap(find.byTooltip('Volver'));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/home');
+
       for (final path in [
         '/map',
         '/profile',
-        '/messages',
         '/explore?section=saved',
         '/missions?section=own',
         '/create',
@@ -150,9 +164,21 @@ void main() {
       for (final path in ['/missions/mission-1', '/messages/conversation-1']) {
         router.push(path);
         await tester.pumpAndSettle();
-        expect(find.byTooltip('Crear').hitTestable(), findsOneWidget);
+        final isChat = path.startsWith('/messages');
+        expect(
+          find.byTooltip('Crear').hitTestable(),
+          isChat ? findsNothing : findsOneWidget,
+        );
+        if (isChat) {
+          expect(find.byType(ChatConversationScreen), findsOneWidget);
+          expect(
+            find.byKey(const Key('mobile-dock')).hitTestable(),
+            findsNothing,
+          );
+        }
         await tester.binding.handlePopRoute();
         await tester.pumpAndSettle();
+        expect(router.state.uri.path, '/missions');
       }
       for (final path in [
         '/settings',

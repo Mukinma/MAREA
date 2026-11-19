@@ -44,7 +44,7 @@ void main() {
         find.byKey(const Key('login-email')),
         'ana@example.com',
       );
-      await tester.tap(find.text('Olvidé mi contraseña'));
+      await tester.tap(find.text('¿Olvidaste tu contraseña?'));
       await tester.pumpAndSettle();
       final uri = router.routeInformationProvider.value.uri;
       expect(uri.path, '/recover-password');
@@ -127,8 +127,11 @@ void main() {
       await tester.pumpAndSettle();
       final email = find.byKey(const Key('register-email'));
       final password = find.byKey(const Key('register-password'));
+      final confirmation = find.byKey(const Key('register-confirm-password'));
       await tester.enterText(email, 'ana@example.com');
       await tester.enterText(password, 'test-password-123');
+      await tester.ensureVisible(confirmation);
+      await tester.enterText(confirmation, 'test-password-123');
       PrimaryButton submit() => tester.widget(
         find.byWidgetPredicate(
           (w) => w is PrimaryButton && w.label == 'Crear cuenta',
@@ -158,6 +161,7 @@ void main() {
           .text;
       expect(fieldText(email), 'ana@example.com');
       expect(fieldText(password), 'test-password-123');
+      expect(fieldText(confirmation), 'test-password-123');
       expect(submit().onPressed, isNotNull);
 
       legal.privacyVersion = 'test-2';

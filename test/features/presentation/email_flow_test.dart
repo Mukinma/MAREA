@@ -94,20 +94,17 @@ void main() {
       find.byKey(const Key('login-password')),
       'Password123',
     );
-    await tester.ensureVisible(find.text('Entrar'));
-    await tester.tap(find.text('Entrar'));
+    await tester.ensureVisible(find.text('Iniciar sesión'));
+    await tester.tap(find.text('Iniciar sesión'));
     await tester.pump();
     final recovery = tester.widget<TextButton>(
-      find.widgetWithText(TextButton, 'Olvidé mi contraseña'),
+      find.widgetWithText(TextButton, '¿Olvidaste tu contraseña?'),
     );
     final register = tester.widget<TextButton>(
-      find.widgetWithText(TextButton, 'Crear cuenta'),
+      find.widgetWithText(TextButton, 'Crea tu cuenta'),
     );
     final back = tester.widget<IconButton>(
-      find.ancestor(
-        of: find.byTooltip('Atrás'),
-        matching: find.byType(IconButton),
-      ),
+      find.widgetWithIcon(IconButton, Icons.arrow_back_rounded),
     );
     auth.pendingLogin!.complete();
     await tester.pumpAndSettle();
@@ -147,8 +144,8 @@ void main() {
         find.byKey(const Key('login-password')),
         'Password123',
       );
-      await tester.ensureVisible(find.text('Entrar'));
-      await tester.tap(find.text('Entrar'));
+      await tester.ensureVisible(find.text('Iniciar sesión'));
+      await tester.tap(find.text('Iniciar sesión'));
       await tester.pumpAndSettle();
       expect(find.text('Confirmar mi correo'), findsOneWidget);
       await tester.enterText(
@@ -171,8 +168,8 @@ void main() {
       find.byKey(const Key('login-password')),
       'Password123',
     );
-    await tester.ensureVisible(find.text('Entrar'));
-    await tester.tap(find.text('Entrar'));
+    await tester.ensureVisible(find.text('Iniciar sesión'));
+    await tester.tap(find.text('Iniciar sesión'));
     await tester.pumpAndSettle();
     expect(find.text('Confirmar mi correo'), findsNothing);
   });
@@ -184,8 +181,8 @@ void main() {
       'ana@example.com',
     );
     await tester.enterText(find.byKey(const Key('login-password')), 'short');
-    await tester.ensureVisible(find.text('Entrar'));
-    await tester.tap(find.text('Entrar'));
+    await tester.ensureVisible(find.text('Iniciar sesión'));
+    await tester.tap(find.text('Iniciar sesión'));
     await tester.pumpAndSettle();
     expect(controller.email, 'ana@example.com');
   });
@@ -204,7 +201,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     final emailAction = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, 'Entrar'),
+      find.widgetWithText(FilledButton, 'Iniciar sesión'),
     );
     final googleAction = tester.widget<AccessGoogleButton>(google);
     auth.pendingGoogle!.complete();
@@ -296,7 +293,7 @@ void main() {
       find.byKey(const Key('login-email')),
       'ana@example.com',
     );
-    final recovery = find.text('Olvidé mi contraseña');
+    final recovery = find.text('¿Olvidaste tu contraseña?');
     await tester.ensureVisible(recovery);
     await tester.tap(recovery);
     await tester.pumpAndSettle();

@@ -21,4 +21,17 @@ class ArMarker {
   bool get active => data['active'] == true;
   bool get isPublished => data['published'] == true;
   bool get isLocal => data['storage'] == 'local' || data['is_local'] == true;
+  String? get updatedAt => data['updated_at'] as String?;
+  String? get reviewReason => data['review_reason'] as String?;
+  bool get requiresChanges => data['review_status'] == 'rejected';
+  bool get awaitingReview =>
+      data['submitted_at'] != null && data['review_status'] == 'pending';
+  bool get hasPreciseLocation =>
+      locationExact &&
+      latitude != null &&
+      longitude != null &&
+      locationAccuracy != null &&
+      locationAccuracy! <= 20;
+  bool get isPublic =>
+      !isLocal && active && data['review_status'] == 'approved' && isTested;
 }

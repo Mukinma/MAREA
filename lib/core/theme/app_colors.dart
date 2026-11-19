@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   static const brandNavy = Color(0xFF0B255E);
+  static const accessPrimary = Color(0xFF005CB8);
   static const actionBlue = Color(0xFF0D4397);
   static const aqua = Color(0xFF22C5C1);
   static const aquaDark = Color(0xFF087F80);

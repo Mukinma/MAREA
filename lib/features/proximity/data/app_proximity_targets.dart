@@ -58,7 +58,8 @@ class AppProximityTargets implements ProximityTargetSource {
     }
     final markers = session.markerRepository;
     if (markers != null) {
-      final owned = await markers.listOwned(account);
+      final device = session.deviceMarkerRepository;
+      final owned = await (device ?? markers).listOwned(account);
       check();
       final published = await markers.nearbyPublic(
         latitude: fix.latitude,
@@ -66,7 +67,10 @@ class AppProximityTargets implements ProximityTargetSource {
       );
       check();
       final seen = <String>{};
-      for (final marker in [...owned, ...published]) {
+      for (final (marker, isPublic) in [
+        for (final marker in published) (marker, true),
+        for (final marker in owned) (marker, false),
+      ]) {
         if (!marker.active ||
             !marker.isTested ||
             !marker.locationExact ||
@@ -79,7 +83,7 @@ class AppProximityTargets implements ProximityTargetSource {
           ProximityTarget(
             id: marker.id,
             title: marker.name,
-            route: '/ar-markers/${marker.id}/scan',
+            route: '/ar-markers/${marker.id}/${isPublic ? 'visit' : 'scan'}',
             latitude: marker.latitude!,
             longitude: marker.longitude!,
             exact: true,

@@ -23,7 +23,11 @@ En la APK **MAREA Prueba RA**, la preparación/subida de fotos está desactivada
 
 Por defecto el CRUD es **privado y persistente en este dispositivo**, separado por cuenta. No aparece automáticamente en otros teléfonos ni se publica al guardar. No requiere nuevas tablas remotas. Sus imágenes y metadatos se guardan juntos; el cierre de sesión no permite leer ni editar los de otra cuenta.
 
-Para sincronización entre dispositivos está preparado `SupabaseMarkerRepository` y [041_ar_markers.sql](../../supabase/migrations/041_ar_markers.sql). **La migración no se ha ejecutado ni validado contra PostgreSQL**. Antes de activar `--dart-define=AR_MARKERS_REMOTE=true`, un responsable debe probar y aplicar el esquema en una base de desarrollo aprobada. Incluye RLS, bucket privado, referencias versionadas y RPC de prueba. Guardar o reconocer no aprueba ni publica; la activación pública queda sujeta a revisión. En remoto el cliente no puede activar esa publicación con un interruptor.
+La edición remota se habilita en la app normal con `--dart-define=AR_MARKERS_REMOTE=true`, tras aplicar [el esquema de marcadores](../../supabase/migrations/041_ar_markers.sql) y [la migración de publicación](../../supabase/migrations/20261119000000_marker_publication.sql). Desplegar también la versión de `delete-account` que limpia las imágenes de marcadores. El piloto RA conectado a producción conserva el almacenamiento local.
+
+Con la opción remota activa, **Gestionar experiencias → Tus marcadores RA** permite a negocios y emprendimientos probar, enviar y retirar marcadores. **Ver marcadores del dispositivo** mantiene la edición local. **Copiar a mi cuenta** crea un borrador remoto con la misma identidad, sin reutilizar la prueba local. El envío requiere la referencia actual probada y una ubicación con precisión de hasta 20 m. La persona revisora abre **Moderación → Marcadores RA** para aprobar o solicitar cambios. Tras la aprobación, **Experiencias → Escanear marcador** permite a visitantes ver información y mapa antes de usar la cámara.
+
+La verificación SQL local se ejecuta con `node tool/check_marker_publication_database.mjs` usando PGlite. Antes de activar la opción remota, validar el mismo flujo en un Supabase de desarrollo con cuentas distintas y un marcador físico.
 
 La entrada existente **Mapa → Misión → Explorar en RA** conserva sus condiciones: mismo organizador, recorrido público y referencia actual con reconocimiento comprobado. Los marcadores independientes no evitan esas condiciones.
 

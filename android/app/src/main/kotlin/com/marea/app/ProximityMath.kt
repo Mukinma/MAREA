@@ -7,7 +7,7 @@ data class ProximityPlace(val id: String, val title: String, val route: String,
     val key get() = route
     fun valid(): Boolean = exact && title.isNotBlank() && title.length <= 120 &&
         ProximityMath.coordinate(latitude, longitude) &&
-        Regex("^/(missions/[a-fA-F0-9-]{36}|ar-markers/[a-fA-F0-9-]{36}/scan)$").matches(route) &&
+        Regex("^/(missions/[a-fA-F0-9-]{36}|ar-markers/[a-fA-F0-9-]{36}/(?:scan|visit))$").matches(route) &&
         Regex("^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$").matches(id) &&
         route.split('/').getOrNull(2) == id
 }

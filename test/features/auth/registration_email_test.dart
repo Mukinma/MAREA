@@ -114,6 +114,9 @@ Future<void> submitRegistration(WidgetTester tester) async {
     find.byKey(const Key('register-password')),
     'test-password-123',
   );
+  final confirmation = find.byKey(const Key('register-confirm-password'));
+  await tester.ensureVisible(confirmation);
+  await tester.enterText(confirmation, 'test-password-123');
   for (final key in ['accept-terms', 'confirm-adult']) {
     await tester.ensureVisible(find.byKey(Key(key)));
     await tester.tap(find.byKey(Key(key)));

@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:marea/features/home_feed/data/home_feed_repository.dart';
 import 'package:marea/features/community/presentation/community_widgets.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 
 class FollowButton extends StatefulWidget {
   const FollowButton({
     required this.repository,
     required this.authorId,
     this.onChanged,
+    this.style,
+    this.compact = false,
     super.key,
   });
   final HomeFeedRepository repository;
   final String authorId;
   final VoidCallback? onChanged;
+  final ButtonStyle? style;
+  final bool compact;
   @override
   State<FollowButton> createState() => _FollowButtonState();
 }
@@ -49,7 +54,13 @@ class _FollowButtonState extends State<FollowButton> {
       }
     } catch (e) {
       if (mounted && generation == _generation) {
-        setState(() => _error = communityError(e));
+        final message = communityError(e);
+        setState(() => _error = message);
+        if (widget.compact) {
+          ScaffoldMessenger.maybeOf(
+            context,
+          )?.showSnackBar(SnackBar(content: Text(message)));
+        }
       }
     }
   }
@@ -81,6 +92,7 @@ class _FollowButtonState extends State<FollowButton> {
     mainAxisSize: MainAxisSize.min,
     children: [
       FilledButton.tonalIcon(
+        style: widget.style,
         onPressed: _busy
             ? null
             : _following == null
@@ -88,18 +100,20 @@ class _FollowButtonState extends State<FollowButton> {
             : _toggle,
         icon: Icon(_following == true ? Icons.check : Icons.person_add_alt_1),
         label: Text(
-          _busy
-              ? 'Guardando…'
-              : _following == null
-              ? _error == null
-                    ? 'Cargando…'
-                    : 'Reintentar'
-              : _following!
-              ? 'Siguiendo'
-              : 'Seguir',
+          AppLocalizations.tr(
+            _busy
+                ? 'Guardando…'
+                : _following == null
+                ? _error == null
+                      ? 'Cargando…'
+                      : 'Reintentar'
+                : _following!
+                ? 'Siguiendo'
+                : 'Seguir',
+          ),
         ),
       ),
-      if (_error != null)
+      if (_error != null && !widget.compact)
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Text(_error!, style: const TextStyle(fontSize: 12)),

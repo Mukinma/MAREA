@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marea/features/ar_markers/application/marker_scan_controller.dart';
 import 'package:marea/features/ar_markers/data/local_marker_repository.dart';
+import 'package:marea/features/ar_markers/data/marker_repository.dart';
+import 'package:marea/features/ar_markers/models/ar_marker.dart';
 import 'package:marea/features/ar_markers/presentation/marker_scan_screen.dart';
 
 import 'local_marker_repository_test.dart'
@@ -15,6 +17,24 @@ class ScanStore extends MarkerStore {
   @override
   Future<String> saveBytes(String account, String id, Uint8List bytes) async =>
       '/private/$account/$id.jpg';
+}
+
+class _PublishedMarker implements MarkerPublicationRepository {
+  ArMarker? marker;
+  final viewers = <String>[];
+
+  @override
+  Future<ArMarker?> getPublic(String viewerId, String id) async {
+    viewers.add(viewerId);
+    return marker;
+  }
+
+  @override
+  Future<Uint8List> loadPublicImage(String viewerId, ArMarker marker) async =>
+      markerJpeg();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
@@ -32,6 +52,84 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, null);
   });
+
+  testWidgets(
+    'a visitor reads information without the camera and cannot reopen a withdrawn marker',
+    (tester) async {
+      const markerId = '11111111-1111-4111-8111-111111111111';
+      final session = await markerController();
+      final viewer = session.profile!.id;
+      final repository = _PublishedMarker()
+        ..marker = ArMarker({
+          'id': markerId,
+          'owner_id': 'other-account',
+          'name': 'Mural del taller',
+          'description': 'Conoce la historia del mural.',
+          'width_cm': 20,
+          'latitude': 19.43,
+          'longitude': -99.13,
+          'location_accuracy': 10,
+          'location_exact': true,
+          'reference_version': 'v1',
+          'tested_version': 'v1',
+          'review_status': 'approved',
+          'active': true,
+        });
+      const unsupported = MethodChannel('test/marker-without-camera');
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(unsupported, (_) async => false);
+      addTearDown(() => messenger.setMockMethodCallHandler(unsupported, null));
+      final scan = MarkerScanController(
+        repository: repository,
+        accountId: viewer,
+        markerId: markerId,
+        currentAccount: () => session.profile?.id,
+        publicVisit: true,
+        channel: unsupported,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MarkerScanScreen(
+            controller: session,
+            repository: repository,
+            markerId: markerId,
+            publicVisit: true,
+            scanController: scan,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Ver en mapa'), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.ancestor(
+                of: find.text('Abrir cámara'),
+                matching: find.byWidgetPredicate(
+                  (widget) => widget is FilledButton,
+                ),
+              ),
+            )
+            .onPressed,
+        isNull,
+      );
+      await tester.tap(find.text('Ver información'));
+      await tester.pumpAndSettle();
+      expect(find.text('Conoce la historia del mural.'), findsOneWidget);
+      Navigator.pop(tester.element(find.text('Conoce la historia del mural.')));
+      await tester.pumpAndSettle();
+      repository.marker = null;
+      await tester.tap(find.text('Ver información'));
+      await tester.pumpAndSettle();
+      expect(find.text('Conoce la historia del mural.'), findsNothing);
+      expect(
+        find.text('Esta experiencia ya no está disponible.'),
+        findsOneWidget,
+      );
+      expect(repository.viewers, everyElement(viewer));
+    },
+  );
 
   testWidgets(
     'only current native tracking shows a card; lost and timeout remove it',
