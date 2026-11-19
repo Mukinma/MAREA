@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:xml/xml.dart';
 
 const panoramaImportMaxBytes = 32 * 1024 * 1024;
+const panoramaDirectImportMaxWidth = 8192;
 const _gpanoNamespace = 'http://ns.google.com/photos/1.0/panorama/';
 const _xmpIdentifier = 'http://ns.adobe.com/xap/1.0/\u0000';
 const _exifIdentifier = 'Exif\u0000\u0000';
@@ -25,8 +26,8 @@ PanoramaImportInfo inspectPanoramaImport(Uint8List bytes) =>
     validatePanoramaImport(bytes, allowHorizontal: true);
 
 /// Checks the original JPEG container and declared full-sphere XMP metadata.
-/// Does not rewrite bytes or claim optical coverage. The worker still decodes
-/// and validates the complete image before producing a usable panorama.
+/// Does not rewrite bytes or claim optical coverage. The server independently
+/// checks the uploaded file before making it available to the viewer.
 PanoramaImportInfo validatePanoramaImport(
   Uint8List bytes, {
   bool allowHorizontal = false,

@@ -139,6 +139,11 @@ class _TourPanoramaState extends State<TourPanorama> {
                     ],
                     child: Image.network(
                       s.data!,
+                      cacheWidth:
+                          (widget.scene.data['panorama_width'] as num? ?? 0) >
+                              4096
+                          ? 4096
+                          : null,
                       errorBuilder: (_, e, st) => Center(
                         child: Text(
                           (AppLocalizations.of(context) ?? AppLocalizationsEs())

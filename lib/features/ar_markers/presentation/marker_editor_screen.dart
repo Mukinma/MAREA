@@ -279,7 +279,9 @@ class _MarkerEditorScreenState extends State<MarkerEditorScreen> {
         _active = saved.active;
         _saved = saved.isLocal
             ? 'Guardado en este dispositivo'
-            : 'Borrador privado guardado en tu cuenta';
+            : saved.isPublished
+            ? 'Marcador publicado'
+            : 'Guardado en tu cuenta. Prueba el reconocimiento para publicarlo.';
       });
     } catch (error) {
       if (_current) setState(() => _error = _message(error));
@@ -463,23 +465,26 @@ class _MarkerEditorScreenState extends State<MarkerEditorScreen> {
                             ? 'Ubicación precisa guardada (±${_accuracy!.round()} m).'
                             : 'Ubicación aproximada. Se necesita una precisión de 20 m o menos para avisar cerca.',
                       ),
-                    if (_marker?.isLocal != false)
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Notificar cerca'),
-                        subtitle: Text(
-                          _tested && _exactLocation
-                              ? 'Avisar cuando el marcador esté a menos de 20 m.'
-                              : 'Primero prueba el reconocimiento en RA y guarda una ubicación precisa.',
-                        ),
-                        value: _active && _tested && _exactLocation,
-                        onChanged: !_busy && _tested && _exactLocation
-                            ? (value) => setState(() => _active = value)
-                            : null,
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Notificar cerca'),
+                      subtitle: Text(
+                        _tested && _exactLocation
+                            ? 'Avisar cuando el marcador esté a menos de 20 m.'
+                            : 'Primero prueba el reconocimiento en RA y guarda una ubicación precisa.',
                       ),
+                      value: _active && _tested && _exactLocation,
+                      onChanged: !_busy && _tested && _exactLocation
+                          ? (value) => setState(() => _active = value)
+                          : null,
+                    ),
                     if (_marker?.isLocal == false)
-                      const Text(
-                        'El marcador se guarda privado en tu cuenta. Su publicación y los avisos públicos requieren revisión.',
+                      Text(
+                        _marker!.isPublished
+                            ? 'Marcador publicado'
+                            : _tested
+                            ? 'Guarda el marcador para publicarlo.'
+                            : 'Prueba la imagen con la cámara para publicarla.',
                       ),
                     if (_draftImage != null ||
                         (_marker != null && _widthCm != _marker!.widthCm))
@@ -499,7 +504,15 @@ class _MarkerEditorScreenState extends State<MarkerEditorScreen> {
                     const SizedBox(height: 16),
                     FilledButton(
                       onPressed: _busy ? null : _save,
-                      child: Text(_saving ? 'Guardando…' : 'Guardar marcador'),
+                      child: Text(
+                        _saving
+                            ? 'Guardando…'
+                            : _marker?.isLocal == false &&
+                                  _tested &&
+                                  !_marker!.isPublished
+                            ? 'Publicar marcador'
+                            : 'Guardar marcador',
+                      ),
                     ),
                   ],
                 ),

@@ -109,6 +109,25 @@ class AppLocalizations {
   }
 
   static const _englishCatalog = <String, String>{
+    'Datos': 'Details',
+    'Panoramas': 'Panoramas',
+    'Más opciones': 'More options',
+    'Más opciones del recorrido': 'More tour options',
+    'Conexiones y orden': 'Connections and order',
+    'Permisos de contenido vinculado': 'Linked content permissions',
+    'Solo necesitas permiso para vincular contenido o un espacio de otra cuenta.':
+        'Permission is only needed to link content or a venue owned by another account.',
+    'Añadir panorama': 'Add panorama',
+    'Cambiar nombre': 'Rename',
+    'Añadir posición': 'Add position',
+    'Añadir zona': 'Add zone',
+    'Capturar o importar': 'Capture or import',
+    'Tu recorrido será público al subirlo.':
+        'Your tour will be public when uploaded.',
+    'Fechas opcionales': 'Optional dates',
+    'Subir recorrido': 'Upload tour',
+    'Añade una imagen panorámica o toma las fotos con la guía.':
+        'Add a panoramic image or take photos with the guide.',
     'Cualquier cuenta': 'Anyone',
     'Solo las cuentas que sigo': 'Only accounts I follow',
     'Nadie': 'Nobody',
