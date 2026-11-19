@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:marea/core/session/app_session_controller.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/profile/models/profile.dart';
+import 'package:marea/features/profile/presentation/profile_experience.dart';
 import 'package:marea/features/profile/presentation/profile_tools_sheet.dart';
 import 'package:marea/features/tours/data/tour_repository.dart';
 import 'package:marea/features/tours/models/business_ar_target.dart';
@@ -89,6 +91,86 @@ Future<void> _mountAction(
 );
 
 void main() {
+  testWidgets('visitor discovers published experiences before publications', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 740);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final repository = _PublicTours()
+      ..records = [
+        _tour(points: ['mural', 'cartel']),
+        _tour(owner: 'other'),
+        _tour(paused: true),
+      ];
+    final controller = AppSessionController(
+      authRepository: FakeAuthRepository(),
+      profileRepository: FakeProfileRepository(),
+      tourRepository: repository,
+    );
+    await controller.initialize();
+    addTearDown(controller.dispose);
+    Uri? opened;
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => Scaffold(
+            body: ProfileExperience(
+              controller: controller,
+              owner: false,
+              onRefresh: () async {},
+              profile: const CommunityProfile(
+                id: 'organizer',
+                fullName: 'Café Marea',
+                username: 'cafe',
+                userType: UserType.business,
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/tours/:id/business-ar',
+          builder: (_, state) {
+            opened = state.uri;
+            return const Scaffold(body: Text('Punto seleccionado'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(2)),
+          child: child!,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(repository.owners, ['organizer']);
+    expect(find.text('Experiencias'), findsOneWidget);
+    expect(find.text('Explorar en 360°'), findsOneWidget);
+    expect(find.text('Explorar con cámara'), findsOneWidget);
+    expect(find.text('Sin datos'), findsNothing);
+    expect(
+      tester.getTopLeft(find.text('Experiencias')).dy,
+      lessThan(tester.getTopLeft(find.text('Explorar con cámara')).dy),
+    );
+    await tester.ensureVisible(find.text('Explorar con cámara'));
+    await tester.tap(find.text('Explorar con cámara'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Imagen cartel'));
+    await tester.pumpAndSettle();
+    expect(opened?.path, '/tours/public-tour/business-ar');
+    expect(opened?.queryParameters, {'owner': 'organizer', 'point': 'cartel'});
+    expect(tester.takeException(), isNull);
+  });
+
   for (final (description, records) in <(String, List<TourRecord>)>[
     ('no public tour', []),
     ('an untested reference', [_tour(testedVersion: null)]),

@@ -1,5 +1,9 @@
 # RA del organizador desde el mapa
 
+Actualización del 18/11/2026: la publicación del autor pasa a ser directa, sin
+revisión administrativa. Ver [publicación directa](direct-ar-publication.md)
+para el flujo simplificado, requisitos del servidor y estado de validación.
+
 La actualización de captura de hasta 40 fotos, acciones agrupadas y búsqueda cercana del 7 de noviembre está en [Simplificación de captura y RA](ar-simplification.md).
 
 Implementación inicial sobre `santiago` a9b6712d7acbc0374034b2d7e2b912d720bd1ecd.

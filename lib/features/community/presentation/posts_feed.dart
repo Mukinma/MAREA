@@ -43,11 +43,17 @@ class PostsFeed extends StatefulWidget {
     this.showHeading = true,
     this.showRefresh = true,
     this.homePresentation = false,
+    this.profilePresentation = false,
+    this.showEmpty = true,
+    this.sectionHeader,
+    this.alwaysShowSectionHeader = false,
     super.key,
   });
   final AppSessionController controller;
   final String? authorId, category;
   final String query;
+  final Widget? sectionHeader;
+  final bool profilePresentation, showEmpty, alwaysShowSectionHeader;
   final bool savedOnly,
       discoverOnly,
       showHeading,
@@ -149,6 +155,12 @@ class PostsFeedState extends State<PostsFeed> {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
+      if (widget.sectionHeader != null &&
+          (widget.alwaysShowSectionHeader ||
+              _posts.isNotEmpty ||
+              _loading ||
+              _error != null))
+        widget.sectionHeader!,
       if (widget.showHeading || widget.showRefresh)
         Row(
           children: [
@@ -181,6 +193,7 @@ class PostsFeedState extends State<PostsFeed> {
           key: ValueKey(post.id),
           post: post,
           homePresentation: widget.homePresentation,
+          profilePresentation: widget.profilePresentation,
           locationRepository: widget.homePresentation
               ? widget.controller.locationRepository
               : null,
@@ -224,7 +237,7 @@ class PostsFeedState extends State<PostsFeed> {
           padding: EdgeInsets.all(24),
           child: Center(child: MareaSkeleton(kind: SkeletonKind.post)),
         )
-      else if (_error == null && _posts.isEmpty)
+      else if (widget.showEmpty && _error == null && _posts.isEmpty)
         CommunityNotice(
           message: AppLocalizations.tr(
             widget.savedOnly
@@ -1278,55 +1291,33 @@ class PostCardState extends State<PostCard> {
     final stats = _stats;
     final active = stats?.myReaction;
     final enabled = !_busy && !widget.post.hidden && widget.viewerId != null;
-    return SizedBox(
-      width: 56,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (widget.socialRepository != null && !widget.post.hidden) ...[
-            ReactionButton(
-              selected: active,
-              count: stats?.reactionCount ?? 0,
-              enabled: enabled,
-              onSelected: _react,
-            ),
-            const SizedBox(height: 8),
-            MareaActionButton(
-              tooltip: AppLocalizations.tr('Comentarios'),
-              onPressed: enabled ? _comments : null,
-              icon: const Icon(
-                Icons.chat_bubble_outline_rounded,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            Text(
+    final actions = <Widget>[
+      if (widget.socialRepository != null && !widget.post.hidden) ...[
+        ReactionButton(
+          selected: active,
+          inline: horizontal,
+          count: stats?.reactionCount ?? 0,
+          enabled: enabled,
+          onSelected: _react,
+        ),
+        if (!horizontal) const SizedBox(height: 8),
+        if (horizontal)
+          TextButton.icon(
+            style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+            onPressed: enabled ? _comments : null,
+            icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+            label: Text(
               '${stats?.commentCount ?? 0}',
-              style: const TextStyle(color: AppColors.textSecondary),
+              semanticsLabel:
+                  '${AppLocalizations.tr('Comentarios')} ${stats?.commentCount ?? 0}',
             ),
-            const SizedBox(height: 8),
-          ],
+          )
+        else ...[
           MareaActionButton(
-            tooltip: AppLocalizations.tr('Compartir'),
-            onPressed: enabled
-                ? () async {
-                    if (_panel) return;
-                    _panel = true;
-                    try {
-                      await sharePost(
-                        context,
-                        AppConfig.fromValues(
-                          supabaseUrl: '',
-                          supabaseAnonKey: '',
-                          publicUrl: widget.publicUrl,
-                        ).postUrl(widget.post.id),
-                      );
-                    } finally {
-                      _panel = false;
-                    }
-                  }
-                : null,
+            tooltip: AppLocalizations.tr('Comentarios'),
+            onPressed: enabled ? _comments : null,
             icon: const Icon(
-              Icons.ios_share_rounded,
+              Icons.chat_bubble_outline_rounded,
               color: AppColors.textSecondary,
             ),
           ),
@@ -1340,26 +1331,92 @@ class PostCardState extends State<PostCard> {
             ),
           ),
           Text(
-            AppLocalizations.tr('Más'),
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+            '${stats?.commentCount ?? 0}',
+            style: const TextStyle(color: AppColors.textSecondary),
           ),
-          if (_busy)
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(
-                AppLocalizations.tr('Guardando…'),
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11),
-              ),
-            ),
+          const SizedBox(height: 8),
         ],
+      ],
+      MareaActionButton(
+        tooltip: AppLocalizations.tr('Compartir'),
+        onPressed: enabled
+            ? () async {
+                if (_panel) return;
+                _panel = true;
+                try {
+                  await sharePost(
+                    context,
+                    AppConfig.fromValues(
+                      supabaseUrl: '',
+                      supabaseAnonKey: '',
+                      publicUrl: widget.publicUrl,
+                    ).postUrl(widget.post.id),
+                  );
+                } finally {
+                  _panel = false;
+                }
+              }
+            : null,
+        icon: const Icon(
+          Icons.ios_share_rounded,
+          color: AppColors.textSecondary,
+        ),
       ),
-    );
+      if (!horizontal) const SizedBox(height: 8),
+      MareaActionButton(
+        tooltip: AppLocalizations.tr('Acciones'),
+        onPressed: _busy ? null : _options,
+        icon: Icon(
+          _saved ? Icons.bookmark_rounded : Icons.more_horiz_rounded,
+          color: _saved ? AppColors.aquaDark : AppColors.textSecondary,
+        ),
+      ),
+      if (!horizontal)
+        Text(
+          AppLocalizations.tr('Más'),
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+        ),
+      if (_busy)
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            AppLocalizations.tr('Guardando…'),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 11),
+          ),
+        ),
+    ];
+    return horizontal
+        ? Wrap(
+            key: const Key('profile-post-actions'),
+            spacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: actions,
+          )
+        : SizedBox(
+            width: 56,
+            child: Column(mainAxisSize: MainAxisSize.min, children: actions),
+          );
   }
 
   Widget _reading() {
     final post = widget.post;
+    final compact = widget.profilePresentation || widget.homePresentation;
+    final bodyStyle = TextStyle(
+      fontFamily: 'NunitoSans',
+      fontSize: widget.homePresentation
+          ? 14
+          : compact
+          ? 15
+          : 16,
+      height: widget.homePresentation
+          ? 1.35
+          : compact
+          ? 1.4
+          : 1.5,
+      color: AppColors.textPrimary,
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1367,42 +1424,33 @@ class PostCardState extends State<PostCard> {
         if (!widget.homePresentation || post.imagePath == null)
           Text(
             _displayTitle,
-            style: const TextStyle(
-              fontSize: 21,
+            style: TextStyle(
+              fontSize: widget.profilePresentation ? 19 : 21,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
               height: 1.25,
             ),
           ),
         if (!widget.homePresentation || post.imagePath == null)
-          const SizedBox(height: 10),
+          SizedBox(height: widget.profilePresentation ? 5 : 10),
         Text(
           _displayBody,
           maxLines: _expanded ? null : 3,
           overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: widget.homePresentation ? 14 : 16,
-            height: widget.homePresentation ? 1.35 : 1.5,
-            color: AppColors.textPrimary,
-          ),
+          style: bodyStyle,
         ),
         _translationControl(),
         LayoutBuilder(
           builder: (context, bounds) {
             final painter = TextPainter(
-              text: TextSpan(
-                text: _displayBody,
-                style: TextStyle(
-                  fontFamily: 'NunitoSans',
-                  fontSize: widget.homePresentation ? 14 : 16,
-                  height: widget.homePresentation ? 1.35 : 1.5,
-                ),
-              ),
+              text: TextSpan(text: _displayBody, style: bodyStyle),
               textDirection: Directionality.of(context),
               textScaler: MediaQuery.textScalerOf(context),
               maxLines: 3,
             )..layout(maxWidth: bounds.maxWidth);
-            return painter.didExceedMaxLines
+            final overflows = painter.didExceedMaxLines;
+            painter.dispose();
+            return overflows
                 ? TextButton(
                     onPressed: () => setState(() => _expanded = !_expanded),
                     child: Text(
@@ -1535,6 +1583,46 @@ class PostCardState extends State<PostCard> {
       ),
     ),
   );
+  String _metadata(BuildContext context) {
+    final post = widget.post;
+    final category = ProfilePreferences.interests[post.category];
+    final kind = AppLocalizations.tr(post.kind.label);
+    if (widget.profilePresentation) {
+      return [
+        MaterialLocalizations.of(
+          context,
+        ).formatShortDate(post.createdAt.toLocal()),
+        if (post.kind != PostKind.community) kind,
+        if (category != null && post.category != 'otros')
+          AppLocalizations.tr(category),
+      ].join(' · ');
+    }
+    return AppLocalizations.trTemplate('{date} · {kind} · {category}', {
+      'date': socialDate(post.createdAt),
+      'kind': kind,
+      'category': AppLocalizations.tr(category ?? 'Otros'),
+    });
+  }
+
+  Widget _postSurface(Widget child) => widget.profilePresentation
+      ? Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Material(
+            color: AppColors.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: AppColors.border),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: child,
+          ),
+        )
+      : MareaCard(
+          margin: const EdgeInsets.only(bottom: 24),
+          clipBehavior: Clip.antiAlias,
+          child: child,
+        );
+
   @override
   Widget build(BuildContext context) {
     final post = widget.post;
@@ -1543,19 +1631,21 @@ class PostCardState extends State<PostCard> {
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 820),
-        child: MareaCard(
-          margin: const EdgeInsets.only(bottom: 24),
-          clipBehavior: Clip.antiAlias,
-          child: Padding(
+        child: _postSurface(
+          Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: () => context.push('/people/${post.authorId}'),
+                  onTap: widget.profilePresentation
+                      ? null
+                      : () => context.push('/people/${post.authorId}'),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: EdgeInsets.symmetric(
+                      vertical: widget.profilePresentation ? 2 : 8,
+                    ),
                     child: Row(
                       children: [
                         SizedBox(
@@ -1567,6 +1657,9 @@ class PostCardState extends State<PostCard> {
                               repository: widget.mediaRepository,
                               fallback: CircleAvatar(
                                 backgroundColor: AppColors.lavender,
+                                foregroundColor: widget.profilePresentation
+                                    ? AppColors.brandNavy
+                                    : null,
                                 child: Text(widget.author?.initials ?? 'M'),
                               ),
                             ),
@@ -1585,20 +1678,7 @@ class PostCardState extends State<PostCard> {
                                 ),
                               ),
                               Text(
-                                AppLocalizations.trTemplate(
-                                  '{date} · {kind} · {category}',
-                                  {
-                                    'date': socialDate(post.createdAt),
-                                    'kind': AppLocalizations.tr(
-                                      post.kind.label,
-                                    ),
-                                    'category': AppLocalizations.tr(
-                                      ProfilePreferences.interests[post
-                                              .category] ??
-                                          'Otros',
-                                    ),
-                                  },
-                                ),
+                                _metadata(context),
                                 style: const TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 12,
@@ -1617,70 +1697,77 @@ class PostCardState extends State<PostCard> {
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                 const SizedBox(height: 12),
-                LayoutBuilder(
-                  builder: (context, bounds) {
-                    final wide = bounds.maxWidth >= 728;
-                    final reading = _reading();
-                    final rail = _rail();
-                    if (wide) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (_url != null)
-                            SizedBox(width: 300, child: _image()),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 20,
-                              ),
-                              child: Center(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 320,
+                if (widget.profilePresentation) ...[
+                  if (_url != null) ...[_image(), const SizedBox(height: 12)],
+                  _reading(),
+                  const SizedBox(height: 8),
+                  const Divider(height: 1),
+                  _rail(horizontal: true),
+                ] else
+                  LayoutBuilder(
+                    builder: (context, bounds) {
+                      final wide = bounds.maxWidth >= 728;
+                      final reading = _reading();
+                      final rail = _rail();
+                      if (wide) {
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (_url != null)
+                              SizedBox(width: 300, child: _image()),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 20,
+                                ),
+                                child: Center(
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 320,
+                                    ),
+                                    child: reading,
                                   ),
-                                  child: reading,
                                 ),
                               ),
                             ),
-                          ),
-                          rail,
-                        ],
-                      );
-                    }
-                    if (_url == null) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 12),
-                              child: reading,
-                            ),
-                          ),
-                          rail,
-                        ],
-                      );
-                    }
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(child: _image()),
-                            const SizedBox(width: 8),
                             rail,
                           ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 16, 8, 4),
-                          child: reading,
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                        );
+                      }
+                      if (_url == null) {
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: reading,
+                              ),
+                            ),
+                            rail,
+                          ],
+                        );
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(child: _image()),
+                              const SizedBox(width: 8),
+                              rail,
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 16, 8, 4),
+                            child: reading,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
               ],
             ),
           ),

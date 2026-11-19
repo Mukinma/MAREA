@@ -19,9 +19,13 @@ import 'tour_panorama.dart';
 import 'tour_widgets.dart';
 
 import 'package:marea/core/localization/app_localizations.dart' as core_l10n;
+
 enum _ReferenceKind { image, printable }
 
 enum _PointAction { edit, mark, list, link, reference }
+
+String _text(String value) => core_l10n.AppLocalizations.tr(value);
+
 Uint8List _referenceJPEG(Uint8List source) {
   final decoded = img.decodeImage(source);
   if (decoded == null) {
@@ -118,7 +122,8 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   String _stateLabel(String state) => switch (state) {
     'published' => core_l10n.AppLocalizations.tr(_l10n.estadoPublicado),
     'paused' => core_l10n.AppLocalizations.tr(_l10n.estadoPausado),
-    'in_review' || 'submitted' => core_l10n.AppLocalizations.tr(_l10n.estadoEnRevision),
+    'in_review' ||
+    'submitted' => core_l10n.AppLocalizations.tr(_l10n.estadoEnRevision),
     'changes_requested' ||
     'needs_changes' ||
     'rejected' => core_l10n.AppLocalizations.tr(_l10n.estadoRequiereCambios),
@@ -131,8 +136,12 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
     _ => status?.toString() ?? core_l10n.AppLocalizations.tr(_l10n.pendiente),
   };
   String _publicationProblemLabel(String issue) => switch (issue) {
-    'Agrega una posición 360°' => core_l10n.AppLocalizations.tr(_l10n.problemaAgregarPosicion360),
-    'Elige una posición inicial' => core_l10n.AppLocalizations.tr(_l10n.problemaElegirPosicionInicial),
+    'Agrega una posición 360°' => core_l10n.AppLocalizations.tr(
+      _l10n.problemaAgregarPosicion360,
+    ),
+    'Elige una posición inicial' => core_l10n.AppLocalizations.tr(
+      _l10n.problemaElegirPosicionInicial,
+    ),
     'Espera a que todos los panoramas estén listos' =>
       core_l10n.AppLocalizations.tr(_l10n.problemaPanoramasPendientes),
     'Revisa los puntos de panoramas reemplazados' =>
@@ -169,7 +178,9 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
     try {
       final profile = widget.controller.profile;
       if (profile == null || profile.userType == UserType.general) {
-        throw StateError(core_l10n.AppLocalizations.tr(_l10n.perfilProfesionalRecorridos));
+        throw StateError(
+          core_l10n.AppLocalizations.tr(_l10n.perfilProfesionalRecorridos),
+        );
       }
       // Read accepted local fields first: a failed RPC must never replace them
       // with an uninitialized form, including when the user immediately leaves.
@@ -192,12 +203,18 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           );
           if (!_current) return;
           if (_record == null) {
-            throw StateError(core_l10n.AppLocalizations.tr(_l10n.borradorNoDisponible));
+            throw StateError(
+              core_l10n.AppLocalizations.tr(_l10n.borradorNoDisponible),
+            );
           }
         } catch (e) {
           if (local == null ||
               e is PostgrestException ||
-              (e is StateError && e.message == core_l10n.AppLocalizations.tr(_l10n.borradorNoDisponible))) {
+              (e is StateError &&
+                  e.message ==
+                      core_l10n.AppLocalizations.tr(
+                        _l10n.borradorNoDisponible,
+                      ))) {
             rethrow;
           }
           final cached = local['record'];
@@ -212,7 +229,9 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                   'document': local['document'],
                 });
           if (_record!.ownerId != _account) {
-            throw StateError(core_l10n.AppLocalizations.tr(_l10n.borradorOtraCuenta));
+            throw StateError(
+              core_l10n.AppLocalizations.tr(_l10n.borradorOtraCuenta),
+            );
           }
           _offline = true;
         }
@@ -295,11 +314,19 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       _localFailure = null;
     });
     _localTail = operation.catchError((Object error) {
-      _localFailure = core_l10n.AppLocalizations.tr(_l10n.errorGuardarCambiosLocal);
+      _localFailure = core_l10n.AppLocalizations.tr(
+        _l10n.errorGuardarCambiosLocal,
+      );
     });
     return operation
         .then((_) {
-          if (_current) setState(() => _saved = core_l10n.AppLocalizations.tr(_l10n.guardadoDispositivo));
+          if (_current && changed) {
+            setState(
+              () => _saved = core_l10n.AppLocalizations.tr(
+                _l10n.guardadoDispositivo,
+              ),
+            );
+          }
         })
         .catchError((Object e) {
           if (_current) setState(() => _error = _localFailure);
@@ -314,8 +341,12 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       final discard = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
-          title: Text(core_l10n.AppLocalizations.tr(_l10n.noSeGuardaronCambios)),
-          content: Text(core_l10n.AppLocalizations.tr(_l10n.volverIntentarCambios)),
+          title: Text(
+            core_l10n.AppLocalizations.tr(_l10n.noSeGuardaronCambios),
+          ),
+          content: Text(
+            core_l10n.AppLocalizations.tr(_l10n.volverIntentarCambios),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c, false),
@@ -340,7 +371,11 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   Future<bool> _save() async {
     if (_busy || !_loaded || !_current) return false;
     if (_title.text.trim().isEmpty || _name.text.trim().isEmpty) {
-      setState(() => _error = core_l10n.AppLocalizations.tr(_l10n.errorTituloNombreLocal));
+      setState(
+        () => _error = core_l10n.AppLocalizations.tr(
+          _l10n.errorTituloNombreLocal,
+        ),
+      );
       return false;
     }
     setState(() {
@@ -359,7 +394,11 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         );
         if (!_current) return false;
         if (authorized == null || authorized.ownerId != _account) {
-          throw StateError(core_l10n.AppLocalizations.tr(_l10n.borradorNoDisponibleSincronizar));
+          throw StateError(
+            core_l10n.AppLocalizations.tr(
+              _l10n.borradorNoDisponibleSincronizar,
+            ),
+          );
         }
         _record = authorized;
         _offline = false;
@@ -434,9 +473,15 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   }
 
   Future<void> _addPoint(TourScene scene) async {
-    final name = await tourTextDialog(context, core_l10n.AppLocalizations.tr(_l10n.nombrePunto));
+    final name = await tourTextDialog(
+      context,
+      core_l10n.AppLocalizations.tr(_l10n.nombrePunto),
+    );
     if (!mounted || !_current || name == null) return;
-    final explanation = await tourTextDialog(context, core_l10n.AppLocalizations.tr(_l10n.explicacionPunto));
+    final explanation = await tourTextDialog(
+      context,
+      core_l10n.AppLocalizations.tr(_l10n.explicacionPunto),
+    );
     if (!mounted || !_current || explanation == null) return;
     setState(() => scene.addPoint(name, explanation));
     await _local();
@@ -483,13 +528,18 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
       final selected = await showDialog<Map<String, dynamic>>(
         context: context,
         builder: (c) => AlertDialog(
-          title: Text(core_l10n.AppLocalizations.tr(_l10n.vincularContenidoTitulo)),
+          title: Text(
+            core_l10n.AppLocalizations.tr(_l10n.vincularContenidoTitulo),
+          ),
           content: SizedBox(
             width: 420,
             child: ListView(
               shrinkWrap: true,
               children: [
-                if (links.isEmpty) Text(core_l10n.AppLocalizations.tr(_l10n.sinContenidoDisponible)),
+                if (links.isEmpty)
+                  Text(
+                    core_l10n.AppLocalizations.tr(_l10n.sinContenidoDisponible),
+                  ),
                 for (final link in links)
                   ListTile(
                     title: Text(link['title'] as String? ?? ''),
@@ -518,7 +568,11 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           point.id,
         );
         if (mounted && _current) {
-          setState(() => _saved = core_l10n.AppLocalizations.tr(_l10n.solicitudVinculacionEnviada));
+          setState(
+            () => _saved = core_l10n.AppLocalizations.tr(
+              _l10n.solicitudVinculacionEnviada,
+            ),
+          );
         }
       }
     } catch (e) {
@@ -658,9 +712,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         ),
       ),
       PopupMenuButton<_PointAction>(
-        tooltip: core_l10n.AppLocalizations.tr(
-          'Más opciones de ${point.name}',
-        ),
+        tooltip: core_l10n.AppLocalizations.tr('Más opciones de ${point.name}'),
         enabled: !_busy,
         onSelected: (action) => _pointAction(action, scene, point),
         itemBuilder: (_) => [
@@ -676,9 +728,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
             ),
           PopupMenuItem(
             value: _PointAction.list,
-            child: Text(
-              core_l10n.AppLocalizations.tr('Mostrar sólo en lista'),
-            ),
+            child: Text(core_l10n.AppLocalizations.tr('Mostrar sólo en lista')),
           ),
           PopupMenuItem(
             value: _PointAction.link,
@@ -687,9 +737,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
           if (point.ar != null)
             PopupMenuItem(
               value: _PointAction.reference,
-              child: Text(
-                core_l10n.AppLocalizations.tr('Cambiar imagen RA'),
-              ),
+              child: Text(core_l10n.AppLocalizations.tr('Cambiar imagen RA')),
             ),
         ],
       ),
@@ -755,9 +803,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                 name: 'activador-${point.id}.jpg',
               ),
             ],
-            text: core_l10n.AppLocalizations.tr(
-              _l10n.imprimirAnchoExacto(cm),
-            ),
+            text: core_l10n.AppLocalizations.tr(_l10n.imprimirAnchoExacto(cm)),
           ),
         );
       }
@@ -769,7 +815,11 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
   Future<void> _connect(TourScene scene) async {
     final targets = _doc.scenes.where((s) => s.id != scene.id).toList();
     if (targets.isEmpty) {
-      setState(() => _error = core_l10n.AppLocalizations.tr(_l10n.agregaPosicionConectar));
+      setState(
+        () => _error = core_l10n.AppLocalizations.tr(
+          _l10n.agregaPosicionConectar,
+        ),
+      );
       return;
     }
     final target = await showDialog<TourScene>(
@@ -840,9 +890,7 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
     if (!mounted || day == null) return null;
     final time = await showTimePicker(
       context: context,
-      helpText: core_l10n.AppLocalizations.tr(
-        _l10n.horaDispositivo(title),
-      ),
+      helpText: core_l10n.AppLocalizations.tr(_l10n.horaDispositivo(title)),
       initialTime: TimeOfDay.now(),
     );
     return time == null
@@ -850,33 +898,28 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         : DateTime(day.year, day.month, day.day, time.hour, time.minute);
   }
 
-  Future<void> _evidence() async {
-    try {
-      final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (file == null || !_current) return;
-      final bytes = await compute(_referenceJPEG, await file.readAsBytes());
-      final path = await widget.controller.tourRepository!.uploadReference(
-        _account,
-        tourId(),
-        bytes,
-      );
-      if (!mounted || !_current) return;
+  Future<void> _addPanorama() async {
+    if (_busy || !_current) return;
+    // Reuse an unfinished position instead of creating duplicates on retries.
+    var scene = _doc.scenes.where((s) => s.panoramaPath == null).firstOrNull;
+    if (scene == null) {
       setState(() {
-        (_space['evidence_paths'] as List? ??
-                (_space['evidence_paths'] = <dynamic>[]))
-            .add(path);
+        final zone = _doc.zones.firstOrNull ?? _doc.addZone('Recorrido');
+        scene = zone.addScene('Panorama ${_doc.scenes.length + 1}');
       });
       await _local();
-    } catch (e) {
-      if (_current) setState(() => _error = _editorError(e));
     }
+    if (_current) await _capture(scene!, import: kIsWeb);
   }
 
   Future<void> _submit() async {
     if (_busy || !_current) return;
     if ((_record == null || _dirty) && !await _save()) return;
     if (!_current) return;
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
     try {
       // A lost response is reconciled before any attempt to create a new revision.
       if (!_dirty) {
@@ -886,7 +929,8 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
         );
         if (!_current) return;
         if (current != null &&
-            (current.state == 'submitted' || current.state == 'published')) {
+            current.publicRevisionId == current.revisionId &&
+            current.publicRevisionId != null) {
           widget.controller.toursChanged();
           setState(() {
             _record = current;
@@ -951,19 +995,40 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                   : 'Editar recorrido 360°',
             ),
           ),
+          actions: [
+            PopupMenuButton<int>(
+              tooltip: _text('Más opciones del recorrido'),
+              enabled: !_busy && _loaded,
+              onSelected: (step) => _changeStep(step),
+              itemBuilder: (_) => [
+                PopupMenuItem(value: 2, child: Text(_text('Puntos y AR'))),
+                PopupMenuItem(
+                  value: 3,
+                  child: Text(_text('Conexiones y orden')),
+                ),
+                PopupMenuItem(value: 4, child: Text(_text('Vista previa'))),
+              ],
+            ),
+          ],
         ),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : !_loaded
             ? Center(
                 child: TourNotice(
-                  _error ?? core_l10n.AppLocalizations.tr(l10n.borradorNoRecuperado),
+                  _error ??
+                      core_l10n.AppLocalizations.tr(l10n.borradorNoRecuperado),
                   onRetry: _load,
                 ),
               )
             : widget.controller.profile?.userType == UserType.general
             ? Center(
-                child: TourNotice(_error ?? core_l10n.AppLocalizations.tr(l10n.necesitasPerfilProfesional)),
+                child: TourNotice(
+                  _error ??
+                      core_l10n.AppLocalizations.tr(
+                        l10n.necesitasPerfilProfesional,
+                      ),
+                ),
               )
             : AbsorbPointer(
                 absorbing: _busy,
@@ -975,22 +1040,26 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                       spacing: 6,
                       runSpacing: 6,
                       children: [
-                        for (var i = 0; i < 6; i++)
+                        for (final i in const [0, 1, 5])
                           ChoiceChip(
                             label: Text(
                               [
-                                core_l10n.AppLocalizations.tr(l10n.pasoLocal),
-                                core_l10n.AppLocalizations.tr(l10n.pasoZonas),
-                                core_l10n.AppLocalizations.tr(l10n.pasoPuntosAr),
-                                core_l10n.AppLocalizations.tr(l10n.pasoConexiones),
-                                core_l10n.AppLocalizations.tr(l10n.pasoVistaPrevia),
-                                core_l10n.AppLocalizations.tr(l10n.pasoPublicacion),
+                                _text('Datos'),
+                                _text('Panoramas'),
+                                core_l10n.AppLocalizations.tr(
+                                  l10n.pasoPuntosAr,
+                                ),
+                                core_l10n.AppLocalizations.tr(
+                                  l10n.pasoConexiones,
+                                ),
+                                core_l10n.AppLocalizations.tr(
+                                  l10n.pasoVistaPrevia,
+                                ),
+                                _text('Publicar'),
                               ][i],
                             ),
                             selected: _step == i,
-                            onSelected: _busy
-                                ? null
-                                : (_) => _changeStep(i),
+                            onSelected: _busy ? null : (_) => _changeStep(i),
                           ),
                       ],
                     ),
@@ -1006,21 +1075,27 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                       TextField(
                         controller: _title,
                         decoration: InputDecoration(
-                          labelText: core_l10n.AppLocalizations.tr(l10n.tituloRecorrido),
+                          labelText: core_l10n.AppLocalizations.tr(
+                            l10n.tituloRecorrido,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _name,
                         decoration: InputDecoration(
-                          labelText: core_l10n.AppLocalizations.tr(l10n.nombreLocal),
+                          labelText: core_l10n.AppLocalizations.tr(
+                            l10n.nombreLocal,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _location,
                         decoration: InputDecoration(
-                          labelText: core_l10n.AppLocalizations.tr(l10n.ubicacionPublica),
+                          labelText: core_l10n.AppLocalizations.tr(
+                            l10n.ubicacionPublica,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -1041,57 +1116,23 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                           await _local();
                         },
                         icon: const Icon(Icons.place_outlined),
-                        label: Text(core_l10n.AppLocalizations.tr(l10n.confirmarUbicacionMapa)),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _context,
-                        maxLines: 3,
-                        decoration: InputDecoration(
-                          labelText: core_l10n.AppLocalizations.tr(l10n.relacionLocal),
-                          helperText: core_l10n.AppLocalizations.tr(l10n.revisaraResponsabilidad),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton(
-                        onPressed: _evidence,
-                        child: Text(core_l10n.AppLocalizations.tr(l10n.anadirEvidenciaPrivada)),
-                      ),
-                      Text(
-                        core_l10n.AppLocalizations.tr(
-                          l10n.imagenesPrivadasRevision(
-                            jsonList(_space['evidence_paths']).length,
+                        label: Text(
+                          core_l10n.AppLocalizations.tr(
+                            l10n.confirmarUbicacionMapa,
                           ),
                         ),
-                      ),
-                      Text(
-                        core_l10n.AppLocalizations.tr(
-                          l10n.horarios(
-                            widget.controller.profile?.businessHours.values
-                                    .whereType<String>()
-                                    .join(' · ') ??
-                                '',
-                          ),
-                        ),
-                      ),
-                      Text(
-                        core_l10n.AppLocalizations.tr(
-                          l10n.contacto(
-                            widget.controller.profile?.contactUrl ?? '',
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => context.push('/profile/edit'),
-                        child: Text(core_l10n.AppLocalizations.tr(l10n.editarDatosPerfil)),
                       ),
                     ],
                     if (_step == 1) ...[
-                      Text(core_l10n.AppLocalizations.tr(l10n.zonaAgrupaPosiciones)),
+                      Text(
+                        _text(
+                          'Añade una imagen panorámica o toma las fotos con la guía.',
+                        ),
+                      ),
                       FilledButton.icon(
-                        onPressed: _busy ? null : _addZone,
+                        onPressed: _busy ? null : _addPanorama,
                         icon: const Icon(Icons.add),
-                        label: Text(core_l10n.AppLocalizations.tr(l10n.agregarZona)),
+                        label: Text(_text('Añadir panorama')),
                       ),
                       for (final z in _doc.zones)
                         Card(
@@ -1107,11 +1148,30 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: () async {
+                                PopupMenuButton<String>(
+                                  tooltip: _text('Opciones de ${z.name}'),
+                                  itemBuilder: (_) => [
+                                    PopupMenuItem(
+                                      value: 'rename',
+                                      child: Text(_text('Cambiar nombre')),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'scene',
+                                      child: Text(_text('Añadir posición')),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'zone',
+                                      child: Text(_text('Añadir zona')),
+                                    ),
+                                  ],
+                                  onSelected: (action) async {
+                                    if (action == 'scene') return _addScene(z);
+                                    if (action == 'zone') return _addZone();
                                     final name = await tourTextDialog(
                                       context,
-                                      core_l10n.AppLocalizations.tr(l10n.editarZona),
+                                      core_l10n.AppLocalizations.tr(
+                                        l10n.editarZona,
+                                      ),
                                       initial: z.name,
                                     );
                                     if (_current && name != null) {
@@ -1119,7 +1179,6 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                       _local();
                                     }
                                   },
-                                  child: Text(core_l10n.AppLocalizations.tr(l10n.editarNombre)),
                                 ),
                                 for (final s in z.scenes)
                                   Column(
@@ -1134,34 +1193,23 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                       ),
                                       Text(
                                         s.panoramaPath == null
-                                            ? core_l10n.AppLocalizations.tr(l10n.sinPanoramaListo)
-                                            : core_l10n.AppLocalizations.tr(l10n.panoramaListo),
+                                            ? core_l10n.AppLocalizations.tr(
+                                                l10n.sinPanoramaListo,
+                                              )
+                                            : core_l10n.AppLocalizations.tr(
+                                                l10n.panoramaListo,
+                                              ),
                                       ),
-                                      Wrap(
-                                        spacing: 8,
-                                        children: [
-                                          if (!kIsWeb)
-                                            TextButton(
-                                              onPressed: _busy
-                                                  ? null
-                                                  : () => _capture(s),
-                                              child: Text(core_l10n.AppLocalizations.tr(l10n.capturarRetomar)),
-                                            ),
-                                          TextButton(
-                                            onPressed: _busy
-                                                ? null
-                                                : () =>
-                                                      _capture(s, import: true),
-                                            child: Text(core_l10n.AppLocalizations.tr(l10n.importar360)),
-                                          ),
-                                        ],
+                                      TextButton(
+                                        onPressed: _busy
+                                            ? null
+                                            : () => _capture(s, import: kIsWeb),
+                                        child: Text(
+                                          _text('Capturar o importar'),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                OutlinedButton(
-                                  onPressed: _busy ? null : () => _addScene(z),
-                                  child: Text(core_l10n.AppLocalizations.tr(l10n.agregarPosicion)),
-                                ),
                               ],
                             ),
                           ),
@@ -1193,7 +1241,11 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                   ),
                                   Text(p.description),
                                   if (p.data['needs_review'] == true)
-                                    Text(core_l10n.AppLocalizations.tr(l10n.revisarPuntoCambioPanorama)),
+                                    Text(
+                                      core_l10n.AppLocalizations.tr(
+                                        l10n.revisarPuntoCambioPanorama,
+                                      ),
+                                    ),
                                   if (p.link != null)
                                     Text(
                                       '${p.link!['title']} · ${_linkStatusLabel(p.link!['status'])}',
@@ -1202,7 +1254,11 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                 ],
                                 OutlinedButton(
                                   onPressed: () => _addPoint(s),
-                                  child: Text(core_l10n.AppLocalizations.tr(l10n.agregarPunto)),
+                                  child: Text(
+                                    core_l10n.AppLocalizations.tr(
+                                      l10n.agregarPunto,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -1213,7 +1269,9 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                       DropdownButtonFormField<String>(
                         initialValue: _doc.scene(_doc.startSceneId ?? '')?.id,
                         decoration: InputDecoration(
-                          labelText: core_l10n.AppLocalizations.tr(l10n.posicionInicial),
+                          labelText: core_l10n.AppLocalizations.tr(
+                            l10n.posicionInicial,
+                          ),
                         ),
                         isExpanded: true,
                         items: [
@@ -1228,12 +1286,16 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                       for (var i = 0; i < _doc.zones.length; i++)
                         ListTile(
                           title: Text(_doc.zones[i].name),
-                          subtitle: Text(core_l10n.AppLocalizations.tr(l10n.ordenZonas)),
+                          subtitle: Text(
+                            core_l10n.AppLocalizations.tr(l10n.ordenZonas),
+                          ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                tooltip: core_l10n.AppLocalizations.tr(l10n.subirZona),
+                                tooltip: core_l10n.AppLocalizations.tr(
+                                  l10n.subirZona,
+                                ),
                                 onPressed: i == 0
                                     ? null
                                     : () => _move(
@@ -1244,7 +1306,9 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                 icon: const Icon(Icons.arrow_upward),
                               ),
                               IconButton(
-                                tooltip: core_l10n.AppLocalizations.tr(l10n.bajarZona),
+                                tooltip: core_l10n.AppLocalizations.tr(
+                                  l10n.bajarZona,
+                                ),
                                 onPressed: i == _doc.zones.length - 1
                                     ? null
                                     : () => _move(
@@ -1275,11 +1339,15 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                     title: Text(c['label'] as String? ?? ''),
                                     subtitle: Text(
                                       c['needs_review'] == true
-                                          ? core_l10n.AppLocalizations.tr(l10n.revisarConexion)
+                                          ? core_l10n.AppLocalizations.tr(
+                                              l10n.revisarConexion,
+                                            )
                                           : c['instruction'] as String? ?? '',
                                     ),
                                     trailing: IconButton(
-                                      tooltip: core_l10n.AppLocalizations.tr(l10n.eliminarConexion),
+                                      tooltip: core_l10n.AppLocalizations.tr(
+                                        l10n.eliminarConexion,
+                                      ),
                                       onPressed: () {
                                         setState(
                                           () => jsonList(s.data['connections'])
@@ -1296,23 +1364,35 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                   onPressed: s.panoramaPath == null
                                       ? null
                                       : () => _connect(s),
-                                  child: Text(core_l10n.AppLocalizations.tr(l10n.conectarOtraPosicion)),
+                                  child: Text(
+                                    core_l10n.AppLocalizations.tr(
+                                      l10n.conectarOtraPosicion,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                      Text(core_l10n.AppLocalizations.tr(l10n.paradasConCamara)),
+                      Text(
+                        core_l10n.AppLocalizations.tr(l10n.paradasConCamara),
+                      ),
                       for (final id in jsonList(_doc.data['ar_order']))
                         if (_doc.point(id as String) != null)
                           ListTile(
                             title: Text(_doc.point(id)!.name),
-                            subtitle: Text(core_l10n.AppLocalizations.tr(l10n.ordenRecorridoPresencial)),
+                            subtitle: Text(
+                              core_l10n.AppLocalizations.tr(
+                                l10n.ordenRecorridoPresencial,
+                              ),
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  tooltip: core_l10n.AppLocalizations.tr(l10n.subirParada),
+                                  tooltip: core_l10n.AppLocalizations.tr(
+                                    l10n.subirParada,
+                                  ),
                                   onPressed: () => _move(
                                     _doc.data['ar_order'] as List,
                                     jsonList(_doc.data['ar_order']).indexOf(id),
@@ -1321,7 +1401,9 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                   icon: const Icon(Icons.arrow_upward),
                                 ),
                                 IconButton(
-                                  tooltip: core_l10n.AppLocalizations.tr(l10n.bajarParada),
+                                  tooltip: core_l10n.AppLocalizations.tr(
+                                    l10n.bajarParada,
+                                  ),
                                   onPressed: () => _move(
                                     _doc.data['ar_order'] as List,
                                     jsonList(_doc.data['ar_order']).indexOf(id),
@@ -1334,7 +1416,11 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                           ),
                     ],
                     if (_step == 4) ...[
-                      Text(core_l10n.AppLocalizations.tr(l10n.revisarAntesVistaPrevia)),
+                      Text(
+                        core_l10n.AppLocalizations.tr(
+                          l10n.revisarAntesVistaPrevia,
+                        ),
+                      ),
                       FilledButton(
                         onPressed: _busy
                             ? null
@@ -1345,85 +1431,118 @@ class _TourEditorScreenState extends State<TourEditorScreen> {
                                   );
                                 }
                               },
-                        child: Text(core_l10n.AppLocalizations.tr(l10n.abrirVistaPreviaPrivada)),
+                        child: Text(
+                          core_l10n.AppLocalizations.tr(
+                            l10n.abrirVistaPreviaPrivada,
+                          ),
+                        ),
                       ),
                     ],
                     if (_step == 5) ...[
-                      Text(
-                        _space['verified'] == true
-                            ? core_l10n.AppLocalizations.tr(l10n.espacioAutorizado)
-                            : core_l10n.AppLocalizations.tr(l10n.espacioPendienteRevision),
-                      ),
+                      Text(_text('Tu recorrido será público al subirlo.')),
                       Text(
                         core_l10n.AppLocalizations.tr(
                           l10n.version(_stateLabel(_record?.state ?? 'draft')),
                         ),
                       ),
                       if (_record?.publicRevisionId != null)
-                        Text(core_l10n.AppLocalizations.tr(l10n.versionPublicaDisponible)),
+                        Text(
+                          core_l10n.AppLocalizations.tr(
+                            l10n.versionPublicaDisponible,
+                          ),
+                        ),
                       for (final issue in _doc.publicationProblems)
                         TourNotice(_publicationProblemLabel(issue)),
                       if (_doc.points.any(
                         (p) =>
                             p.link != null && p.link!['status'] != 'approved',
                       ))
-                        TourNotice(core_l10n.AppLocalizations.tr(l10n.vinculosPendientes)),
-                      OutlinedButton(
-                        onPressed: () async {
-                          final start = await _pickDateTime(
-                            core_l10n.AppLocalizations.tr(l10n.inicioVigencia),
-                          );
-                          if (!mounted || !_current || start == null) return;
-                          final end = await _pickDateTime(core_l10n.AppLocalizations.tr(l10n.finVigencia));
-                          if (!mounted || !_current || end == null) return;
-                          if (!end.isAfter(start)) {
-                            setState(() => _error = core_l10n.AppLocalizations.tr(l10n.finPosteriorInicio));
-                            return;
-                          }
-                          setState(
-                            () => _doc.data.addAll({
-                              'starts_at': start.toUtc().toIso8601String(),
-                              'ends_at': end.toUtc().toIso8601String(),
-                            }),
-                          );
-                          _local();
-                        },
-                        child: Text(core_l10n.AppLocalizations.tr(l10n.definirVigenciaTemporal)),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(
-                            () => _doc.data.addAll({
-                              'starts_at': null,
-                              'ends_at': null,
-                            }),
-                          );
-                          _local();
-                        },
-                        child: Text(core_l10n.AppLocalizations.tr(l10n.vigenciaPermanente)),
+                        TourNotice(
+                          core_l10n.AppLocalizations.tr(
+                            l10n.vinculosPendientes,
+                          ),
+                        ),
+                      ExpansionTile(
+                        title: Text(_text('Fechas opcionales')),
+                        children: [
+                          OutlinedButton(
+                            onPressed: () async {
+                              final start = await _pickDateTime(
+                                core_l10n.AppLocalizations.tr(
+                                  l10n.inicioVigencia,
+                                ),
+                              );
+                              if (!mounted || !_current || start == null) {
+                                return;
+                              }
+                              final end = await _pickDateTime(
+                                core_l10n.AppLocalizations.tr(l10n.finVigencia),
+                              );
+                              if (!mounted || !_current || end == null) return;
+                              if (!end.isAfter(start)) {
+                                setState(
+                                  () => _error = core_l10n.AppLocalizations.tr(
+                                    l10n.finPosteriorInicio,
+                                  ),
+                                );
+                                return;
+                              }
+                              setState(
+                                () => _doc.data.addAll({
+                                  'starts_at': start.toUtc().toIso8601String(),
+                                  'ends_at': end.toUtc().toIso8601String(),
+                                }),
+                              );
+                              _local();
+                            },
+                            child: Text(
+                              core_l10n.AppLocalizations.tr(
+                                l10n.definirVigenciaTemporal,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              setState(
+                                () => _doc.data.addAll({
+                                  'starts_at': null,
+                                  'ends_at': null,
+                                }),
+                              );
+                              _local();
+                            },
+                            child: Text(
+                              core_l10n.AppLocalizations.tr(
+                                l10n.vigenciaPermanente,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       FilledButton(
                         onPressed: _busy || _doc.publicationProblems.isNotEmpty
                             ? null
                             : _submit,
-                        child: Text(
-                          _space['verified'] == true
-                              ? core_l10n.AppLocalizations.tr(l10n.publicarVersion)
-                              : core_l10n.AppLocalizations.tr(l10n.enviarRevision),
-                        ),
+                        child: Text(_text('Subir recorrido')),
                       ),
                     ],
                     const SizedBox(height: 20),
-                    FilledButton(
+                    TextButton(
                       onPressed: _busy ? null : _save,
                       child: Text(
-                        _busy ? core_l10n.AppLocalizations.tr(l10n.guardando) : core_l10n.AppLocalizations.tr(l10n.guardarBorrador),
+                        _busy
+                            ? core_l10n.AppLocalizations.tr(l10n.guardando)
+                            : core_l10n.AppLocalizations.tr(
+                                l10n.guardarBorrador,
+                              ),
                       ),
                     ),
                     if (_step < 5)
-                      TextButton(
-                        onPressed: () => setState(() => _step++),
-                        child: Text(core_l10n.AppLocalizations.tr(l10n.continuarPaso)),
+                      FilledButton(
+                        onPressed: () => _changeStep(_step == 0 ? 1 : 5),
+                        child: Text(
+                          core_l10n.AppLocalizations.tr(l10n.continuarPaso),
+                        ),
                       ),
                     const SizedBox(height: 24),
                   ],

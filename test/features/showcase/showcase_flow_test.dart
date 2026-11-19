@@ -165,7 +165,10 @@ void main() {
           '/people/visitor-owner',
           community: VisitorRepository(type),
         );
-        expect(find.text(type.showcaseLabel), findsOneWidget);
+        expect(
+          find.text(type.showcaseLabel),
+          hasShowcase ? findsOneWidget : findsNothing,
+        );
         await tap(tester, find.text('Ver todas ›'));
         expect(find.text('Misiones del perfil').hitTestable(), findsOneWidget);
         expect(find.text('Pintemos el barrio').hitTestable(), findsOneWidget);

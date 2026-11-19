@@ -128,6 +128,17 @@ class _ModerationScreenState extends State<ModerationScreen> {
                   onTap: () => context.push('/tours/requests'),
                 ),
 
+              if (widget.controller.markerPublicationRepository != null)
+                ListTile(
+                  leading: const Icon(Icons.image_search_outlined),
+                  title: Text(AppLocalizations.tr('Marcadores RA')),
+                  subtitle: Text(
+                    AppLocalizations.tr('Revisar marcadores enviados.'),
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/moderation/ar-markers'),
+                ),
+
               if (_accounts.isNotEmpty || _accountError != null)
                 Text(
                   AppLocalizations.tr('Reportes de cuentas'),

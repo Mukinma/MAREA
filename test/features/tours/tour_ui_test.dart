@@ -53,6 +53,9 @@ class ReloadTourFake extends TourFake {
 }
 
 void main() {
+  tearDown(() async {
+    await legacy.AppLocalizations.delegate.load(const Locale('es', 'MX'));
+  });
   testWidgets('tour management labels follow the selected English locale', (
     tester,
   ) async {
@@ -76,10 +79,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Your tours'), findsOneWidget);
     expect(find.text('Show your venue in 360°'), findsOneWidget);
-    expect(find.text('Requests and review'), findsOneWidget);
+    expect(find.text('Requests and review'), findsNothing);
     expect(find.text('Draft'), findsOneWidget);
     expect(find.text('Edit draft'), findsOneWidget);
     expect(find.byTooltip('Back'), findsOneWidget);
+    await tester.tap(find.byTooltip('More options'));
+    await tester.pumpAndSettle();
+    expect(find.text('Linked content permissions'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await tester.pumpWidget(
@@ -95,7 +101,9 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(
-      find.text('Venue and content permissions are reviewed separately.'),
+      find.text(
+        'Permission is only needed to link content or a venue owned by another account.',
+      ),
       findsOneWidget,
     );
     expect(find.text('There are no pending requests.'), findsOneWidget);
@@ -242,7 +250,10 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('Tus recorridos'), findsOneWidget);
-      expect(find.text('Solicitudes y revisión'), findsOneWidget);
+      expect(find.text('Solicitudes y revisión'), findsNothing);
+      await tester.tap(find.byTooltip('Más opciones'));
+      await tester.pumpAndSettle();
+      expect(find.text('Permisos de contenido vinculado'), findsOneWidget);
       expect(tester.takeException(), isNull);
       controller.dispose();
     },

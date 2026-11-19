@@ -2,6 +2,7 @@ import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/features/ar_markers/presentation/marker_management_screen.dart';
 import 'package:marea/features/ar_markers/presentation/marker_editor_screen.dart';
 import 'package:marea/features/ar_markers/presentation/marker_scan_screen.dart';
+import 'package:marea/features/ar_markers/presentation/marker_review_screen.dart';
 import 'package:marea/features/proximity/presentation/proximity_settings_screen.dart';
 import 'package:marea/features/tours/presentation/business_ar_screen.dart';
 import 'package:marea/features/missions/presentation/mission_catalog_screen.dart';
@@ -510,11 +511,9 @@ abstract final class AppRouter {
               state.pathParameters['id'] == controller.profile?.id
               ? '/profile'
               : null,
-          builder: withCreate(
-            (_, state) => PublicProfileScreen(
-              controller: controller,
-              profileId: state.pathParameters['id']!,
-            ),
+          builder: (_, state) => PublicProfileScreen(
+            controller: controller,
+            profileId: state.pathParameters['id']!,
           ),
         ),
         GoRoute(
@@ -530,68 +529,97 @@ abstract final class AppRouter {
         GoRoute(
           path: '/ar-markers',
           parentNavigatorKey: rootKey,
-          builder: withCreate(
-            (_, _) => controller.markerRepository == null
-                ? const Scaffold(
-                    body: Center(
-                      child: Text(
-                        'Los marcadores no están disponibles en esta sesión.',
-                      ),
-                    ),
-                  )
+          builder: withCreate((_, state) {
+            final device = state.uri.queryParameters['device'] == '1';
+            final repository = device
+                ? controller.deviceMarkerRepository
+                : controller.markerRepository;
+            return repository == null
+                ? const _MarkerUnavailable()
                 : MarkerManagementScreen(
-                    key: ValueKey(controller.profile?.id),
+                    key: ValueKey((controller.profile?.id, device)),
                     controller: controller,
-                    repository: controller.markerRepository!,
-                  ),
-          ),
+                    repository: repository,
+                    device: device,
+                  );
+          }),
         ),
         GoRoute(
           path: '/ar-markers/new',
           parentNavigatorKey: rootKey,
-          builder: (_, _) => controller.markerRepository == null
-              ? const Scaffold(
-                  body: Center(
-                    child: Text('Abre tus marcadores desde Perfil.'),
-                  ),
-                )
-              : MarkerEditorScreen(
-                  key: ValueKey('new-marker:${controller.profile?.id}'),
-                  controller: controller,
-                  repository: controller.markerRepository!,
-                ),
+          builder: (_, state) {
+            final repository = state.uri.queryParameters['device'] == '1'
+                ? controller.deviceMarkerRepository
+                : controller.markerRepository;
+            return repository == null
+                ? const _MarkerUnavailable()
+                : MarkerEditorScreen(
+                    key: ValueKey(
+                      'new-marker:${controller.profile?.id}:${state.uri}',
+                    ),
+                    controller: controller,
+                    repository: repository,
+                  );
+          },
         ),
         GoRoute(
           path: '/ar-markers/:id/edit',
           parentNavigatorKey: rootKey,
-          builder: (_, s) => controller.markerRepository == null
-              ? const Scaffold(
-                  body: Center(
-                    child: Text('Abre tus marcadores desde Perfil.'),
-                  ),
-                )
-              : MarkerEditorScreen(
-                  key: ValueKey('${controller.profile?.id}:${s.uri}'),
-                  controller: controller,
-                  repository: controller.markerRepository!,
-                  markerId: s.pathParameters['id'],
-                ),
+          builder: (_, state) {
+            final repository = state.uri.queryParameters['device'] == '1'
+                ? controller.deviceMarkerRepository
+                : controller.markerRepository;
+            return repository == null
+                ? const _MarkerUnavailable()
+                : MarkerEditorScreen(
+                    key: ValueKey('${controller.profile?.id}:${state.uri}'),
+                    controller: controller,
+                    repository: repository,
+                    markerId: state.pathParameters['id'],
+                  );
+          },
         ),
         GoRoute(
           path: '/ar-markers/:id/scan',
           parentNavigatorKey: rootKey,
-          builder: (_, s) => controller.markerRepository == null
-              ? const Scaffold(
-                  body: Center(
-                    child: Text('Abre tus marcadores desde Perfil.'),
-                  ),
-                )
-              : MarkerScanScreen(
-                  key: ValueKey('${controller.profile?.id}:${s.uri}'),
-                  controller: controller,
-                  repository: controller.markerRepository!,
-                  markerId: s.pathParameters['id']!,
-                ),
+          builder: (_, state) {
+            final repository = state.uri.queryParameters['remote'] == '1'
+                ? controller.markerRepository
+                : controller.deviceMarkerRepository ??
+                      controller.markerRepository;
+            return repository == null
+                ? const _MarkerUnavailable()
+                : MarkerScanScreen(
+                    key: ValueKey('${controller.profile?.id}:${state.uri}'),
+                    controller: controller,
+                    repository: repository,
+                    markerId: state.pathParameters['id']!,
+                  );
+          },
+        ),
+        GoRoute(
+          path: '/ar-markers/:id/visit',
+          parentNavigatorKey: rootKey,
+          builder: (_, state) {
+            final repository = controller.markerPublicationRepository;
+            return repository == null
+                ? const _MarkerUnavailable()
+                : MarkerScanScreen(
+                    key: ValueKey('${controller.profile?.id}:${state.uri}'),
+                    controller: controller,
+                    repository: repository,
+                    markerId: state.pathParameters['id']!,
+                    publicVisit: true,
+                  );
+          },
+        ),
+        GoRoute(
+          path: '/moderation/ar-markers',
+          parentNavigatorKey: rootKey,
+          builder: (_, _) => MarkerReviewScreen(
+            key: ValueKey(controller.profile?.id),
+            controller: controller,
+          ),
         ),
         GoRoute(
           path: '/nearby-alerts',
@@ -750,6 +778,20 @@ abstract final class AppRouter {
       ],
     );
   }
+}
+
+class _MarkerUnavailable extends StatelessWidget {
+  const _MarkerUnavailable();
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(leading: const ProfileBackButton(fallback: '/explore')),
+    body: Center(
+      child: Text(
+        AppLocalizations.tr('Esta experiencia ya no está disponible.'),
+      ),
+    ),
+  );
 }
 
 class AppRouteGuard {

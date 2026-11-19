@@ -241,6 +241,12 @@ class _BusinessARScreenState extends State<BusinessARScreen>
           core_l10n.AppLocalizations.tr(l10n.perfilNoDisponible),
         );
       }
+      if (!_current || generation != _generation) return;
+      setState(() {
+        _target = target;
+        _profile = profile;
+        _supported = false;
+      });
       final url = await repo.assetUrl(
         target.point.ar!['reference_path'] as String,
       );
@@ -260,8 +266,6 @@ class _BusinessARScreenState extends State<BusinessARScreen>
         return;
       }
       setState(() {
-        _target = target;
-        _profile = profile;
         _referenceUrl = url;
         _supported = supported;
       });
@@ -469,6 +473,7 @@ class _BusinessARScreenState extends State<BusinessARScreen>
     final profile = _profile;
     return Scaffold(
       appBar: AppBar(
+        leading: TourBackButton(fallback: '/people/${widget.ownerId}'),
         title: Text(core_l10n.AppLocalizations.tr(_l10n.explorarEnRa)),
         actions: [
           if (_current && profile != null)
@@ -717,6 +722,23 @@ class _BusinessARScreenState extends State<BusinessARScreen>
                             )
                           : core_l10n.AppLocalizations.tr(_l10n.abrirCamara),
                     ),
+                  ),
+                  TextButton.icon(
+                    icon: const Icon(Icons.panorama_photosphere_outlined),
+                    label: Text(
+                      core_l10n.AppLocalizations.tr('Ver punto en 360°'),
+                    ),
+                    onPressed: _busy
+                        ? null
+                        : () {
+                            final point = _target!.point;
+                            context.push(
+                              Uri(
+                                path: '/tours/${widget.tourId}',
+                                queryParameters: {'point': point.id},
+                              ).toString(),
+                            );
+                          },
                   ),
                 ],
                 if (_error != null)

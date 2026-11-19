@@ -47,6 +47,45 @@ SupabaseClient client(Future<http.Response> Function(http.Request) handler) =>
 
 void main() {
   test(
+    'a tested cloud marker publishes through the owner RPC without requiring GPS',
+    () async {
+      final methods = <String>[];
+      final api = client((request) async {
+        methods.add(request.method);
+        final tested = {...cloudRow(), 'tested_version': version};
+        if (request.method == 'GET') return response(tested);
+        if (request.method == 'PATCH') {
+          expect(
+            (jsonDecode(request.body) as Map).containsKey('published'),
+            false,
+          );
+          return response({...tested, 'description': 'Menú actualizado'});
+        }
+        expect(request.url.path, '/rest/v1/rpc/ar_markers_set_publication');
+        expect(jsonDecode(request.body), {
+          'p_id': markerId,
+          'p_reference_version': version,
+          'p_published': true,
+          'p_active': false,
+        });
+        return response({
+          ...tested,
+          'published': true,
+          'review_status': 'approved',
+        });
+      });
+      addTearDown(api.dispose);
+      final marker = await SupabaseMarkerRepository(
+        api,
+        currentOwner: () => owner,
+      ).save(owner, {'id': markerId, 'description': 'Menú actualizado'});
+      expect(marker.isPublished, true);
+      expect(marker.active, false);
+      expect(methods, ['GET', 'PATCH', 'POST']);
+    },
+  );
+
+  test(
     'cloud text edits use owner and reference-version predicates without sending protected fields',
     () async {
       final requests = <http.Request>[];
@@ -228,6 +267,14 @@ void main() {
         expect(request.method, 'GET');
         expect(request.url.queryParameters['active'], 'eq.true');
         expect(request.url.queryParameters['review_status'], 'eq.approved');
+        expect(request.url.queryParametersAll['latitude'], [
+          'gte.19.0',
+          'lte.20.0',
+        ]);
+        expect(request.url.queryParametersAll['longitude'], [
+          'gte.-99.7',
+          'lte.-98.7',
+        ]);
         return response([]);
       });
       addTearDown(api.dispose);
@@ -245,6 +292,45 @@ void main() {
         isEmpty,
       );
       expect(requests, 1);
+    },
+  );
+
+  test(
+    'copying a local marker twice preserves its private remote draft',
+    () async {
+      Map<String, dynamic>? saved;
+      var uploads = 0;
+      final api = client((request) async {
+        if (request.method == 'GET') return response(saved ?? []);
+        if (request.url.path.contains('/storage/v1/object/')) {
+          uploads++;
+          return response({'Key': request.url.path});
+        }
+        final submitted = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(submitted['id'], markerId);
+        expect(submitted['owner_id'], owner);
+        expect(submitted.containsKey('tested_version'), isFalse);
+        expect(submitted.containsKey('active'), isFalse);
+        saved = {...cloudRow(), ...submitted};
+        return response(saved);
+      });
+      addTearDown(api.dispose);
+      final repository = SupabaseMarkerRepository(
+        api,
+        currentOwner: () => owner,
+      );
+      final local = ArMarker({
+        ...cloudRow(),
+        'storage': 'local',
+        'tested_version': version,
+        'active': true,
+      });
+      final first = await repository.copyLocal(owner, local, markerJpeg());
+      final retry = await repository.copyLocal(owner, local, markerJpeg());
+      expect(first.id, retry.id);
+      expect(first.isPublic, isFalse);
+      expect(first.isTested, isFalse);
+      expect(uploads, 1);
     },
   );
 }

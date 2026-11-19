@@ -323,7 +323,7 @@ void main() {
       );
       expect(find.byType(ProfileImage), findsNWidgets(2));
       expect(find.text(sampleProfile.fullName), findsOneWidget);
-      expect(find.text(sampleProfile.bio!), findsOneWidget);
+      expect(find.text(sampleProfile.bio!), findsNothing);
       expect(tester.takeException(), isNull);
     },
   );

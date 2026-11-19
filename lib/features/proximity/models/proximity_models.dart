@@ -91,7 +91,7 @@ bool isAllowedProximityRoute(
       segments.length == 3 &&
       segments[0] == 'ar-markers' &&
       isProximityUuid(segments[1]) &&
-      segments[2] == 'scan';
+      const {'scan', 'visit'}.contains(segments[2]);
   if (!mission && !marker) return false;
   if (kind != null &&
       (kind == ProximityTargetKind.mission ? !mission : !marker)) {
@@ -99,5 +99,6 @@ bool isAllowedProximityRoute(
   }
   final id = segments[1];
   if (targetId != null && targetId != id) return false;
-  return route == (mission ? '/missions/$id' : '/ar-markers/$id/scan');
+  return route ==
+      (mission ? '/missions/$id' : '/ar-markers/$id/${segments[2]}');
 }

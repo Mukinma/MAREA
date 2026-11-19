@@ -15,7 +15,7 @@ void main() {
       tester,
     ) async {
       await flow.open(tester, ShowcaseRepositoryFake(), '/profile', type: type);
-      await flow.tap(tester, find.text('Herramientas'));
+      await flow.tap(tester, find.byTooltip('Menú del perfil'));
       for (final action in [
         'Agregar obra',
         'Agregar producto',
@@ -72,7 +72,7 @@ void main() {
       '/profile',
       type: UserType.business,
     );
-    await flow.tap(tester, find.text('Herramientas'));
+    await flow.tap(tester, find.byTooltip('Menú del perfil'));
     await flow.tap(tester, find.text('Datos profesionales'));
     expect(find.text('Enlace de contacto'), findsOneWidget);
     expect(find.text('Nombre completo'), findsNothing);
@@ -82,7 +82,7 @@ void main() {
     tester,
   ) async {
     await missions.openRoute(tester, MissionRepositoryFake(), '/profile');
-    await flow.tap(tester, find.text('Herramientas'));
+    await flow.tap(tester, find.byTooltip('Menú del perfil'));
     await flow.tap(
       tester,
       find.descendant(
