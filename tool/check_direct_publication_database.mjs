@@ -39,6 +39,7 @@ try {
       if auth.uid() is null or not exists(select 1 from public.profiles where id=auth.uid())
         or exists(select 1 from public.account_deletion_requests where user_id=auth.uid())
         then raise exception 'account_required'; end if; return auth.uid(); end $$;
+    revoke all on function public.community_active_account() from public,anon,authenticated;
     create table public.posts(id uuid primary key,author_id uuid,title text,kind text,hidden boolean default false);
     create table public.missions(id uuid primary key,author_id uuid,title text,hidden boolean default false);
     create table public.showcase_items(id uuid primary key,owner_id uuid,title text,status text,hidden boolean default false,available boolean default true);
@@ -168,9 +169,18 @@ try {
   const path = `${owner}/${markerId}/${imageVersion}.jpg`;
   await system();
   await db.query("insert into storage.objects(bucket_id,name) values('ar-marker-images',$1)", [path]);
+  const insertMarker = `insert into public.ar_markers(id,owner_id,name,width_cm,reference_path)
+    values($1,$2,'Mi menú',20,$3) returning to_jsonb(ar_markers.*)`;
+  const markerArgs = [markerId, owner, path];
   await login(owner);
-  let marker = await scalar(`insert into public.ar_markers(id,owner_id,name,width_cm,reference_path)
-    values($1,$2,'Mi menú',20,$3) returning to_jsonb(ar_markers.*)`, [markerId, owner, path]);
+  await rejects(insertMarker, markerArgs, /permission denied for function community_active_account/);
+  await system();
+  await migrate('20261119072912_fix_marker_owner_write_policy');
+  await login(visitor);
+  await rejects(insertMarker, markerArgs, /row-level security/);
+  await login(owner);
+  await rejects('select public.community_active_account()', [], /permission denied/);
+  let marker = await scalar(insertMarker, markerArgs);
   eq(marker.published, false, 'untested upload remains private');
   await rejects('select ar_markers_set_publication($1,$2,true,false)', [markerId, marker.reference_version], /marker_recognition_required/);
   await rejects(`update public.ar_markers set published=true where id=$1`, [markerId], /permission denied/);
