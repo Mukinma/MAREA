@@ -47,6 +47,45 @@ SupabaseClient client(Future<http.Response> Function(http.Request) handler) =>
 
 void main() {
   test(
+    'a tested cloud marker publishes through the owner RPC without requiring GPS',
+    () async {
+      final methods = <String>[];
+      final api = client((request) async {
+        methods.add(request.method);
+        final tested = {...cloudRow(), 'tested_version': version};
+        if (request.method == 'GET') return response(tested);
+        if (request.method == 'PATCH') {
+          expect(
+            (jsonDecode(request.body) as Map).containsKey('published'),
+            false,
+          );
+          return response({...tested, 'description': 'Menú actualizado'});
+        }
+        expect(request.url.path, '/rest/v1/rpc/ar_markers_set_publication');
+        expect(jsonDecode(request.body), {
+          'p_id': markerId,
+          'p_reference_version': version,
+          'p_published': true,
+          'p_active': false,
+        });
+        return response({
+          ...tested,
+          'published': true,
+          'review_status': 'approved',
+        });
+      });
+      addTearDown(api.dispose);
+      final marker = await SupabaseMarkerRepository(
+        api,
+        currentOwner: () => owner,
+      ).save(owner, {'id': markerId, 'description': 'Menú actualizado'});
+      expect(marker.isPublished, true);
+      expect(marker.active, false);
+      expect(methods, ['GET', 'PATCH', 'POST']);
+    },
+  );
+
+  test(
     'cloud text edits use owner and reference-version predicates without sending protected fields',
     () async {
       final requests = <http.Request>[];

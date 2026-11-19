@@ -45,6 +45,7 @@ class SupabaseMarkerRepository implements MarkerPublicationRepository {
         .from('ar_markers')
         .select()
         .eq('active', true)
+        .eq('published', true)
         .eq('review_status', 'approved');
     if (latitude != null &&
         longitude != null &&
@@ -317,7 +318,31 @@ class SupabaseMarkerRepository implements MarkerPublicationRepository {
         'El marcador cambió mientras lo editabas. Vuelve a abrirlo.',
       );
     }
-    return ArMarker(row);
+    final saved = ArMarker(row);
+    if (!saved.isTested) return saved;
+    try {
+      final published = await client.rpc(
+        'ar_markers_set_publication',
+        params: {
+          'p_id': saved.id,
+          'p_reference_version': saved.referenceVersion,
+          'p_published': true,
+          'p_active': values['active'] == null
+              ? saved.active
+              : values['active'] == true,
+        },
+      );
+      _check(ownerId);
+      return ArMarker(Map<String, dynamic>.from(published as Map));
+    } on PostgrestException catch (error) {
+      if (error.code == 'PGRST202' || error.code == '42883') {
+        throw StateError(
+          'El marcador quedó guardado. La publicación directa todavía no '
+          'está habilitada en el servidor.',
+        );
+      }
+      rethrow;
+    }
   }
 
   @override
