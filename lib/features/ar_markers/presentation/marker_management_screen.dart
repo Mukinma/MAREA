@@ -236,7 +236,11 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
                               title: Text(marker.name),
                               subtitle: Text(
                                 '${marker.isTested ? 'Reconocimiento probado' : 'Pendiente de probar en RA'}\n'
-                                '${marker.isLocal ? 'Guardado en este dispositivo' : 'Guardado en tu cuenta'}',
+                                '${marker.isLocal
+                                    ? 'Guardado en este dispositivo'
+                                    : marker.isPublished
+                                    ? 'Publicado'
+                                    : 'Guardado en tu cuenta'}',
                               ),
                               trailing: PopupMenuButton<_MarkerAction>(
                                 tooltip: 'Opciones de ${marker.name}',

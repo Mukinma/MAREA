@@ -87,6 +87,18 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
       appBar: AppBar(
         leading: const TourBackButton(fallback: '/profile'),
         title: Text(_tourText(legacy.AppLocalizations.tr(l10n.tusRecorridos))),
+        actions: [
+          PopupMenuButton<String>(
+            tooltip: _tourText('Más opciones'),
+            onSelected: (_) => context.push('/tours/requests'),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                value: 'permissions',
+                child: Text(_tourText('Permisos de contenido vinculado')),
+              ),
+            ],
+          ),
+        ],
       ),
       body: FutureBuilder<List<TourRecord>>(
         future: _items,
@@ -116,12 +128,6 @@ class _TourManagementScreenState extends State<TourManagementScreen> {
                   _tourText(legacy.AppLocalizations.tr(l10n.crearRecorrido)),
                 ),
               ),
-            OutlinedButton(
-              onPressed: () => context.push('/tours/requests'),
-              child: Text(
-                _tourText(legacy.AppLocalizations.tr(l10n.solicitudesRevision)),
-              ),
-            ),
             if (s.hasError)
               TourNotice(
                 _tourText(tourError(s.error!, l10n: l10n)),
@@ -283,9 +289,7 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const TourBackButton(fallback: '/tours'),
-        title: Text(
-          _tourText(legacy.AppLocalizations.tr(l10n.solicitudesRevision)),
-        ),
+        title: Text(_tourText('Permisos de contenido vinculado')),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _items,
@@ -294,7 +298,7 @@ class _TourRequestsScreenState extends State<TourRequestsScreen> {
           children: [
             Text(
               _tourText(
-                legacy.AppLocalizations.tr(l10n.autorizacionEspacioContenido),
+                'Solo necesitas permiso para vincular contenido o un espacio de otra cuenta.',
               ),
             ),
             if (s.hasError)

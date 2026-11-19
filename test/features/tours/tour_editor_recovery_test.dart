@@ -84,7 +84,8 @@ class EditorialRepo implements TourRepository {
   @override
   Future<TourRecord> submit(String id) async {
     submissions++;
-    data['state'] = 'submitted';
+    data['state'] = 'published';
+    data['public_revision_id'] = data['revision_id'];
     if (submissions == 1) throw StateError('Respuesta perdida');
     return TourRecord(clone(data));
   }
@@ -286,17 +287,19 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await chooseEditorStep(tester, 'Publicación');
-      await tester.ensureVisible(find.text('Enviar a revisión'));
-      await tester.tap(find.text('Enviar a revisión'));
+      await chooseEditorStep(tester, 'Publicar');
+      await tester.ensureVisible(find.text('Subir recorrido'));
+      await tester.tap(find.text('Subir recorrido'));
       await tester.pumpAndSettle();
       expect(repo.submissions, 1);
       expect(repo.saves, 0);
-      await tester.ensureVisible(find.text('Enviar a revisión'));
-      await tester.tap(find.text('Enviar a revisión'));
+      await tester.ensureVisible(find.text('Subir recorrido'));
+      await tester.tap(find.text('Subir recorrido'));
       await tester.pumpAndSettle();
       expect(repo.submissions, 1);
       expect(repo.saves, 0);
+      expect(find.text('Publicado'), findsOneWidget);
+      expect(find.text('Respuesta perdida'), findsNothing);
       expect(tester.takeException(), isNull);
       c.dispose();
     },
@@ -316,8 +319,12 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Editar recorrido 360°'), findsOneWidget);
-    expect(find.byType(ChoiceChip), findsNWidgets(6));
-    await chooseEditorStep(tester, 'Puntos y AR');
+    expect(find.byType(ChoiceChip), findsNWidgets(3));
+    expect(find.text('Puntos y AR'), findsNothing);
+    await tester.tap(find.byTooltip('Más opciones del recorrido'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Puntos y AR'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Añadir imagen RA'));
     expect(find.text('Editar texto'), findsNothing);
     expect(find.text('Vincular contenido'), findsNothing);
@@ -338,6 +345,81 @@ void main() {
   });
 
   testWidgets(
+    'an earlier pending submission is published instead of reconciled as done',
+    (tester) async {
+      final repo = EditorialRepo()..data['state'] = 'submitted';
+      final c = await session(repo);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: TourEditorScreen(
+            controller: c,
+            tourId: 'tour',
+            localStore: MemoryDrafts(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await chooseEditorStep(tester, 'Publicar');
+      await tester.ensureVisible(find.text('Subir recorrido'));
+      await tester.tap(find.text('Subir recorrido'));
+      await tester.pumpAndSettle();
+      expect(repo.submissions, 1);
+      expect(repo.data['state'], 'published');
+      expect(repo.saves, 0);
+      await tester.pumpWidget(const SizedBox());
+      c.dispose();
+    },
+  );
+
+  testWidgets(
+    'adding a panorama creates its position and reuses it after returning',
+    (tester) async {
+      final repo = EditorialRepo()
+        ..data['document'] = TourDocument.empty().data;
+      final c = await session(repo);
+      final router = GoRouter(
+        initialLocation: '/edit',
+        routes: [
+          GoRoute(
+            path: '/edit',
+            builder: (_, _) => TourEditorScreen(
+              controller: c,
+              tourId: 'tour',
+              localStore: MemoryDrafts(),
+            ),
+          ),
+          GoRoute(
+            path: '/tours/:id/capture',
+            builder: (context, state) => Scaffold(
+              body: TextButton(
+                onPressed: () => context.pop(),
+                child: const Text('Volver de captura'),
+              ),
+            ),
+          ),
+        ],
+      );
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpAndSettle();
+      await chooseEditorStep(tester, 'Panoramas');
+      await tester.ensureVisible(find.text('Añadir panorama'));
+      await tester.tap(find.text('Añadir panorama'));
+      await tester.pumpAndSettle();
+      expect(find.text('Volver de captura'), findsOneWidget);
+      final sceneId = TourRecord(repo.data).document.scenes.single.id;
+      await tester.tap(find.text('Volver de captura'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Añadir panorama'));
+      await tester.tap(find.text('Añadir panorama'));
+      await tester.pumpAndSettle();
+      expect(TourRecord(repo.data).document.scenes.single.id, sceneId);
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+      c.dispose();
+    },
+  );
+
+  testWidgets(
     'reference chooser groups photo and printed mark without replacing tested data on cancel',
     (tester) async {
       final repo = PointEditorRepo(reference: true),
@@ -353,7 +435,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await chooseEditorStep(tester, 'Puntos y AR');
+      await tester.tap(find.byTooltip('Más opciones del recorrido'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Puntos y AR'));
+      await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Volver a probar RA'));
       await tester.tap(find.byTooltip('Más opciones de Mural del local'));
       await tester.pumpAndSettle();

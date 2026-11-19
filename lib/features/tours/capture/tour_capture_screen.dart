@@ -102,6 +102,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
   StreamSubscription<dynamic>? _orientation;
   Map<String, dynamic> _session = {};
   bool get _horizontalImport => _session['panorama_kind'] == 'horizontal';
+  bool get _sphereImport => _session['mode'] == 'import' && !_horizontalImport;
   CapturePlan? _plan;
   CaptureCubeGuide? _cubeGuide;
   int get _cubeGuideIndex => _cubeGuide?.nextIndex(_frames) ?? 0;
@@ -719,6 +720,11 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       final bytes = await picked.readAsBytes();
       final info = await compute(inspectPanoramaImport, bytes);
       if (!mounted || !_current) return;
+      if (!info.horizontal && info.width > panoramaDirectImportMaxWidth) {
+        throw StateError(
+          'Exporta la foto 360° a un máximo de 8192 × 4096 píxeles.',
+        );
+      }
       if (_frames.isNotEmpty && !_missingWebFile) {
         final replace = await showDialog<bool>(
           context: context,
@@ -848,6 +854,10 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
         if (!mounted || !_current) return;
         final frame = sending[i];
         final remote = '$_account/${_session['capture_id']}/${frame['id']}.jpg';
+        if (_sphereImport && frame['path'] == remote) {
+          setState(() => _upload = 1);
+          continue;
+        }
         await uploader.upload(
           bytes: await _store.readBytes(frame['local_path'] as String),
           bucket: 'tour-inputs',
@@ -881,17 +891,44 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
             )
             .toList(),
       };
-      _job = await repo.submitCapture(
-        _session['capture_id'] as String,
-        manifest,
-      );
-      _session['job_id'] = _job!.id;
-      await _persist();
-      _watch();
+      await _submitUploadedCapture(manifest);
     } catch (e) {
       if (_current) setState(() => _error = _captureError(e, l10n));
     } finally {
       uploader?.dispose();
+      if (_current) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _submitUploadedCapture(Map<String, dynamic> manifest) async {
+    final job = await widget.controller.tourRepository!.submitCapture(
+      _session['capture_id'] as String,
+      manifest,
+    );
+    if (!_current) return;
+    _job = job;
+    _session['job_id'] = job.id;
+    await _persist();
+    _watch();
+  }
+
+  Future<void> _finishQueuedSphere() async {
+    if (_busy || !_current || !widget.controller.allowCaptureUploads) return;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEs();
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await _submitUploadedCapture({
+        'mode': 'import',
+        'frames': [
+          {'id': _frames.single['id']},
+        ],
+      });
+    } catch (error) {
+      if (_current) _error = _captureError(error, l10n);
+    } finally {
       if (_current) setState(() => _busy = false);
     }
   }
@@ -903,8 +940,10 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
       if (_searching || !_current) return;
       _searching = true;
       try {
-        final j = await widget.controller.tourRepository!.job(_job!.id);
-        if (mounted && _current) {
+        final previous = _job;
+        if (previous == null || previous.terminal) return;
+        final j = await widget.controller.tourRepository!.job(previous.id);
+        if (_current && identical(_job, previous)) {
           setState(() => _job = j);
           if (j.terminal) _poll?.cancel();
         }
@@ -1319,7 +1358,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                     _session['mode'] == 'import'
                         ? _horizontalImport
                               ? 'Revisa la panorámica elegida antes de subirla. Puedes recorrerla de izquierda a derecha.'
-                              : 'Revisa el panorama elegido antes de subirlo. Después del procesamiento podrás comprobar la costura, el techo y el piso.'
+                              : 'Revisa la foto 360° antes de subirla. Se guardará como un panorama listo para usar.'
                         : c != null
                         ? 'Gira sobre el mismo punto, sin caminar. El centro es tu referencia.'
                         : 'Empieza al frente, a la altura de tus ojos. El cubo te indicará qué lado fotografiar, siempre desde el centro.',
@@ -1344,7 +1383,7 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                         scene: TourScene({
                           'id': widget.sceneId,
                           'name': core_l10n.AppLocalizations.tr(
-                            'Panorama procesado',
+                            _sphereImport ? 'Foto 360°' : 'Panorama procesado',
                           ),
                           ...jsonMap(_job!.data['result']),
                           'points': [],
@@ -1390,47 +1429,52 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                               }
                             },
                       child: Text(
-                        core_l10n.AppLocalizations.tr(
-                          'Usar panorama revisado',
-                        ),
+                        core_l10n.AppLocalizations.tr('Usar panorama revisado'),
                       ),
                     ),
                   ],
+                  if (_sphereImport &&
+                      _job!.state == 'queued' &&
+                      _session['capture_id'] is String &&
+                      _frames.length == 1 &&
+                      widget.controller.allowCaptureUploads)
+                    FilledButton(
+                      onPressed: _busy ? null : _finishQueuedSphere,
+                      child: const Text('Terminar subida de la foto 360°'),
+                    ),
                   if (!_job!.terminal)
                     OutlinedButton(
-                      onPressed: () async {
-                        await widget.controller.tourRepository!.cancelJob(
-                          _job!.id,
-                        );
-                        if (mounted && _current) {
-                          setState(
-                            () => _job = TourJob({
-                              ..._job!.data,
-                              'state': 'cancelled',
-                            }),
-                          );
-                        }
-                      },
+                      onPressed: _busy
+                          ? null
+                          : () async {
+                              await widget.controller.tourRepository!.cancelJob(
+                                _job!.id,
+                              );
+                              if (mounted && _current) {
+                                setState(
+                                  () => _job = TourJob({
+                                    ..._job!.data,
+                                    'state': 'cancelled',
+                                  }),
+                                );
+                              }
+                            },
                       child: Text(
-                        core_l10n.AppLocalizations.tr(
-                          'Cancelar procesamiento',
-                        ),
+                        core_l10n.AppLocalizations.tr('Cancelar procesamiento'),
                       ),
                     ),
                   if (_job!.terminal && _job!.state != 'ready')
                     OutlinedButton(
                       onPressed: _busy ? null : _startNewCapture,
                       child: Text(
-                        core_l10n.AppLocalizations.tr(
-                          'Preparar nueva captura',
-                        ),
+                        core_l10n.AppLocalizations.tr('Preparar nueva captura'),
                       ),
                     ),
                 ] else ...[
                   if (_missingWebFile) ...[
                     TourNotice(
                       core_l10n.AppLocalizations.tr(
-                      'El navegador no conserva este archivo al cerrar la pantalla. Elige el panorama de nuevo para iniciar otra subida.',
+                        'El navegador no conserva este archivo al cerrar la pantalla. Elige el panorama de nuevo para iniciar otra subida.',
                       ),
                     ),
                     OutlinedButton(
@@ -1589,6 +1633,8 @@ class _TourCaptureScreenState extends State<TourCaptureScreen>
                   TourNotice(
                     !widget.controller.allowCaptureUploads
                         ? 'Esta prueba guarda las fotos sólo en el teléfono. La preparación y el envío están desactivados.'
+                        : _sphereImport
+                        ? 'La foto se guarda en privado. Puedes revisarla y usarla en tu recorrido antes de publicar.'
                         : kIsWeb
                         ? 'Mantén esta pantalla abierta durante la subida. Si la cierras, tendrás que elegir el archivo de nuevo. El procesamiento empieza tras confirmar la subida completa.'
                         : 'Tus fotos se guardan en este dispositivo. Al preparar el panorama se comprobará la unión de las imágenes.',

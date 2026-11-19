@@ -19,5 +19,6 @@ class ArMarker {
   bool get isTested =>
       referenceVersion.isNotEmpty && testedVersion == referenceVersion;
   bool get active => data['active'] == true;
+  bool get isPublished => data['published'] == true;
   bool get isLocal => data['storage'] == 'local' || data['is_local'] == true;
 }

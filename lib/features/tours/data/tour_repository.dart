@@ -94,8 +94,26 @@ class SupabaseTourRepository implements TourRepository {
     }),
   );
   @override
-  Future<TourRecord> submit(String id) async =>
-      TourRecord.fromJson(await _rpc('tours_submit', {'p_tour': id}));
+  Future<TourRecord> submit(String id) async {
+    try {
+      final record = TourRecord.fromJson(
+        await _rpc('tours_publish', {'p_tour': id}),
+      );
+      if (record.publicRevisionId != record.revisionId) {
+        throw StateError('El recorrido todavía no está publicado.');
+      }
+      return record;
+    } on PostgrestException catch (error) {
+      if (error.code == 'PGRST202' || error.code == '42883') {
+        throw StateError(
+          'La publicación directa todavía no está habilitada en el servidor. '
+          'Tu borrador sigue guardado.',
+        );
+      }
+      rethrow;
+    }
+  }
+
   @override
   Future<void> pause(String id, bool paused) async {
     await _rpc('tours_pause', {'p_tour': id, 'p_paused': paused});
@@ -166,7 +184,43 @@ class SupabaseTourRepository implements TourRepository {
     String capture,
     Map<String, dynamic> manifest,
   ) async {
-    final j = TourJob(
+    if (manifest['mode'] == 'import' &&
+        (manifest['panorama_kind'] ?? 'sphere') == 'sphere') {
+      final frames = jsonList(manifest['frames']);
+      final frame = frames.length == 1 ? jsonMap(frames.single)['id'] : null;
+      if (frame is! String || frame.isEmpty) {
+        throw StateError('Elige el archivo original de la foto 360°.');
+      }
+      try {
+        final response = await client.functions.invoke(
+          'tour-import',
+          body: {'capture': capture, 'frame': frame},
+        );
+        return TourJob(jsonMap(response.data));
+      } on FunctionException catch (error) {
+        final details = error.details;
+        final code = details is Map ? details['error'] : null;
+        throw StateError(switch (code) {
+          'invalid_panorama' =>
+            'Usa el JPEG original de una esfera 360° completa con metadatos GPano.',
+          'panorama_dimensions' =>
+            'Exporta la foto 360° a un máximo de 8192 × 4096 píxeles.',
+          'import_file_required' =>
+            'No encontramos la foto completa en el servidor. Vuelve a elegir el archivo para subirlo.',
+          'import_job_unavailable' =>
+            'Este envío ya no se puede completar. Puedes importar el mismo archivo en una nueva captura.',
+          'media_operation_unavailable' =>
+            'Hay otra operación de carga en curso. Espera un momento y reintenta.',
+          'session_invalid' ||
+          'unauthorized' => 'Vuelve a iniciar sesión para subir la foto 360°.',
+          'mfa_required' => 'Verifica tu sesión para subir la foto 360°.',
+          _ =>
+            'No pudimos registrar la foto 360°. Puedes reintentar desde esta captura.',
+        });
+      }
+    }
+    // Only captures and horizontal imports use the private dispatcher.
+    return TourJob(
       jsonMap(
         await _rpc('tours_capture_submit', {
           'p_capture': capture,
@@ -174,8 +228,6 @@ class SupabaseTourRepository implements TourRepository {
         }),
       ),
     );
-    // Server trigger/cron wakes the private dispatcher after this commit.
-    return j;
   }
 
   @override

@@ -35,8 +35,7 @@ class TourBackButton extends StatelessWidget {
 String tourError(Object e, {AppLocalizations? l10n}) {
   if (e is PostgrestException && e.message == 'space_permission_required') {
     return _tourText(
-      l10n?.permisoEspacioRetiradoError ??
-          'El permiso del espacio fue retirado. Solicita una nueva revisión para volver a publicar.',
+      'Este espacio pertenece a otra cuenta. Necesitas su permiso para vincularlo; puedes publicar tu propio espacio sin revisión.',
     );
   }
   if (e is PostgrestException && e.message == 'capture_superseded') {
