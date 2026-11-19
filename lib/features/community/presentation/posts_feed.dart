@@ -271,6 +271,7 @@ class PostCard extends StatefulWidget {
     this.stats,
     this.onStats,
     this.homePresentation = false,
+    this.profilePresentation = false,
     this.detailPresentation = false,
     this.onComments,
     this.onHomeCategory,
@@ -292,6 +293,7 @@ class PostCard extends StatefulWidget {
   final String publicUrl;
   final PostContentTranslator? contentTranslator;
   final bool saved, moderator, homePresentation, detailPresentation;
+  final bool profilePresentation;
   final VoidCallback? onComments;
   final Future<void> Function() onChanged;
   final ValueChanged<bool>? onSaved, onSaveSettled;
@@ -1287,7 +1289,7 @@ class PostCardState extends State<PostCard> {
     );
   }
 
-  Widget _rail() {
+  Widget _rail({bool horizontal = false}) {
     final stats = _stats;
     final active = stats?.myReaction;
     final enabled = !_busy && !widget.post.hidden && widget.viewerId != null;
@@ -1322,14 +1324,6 @@ class PostCardState extends State<PostCard> {
             ),
           ),
           const SizedBox(height: 8),
-          MareaActionButton(
-            tooltip: AppLocalizations.tr('Acciones'),
-            onPressed: _busy ? null : showOptions,
-            icon: Icon(
-              _saved ? Icons.bookmark_rounded : Icons.more_horiz_rounded,
-              color: _saved ? AppColors.aquaDark : AppColors.textSecondary,
-            ),
-          ),
           Text(
             '${stats?.commentCount ?? 0}',
             style: const TextStyle(color: AppColors.textSecondary),
@@ -1365,7 +1359,7 @@ class PostCardState extends State<PostCard> {
       if (!horizontal) const SizedBox(height: 8),
       MareaActionButton(
         tooltip: AppLocalizations.tr('Acciones'),
-        onPressed: _busy ? null : _options,
+        onPressed: _busy ? null : showOptions,
         icon: Icon(
           _saved ? Icons.bookmark_rounded : Icons.more_horiz_rounded,
           color: _saved ? AppColors.aquaDark : AppColors.textSecondary,

@@ -55,7 +55,7 @@ void main() {
         '/settings/notifications' ||
         '/profile/preferences' => '/settings',
         '/settings/email' || '/settings/password' => '/settings/personal',
-        _ when route.startsWith('/people/') => '/explore',
+        _ when route.startsWith('/people/') => '/search/people',
         _ => '/profile',
       });
     }

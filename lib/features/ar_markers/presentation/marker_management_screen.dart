@@ -358,12 +358,23 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
                               ),
                               title: Text(marker.name),
                               subtitle: Text(
-                                '${marker.isTested ? 'Reconocimiento probado' : 'Pendiente de probar en RA'}\n'
-                                '${marker.isLocal
-                                    ? 'Guardado en este dispositivo'
-                                    : marker.isPublished
-                                    ? 'Publicado'
-                                    : 'Guardado en tu cuenta'}',
+                                [
+                                  _status(marker),
+                                  if (!marker.isTested)
+                                    AppLocalizations.tr(
+                                      'Pendiente de probar en RA',
+                                    )
+                                  else if (!marker.isLocal &&
+                                      !marker.hasPreciseLocation)
+                                    AppLocalizations.tr(
+                                      'Falta una ubicación con precisión de hasta 20 m',
+                                    )
+                                  else
+                                    AppLocalizations.tr(
+                                      'Reconocimiento probado',
+                                    ),
+                                  ?marker.reviewReason,
+                                ].join('\n'),
                               ),
                               trailing: PopupMenuButton<_MarkerAction>(
                                 tooltip: 'Opciones de ${marker.name}',

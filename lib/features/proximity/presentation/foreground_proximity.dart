@@ -51,8 +51,9 @@ class ForegroundProximityNotices extends ChangeNotifier
     );
     if (!isCurrent() || !target.isValid || !payload.isValid) return;
     if (!await claim(accountId, target.key, encounter.occurredAt) ||
-        !isCurrent())
+        !isCurrent()) {
       return;
+    }
     _queue.add((title: target.title, payload: payload));
     notifyListeners();
   }

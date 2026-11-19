@@ -158,6 +158,30 @@ void main() {
     expect(find.text('Tipo de perfil'), findsOneWidget);
   });
 
+  testWidgets('Google can start from the first step with an empty draft', (
+    tester,
+  ) async {
+    final auth = FakeAuthRepository()..user = null;
+    final controller = AppSessionController(
+      authRepository: auth,
+      profileRepository: FakeProfileRepository(),
+      legalRepository: FakeLegalRepository(),
+    );
+    await controller.initialize();
+    addTearDown(controller.dispose);
+    addTearDown(auth.close);
+    await tester.pumpWidget(testApp(RegisterScreen(controller: controller)));
+
+    expect(find.byKey(const Key('register-email')), findsNothing);
+    final google = find.text('Continuar con Google');
+    await tester.ensureVisible(google);
+    await tester.tap(google);
+    await tester.pumpAndSettle();
+
+    expect(auth.currentUser?.email, 'google@marea.app');
+    expect(controller.status, AuthStatus.authenticated);
+  });
+
   testWidgets('an occupied username stays inline on the identity step', (
     tester,
   ) async {
@@ -234,7 +258,34 @@ void main() {
         await tester.ensureVisible(find.text('Continuar'));
         await tester.tap(find.text('Continuar'));
         await tester.pumpAndSettle();
-        expect(find.text('Confirmar contraseña'), findsNothing);
+        final confirmation = find.byKey(const Key('register-confirm-password'));
+        expect(confirmation, findsOneWidget);
+        if (type == UserType.general) {
+          tester.view.physicalSize = const Size(360, 800);
+          tester.view.padding = const FakeViewPadding(top: 44, bottom: 24);
+          tester.view.resetViewInsets();
+          tester.platformDispatcher.clearTextScaleFactorTestValue();
+          await tester.pumpAndSettle();
+
+          Finder legalButton(String label) =>
+              find.widgetWithText(TextButton, label);
+          final terms = legalButton('Términos');
+          final privacy = legalButton('Aviso de privacidad');
+          expect(tester.getCenter(terms).dy, tester.getCenter(privacy).dy);
+          expect(
+            tester.getCenter(terms).dx,
+            lessThan(tester.getCenter(privacy).dx),
+          );
+          expect(find.text('Crear cuenta').hitTestable(), findsOneWidget);
+          expect(find.text('Iniciar sesión').hitTestable(), findsOneWidget);
+
+          tester.view.physicalSize = const Size(320, 700);
+          tester.view.resetPadding();
+          tester.view.viewInsets = const FakeViewPadding(bottom: 260);
+          tester.platformDispatcher.textScaleFactorTestValue = 2;
+          await tester.pumpAndSettle();
+        }
+        expect(find.text('Iniciar sesión'), findsOneWidget);
         expect(
           tester
               .widget<CheckboxListTile>(find.byKey(const Key('accept-terms')))
@@ -292,7 +343,25 @@ void main() {
               .value,
           isTrue,
         );
-        await tester.ensureVisible(find.byKey(const Key('register-continue')));
+        final submit = find.byKey(const Key('register-continue'));
+        if (type == UserType.general) {
+          await tester.ensureVisible(submit);
+          await tester.tap(submit);
+          await tester.pumpAndSettle();
+          expect(find.text('Confirma tu contraseña.'), findsOneWidget);
+          expect(auth.type, isNull);
+
+          await tester.ensureVisible(confirmation);
+          await tester.enterText(confirmation, 'different-password');
+          await tester.ensureVisible(submit);
+          await tester.tap(submit);
+          await tester.pumpAndSettle();
+          expect(find.text('Las contraseñas no coinciden.'), findsOneWidget);
+          expect(auth.type, isNull);
+        }
+        await tester.ensureVisible(confirmation);
+        await tester.enterText(confirmation, 'test-password-123');
+        await tester.ensureVisible(submit);
         auth.rejection = type == UserType.general
             ? 'User already registered'
             : type == UserType.creator
@@ -317,6 +386,10 @@ void main() {
             field,
             emailError ? 'nueva@example.com' : 'stronger-test-password-123',
           );
+          if (!emailError) {
+            await tester.ensureVisible(confirmation);
+            await tester.enterText(confirmation, 'stronger-test-password-123');
+          }
           auth.rejection = null;
           await tester.ensureVisible(
             find.byKey(const Key('register-continue')),

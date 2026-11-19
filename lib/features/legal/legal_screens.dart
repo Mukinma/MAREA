@@ -57,29 +57,37 @@ class LegalLinks extends StatelessWidget {
     super.key,
     this.compact = false,
     this.alignment = WrapAlignment.center,
+    this.sideBySide = false,
   });
 
-  final bool compact;
+  final bool compact, sideBySide;
   final WrapAlignment alignment;
 
   @override
-  Widget build(BuildContext context) => Wrap(
-    alignment: alignment,
-    children: [
+  Widget build(BuildContext context) {
+    final links = [
       TextButton(
         onPressed: () => context.push('/terms'),
         child: Text(
-          compact
-              ? AppLocalizations.tr('Términos')
-              : AppLocalizations.tr('Términos y condiciones'),
+          AppLocalizations.tr(compact ? 'Términos' : 'Términos y condiciones'),
+          textAlign: TextAlign.center,
         ),
       ),
       TextButton(
         onPressed: () => context.push('/privacy'),
-        child: Text(AppLocalizations.tr('Aviso de privacidad')),
+        child: Text(
+          AppLocalizations.tr('Aviso de privacidad'),
+          textAlign: TextAlign.center,
+        ),
       ),
-    ],
-  );
+    ];
+    return sideBySide
+        ? Row(
+            spacing: 12,
+            children: [for (final link in links) Expanded(child: link)],
+          )
+        : Wrap(alignment: alignment, children: links);
+  }
 }
 
 class ConsentFields extends StatelessWidget {
@@ -89,10 +97,11 @@ class ConsentFields extends StatelessWidget {
     required this.onTermsChanged,
     required this.onAdultChanged,
     this.enabled = true,
+    this.compact = false,
     super.key,
   });
 
-  final bool terms, adult, enabled;
+  final bool terms, adult, enabled, compact;
   final ValueChanged<bool> onTermsChanged, onAdultChanged;
 
   @override
@@ -103,10 +112,16 @@ class ConsentFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const LegalLinks(alignment: WrapAlignment.start),
+        LegalLinks(
+          alignment: WrapAlignment.start,
+          compact: compact,
+          sideBySide: compact,
+        ),
+        if (compact) const Divider(height: 9),
         CheckboxListTile(
           key: const Key('accept-terms'),
           contentPadding: EdgeInsets.zero,
+          minTileHeight: compact ? 48 : null,
           controlAffinity: ListTileControlAffinity.leading,
           activeColor: AppColors.actionBlue,
           shape: shape,
@@ -121,6 +136,7 @@ class ConsentFields extends StatelessWidget {
         CheckboxListTile(
           key: const Key('confirm-adult'),
           contentPadding: EdgeInsets.zero,
+          minTileHeight: compact ? 48 : null,
           controlAffinity: ListTileControlAffinity.leading,
           activeColor: AppColors.actionBlue,
           shape: shape,

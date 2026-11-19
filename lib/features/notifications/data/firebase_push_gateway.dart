@@ -178,7 +178,8 @@ class FirebasePushGateway implements PushGateway {
       AuthorizationStatus.authorized ||
       AuthorizationStatus.provisional => PushPermission.granted,
       AuthorizationStatus.notDetermined => PushPermission.notDetermined,
-      AuthorizationStatus.denied => PushPermission.denied,
+      AuthorizationStatus.denied ||
+      AuthorizationStatus.deniedPermanently => PushPermission.denied,
     };
   }
 

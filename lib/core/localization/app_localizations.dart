@@ -211,6 +211,7 @@ class AppLocalizations {
     'Correo de soporte no disponible': 'Support email unavailable',
     'Correo electrónico': 'Email address',
     'Correo y contraseña': 'Email and password',
+    'Crea tu cuenta': 'Create your account',
     'Creando cuenta…': 'Creating account…',
     'Crear marcador RA': 'Create AR marker',
     'Cuentas bloqueadas': 'Blocked accounts',
@@ -273,6 +274,7 @@ class AppLocalizations {
     'Ingresa el código que aparece en tu app autenticadora.':
         'Enter the code from your authenticator app.',
     'Iniciando sesión…': 'Signing in…',
+    'Introduce tu contraseña': 'Enter your password',
     'Interés en colaborar en tus publicaciones':
         'Requests to collaborate on your posts',
     'Ir a Mis datos personales': 'Go to Personal information',
@@ -616,7 +618,21 @@ class AppLocalizations {
     'Reintentar imagen': 'Retry image',
     'Revisa tu correo y spam.': 'Check your email and spam folder.',
     'Saltar parada': 'Skip stop',
-    'Selecciona una conversación': 'Select to conversation',
+    'Selecciona una conversación': 'Select a conversation',
+    'No pudimos cargar tus mensajes.': 'We couldn’t load your messages.',
+    'No pudimos cargar la conversación.': 'We couldn’t load the conversation.',
+    'Los mensajes no están disponibles en este momento.':
+        'Messages are unavailable right now.',
+    'Puedes iniciar una conversación desde el perfil de otra cuenta.':
+        'You can start a conversation from someone else’s profile.',
+    'Podrás escribir cuando la otra persona acepte.':
+        'You can message once the other person accepts.',
+    '{name} quiere iniciar una conversación contigo.':
+        '{name} wants to start a conversation with you.',
+    'Actualizar estado': 'Refresh status',
+    'Solicitud rechazada': 'Request declined',
+    'Chat bloqueado': 'Chat blocked',
+    'Cargando': 'Loading',
     'Solicitudes y revisión': 'Requests and review',
     'Todas': 'All',
     'Todas las categorías': 'All categories',
@@ -746,14 +762,20 @@ class AppLocalizations {
         'There is no content with these filters. Come back later or change the filters.',
     'Olvidé mi contraseña': 'Olvidé mi contraseñto',
     'Continuar con Google': 'Continue with Google',
+    'o continúa con': 'or continue with',
+    '¡Hola de nuevo!': 'Welcome back!',
+    '¿Olvidaste tu contraseña?': 'Forgot your password?',
+    '¿Aún no tienes cuenta?': 'New to MAREA?',
+    'Tu ciudad te está esperando. Inicia sesión y explora lo que hay cerca de ti.':
+        'Your city is waiting for you. Sign in to explore what’s nearby.',
     'Saltar': 'Skip',
     'Cambiar': 'Change',
     'Recuperar contraseña': 'Recover contraseñto',
     'Guardar contraseña': 'Save contraseñto',
     'Confirmar nueva contraseña': 'Confirm new contraseñto',
     'Enviar código por correo': 'Send código by email',
-    'Aún no tienes conversaciones.': 'Aún not you have conversations.',
-    'Reportar conversación': 'Report conversación',
+    'Aún no tienes conversaciones.': 'You don’t have any conversations yet.',
+    'Reportar conversación': 'Report conversation',
     'Este chat está bloqueado temporalmente.':
         'This chat está blocked temporarily.',
     'No encontramos perfiles con ese nombre.':
@@ -1707,6 +1729,8 @@ class AppLocalizations {
     'Escribe una contraseña.': 'Enter a password.',
     'Usa al menos 8 caracteres.': 'Use at least 8 characters.',
     'Confirma tu contraseña.': 'Confirm your password.',
+    'Confirmar contraseña': 'Confirm password',
+    'No se pudo conectar con Google.': 'Could not connect to Google.',
     'Las contraseñas no coinciden.': 'Passwords do not match.',
     'Usa máximo 160 caracteres.': 'Use no more than 160 characters.',
     'Ajustar foto de portada': 'Adjust cover photo',

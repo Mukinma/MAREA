@@ -115,15 +115,16 @@ class SupabaseChatRepository implements ChatRepository, ChatPrivacyRepository {
       );
     }
     return rows.map((r) {
-      final id =
+      final otherId =
           (r['requester_id'] == user ? r['recipient_id'] : r['requester_id'])
               as String;
-      final p = byId[id];
+      final p = byId[otherId];
       return ChatConversation.fromJson(
         Map<String, dynamic>.from(r),
         otherName: p?['full_name'] as String?,
         otherUsername: p?['username'] as String?,
-      ).copyWithLastMessage(lastBody[id]);
+        otherAvatarPath: p?['avatar_path'] as String?,
+      ).copyWithLastMessage(lastBody[r['id']]);
     }).toList();
   });
   @override

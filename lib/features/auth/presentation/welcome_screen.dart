@@ -107,7 +107,7 @@ class WelcomeScreen extends StatelessWidget {
         FilledButton(
           key: const Key('welcome-register'),
           style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF005CB8),
+            backgroundColor: AppColors.accessPrimary,
             shape: const StadiumBorder(),
             minimumSize: const Size(48, 52),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),

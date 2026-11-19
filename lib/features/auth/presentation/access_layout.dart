@@ -75,6 +75,7 @@ class AccessLayout extends StatelessWidget {
     this.leading,
     this.messengerKey,
     this.maxWidth = 480,
+    this.compact = false,
   }) : assert((step == null) == (totalSteps == null));
 
   final Widget child;
@@ -86,6 +87,7 @@ class AccessLayout extends StatelessWidget {
   final Widget? leading;
   final GlobalKey<ScaffoldMessengerState>? messengerKey;
   final double maxWidth;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +122,7 @@ class AccessLayout extends StatelessWidget {
                 constraints.maxWidth < 360 ? 16 : 24,
                 constraints.maxWidth >= 600 ? 32 : 8,
                 constraints.maxWidth < 360 ? 16 : 24,
-                24,
+                compact ? 12 : 24,
               ),
               child: Center(
                 child: ConstrainedBox(
@@ -175,7 +177,7 @@ class AccessLayout extends StatelessWidget {
                           ),
                         ),
                       ],
-                      const SizedBox(height: 24),
+                      SizedBox(height: compact ? 12 : 24),
                       if (leading != null) ...[
                         Align(alignment: Alignment.centerLeft, child: leading),
                         const SizedBox(height: 12),
@@ -196,7 +198,7 @@ class AccessLayout extends StatelessWidget {
                           ),
                         ),
                       ],
-                      const SizedBox(height: 24),
+                      SizedBox(height: compact ? 12 : 24),
                       child,
                     ],
                   ),

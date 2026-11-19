@@ -335,15 +335,15 @@ abstract final class AppRouter {
               path: '/profile',
               builder: (_, _) => ProfileScreen(controller: controller),
             ),
-            GoRoute(
-              path: '/messages',
-              builder: (_, state) => ChatInboxScreen(
-                controller: controller,
-                initialConversationId:
-                    state.uri.queryParameters['conversation'],
-              ),
-            ),
           ],
+        ),
+        GoRoute(
+          path: '/messages',
+          builder: (_, state) => ChatInboxScreen(
+            key: ValueKey(controller.profile?.id),
+            controller: controller,
+            initialConversationId: state.uri.queryParameters['conversation'],
+          ),
         ),
         GoRoute(
           path: '/stories/new',
@@ -469,11 +469,10 @@ abstract final class AppRouter {
         GoRoute(
           parentNavigatorKey: rootKey,
           path: '/messages/:id',
-          builder: withCreate(
-            (_, state) => ChatConversationScreen(
-              controller: controller,
-              conversationId: state.pathParameters['id']!,
-            ),
+          builder: (_, state) => ChatConversationScreen(
+            key: ValueKey((controller.profile?.id, state.pathParameters['id'])),
+            controller: controller,
+            conversationId: state.pathParameters['id']!,
           ),
         ),
         GoRoute(

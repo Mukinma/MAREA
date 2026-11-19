@@ -38,7 +38,7 @@ void main() {
     );
     expect(find.byKey(const Key('login-email')), findsOneWidget);
     expect(find.byKey(const Key('login-password')), findsOneWidget);
-    expect(find.text('Crear cuenta'), findsOneWidget);
+    expect(find.text('Crea tu cuenta'), findsOneWidget);
   });
 
   testWidgets('register explains the public username identity', (tester) async {
@@ -59,7 +59,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(testApp(LoginScreen(controller: controller)));
-    await tester.tap(find.text('Entrar'));
+    await tester.tap(find.text('Iniciar sesión'));
     await tester.pump();
 
     expect(find.text('Escribe tu correo.'), findsOneWidget);
@@ -155,8 +155,8 @@ void main() {
       for (final label
           in width < 600
               ? ['Inicio', 'Misiones', 'Mapa', 'Perfil']
-              : ['Inicio', 'Explorar', 'Crear', 'Misiones', 'Mapa', 'Perfil']) {
-        expect(find.byTooltip(label).hitTestable(), findsOneWidget);
+              : ['Inicio', 'Guardados', 'Crear', 'Misiones', 'Mapa', 'Perfil']) {
+        expect(find.byTooltip(label).hitTestable(), findsOneWidget, reason: label);
       }
       expect(find.byType(NavigationRail), findsNothing);
       expect(find.byType(BottomNavigationBar), findsNothing);

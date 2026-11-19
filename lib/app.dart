@@ -63,8 +63,9 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
         _webProximity?.running != true ||
         !proximityPageVisible ||
         !payload.isValid ||
-        widget.controller.profile?.id != payload.recipientId)
+        widget.controller.profile?.id != payload.recipientId) {
       return;
+    }
     unawaited(_router.push(payload.route));
   }
 
@@ -171,8 +172,9 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
               proximityPageVisible,
         ),
       );
-      if (state == AppLifecycleState.resumed)
+      if (state == AppLifecycleState.resumed) {
         unawaited(widget.controller.recheckAppSession());
+      }
       return;
     }
     if (state == AppLifecycleState.resumed) {

@@ -53,8 +53,9 @@ class _ProximitySettingsScreenState extends State<ProximitySettingsScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!kIsWeb && state == AppLifecycleState.resumed && !_activating)
+    if (!kIsWeb && state == AppLifecycleState.resumed && !_activating) {
       _refresh();
+    }
   }
 
   Future<void> _refresh() async {

@@ -302,7 +302,7 @@ class AppShell extends StatelessWidget {
     if (controller?.chatRepository != null)
       IconButton(
         tooltip: AppLocalizations.tr('Mensajes'),
-        onPressed: () => context.go('/messages'),
+        onPressed: () => context.push('/messages'),
         icon: Icon(
           Icons.chat_bubble_outline_rounded,
           semanticLabel: AppLocalizations.tr('Mensajes'),
