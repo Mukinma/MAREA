@@ -46,6 +46,8 @@ dependencies:
   qr: 3.0.2
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   mapbox_maps_flutter_platform_interface: 3.34.2
   flutter_test:
     sdk: flutter

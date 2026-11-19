@@ -87,7 +87,7 @@ void main() {
         '/map',
         '/profile',
         '/messages',
-        '/explore?section=saved',
+        '/profile/saved',
         '/missions?section=own',
         '/create',
       ]) {

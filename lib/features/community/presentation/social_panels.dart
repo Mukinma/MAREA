@@ -114,6 +114,7 @@ class CommentsPanel extends StatefulWidget {
     required this.draft,
     required this.onChanged,
     this.moderator = false,
+    this.inline = false,
     this.commentId,
     this.onReady,
     super.key,
@@ -122,7 +123,7 @@ class CommentsPanel extends StatefulWidget {
   final SocialRepository repository;
   final CommunityRepository community;
   final String? viewerId, commentId;
-  final bool moderator;
+  final bool moderator, inline;
   final CommentDraft draft;
   final Future<void> Function()? onReady;
   final Future<void> Function() onChanged;
@@ -133,6 +134,9 @@ class CommentsPanel extends StatefulWidget {
 class _CommentsPanelState extends State<CommentsPanel> {
   final _comments = <PostComment>[];
   final _authors = <String, CommunityProfile>{};
+  final _highlightedComment = GlobalKey();
+  bool _showComposer = false;
+  String? _sendError;
   bool _loading = true, _sending = false, _more = true;
   String? _error;
   bool _ready = false;
@@ -159,12 +163,13 @@ class _CommentsPanelState extends State<CommentsPanel> {
           !rows.any((c) => c.id == widget.commentId)) {
         highlighted = await widget.repository.comment(widget.commentId!);
       }
-      final authors = await widget.community.profiles(
-        ids: {
-          ...rows.map((c) => c.authorId),
-          if (highlighted != null) highlighted.authorId,
-        }.toList(),
-      );
+      final authorIds = {
+        ...rows.map((c) => c.authorId),
+        if (highlighted != null) highlighted.authorId,
+      };
+      final authors = authorIds.isEmpty
+          ? <CommunityProfile>[]
+          : await widget.community.profiles(ids: authorIds.toList());
       if (!mounted) return;
       setState(() {
         if (reset) {
@@ -185,6 +190,14 @@ class _CommentsPanelState extends State<CommentsPanel> {
       if (!_ready &&
           (widget.commentId == null ||
               _comments.any((c) => c.id == widget.commentId))) {
+        if (widget.inline && widget.commentId != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final target = _highlightedComment.currentContext;
+            if (target != null) {
+              Scrollable.ensureVisible(target, alignment: .06);
+            }
+          });
+        }
         await widget.onReady?.call();
         _ready = true;
       }
@@ -203,8 +216,9 @@ class _CommentsPanelState extends State<CommentsPanel> {
     if (_sending) return;
     if (body.isEmpty || body.length > 1000) {
       setState(
-        () =>
-            _error = AppLocalizations.tr('Escribe entre 1 y 1.000 caracteres.'),
+        () => _sendError = AppLocalizations.tr(
+          'Escribe entre 1 y 1.000 caracteres.',
+        ),
       );
       return;
     }
@@ -214,7 +228,7 @@ class _CommentsPanelState extends State<CommentsPanel> {
     }
     setState(() {
       _sending = true;
-      _error = null;
+      _sendError = null;
     });
     try {
       await widget.repository.createComment(
@@ -229,7 +243,7 @@ class _CommentsPanelState extends State<CommentsPanel> {
       await _load(reset: true);
       await widget.onChanged();
     } catch (e) {
-      if (mounted) setState(() => _error = communityError(e));
+      if (mounted) setState(() => _sendError = communityError(e));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -254,115 +268,182 @@ class _CommentsPanelState extends State<CommentsPanel> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) => SocialPanelFrame(
-    title: AppLocalizations.tr('Comentarios'),
-    footer: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TextField(
-          controller: widget.draft,
-          enabled: !_sending,
-          maxLength: 1000,
-          minLines: 1,
-          maxLines: 4,
-          decoration: InputDecoration(
-            labelText: AppLocalizations.tr('Tu comentario'),
-          ),
-          textCapitalization: TextCapitalization.sentences,
+  Widget _composer() => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      TextField(
+        controller: widget.draft,
+        autofocus: widget.inline,
+        enabled: !_sending,
+        maxLength: 1000,
+        minLines: 1,
+        maxLines: 4,
+        decoration: InputDecoration(
+          labelText: AppLocalizations.tr('Tu comentario'),
         ),
-        const SizedBox(height: 8),
-        Align(
-          alignment: Alignment.centerRight,
-          child: FilledButton.icon(
-            onPressed: _sending ? null : _send,
-            icon: const Icon(Icons.send_outlined),
-            label: Text(_sending ? AppLocalizations.tr('Enviando…') : 'Enviar'),
+        textCapitalization: TextCapitalization.sentences,
+      ),
+      const SizedBox(height: 8),
+      Align(
+        alignment: Alignment.centerRight,
+        child: FilledButton.icon(
+          onPressed: _sending ? null : _send,
+          icon: const Icon(Icons.send_outlined),
+          label: Text(
+            _sending
+                ? AppLocalizations.tr('Enviando…')
+                : AppLocalizations.tr('Enviar'),
           ),
         ),
-      ],
-    ),
-    child: ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      children: [
-        if (widget.commentId != null &&
-            !_loading &&
-            !_comments.any((c) => c.id == widget.commentId))
-          CommunityNotice(
-            message: AppLocalizations.tr('Este comentario fue retirado.'),
-          ),
-        for (final c in _comments)
-          Container(
-            key: ValueKey(c.id),
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: c.id == widget.commentId
-                  ? AppColors.mint
-                  : AppColors.paper,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      if (_sendError case final error?)
+        Semantics(
+          liveRegion: true,
+          child: Text(error, style: const TextStyle(color: AppColors.error)),
+        ),
+    ],
+  );
+
+  List<Widget> _thread() => [
+    if (widget.commentId != null &&
+        !_loading &&
+        !_comments.any((c) => c.id == widget.commentId))
+      CommunityNotice(
+        message: AppLocalizations.tr('Este comentario fue retirado.'),
+      ),
+    for (final c in _comments)
+      Container(
+        key: widget.inline && c.id == widget.commentId
+            ? _highlightedComment
+            : ValueKey(c.id),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: c.id == widget.commentId ? AppColors.mint : AppColors.paper,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _authors[c.authorId]?.fullName ??
-                            AppLocalizations.tr('Cuenta no disponible'),
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    if (c.authorId == widget.viewerId ||
-                        widget.post.authorId == widget.viewerId ||
-                        widget.moderator)
-                      IconButton(
-                        tooltip: AppLocalizations.tr('Retirar comentario'),
-                        onPressed: () => _delete(c),
-                        icon: const Icon(Icons.delete_outline_rounded),
-                      ),
-                  ],
-                ),
-                SelectableText(
-                  c.body,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  socialDate(c.createdAt),
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
+                Expanded(
+                  child: Text(
+                    _authors[c.authorId]?.fullName ??
+                        AppLocalizations.tr('Cuenta no disponible'),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
+                if (c.authorId == widget.viewerId ||
+                    widget.post.authorId == widget.viewerId ||
+                    widget.moderator)
+                  IconButton(
+                    tooltip: AppLocalizations.tr('Retirar comentario'),
+                    onPressed: () => _delete(c),
+                    icon: const Icon(Icons.delete_outline_rounded),
+                  ),
               ],
             ),
-          ),
-        if (_error != null)
-          CommunityNotice(
-            message: _error!,
-            onRetry: () => _load(reset: _comments.isEmpty),
-          ),
-        if (_loading && _comments.isEmpty)
-          const Padding(
-            padding: EdgeInsets.all(20),
-            child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
-          ),
-        if (!_loading && _comments.isEmpty && _error == null)
-          CommunityNotice(
-            message: AppLocalizations.tr(
+            Semantics(
+              container: true,
+              excludeSemantics: true,
+              label: c.body,
+              child: SelectableText(
+                c.body,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              socialDate(c.createdAt),
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    if (_error != null)
+      CommunityNotice(
+        message: _error!,
+        onRetry: () => _load(reset: _comments.isEmpty),
+      ),
+    if (_loading && _comments.isEmpty)
+      const Padding(
+        padding: EdgeInsets.all(20),
+        child: Center(child: MareaSkeleton(kind: SkeletonKind.list)),
+      ),
+    if (!_loading && _comments.isEmpty && _error == null)
+      if (widget.inline)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text(
+            AppLocalizations.tr(
               'Abre la conversación con el primer comentario.',
             ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),
-        if (!_loading && _more && _comments.isNotEmpty)
-          TextButton(
-            onPressed: _load,
-            child: Text(AppLocalizations.tr('Cargar más comentarios')),
+        )
+      else
+        CommunityNotice(
+          message: AppLocalizations.tr(
+            'Abre la conversación con el primer comentario.',
           ),
+        ),
+    if (!_loading && _more && _comments.isNotEmpty)
+      TextButton(
+        onPressed: _load,
+        child: Text(AppLocalizations.tr('Cargar más comentarios')),
+      ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.inline) {
+      return SocialPanelFrame(
+        title: AppLocalizations.tr('Comentarios'),
+        footer: _composer(),
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          children: _thread(),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          header: true,
+          child: Text(
+            AppLocalizations.tr('Comentarios'),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AppColors.brandNavy,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (widget.viewerId != null) ...[
+          if (_showComposer)
+            _composer()
+          else
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: OutlinedButton.icon(
+                onPressed: () => setState(() => _showComposer = true),
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: Text(AppLocalizations.tr('Escribir comentario')),
+              ),
+            ),
+          const SizedBox(height: 12),
+        ],
+        ..._thread(),
       ],
-    ),
-  );
+    );
+  }
 }
 
 class CollaborationPanel extends StatefulWidget {

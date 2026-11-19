@@ -42,6 +42,7 @@ class _Community extends MissionRepositoryFake {
     String? category,
     bool savedOnly = false,
     bool discoverOnly = false,
+    bool visibleOnly = false,
     int offset = 0,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 600));

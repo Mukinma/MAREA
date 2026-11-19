@@ -41,6 +41,7 @@ class _Repo implements CommunityRepository {
     String? category,
     bool savedOnly = false,
     bool discoverOnly = false,
+    bool visibleOnly = false,
     int offset = 0,
   }) async => values.where((p) => !savedOnly || saved.contains(p.id)).toList();
   @override

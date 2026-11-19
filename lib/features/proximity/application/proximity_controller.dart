@@ -95,7 +95,10 @@ class ProximityController extends ChangeNotifier {
       _running = true;
       return true;
     } catch (error) {
-      if (current()) _error = error;
+      if (current()) {
+        _error = error;
+        _resetOptIn(account);
+      }
       return false;
     } finally {
       if (!_disposed && generation == _generation) {
@@ -144,8 +147,16 @@ class ProximityController extends ChangeNotifier {
     _running = false;
     _starting = false;
     _error = error;
+    _resetOptIn(account);
     if (subscription != null) unawaited(subscription.cancel());
     _notify();
+  }
+
+  void _resetOptIn(String account) {
+    _enabled = false;
+    _lastEncounter = null;
+    _engine.reset();
+    unawaited(notifications.clearAccount(account));
   }
 
   Future<void> _stopListening() async {
@@ -186,8 +197,11 @@ class ProximityController extends ChangeNotifier {
     _error = null;
     _lastEncounter = null;
     _engine.reset();
+    final clear = previous == null
+        ? null
+        : notifications.clearAccount(previous);
     await _stopListening();
-    if (previous != null) await notifications.clearAccount(previous);
+    await clear;
   }
 
   @override

@@ -328,6 +328,7 @@ class _Community implements CommunityRepository {
     String? category,
     bool savedOnly = false,
     bool discoverOnly = false,
+    bool visibleOnly = false,
     int offset = 0,
   }) async {
     postCalls++;

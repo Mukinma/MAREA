@@ -176,12 +176,8 @@ void main() {
       repository.failLoad = false;
       await tap('Reintentar');
       expect(find.text('Reintentar'), findsNothing);
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        await tap('Abrir ajustes de Android');
-        expect(gateway.settingsOpened, 1);
-      } else {
-        expect(find.text('Abrir ajustes de Android'), findsNothing);
-      }
+      await tap('Abrir ajustes del dispositivo');
+      expect(gateway.settingsOpened, 1);
       await tap('Mensajes y solicitudes de chat');
       await tap('Recordatorios de MAREA');
       expect(repository.value.isEnabled(NotificationCategory.chat), isFalse);

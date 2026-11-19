@@ -15,6 +15,7 @@ abstract interface class CommunityRepository {
     String? category,
     bool savedOnly = false,
     bool discoverOnly = false,
+    bool visibleOnly = false,
     int offset = 0,
   });
   Future<CommunityPost?> post(String id);
@@ -122,12 +123,12 @@ class SupabaseCommunityRepository
     String? category,
     bool savedOnly = false,
     bool discoverOnly = false,
+    bool visibleOnly = false,
     int offset = 0,
   }) => _run(() async {
     var request = _client.from('posts').select();
-    if (discoverOnly) {
-      request = request.eq('hidden', false).neq('author_id', _userId);
-    }
+    if (visibleOnly || discoverOnly) request = request.eq('hidden', false);
+    if (discoverOnly) request = request.neq('author_id', _userId);
     if (authorId != null) request = request.eq('author_id', authorId);
     if (category != null) request = request.eq('category', category);
     if (query.trim().isNotEmpty) {

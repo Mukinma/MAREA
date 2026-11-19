@@ -237,6 +237,7 @@ void main() {
       expect(find.text('Crear publicación'), findsOneWidget);
       router.pop();
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Siguiendo'));
       await tester.tap(find.text('Siguiendo'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Explorar perfiles'));

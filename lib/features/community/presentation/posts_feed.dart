@@ -271,7 +271,8 @@ class PostCard extends StatefulWidget {
     this.stats,
     this.onStats,
     this.homePresentation = false,
-    this.profilePresentation = false,
+    this.detailPresentation = false,
+    this.onComments,
     this.onHomeCategory,
     this.locationRepository,
     this.moderator = false,
@@ -290,15 +291,16 @@ class PostCard extends StatefulWidget {
   final String? viewerId;
   final String publicUrl;
   final PostContentTranslator? contentTranslator;
-  final bool saved, moderator, homePresentation, profilePresentation;
+  final bool saved, moderator, homePresentation, detailPresentation;
+  final VoidCallback? onComments;
   final Future<void> Function() onChanged;
   final ValueChanged<bool>? onSaved, onSaveSettled;
   final ValueChanged<String>? onHomeCategory;
   @override
-  State<PostCard> createState() => _PostCardState();
+  PostCardState createState() => PostCardState();
 }
 
-class _PostCardState extends State<PostCard> {
+class PostCardState extends State<PostCard> {
   PostContentTranslator get _translator =>
       widget.contentTranslator ?? LocalPostContentTranslator.shared;
 
@@ -344,17 +346,17 @@ class _PostCardState extends State<PostCard> {
   }
 
   void _loadImage() {
-    _homeImageFailed = false;
     _url = widget.post.imagePath == null
         ? null
         : widget.repository.imageUrl(widget.post.imagePath!);
   }
 
   @override
-  void didUpdateWidget(PostCard old) {
-    super.didUpdateWidget(old);
+  void didUpdateWidget(PostCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
     _saved = widget.saved;
-    if (old.viewerId != widget.viewerId || old.post.id != widget.post.id) {
+    if (oldWidget.viewerId != widget.viewerId ||
+        oldWidget.post.id != widget.post.id) {
       ++_reactionGeneration;
       _reacting = false;
       _stats = widget.stats;
@@ -362,11 +364,11 @@ class _PostCardState extends State<PostCard> {
       _draft.operationId = null;
       _draft.submitted = null;
     }
-    if (old.stats != widget.stats && !_reacting) _stats = widget.stats;
-    if (old.post.imagePath != widget.post.imagePath) _loadImage();
-    if (old.post.id != widget.post.id ||
-        old.post.title != widget.post.title ||
-        old.post.body != widget.post.body) {
+    if (oldWidget.stats != widget.stats && !_reacting) _stats = widget.stats;
+    if (oldWidget.post.imagePath != widget.post.imagePath) _loadImage();
+    if (oldWidget.post.id != widget.post.id ||
+        oldWidget.post.title != widget.post.title ||
+        oldWidget.post.body != widget.post.body) {
       _resetTranslation();
     }
   }
@@ -423,7 +425,7 @@ class _PostCardState extends State<PostCard> {
     }
   }
 
-  Widget _translationControl() {
+  Widget _translationControl({bool compact = false}) {
     final available = _translator.isSupported;
     final onPressed = _translating || !available ? null : _translateContent;
     final icon = _translating
@@ -431,10 +433,7 @@ class _PostCardState extends State<PostCard> {
             dimension: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           )
-        : Icon(
-            Icons.translate_rounded,
-            size: widget.profilePresentation ? 16 : 18,
-          );
+        : const Icon(Icons.translate_rounded, size: 17);
     final label = Text(
       AppLocalizations.tr(
         _translatedContent != null ? 'Ver original' : 'Traducir publicación',
@@ -443,19 +442,15 @@ class _PostCardState extends State<PostCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.profilePresentation)
+        if (compact)
           TextButton.icon(
             onPressed: onPressed,
             icon: icon,
             label: label,
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.actionBlue,
               minimumSize: const Size(48, 48),
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              textStyle: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-              ),
+              padding: const EdgeInsetsDirectional.only(end: 8),
+              textStyle: Theme.of(context).textTheme.labelMedium,
             ),
           )
         else
@@ -668,7 +663,7 @@ class _PostCardState extends State<PostCard> {
       return;
     }
     if (value == 'details') {
-      await context.push('/posts/${post.id}');
+      await _openPost();
       return;
     }
     if (value == 'edit') {
@@ -704,7 +699,8 @@ class _PostCardState extends State<PostCard> {
     }
   }
 
-  Future<void> _options() async {
+  Future<void> showOptions() async {
+    if (_busy) return;
     final value = await showMareaBottomSheet<String>(
       context: context,
       builder: (context) => SafeArea(
@@ -723,11 +719,12 @@ class _PostCardState extends State<PostCard> {
                 ),
                 onTap: () => Navigator.pop(context, 'save'),
               ),
-            ListTile(
-              leading: const Icon(Icons.open_in_new_rounded),
-              title: Text(AppLocalizations.tr('Ver detalles')),
-              onTap: () => Navigator.pop(context, 'details'),
-            ),
+            if (!widget.detailPresentation)
+              ListTile(
+                leading: const Icon(Icons.open_in_new_rounded),
+                title: Text(AppLocalizations.tr('Ver detalles')),
+                onTap: () => Navigator.pop(context, 'details'),
+              ),
             if (widget.post.authorId == widget.viewerId) ...[
               ListTile(
                 leading: const Icon(Icons.edit_outlined),
@@ -758,410 +755,184 @@ class _PostCardState extends State<PostCard> {
     if (value != null && mounted) await _option(value);
   }
 
-  Widget _homeActions({bool vertical = false}) {
-    final post = widget.post;
-    final enabled = !_busy && !post.hidden && widget.viewerId != null;
+  Future<void> _share() async {
+    if (_panel) return;
+    _panel = true;
+    try {
+      await sharePost(
+        context,
+        AppConfig.fromValues(
+          supabaseUrl: '',
+          supabaseAnonKey: '',
+          publicUrl: widget.publicUrl,
+        ).postUrl(widget.post.id),
+      );
+    } finally {
+      _panel = false;
+    }
+  }
+
+  Widget _postActions() {
+    final enabled = !_busy && !widget.post.hidden && widget.viewerId != null;
     final commentCount = _stats?.commentCount ?? 0;
-    final actions = <Widget>[
-      if (widget.socialRepository != null) ...[
-        ReactionButton(
-          inline: true,
-          compact: vertical,
-          stackedCount: vertical,
-          selected: _stats?.myReaction,
-          count: _stats?.reactionCount ?? 0,
-          enabled: enabled,
-          onSelected: _react,
-        ),
-        Semantics(
-          button: true,
-          enabled: enabled,
-          label: 'Comentarios',
-          value: '$commentCount',
-          onTap: enabled ? _comments : null,
-          excludeSemantics: true,
-          child: IconButton(
-            tooltip: 'Comentarios',
-            onPressed: enabled ? _comments : null,
-            icon: Flex(
-              direction: vertical ? Axis.vertical : Axis.horizontal,
-              mainAxisSize: MainAxisSize.min,
-              spacing: vertical ? 3 : 5,
-              children: [
-                const Icon(Icons.chat_bubble_outline_rounded, size: 20),
-                Flexible(
-                  child: Text(
+    final commentLabel = AppLocalizations.tr('Comentarios');
+    final onComments = widget.onComments ?? _comments;
+    return Wrap(
+      key: Key(
+        widget.homePresentation
+            ? 'home-post-action-row'
+            : 'detail-post-action-row',
+      ),
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        if (widget.socialRepository != null) ...[
+          ReactionButton(
+            inline: true,
+            selected: _stats?.myReaction,
+            count: _stats?.reactionCount ?? 0,
+            enabled: enabled,
+            onSelected: _react,
+          ),
+          Semantics(
+            button: true,
+            enabled: enabled,
+            label: commentLabel,
+            value: '$commentCount',
+            onTap: enabled ? onComments : null,
+            excludeSemantics: true,
+            child: IconButton(
+              tooltip: commentLabel,
+              onPressed: enabled ? onComments : null,
+              icon: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 5,
+                children: [
+                  const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+                  Text(
                     '$commentCount',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: vertical
-                        ? Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontSize: 10,
-                            height: 1.1,
-                          )
-                        : Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
+        ],
+        IconButton(
+          tooltip: AppLocalizations.tr(_saved ? 'Quitar guardado' : 'Guardar'),
+          isSelected: _saved,
+          onPressed: enabled ? () => _save(!_saved) : null,
+          selectedIcon: const Icon(
+            Icons.bookmark_rounded,
+            color: AppColors.aquaDark,
+          ),
+          icon: const Icon(Icons.bookmark_border_rounded),
+        ),
+        IconButton(
+          tooltip: AppLocalizations.tr('Compartir'),
+          onPressed: enabled ? _share : null,
+          icon: const Icon(Icons.ios_share_rounded, size: 21),
         ),
       ],
-      IconButton(
-        tooltip: _saved ? 'Quitar guardado' : 'Guardar',
-        onPressed: enabled ? () => _save(!_saved) : null,
-        icon: Icon(
-          _saved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-          size: 22,
-        ),
-      ),
-      IconButton(
-        tooltip: 'Compartir',
-        onPressed: enabled
-            ? () => sharePost(
-                context,
-                AppConfig.fromValues(
-                  supabaseUrl: '',
-                  supabaseAnonKey: '',
-                  publicUrl: widget.publicUrl,
-                ).postUrl(post.id),
-              )
-            : null,
-        icon: const Icon(Icons.shortcut_rounded, size: 22),
-      ),
-    ];
-    if (!vertical) {
-      return Wrap(
-        key: const Key('home-post-action-row'),
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: actions,
-      );
-    }
-
-    final color = _homeCategory.color;
-    return DecoratedBox(
-      key: const Key('home-post-action-rail'),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [color, Color.lerp(color, AppColors.surface, .56)!],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: actions,
-      ),
     );
   }
 
-  CategoryVisual get _homeCategory =>
-      CategoryVisuals.values[widget.post.category] ??
-      CategoryVisuals.values['otros']!;
-
-  Widget _homeCategoryChip() {
+  Widget _postCategory() {
     final category = widget.post.category;
-    final visual = _homeCategory;
-    final name = communityCategories[category] ?? 'Otros';
-    final label = Text(name);
+    final visual = CategoryVisuals.forCategory(category);
+    final name = AppLocalizations.tr(communityCategories[category] ?? 'Otros');
+    final icon = Icon(visual.icon, size: 15, color: AppColors.brandNavy);
+    final labelStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
+      color: AppColors.brandNavy,
+      fontWeight: FontWeight.w800,
+    );
     final onCategory = widget.onHomeCategory;
     if (onCategory == null) {
-      return Chip(
-        avatar: Icon(visual.icon, size: 16),
-        label: label,
-        backgroundColor: visual.color,
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: visual.color,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 6,
+            children: [
+              icon,
+              Text(name, style: labelStyle),
+            ],
+          ),
+        ),
       );
     }
-    void filterCategory() => onCategory(category);
     return Semantics(
-      button: true,
-      excludeSemantics: true,
-      label: 'Ver publicaciones de $name',
-      onTap: filterCategory,
+      label: AppLocalizations.trTemplate('Ver publicaciones de {category}', {
+        'category': name,
+      }),
       child: TextButton.icon(
         style: TextButton.styleFrom(
           backgroundColor: visual.color,
           foregroundColor: AppColors.brandNavy,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          minimumSize: const Size(48, 36),
+          padding: const EdgeInsets.symmetric(horizontal: 9),
+          minimumSize: const Size(48, 28),
           tapTargetSize: MaterialTapTargetSize.padded,
-          textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-            fontSize: 12,
-            letterSpacing: 0,
-            fontWeight: FontWeight.w800,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: labelStyle,
         ),
-        icon: Icon(visual.icon, size: 16),
-        label: label,
-        onPressed: filterCategory,
+        icon: icon,
+        label: Text(name),
+        onPressed: () => onCategory(category),
       ),
     );
   }
 
-  Widget _homeContent({required bool photo}) {
-    final post = widget.post;
-    final theme = Theme.of(context);
-    final bodyStyle = theme.textTheme.bodyMedium!;
-    final content = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _homeCategoryChip(),
-        InkWell(
-          onTap: _openHomePost,
-          borderRadius: BorderRadius.circular(8),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48),
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(
-                _displayTitle,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  color: AppColors.brandNavy,
-                  fontWeight: FontWeight.w900,
-                  height: 1.16,
-                  letterSpacing: -.35,
+  Widget _authorLine() {
+    final styles = Theme.of(context).textTheme;
+    return InkWell(
+      onTap: () => context.push('/people/${widget.post.authorId}'),
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: [
+            SizedBox.square(
+              dimension: 36,
+              child: ClipOval(
+                child: ProfileImage(
+                  path: widget.author?.avatarPath,
+                  repository: widget.mediaRepository,
+                  fallback: CircleAvatar(
+                    backgroundColor: AppColors.mint,
+                    child: Text(widget.author?.initials ?? 'M'),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-        LayoutBuilder(
-          builder: (context, bounds) {
-            final painter = TextPainter(
-              text: TextSpan(text: _displayBody, style: bodyStyle),
-              textDirection: Directionality.of(context),
-              textScaler: MediaQuery.textScalerOf(context),
-              maxLines: 3,
-            )..layout(maxWidth: bounds.maxWidth);
-            final truncated = painter.didExceedMaxLines;
-            painter.dispose();
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _displayBody,
-                  maxLines: _expanded ? null : 3,
-                  overflow: _expanded
-                      ? TextOverflow.visible
-                      : TextOverflow.ellipsis,
-                  style: bodyStyle,
-                ),
-                if (truncated)
-                  TextButton(
-                    onPressed: () => setState(() => _expanded = !_expanded),
-                    child: Text(
-                      AppLocalizations.tr(_expanded ? 'Ver menos' : 'Ver más'),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.author?.fullName ??
+                        AppLocalizations.tr('Perfil de MAREA'),
+                    style: styles.titleSmall?.copyWith(
+                      color: AppColors.brandNavy,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    AppLocalizations.trTemplate('{date} · {kind}', {
+                      'date': socialDate(widget.post.createdAt),
+                      'kind': AppLocalizations.tr(widget.post.kind.label),
+                    }),
+                    style: styles.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
-              ],
-            );
-          },
-        ),
-        if (post.price != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              '\$${post.price!.toStringAsFixed(2)} MXN',
-              style: theme.textTheme.titleMedium,
-            ),
-          ),
-        if (post.location != null || post.coordinates != null)
-          FeedCityLabel(
-            contentKind: 'post',
-            contentId: post.id,
-            city: post.city,
-            coordinates: post.coordinates,
-            repository: widget.locationRepository,
-            fallbackLabel: AppLocalizations.tr('Ver ubicación'),
-            onTap: () => post.coordinates == null
-                ? _openHomePost()
-                : showPostLocationViewer(
-                    context,
-                    label: post.location ?? 'Ubicación',
-                    coordinates: post.coordinates!,
-                  ),
-          ),
-      ],
-    );
-
-    if (photo) return content;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Color.lerp(AppColors.surface, _homeCategory.color, .27),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 6, 14, 14),
-        child: content,
-      ),
-    );
-  }
-
-  Future<void> _openHomePost() async {
-    await context.push('/posts/${widget.post.id}');
-    if (mounted) await widget.onChanged();
-  }
-
-  bool _homeImageFailed = false;
-  Widget _homePhoto(String url, Future<String>? request) => Semantics(
-    label: 'Abrir foto de ${widget.post.title}',
-    button: true,
-    child: InkWell(
-      onTap: _openHomePost,
-      borderRadius: BorderRadius.circular(18),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: Image.network(
-          url,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted && request == _url && !_homeImageFailed) {
-                setState(() => _homeImageFailed = true);
-              }
-            });
-            return const SizedBox.shrink();
-          },
-        ),
-      ),
-    ),
-  );
-
-  Widget _homeCard() {
-    final post = widget.post;
-    final theme = Theme.of(context);
-    final request = _url;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: MareaSurface(
-        color: AppColors.surface,
-        radius: 20,
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () => context.push('/people/${post.authorId}'),
-                    borderRadius: BorderRadius.circular(16),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Row(
-                        children: [
-                          SizedBox.square(
-                            dimension: 40,
-                            child: ClipOval(
-                              child: ProfileImage(
-                                path: widget.author?.avatarPath,
-                                repository: widget.mediaRepository,
-                                fallback: CircleAvatar(
-                                  backgroundColor: AppColors.mint,
-                                  child: Text(widget.author?.initials ?? 'M'),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.author?.fullName ??
-                                      AppLocalizations.tr('Perfil de MAREA'),
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    color: AppColors.brandNavy,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                Text(
-                                  AppLocalizations.trTemplate(
-                                    '{date} · {kind}',
-                                    {
-                                      'date': socialDate(post.createdAt),
-                                      'kind': AppLocalizations.tr(
-                                        post.kind.label,
-                                      ),
-                                    },
-                                  ),
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Acciones',
-                  onPressed: _busy ? null : _options,
-                  icon: const Icon(Icons.more_horiz_rounded),
-                ),
-              ],
-            ),
-            if (post.hidden)
-              Text('Oculta por moderación', style: theme.textTheme.bodySmall),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: _translationControl(),
-            ),
-            const SizedBox(height: 8),
-            FutureBuilder<String>(
-              future: request,
-              builder: (_, snapshot) => LayoutBuilder(
-                builder: (context, bounds) {
-                  final photo =
-                      request != null &&
-                      !_homeImageFailed &&
-                      !snapshot.hasError;
-                  final hasRail =
-                      photo &&
-                      bounds.maxWidth >= 296 &&
-                      MediaQuery.textScalerOf(context).scale(14) <= 18;
-                  final image =
-                      snapshot.connectionState == ConnectionState.done &&
-                          snapshot.hasData
-                      ? _homePhoto(snapshot.data!, request)
-                      : const ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(18)),
-                          child: MareaSkeleton(kind: SkeletonKind.image),
-                        );
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (hasRail)
-                        SizedBox(
-                          height: ((bounds.maxWidth - 68) * .78)
-                              .clamp(208, 376)
-                              .toDouble(),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(child: image),
-                              const SizedBox(width: 8),
-                              SizedBox(
-                                width: 60,
-                                child: _homeActions(vertical: true),
-                              ),
-                            ],
-                          ),
-                        )
-                      else if (photo)
-                        AspectRatio(aspectRatio: 1.5, child: image),
-                      if (photo) const SizedBox(height: 6),
-                      _homeContent(photo: photo),
-                      if (!hasRail) _homeActions(),
-                      if (hasRail) const SizedBox(height: 8),
-                    ],
-                  );
-                },
+                ],
               ),
             ),
           ],
@@ -1170,7 +941,353 @@ class _PostCardState extends State<PostCard> {
     );
   }
 
-  Widget _rail({bool horizontal = false}) {
+  bool _overflows(String value, TextStyle style, int lines, double width) {
+    final painter = TextPainter(
+      text: TextSpan(text: value, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: lines,
+    )..layout(maxWidth: width);
+    final truncated = painter.didExceedMaxLines;
+    painter.dispose();
+    return truncated;
+  }
+
+  Widget _homeCopy() {
+    final styles = Theme.of(context).textTheme;
+    final titleStyle = styles.titleLarge!.copyWith(
+      height: 1.18,
+      color: AppColors.brandNavy,
+      fontWeight: FontWeight.w900,
+      letterSpacing: -.35,
+    );
+    final bodyStyle = styles.bodyMedium!;
+    return LayoutBuilder(
+      builder: (context, bounds) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InkWell(
+            onTap: _openPost,
+            borderRadius: BorderRadius.circular(8),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  _displayTitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: titleStyle,
+                ),
+              ),
+            ),
+          ),
+          if (_displayBody.isNotEmpty)
+            Text(
+              _displayBody,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: bodyStyle,
+            ),
+          if (_overflows(_displayTitle, titleStyle, 2, bounds.maxWidth) ||
+              _overflows(_displayBody, bodyStyle, 3, bounds.maxWidth))
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton(
+                onPressed: _openPost,
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsetsDirectional.only(end: 8),
+                ),
+                child: Text(AppLocalizations.tr('Leer publicación')),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _postContext() {
+    final post = widget.post;
+    final theme = Theme.of(context);
+    final hasLocation =
+        post.location != null || post.coordinates != null || post.city != null;
+    if (post.price == null && !hasLocation) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (post.price case final price?)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Text(
+              '\$${price.toStringAsFixed(2)} MXN',
+              style: theme.textTheme.titleMedium,
+            ),
+          ),
+        if (hasLocation)
+          if (widget.homePresentation)
+            FeedCityLabel(
+              contentKind: 'post',
+              contentId: post.id,
+              city: post.city,
+              coordinates: post.coordinates,
+              repository: widget.locationRepository,
+              fallbackLabel: AppLocalizations.tr('Ver ubicación'),
+              onTap: post.coordinates == null ? _openPost : _openPostMap,
+            )
+          else
+            _readerLocation(),
+      ],
+    );
+  }
+
+  void _openPostMap() => showPostLocationViewer(
+    context,
+    label:
+        widget.post.location ??
+        widget.post.city?.name ??
+        AppLocalizations.tr('Ubicación'),
+    coordinates: widget.post.coordinates!,
+  );
+
+  Widget _readerLocation() {
+    final post = widget.post;
+    final label = post.location ?? post.city?.name;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (label != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 6,
+              children: [
+                const Icon(
+                  Icons.place_outlined,
+                  size: 18,
+                  color: AppColors.textSecondary,
+                ),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (post.coordinates != null)
+          TextButton.icon(
+            onPressed: _openPostMap,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsetsDirectional.only(end: 8),
+            ),
+            icon: const Icon(Icons.map_outlined, size: 18),
+            label: Text(AppLocalizations.tr('Ver mapa')),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _openPost() async {
+    await context.push('/posts/${widget.post.id}');
+    if (mounted) await widget.onChanged();
+  }
+
+  void _openPhoto(String url) {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _PostPhotoViewer(url: url, title: _displayTitle),
+      ),
+    );
+  }
+
+  Widget _postPhoto({required bool preview}) => LayoutBuilder(
+    builder: (context, bounds) {
+      final slotHeight = (bounds.maxWidth * (preview ? .625 : .9))
+          .clamp(0, preview ? 376.0 : MediaQuery.sizeOf(context).height * .47)
+          .toDouble();
+      final placeholder = SizedBox(
+        height: slotHeight,
+        child: const MareaSkeleton(kind: SkeletonKind.image),
+      );
+      Widget error() => SizedBox(height: slotHeight, child: _photoError());
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Material(
+          color: AppColors.profileCanvas,
+          child: FutureBuilder<String>(
+            future: _url,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return placeholder;
+              }
+              final url = snapshot.data;
+              if (url == null) return error();
+              return Image.network(
+                url,
+                width: bounds.maxWidth,
+                height: preview ? slotHeight : null,
+                fit: preview ? BoxFit.cover : BoxFit.contain,
+                excludeFromSemantics: true,
+                frameBuilder: (context, child, frame, synchronous) {
+                  if (frame == null && !synchronous) return placeholder;
+                  final label = AppLocalizations.tr(
+                    preview ? 'Abrir publicación' : 'Ampliar foto',
+                  );
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: slotHeight.clamp(0, 84).toDouble(),
+                      maxHeight: slotHeight,
+                    ),
+                    child: Stack(
+                      fit: StackFit.passthrough,
+                      children: [
+                        child,
+                        Positioned.fill(
+                          child: Tooltip(
+                            message: label,
+                            child: Material(
+                              type: MaterialType.transparency,
+                              child: InkWell(
+                                onTap: preview
+                                    ? _openPost
+                                    : () => _openPhoto(url),
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (!preview)
+                          const PositionedDirectional(
+                            end: 10,
+                            bottom: 10,
+                            child: IgnorePointer(
+                              child: CircleAvatar(
+                                backgroundColor: AppColors.brandNavy,
+                                foregroundColor: Colors.white,
+                                child: Icon(Icons.fullscreen_rounded),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+                errorBuilder: (_, _, _) => error(),
+              );
+            },
+          ),
+        ),
+      );
+    },
+  );
+
+  Widget _photoError() =>
+      Center(child: SingleChildScrollView(child: _imageError()));
+
+  Widget _homeCard() => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Material(
+      color: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 8, 14, 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(child: _authorLine()),
+                IconButton(
+                  tooltip: AppLocalizations.tr('Acciones'),
+                  onPressed: _busy ? null : showOptions,
+                  icon: const Icon(Icons.more_horiz_rounded),
+                ),
+              ],
+            ),
+            if (widget.post.hidden)
+              Text(
+                AppLocalizations.tr('Oculta por moderación'),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: _postCategory(),
+            ),
+            _homeCopy(),
+            if (_url != null) ...[
+              const SizedBox(height: 12),
+              _postPhoto(preview: true),
+            ],
+            _postContext(),
+            _translationControl(compact: true),
+            const Divider(height: 1, color: AppColors.border),
+            _postActions(),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _detailArticle() {
+    final styles = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _authorLine(),
+        const SizedBox(height: 12),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: _postCategory(),
+        ),
+        const SizedBox(height: 10),
+        Semantics(
+          header: true,
+          container: true,
+          label: _displayTitle,
+          excludeSemantics: true,
+          child: SelectableText(
+            _displayTitle,
+            style: styles.headlineMedium?.copyWith(
+              color: AppColors.brandNavy,
+              height: 1.14,
+              letterSpacing: -.5,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ),
+        if (_url != null) ...[
+          const SizedBox(height: 16),
+          _postPhoto(preview: false),
+        ],
+        if (_displayBody.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Semantics(
+            container: true,
+            label: _displayBody,
+            excludeSemantics: true,
+            child: SelectableText(
+              _displayBody,
+              style: styles.bodyLarge?.copyWith(height: 1.55),
+            ),
+          ),
+        ],
+        _postContext(),
+        _translationControl(compact: true),
+        _collaborationAction(),
+        const SizedBox(height: 8),
+        const Divider(height: 1, color: AppColors.border),
+        _postActions(),
+      ],
+    );
+  }
+
+  Widget _rail() {
     final stats = _stats;
     final active = stats?.myReaction;
     final enabled = !_busy && !widget.post.hidden && widget.viewerId != null;
@@ -1202,6 +1319,15 @@ class _PostCardState extends State<PostCard> {
             icon: const Icon(
               Icons.chat_bubble_outline_rounded,
               color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          MareaActionButton(
+            tooltip: AppLocalizations.tr('Acciones'),
+            onPressed: _busy ? null : showOptions,
+            icon: Icon(
+              _saved ? Icons.bookmark_rounded : Icons.more_horiz_rounded,
+              color: _saved ? AppColors.aquaDark : AppColors.textSecondary,
             ),
           ),
           Text(
@@ -1371,40 +1497,42 @@ class _PostCardState extends State<PostCard> {
               style: const TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
-        if (post.allowsCollaboration &&
-            post.authorId != widget.viewerId &&
-            widget.socialRepository != null &&
-            !post.hidden)
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: TextButton.icon(
-              style: TextButton.styleFrom(
-                backgroundColor: AppColors.mint,
-                foregroundColor: AppColors.textPrimary,
-                minimumSize: const Size(48, 48),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-              onPressed: _stats?.interestSent == true || _busy
-                  ? null
-                  : _collaborate,
-              icon: Icon(
-                _stats?.interestSent == true
-                    ? Icons.check_rounded
-                    : Icons.handshake_outlined,
-              ),
-              label: Text(
-                AppLocalizations.tr(
-                  _stats?.interestSent == true
-                      ? 'Interés enviado'
-                      : 'Me interesa colaborar',
-                ),
-              ),
-            ),
-          ),
+        _collaborationAction(),
       ],
+    );
+  }
+
+  Widget _collaborationAction() {
+    final post = widget.post;
+    if (!post.allowsCollaboration ||
+        post.authorId == widget.viewerId ||
+        widget.socialRepository == null ||
+        post.hidden) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: TextButton.icon(
+        style: TextButton.styleFrom(
+          backgroundColor: AppColors.mint,
+          foregroundColor: AppColors.textPrimary,
+          minimumSize: const Size(48, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+        onPressed: _stats?.interestSent == true || _busy ? null : _collaborate,
+        icon: Icon(
+          _stats?.interestSent == true
+              ? Icons.check_rounded
+              : Icons.handshake_outlined,
+        ),
+        label: Text(
+          AppLocalizations.tr(
+            _stats?.interestSent == true
+                ? 'Interés enviado'
+                : 'Me interesa colaborar',
+          ),
+        ),
+      ),
     );
   }
 
@@ -1499,6 +1627,7 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     final post = widget.post;
     if (widget.homePresentation) return _homeCard();
+    if (widget.detailPresentation) return _detailArticle();
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 820),
@@ -1646,4 +1775,96 @@ class _PostCardState extends State<PostCard> {
       ),
     );
   }
+}
+
+class _PostPhotoViewer extends StatefulWidget {
+  const _PostPhotoViewer({required this.url, required this.title});
+
+  final String url, title;
+
+  @override
+  State<_PostPhotoViewer> createState() => _PostPhotoViewerState();
+}
+
+class _PostPhotoViewerState extends State<_PostPhotoViewer> {
+  final _transform = TransformationController();
+
+  @override
+  void dispose() {
+    _transform.dispose();
+    super.dispose();
+  }
+
+  void _zoom(Size viewport) {
+    final next = Matrix4.identity();
+    if (_transform.value.getMaxScaleOnAxis() < 1.1) {
+      next
+        ..translateByDouble(-viewport.width / 2, -viewport.height / 2, 0, 1)
+        ..scaleByDouble(2, 2, 1, 1);
+    }
+    _transform.value = next;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, bounds) => Scaffold(
+      backgroundColor: AppColors.brandNavy,
+      appBar: AppBar(
+        backgroundColor: AppColors.brandNavy,
+        foregroundColor: Colors.white,
+        titleTextStyle: Theme.of(
+          context,
+        ).appBarTheme.titleTextStyle?.copyWith(color: Colors.white),
+        leading: IconButton(
+          tooltip: AppLocalizations.tr('Cerrar'),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.close_rounded),
+        ),
+        title: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        actions: [
+          ValueListenableBuilder<Matrix4>(
+            valueListenable: _transform,
+            builder: (_, value, _) {
+              final zoomed = value.getMaxScaleOnAxis() >= 1.1;
+              return IconButton(
+                tooltip: AppLocalizations.tr(
+                  zoomed ? 'Restablecer zoom' : 'Acercar',
+                ),
+                onPressed: () => _zoom(
+                  Size(
+                    bounds.maxWidth,
+                    bounds.maxHeight -
+                        MediaQuery.paddingOf(context).top -
+                        kToolbarHeight,
+                  ),
+                ),
+                icon: Icon(
+                  zoomed ? Icons.zoom_out_rounded : Icons.zoom_in_rounded,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: InteractiveViewer(
+          transformationController: _transform,
+          maxScale: 4,
+          child: SizedBox.expand(
+            child: Image.network(
+              widget.url,
+              fit: BoxFit.contain,
+              semanticLabel: AppLocalizations.tr('Fotografía'),
+              errorBuilder: (_, _, _) => Center(
+                child: Text(
+                  AppLocalizations.tr('La fotografía no está disponible.'),
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }

@@ -1,18 +1,13 @@
-// Opt-in hosted verification. Fixtures belong only to temporary .invalid users.
+import {liveTarget} from './parity/lab.mjs';
+// Opt-in local verification. Fixtures belong only to temporary .invalid users.
 // Credentials stay in memory; a recovery journal contains only fixture IDs.
-import {readFile,writeFile,mkdtemp,rm} from 'node:fs/promises';
+import {writeFile,mkdtemp,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {spawnSync} from 'node:child_process';
 import {randomBytes,randomUUID} from 'node:crypto';
 import assert from 'node:assert/strict';
 if(!process.argv.includes('--run')){console.log('Usage: node tool/check_live_feed_correction.mjs --run');process.exit(0);}
-const config=JSON.parse(await readFile(new URL('../config/supabase.production.json',import.meta.url),'utf8'));
-const base=config.SUPABASE_URL,publicKey=config.SUPABASE_ANON_KEY,ref=new URL(base).hostname.split('.')[0];
-const cli=args=>{const result=spawnSync('supabase',args,{encoding:'utf8'});if(result.status!==0)throw Error('Administrative CLI unavailable');return JSON.parse(result.stdout);};
-const resultRows=result=>Array.isArray(result)?result:result.rows;
-const admin=resultRows(cli(['projects','api-keys','--project-ref',ref,'--output','json'])).find(k=>k.name==='service_role')?.api_key;
-assert.ok(admin,'Administrative credentials unavailable');
+const {base, publicKey, admin} = liveTarget();
 const users=[],media=[],journal=await mkdtemp(join(tmpdir(),'marea-feed-correction-'));
 let checks=0;
 const check=(value,label)=>{assert.ok(value,label);checks++;};
@@ -46,7 +41,7 @@ try {
  check(stats.reaction_count===1&&stats.my_reaction==='support','one confirmed reaction replacement');
  const operation=randomUUID(),input={mission_uuid:mission,comment_body:'Comentario temporal concurrente.',operation_uuid:operation};
  const ids=await Promise.all(Array.from({length:8},()=>rpc(viewer,'create_mission_comment',input)));
- check(ids.every(id=>id===ids[0]),'independent hosted concurrent comment retries return one id');
+ check(ids.every(id=>id===ids[0]),'independent local concurrent comment retries return one id');
  check((await rows(viewer,'mission_comments',`mission_id=eq.${mission}&select=id`)).length===1,'one concurrent comment row');
  await denied(viewer,'create_mission_comment',{...input,comment_body:'Payload diferente.'},'changed retry payload denied');
  const notices=await rows(owner,'notifications',`mission_id=eq.${mission}&select=kind,source_id`);
@@ -73,7 +68,7 @@ try {
  check((await request('/functions/v1/geocoding',{method:'POST',body:{mode:'content_city',contentKind:'mission',contentId:mission,latitude:19.4326,longitude:-99.1332}})).status===401,'content city requires valid user');
  await json('/functions/v1/delete-account',{user:owner,method:'POST',body:{}},'temporary owner account deletion');owner.deleted=true;
  for(const table of ['mission_reactions','mission_comments','mission_comment_operations']) check((await json(`/rest/v1/${table}?mission_id=eq.${mission}&select=*`,{privileged:true})).length===0,`${table} cascades with mission/account`);
- console.log(`${checks} hosted correction checks passed, including eight concurrent HTTP comment retries.`);
+ console.log(`${checks} local correction checks passed, including eight concurrent HTTP comment retries.`);
 } finally {
  let failed=false;
  for(const user of users){if(user.deleted)continue;const r=await request('/auth/v1/admin/users/'+user.id,{privileged:true,method:'DELETE'}).catch(()=>null);if(!r?.ok)failed=true;}

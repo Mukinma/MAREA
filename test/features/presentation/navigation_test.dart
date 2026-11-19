@@ -66,7 +66,6 @@ void main() {
 
   const desktopDestinations = {
     'Inicio': '/home',
-    'Explorar': '/explore',
     'Crear': '/create',
     'Misiones': '/missions',
     'Mapa': '/map',

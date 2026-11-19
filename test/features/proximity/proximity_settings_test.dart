@@ -10,10 +10,12 @@ import '../ar_markers/marker_ui_test.dart'
 void main() {
   const channel = MethodChannel('test/proximity-settings');
   final calls = <MethodCall>[];
+  var ios = false;
   var always = false;
   var enabled = false;
   setUp(() {
     calls.clear();
+    ios = false;
     always = false;
     enabled = false;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -24,6 +26,7 @@ void main() {
           if (call.method == 'status') {
             return {
               'supported': true,
+              'ios': ios,
               'enabled': enabled,
               'running': enabled,
               'precise': true,
@@ -98,6 +101,34 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Activar avisos'), findsNothing);
       expect(find.text('Abre los avisos desde tu sesión.'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'iOS foreground opt-in works with While Using and separate optional upgrade',
+    (tester) async {
+      ios = true;
+      final session = await markerController();
+      final bridge = NativeProximityBridge(channel: channel);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ProximitySettingsScreen(
+            controller: session,
+            location: MarkerLocation(),
+            bridge: bridge,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Activar avisos'));
+      await tester.pumpAndSettle();
+      expect(calls.where((c) => c.method == 'start'), hasLength(1));
+      expect(calls.where((c) => c.method == 'requestBackground'), isEmpty);
+      final upgrade = find.text('Permitir avisos en segundo plano');
+      await tester.ensureVisible(upgrade);
+      await tester.tap(upgrade);
+      await tester.pumpAndSettle();
+      expect(calls.where((c) => c.method == 'requestBackground'), hasLength(1));
     },
   );
 }

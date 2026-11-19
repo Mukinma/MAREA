@@ -8,6 +8,7 @@ class NativeProximityBridge {
   NativeProximityBridge({MethodChannel? channel})
     : _channel = channel ?? const MethodChannel('marea/proximity_background') {
     _channel.setMethodCallHandler((call) async {
+      if (call.method == 'pendingAvailable') _opened.add('');
       if (call.method == 'opened' && call.arguments is String) {
         _pending = call.arguments as String;
         _opened.add(_pending!);
@@ -37,12 +38,14 @@ class NativeProximityBridge {
         'foreground': foreground,
       });
     } on MissingPluginException {
-      /* Background service is Android-only. */
+      /* This platform has no native location monitor. */
     }
   }
 
   Future<void> requestNotifications() =>
       _channel.invokeMethod<void>('requestNotifications');
+  Future<void> requestBackground() =>
+      _channel.invokeMethod<void>('requestBackground');
   Future<void> openSettings() => _channel.invokeMethod<void>('openSettings');
   Future<void> stop({bool forget = false}) =>
       _channel.invokeMethod<void>('stop', {'forget': forget});

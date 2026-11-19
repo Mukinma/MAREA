@@ -13,6 +13,7 @@ class HomeFeedControls extends StatelessWidget {
     required this.hasCustomRadius,
     required this.onMode,
     required this.onFilters,
+    required this.onSearch,
     required this.onClearCategory,
     super.key,
   });
@@ -22,6 +23,7 @@ class HomeFeedControls extends StatelessWidget {
   final bool hasCustomRadius;
   final ValueChanged<HomeFeedMode> onMode;
   final VoidCallback onFilters, onClearCategory;
+  final VoidCallback onSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +62,11 @@ class HomeFeedControls extends StatelessWidget {
                   const SizedBox(
                     height: 22,
                     child: VerticalDivider(width: 6, color: AppColors.border),
+                  ),
+                  IconButton(
+                    tooltip: AppLocalizations.tr('Buscar publicaciones'),
+                    onPressed: onSearch,
+                    icon: const Icon(Icons.search_rounded, size: 23),
                   ),
                   IconButton(
                     tooltip: switch (count) {

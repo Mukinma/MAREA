@@ -1,5 +1,7 @@
 # Notificaciones Android de MAREA
 
+Esta bitácora describe la distribución Android de octubre de 2026. La configuración multiplataforma actual está en [Avisos remotos en Android, iOS y Web](push-platforms.md).
+
 La integración está activa en el proyecto Supabase vinculado: migración 014, worker `send-push`, credenciales FCM, Vault y proceso por minuto configurados. Supabase conserva cuentas, publicaciones, bandeja, preferencias y cola; Firebase sólo transporta avisos a Android. La Web compatible se publicó el 5 de octubre de 2026 en https://marea-azul.netlify.app/ (deploy `6ac4886c87af0e3de91ce2fb`); su `main.dart.js` servido coincide byte por byte con la compilación verificada. iOS quedó fuera de la distribución solicitada por el usuario.
 
 ## Configuración externa

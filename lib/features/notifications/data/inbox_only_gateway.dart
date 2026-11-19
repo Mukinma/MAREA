@@ -2,7 +2,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import '../models/notification_destination.dart';
 import 'push_gateway.dart';
 
-/// Web/iOS share preferences and activity without registering a push token.
+/// Unconfigured builds retain preferences and activity without a push transport.
 class InboxOnlyGateway implements PushGateway {
   @override
   Stream<PushNotice> get opened => const Stream.empty();

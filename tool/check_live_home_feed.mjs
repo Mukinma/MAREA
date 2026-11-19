@@ -1,20 +1,13 @@
-// Opt-in hosted verification. Fixtures belong only to temporary .invalid users.
+import {liveTarget} from './parity/lab.mjs';
+// Opt-in local verification. Fixtures belong only to temporary .invalid users.
 // Credentials stay in memory; a recovery journal contains only fixture IDs.
-import {readFile,writeFile,mkdtemp,rm} from 'node:fs/promises';
+import {writeFile,mkdtemp,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {spawnSync} from 'node:child_process';
 import {randomBytes,randomUUID} from 'node:crypto';
 import assert from 'node:assert/strict';
 if(!process.argv.includes('--run')){console.log('Usage: node tool/check_live_home_feed.mjs --run');process.exit(0);}
-const config=JSON.parse(await readFile(new URL('../config/supabase.production.json',import.meta.url),'utf8'));
-const base=config.SUPABASE_URL,publicKey=config.SUPABASE_ANON_KEY,ref=new URL(base).hostname.split('.')[0];
-const cli=args=>{const result=spawnSync('supabase',args,{encoding:'utf8'});if(result.status!==0)throw Error('Administrative CLI unavailable');return JSON.parse(result.stdout);};
-const resultRows=result=>Array.isArray(result)?result:result.rows;
-const admin=resultRows(cli(['projects','api-keys','--project-ref',ref,'--output','json'])).find(k=>k.name==='service_role')?.api_key;
-assert.ok(admin,'Administrative credentials unavailable');
-const workerSecret=resultRows(cli(['db','query','--linked','--output','json',"select decrypted_secret as value from vault.decrypted_secrets where name='marea_story_worker_secret'"]))?.[0]?.value;
-assert.ok(workerSecret,'Cleanup worker unavailable');
+const {base, publicKey, admin, storySecret: workerSecret} = liveTarget();
 const users=[],media=[],journal=await mkdtemp(join(tmpdir(),'marea-home-feed-'));
 let checks=0;
 const check=(value,label)=>{assert.ok(value,label);checks++;};

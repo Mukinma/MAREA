@@ -17,6 +17,7 @@ import 'package:marea/shared/widgets/marea_skeleton.dart';
 import 'package:marea/features/community/presentation/mission_application_screen.dart';
 import 'package:marea/features/community/presentation/mission_management_screen.dart';
 import 'package:marea/features/community/presentation/post_detail_screen.dart';
+import 'package:marea/features/community/presentation/post_search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:marea/features/profile/presentation/profile_setup_screen.dart';
 import 'package:marea/features/showcase/models/showcase.dart';
@@ -45,7 +46,7 @@ import 'package:marea/features/shell/presentation/marea_create_action.dart';
 import 'package:marea/features/map/presentation/mission_map_screen.dart';
 import 'package:marea/features/community/models/community_models.dart';
 import 'package:marea/features/community/presentation/posts_feed.dart';
-import 'package:marea/features/community/presentation/explore_screen.dart';
+import 'package:marea/features/community/presentation/community_collection_screen.dart';
 import 'package:marea/features/community/presentation/post_composer_screen.dart';
 import 'package:marea/features/community/presentation/missions_screen.dart';
 import 'package:marea/features/community/presentation/moderation_screen.dart';
@@ -275,14 +276,22 @@ abstract final class AppRouter {
             ),
             GoRoute(
               path: '/explore',
-              builder: (_, state) => ExploreScreen(
-                key: ValueKey(controller.profile?.id),
-                controller: controller,
-                initialSection: state.uri.queryParameters['section'],
-                initialCategory: _routeCategory(state.uri),
-                discoverOnly: state.uri.queryParameters['from'] == 'discover',
-              ),
+              redirect: (_, state) => _legacyExploreDestination(state.uri),
             ),
+            for (final entry in const {
+              '/profile/saved': 'saved',
+              '/search/people': 'people',
+              '/search/showcases': 'showcases',
+            }.entries)
+              GoRoute(
+                path: entry.key,
+                builder: (_, state) => CommunityCollectionScreen(
+                  key: ValueKey((controller.profile?.id, state.uri)),
+                  controller: controller,
+                  section: entry.value,
+                  initialCategory: _routeCategory(state.uri),
+                ),
+              ),
             GoRoute(
               path: '/create',
               builder: (_, _) => CreateScreen(
@@ -469,17 +478,25 @@ abstract final class AppRouter {
         ),
         GoRoute(
           parentNavigatorKey: rootKey,
+          path: '/search/posts',
+          builder: (_, state) => PostSearchScreen(
+            key: ValueKey((controller.profile?.id, state.uri)),
+            controller: controller,
+            discoverOnly: state.uri.queryParameters['from'] == 'discover',
+            initialCategory: _routeCategory(state.uri),
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootKey,
           path: '/posts/:id',
-          builder: withCreate(
-            (_, state) => PostDetailScreen(
-              key: ValueKey(state.uri.toString()),
-              controller: controller,
-              postId: state.pathParameters['id']!,
-              panel: state.uri.queryParameters['panel'],
-              commentId: state.uri.queryParameters['comment'],
-              interestId: state.uri.queryParameters['interest'],
-              notificationId: state.uri.queryParameters['notification'],
-            ),
+          builder: (_, state) => PostDetailScreen(
+            key: ValueKey((controller.profile?.id, state.uri)),
+            controller: controller,
+            postId: state.pathParameters['id']!,
+            panel: state.uri.queryParameters['panel'],
+            commentId: state.uri.queryParameters['comment'],
+            interestId: state.uri.queryParameters['interest'],
+            notificationId: state.uri.queryParameters['notification'],
           ),
         ),
         GoRoute(
@@ -817,7 +834,7 @@ class AppRouteGuard {
         uri.hasScheme ||
         uri.hasAuthority ||
         !RegExp(
-          r'^/(discover|settings(?:/(?:personal|notifications|privacy|security|support(?:/reports)?))?|profile/edit|tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|ar-markers(?:/new|/[A-Za-z0-9_-]+/(?:edit|scan|visit))?|nearby-alerts|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
+          r'^/(explore|discover|map|people/[A-Za-z0-9_-]+|showcase/[A-Za-z0-9_-]+(?:/edit)?|messages(?:/[A-Za-z0-9_-]+)?|settings(?:/(?:personal|notifications|privacy|security|support(?:/reports)?))?|profile/(?:edit|saved)|tours(?:/new|/requests|/nearby|/[A-Za-z0-9_-]+(?:/(?:edit|capture|ar|business-ar))?)?|ar-markers(?:/new|/[A-Za-z0-9_-]+/(?:edit|scan))?|nearby-alerts|search/(?:posts|people|showcases)|posts/[A-Za-z0-9_-]+|missions(?:/new|/drafts/[A-Za-z0-9_-]+/edit|/[A-Za-z0-9_-]+(?:/(?:edit|apply|sent|manage))?)?)$',
         ).hasMatch(uri.path)) {
       return null;
     }
@@ -931,4 +948,21 @@ class AppRouteGuard {
 String? _routeCategory(Uri uri) {
   final category = uri.queryParameters['category'];
   return communityCategories.containsKey(category) ? category : null;
+}
+
+String _legacyExploreDestination(Uri uri) {
+  final category = _routeCategory(uri);
+  final discovery = uri.queryParameters['from'] == 'discover';
+  final path = switch (uri.queryParameters['section']) {
+    'people' => '/search/people',
+    'showcases' => '/search/showcases',
+    'saved' => '/profile/saved',
+    'posts' => '/search/posts',
+    _ => category != null || discovery ? '/search/posts' : '/home',
+  };
+  final parameters = {
+    if (category != null && path != '/search/people') 'category': category,
+    if (discovery && path == '/search/posts') 'from': 'discover',
+  };
+  return Uri(path: path, queryParameters: parameters.isEmpty ? null : parameters).toString();
 }

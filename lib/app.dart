@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:marea/features/proximity/application/proximity_controller.dart';
+import 'package:marea/features/proximity/data/geolocator_proximity_source.dart';
+import 'package:marea/features/proximity/data/proximity_browser.dart';
+import 'package:marea/features/proximity/presentation/foreground_proximity.dart';
 import 'package:marea/features/notifications/models/notification_destination.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -43,6 +48,25 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
   String? _proximityAccount;
   bool _proximityBound = false, _refreshingProximity = false;
   int _markerRevision = -1;
+  ForegroundProximityNotices? _webNotices;
+  ProximityController? _webProximity;
+
+  void _webMonitoringChanged() {
+    final monitor = _webProximity;
+    if (monitor != null && (!monitor.running || !monitor.foreground)) {
+      _webNotices?.clear();
+    }
+  }
+
+  void _openWebNotice(ProximityNotificationPayload payload) {
+    if (!_readyForProximity ||
+        _webProximity?.running != true ||
+        !proximityPageVisible ||
+        !payload.isValid ||
+        widget.controller.profile?.id != payload.recipientId)
+      return;
+    unawaited(_router.push(payload.route));
+  }
 
   @override
   void initState() {
@@ -52,7 +76,16 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
     _localeController.addListener(_localeChanged);
     if (widget.localeController == null) unawaited(_localeController.load());
     WidgetsBinding.instance.addObserver(this);
-    if (widget.controller.markerRepository != null) {
+    if (kIsWeb) {
+      final notices = ForegroundProximityNotices();
+      _webNotices = notices;
+      _webProximity = ProximityController(
+        location: const GeolocatorProximityLocationSource(),
+        targets: AppProximityTargets(widget.controller),
+        notifications: notices,
+      )..addListener(_webMonitoringChanged);
+      unawaited(_webProximity!.setForeground(proximityPageVisible));
+    } else if (widget.controller.markerRepository != null) {
       _proximityOpened = NativeProximityBridge.instance.opened.listen(
         (_) => _openProximity(),
       );
@@ -96,7 +129,14 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
 
   Future<void> _syncProximity() async {
     final c = widget.controller;
-    if (c.markerRepository == null || c.status == AuthStatus.initializing) {
+    if (c.status == AuthStatus.initializing) return;
+    if (kIsWeb) {
+      await _webProximity?.setAccount(
+        _readyForProximity ? c.profile?.id : null,
+      );
+      return;
+    }
+    if (c.markerRepository == null) {
       return;
     }
     final account = _readyForProximity ? c.profile?.id : null;
@@ -123,6 +163,18 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (kIsWeb) {
+      unawaited(
+        _webProximity?.setForeground(
+          state != AppLifecycleState.hidden &&
+              state != AppLifecycleState.detached &&
+              proximityPageVisible,
+        ),
+      );
+      if (state == AppLifecycleState.resumed)
+        unawaited(widget.controller.recheckAppSession());
+      return;
+    }
     if (state == AppLifecycleState.resumed) {
       unawaited(widget.controller.recheckAppSession());
       if (widget.controller.markerRepository != null && _readyForProximity) {
@@ -261,6 +313,8 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _webProximity?.dispose();
+    _webNotices?.dispose();
     _proximityTimer?.cancel();
     unawaited(_proximityOpened?.cancel());
     _router.routeInformationProvider.removeListener(_refreshProximity);
@@ -311,6 +365,25 @@ class _MareaAppState extends State<MareaApp> with WidgetsBindingObserver {
             location: BannerLocation.topEnd,
             color: Colors.deepOrange,
             child: content,
+          );
+        }
+        if (_webProximity case final monitor?) {
+          content = ForegroundProximityScope(
+            controller: monitor,
+            child: Stack(
+              children: [
+                content,
+                Positioned(
+                  top: 0,
+                  left: 8,
+                  right: 8,
+                  child: ForegroundProximityBanner(
+                    notices: _webNotices!,
+                    open: _openWebNotice,
+                  ),
+                ),
+              ],
+            ),
           );
         }
         return AppLocaleScope(controller: _localeController, child: content);

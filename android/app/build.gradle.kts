@@ -23,8 +23,13 @@ val firebaseDefines = dartDefines.filterKeys { it in firebaseResources }
 val mareaEnvironment = dartDefines["MAREA_ENV"] ?: "production"
 require(mareaEnvironment in setOf("production", "development")) { "Invalid MAREA_ENV." }
 val developmentTarget = mareaEnvironment == "development"
-require(!developmentTarget || firebaseDefines.isEmpty()) {
-    "The development pilot uses inbox notifications without Firebase defines."
+val firebaseTestProject = dartDefines["MAREA_TEST_FIREBASE_PROJECT_ID"]
+val productionFirebaseProject = dartDefines["MAREA_PRODUCTION_FIREBASE_PROJECT_ID"]
+require(!developmentTarget || firebaseDefines.isEmpty() ||
+        (!firebaseTestProject.isNullOrBlank() && !productionFirebaseProject.isNullOrBlank() &&
+         firebaseTestProject == firebaseDefines["FIREBASE_PROJECT_ID"] &&
+         firebaseTestProject != productionFirebaseProject && firebaseTestProject != "marea-f6a92")) {
+    "Development push requires an explicitly designated, separate Firebase test project."
 }
 require(firebaseDefines.isEmpty() || firebaseResources.keys.all { !firebaseDefines[it].isNullOrBlank() }) {
     "Provide all four Firebase Android defines together."
@@ -37,6 +42,9 @@ val arLiveTarget = (project.findProperty("target") as? String)
     ?.replace('\\', '/')?.endsWith("test/manual/business_ar_live_probe.dart") == true
 val proximityQaTarget = (project.findProperty("target") as? String)
     ?.replace('\\', '/')?.endsWith("test/manual/proximity_probe.dart") == true
+require(!(arLocalTarget || proximityQaTarget) || firebaseDefines.isEmpty()) {
+    "Local pilots must not initialize Firebase."
+}
 require(!arLiveTarget || (!developmentTarget && firebaseDefines.isEmpty())) {
     "The authorized production pilot uses its own sessions and inbox notifications."
 }

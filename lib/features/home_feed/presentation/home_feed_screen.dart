@@ -276,6 +276,15 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     }, scrollToTop: false);
   }
 
+  void _searchPosts() {
+    context.push(
+      Uri(
+        path: '/search/posts',
+        queryParameters: _category == null ? null : {'category': _category!},
+      ).toString(),
+    );
+  }
+
   Future<void> _filters() async {
     final viewer = _viewerId;
     final mode = _mode;
@@ -393,7 +402,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         Icons.people_outline_rounded,
         'Aún no hay publicaciones de perfiles que sigues.',
         'Explorar perfiles',
-        () => context.push('/explore?section=people'),
+        () => context.push('/search/people'),
       ),
       (HomeFeedMode.nearby, _, _) => (
         Icons.place_outlined,
@@ -502,6 +511,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                           _mode == HomeFeedMode.nearby && _radius != 10,
                       onMode: _select,
                       onFilters: _filters,
+                      onSearch: _searchPosts,
                       onClearCategory: () => _applyCategory(null),
                     ),
                   ),
@@ -514,7 +524,22 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                 itemBuilder: (_, index) => _inColumn(_entry(_posts[index])),
               ),
               SliverToBoxAdapter(child: _inColumn(_footer())),
-            ] else
+            ] else ...[
+              if (widget.controller.communityRepository != null)
+                SliverToBoxAdapter(
+                  child: _inColumn(
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: TextButton.icon(
+                        onPressed: _searchPosts,
+                        icon: const Icon(Icons.search_rounded),
+                        label: Text(
+                          AppLocalizations.tr('Buscar publicaciones'),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               SliverToBoxAdapter(
                 child: _inColumn(
                   PostsFeed(
@@ -526,6 +551,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                   ),
                 ),
               ),
+            ],
             SliverToBoxAdapter(
               child: SizedBox(
                 height: MediaQuery.paddingOf(context).bottom + 24,

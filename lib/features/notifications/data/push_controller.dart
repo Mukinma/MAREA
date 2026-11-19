@@ -52,7 +52,11 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
     _userId = userId;
     _ready = ready;
     _activityTimer?.cancel();
-    if (lostSession) _queueReset(revoke: false);
+    if (lostSession) {
+      _pending = null;
+      _queueReset(revoke: false);
+    }
+    permissionStatus = PushPermission.unavailable;
     final generation = ++_generation;
     preferences = const NotificationPreferences();
     preferencesLoaded = false;
@@ -84,9 +88,10 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
         }
       });
       if (configured) {
-        permissionStatus = await gateway.promptOnce();
+        final permission = await gateway.promptOnce();
         if (!_current(generation)) return;
-        await _register(await gateway.token(), generation: generation);
+        permissionStatus = permission;
+        await _register(null, generation: generation);
       }
     } catch (_) {
       if (_current(generation)) {
@@ -111,13 +116,16 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
           if (!_current(revision)) return;
           if (permissionStatus != PushPermission.granted) {
             await repository.unregisterDevice(installation);
-          } else if (token != null) {
-            await repository.registerDevice(installation, token, true);
+          } else {
+            final currentToken = token ?? await gateway.token();
+            if (_current(revision) && currentToken != null) {
+              await repository.registerDevice(installation, currentToken, true);
+            }
           }
         })
         .catchError((Object _) {
           if (_current(revision)) {
-            error = 'No pudimos registrar este celular. Puedes reintentar.';
+            error = 'No pudimos registrar este dispositivo. Puedes reintentar.';
             _notify();
           }
         });
@@ -126,7 +134,7 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
       await work.timeout(const Duration(seconds: 10));
     } catch (_) {
       if (_current(revision)) {
-        error = 'No pudimos registrar este celular. Puedes reintentar.';
+        error = 'No pudimos registrar este dispositivo. Puedes reintentar.';
         _notify();
       }
     }
@@ -183,6 +191,11 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
     error = null;
     _notify();
     try {
+      // On Web the prompt must run directly from the settings button gesture.
+      final requested = requestPermission && configured
+          ? await gateway.requestPermission()
+          : null;
+      if (!_current(generation)) return;
       await _deviceWork?.timeout(const Duration(seconds: 10));
       if (!_current(generation)) return;
       if (_resetPending) {
@@ -201,11 +214,10 @@ class PushController extends ChangeNotifier with WidgetsBindingObserver {
       preferencesLoaded = true;
       await _recordActivity(generation);
       if (!_current(generation) || !configured) return;
-      permissionStatus = requestPermission
-          ? await gateway.requestPermission()
-          : await gateway.promptOnce();
+      final permission = requested ?? await gateway.promptOnce();
       if (!_current(generation)) return;
-      await _register(await gateway.token(), generation: generation);
+      permissionStatus = permission;
+      await _register(null, generation: generation);
     } catch (_) {
       if (_current(generation)) {
         error = 'No pudimos actualizar los avisos. Puedes reintentar.';
