@@ -2143,6 +2143,77 @@ class AppLocalizations {
     '{name} quiere iniciar una conversación contigo. ¿Deseas aceptar la solicitud?':
         '{name} wants to start a conversation with you. Would you like to accept the request?',
     'Ir a {location}': 'Go to {location}',
+    'Mensaje': 'Message',
+    'Seguir': 'Follow',
+    'Enviar solicitud de chat': 'Send a chat request',
+    'Enviar solicitud': 'Send request',
+    'Podrás escribirle a {name} cuando acepte tu solicitud.':
+        'You can message {name} once they accept your request.',
+    'Reportar cuenta': 'Report account',
+    'Recibimos tu reporte. Puedes consultarlo en Ayuda y reportes.':
+        'We received your report. You can find it under Help and reports.',
+    'seguidor': 'follower',
+    'seguidores': 'followers',
+    'seguidos': 'following',
+    'Tu actividad': 'Your activity',
+    'En este perfil': 'On this profile',
+    'Tu cuenta': 'Your account',
+    'Gestionar': 'Manage',
+    'Experiencias': 'Experiences',
+    'Cargando experiencias': 'Loading experiences',
+    'Gestionar experiencias': 'Manage experiences',
+    'Explorar en 360°': 'Explore in 360°',
+    'Explorar con cámara': 'Explore with the camera',
+    'Escanear marcador': 'Scan marker',
+    'Ver punto en 360°': 'View point in 360°',
+    'Ver en mapa': 'View on map',
+    'Ver información': 'View information',
+    'Reintentar recorridos': 'Retry tours',
+    'Reintentar marcadores': 'Retry markers',
+    'Tus marcadores': 'Your markers',
+    'Tus marcadores RA': 'Your AR markers',
+    'Marcadores RA': 'AR markers',
+    'Marcadores del dispositivo': 'Markers on this device',
+    'Ver marcadores del dispositivo': 'View device markers',
+    'Copiar a mi cuenta': 'Copy to my account',
+    'Copia guardada en tu cuenta.': 'Copy saved to your account.',
+    'Se guardará una copia privada en tu cuenta. Podrás probarla y enviarla a revisión desde Tus marcadores.':
+        'A private copy will be saved to your account. You can test it and submit it for review from Your markers.',
+    'Si se aprueba, el perfil mostrará la imagen, el contenido y la ubicación exacta del marcador.':
+        'If approved, the marker image, content, and exact location will appear on the profile.',
+    'Retirar marcador': 'Withdraw marker',
+    'El marcador dejará de estar disponible para visitantes y quedará en tus borradores.':
+        'The marker will move to your drafts and visitors will lose access.',
+    'Pendiente de probar en RA': 'AR test pending',
+    'Falta una ubicación con precisión de hasta 20 m':
+        'A location accurate to within 20 m is required',
+    'Reconocimiento probado': 'Recognition tested',
+    'Revisar marcadores enviados.': 'Review submitted markers.',
+    'Pendientes de revisión': 'Pending review',
+    'No hay marcadores pendientes.': 'There are no markers awaiting review.',
+    'Cargar más marcadores': 'Load more markers',
+    'Aprobar y publicar': 'Approve and publish',
+    'Solicitar cambios': 'Request changes',
+    'Motivo de la revisión': 'Reason for the review',
+    'El marcador cambió. Revisa su versión actual.':
+        'The marker changed. Review its current version.',
+    'No pudimos abrir la imagen del marcador.':
+        'We could not open the marker image.',
+    'Esta experiencia ya no está disponible.':
+        'This experience is no longer available.',
+    'Busca esta imagen y apúntale con la cámara.':
+        'Look for this image and point your camera at it.',
+    'Este dispositivo no ofrece reconocimiento RA compatible.':
+        'This device does not support AR image recognition.',
+    'Marcador guardado en este dispositivo.': 'Marker saved on this device.',
+    'Reconocimiento comprobado para esta imagen.':
+        'Recognition has been tested for this image.',
+    'Encuadra la imagen para reconocerla.':
+        'Frame the image so the camera can recognize it.',
+    'Imagen reconocida.': 'Image recognized.',
+    'Toca para abrir el menú': 'Tap to open the menu',
+    'Abrir menú': 'Open menu',
+    'Añadir descripción': 'Add a description',
     'Administrar ficha · {status}': 'Manage listing · {status}',
   };
 }

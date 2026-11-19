@@ -38,6 +38,7 @@ class AppSessionController extends ChangeNotifier {
     this.missionMapRepository,
     this.tourRepository,
     this.markerRepository,
+    this.deviceMarkerRepository,
     this.allowCaptureUploads = true,
     this.showcaseRepository,
     this.socialRepository,
@@ -62,6 +63,12 @@ class AppSessionController extends ChangeNotifier {
   }
 
   final MarkerRepository? markerRepository;
+  final MarkerRepository? deviceMarkerRepository;
+  MarkerPublicationRepository? get markerPublicationRepository {
+    final repository = markerRepository;
+    return repository is MarkerPublicationRepository ? repository : null;
+  }
+
   final bool allowCaptureUploads;
   int _markerRevision = 0;
   int get markerRevision => _markerRevision;

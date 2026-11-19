@@ -186,7 +186,8 @@ class AppShell extends StatelessWidget {
           statusBarBrightness: Brightness.light,
         ),
         child: Scaffold(
-          extendBody: true,
+          extendBody: !profileLayout,
+          backgroundColor: profileLayout ? AppColors.profileCanvas : null,
           body: SafeArea(
             top: false,
             bottom: false,

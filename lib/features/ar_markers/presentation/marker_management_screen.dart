@@ -3,22 +3,26 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marea/core/errors/app_failure.dart';
+import 'package:marea/core/localization/app_localizations.dart';
 import 'package:marea/core/session/app_session_controller.dart';
+import 'package:marea/features/profile/models/profile.dart';
 
 import '../data/marker_repository.dart';
 import '../models/ar_marker.dart';
 
-enum _MarkerAction { edit, scan, delete }
+enum _MarkerAction { edit, scan, submit, withdraw, copy, delete }
 
 class MarkerManagementScreen extends StatefulWidget {
   const MarkerManagementScreen({
     required this.controller,
     required this.repository,
+    this.device = false,
     super.key,
   });
 
   final AppSessionController controller;
   final MarkerRepository repository;
+  final bool device;
 
   @override
   State<MarkerManagementScreen> createState() => _MarkerManagementScreenState();
@@ -33,6 +37,12 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
   List<ArMarker> _items = [];
   final _deleting = <String>{};
   final _images = <String, Future<Uint8List>>{};
+  MarkerPublicationRepository? get _publication =>
+      widget.controller.markerPublicationRepository;
+  bool get _canPublish => switch (widget.controller.profile?.userType) {
+    UserType.business || UserType.entrepreneur => _publication != null,
+    _ => false,
+  };
 
   @override
   void initState() {
@@ -107,8 +117,18 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
       return;
     }
     final id = Uri.encodeComponent(marker.id);
-    if (action == _MarkerAction.edit) return _open('/ar-markers/$id/edit');
-    if (action == _MarkerAction.scan) return _open('/ar-markers/$id/scan');
+    if (action == _MarkerAction.edit) {
+      return _open('/ar-markers/$id/edit${widget.device ? '?device=1' : ''}');
+    }
+    if (action == _MarkerAction.scan) {
+      final remote =
+          !marker.isLocal && widget.controller.deviceMarkerRepository != null;
+      return _open('/ar-markers/$id/scan${remote ? '?remote=1' : ''}');
+    }
+    if (action != _MarkerAction.delete) {
+      await _changePublication(owner, marker, action);
+      return;
+    }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -149,6 +169,92 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
     }
   }
 
+  Future<void> _changePublication(
+    String owner,
+    ArMarker marker,
+    _MarkerAction action,
+  ) async {
+    final publication = _publication;
+    if (publication == null || !_canPublish) return;
+    String tr(String value) => AppLocalizations.tr(value);
+    final (title, body) = switch (action) {
+      _MarkerAction.submit => (
+        'Enviar a revisión',
+        'Si se aprueba, el perfil mostrará la imagen, el contenido y la ubicación exacta del marcador.',
+      ),
+      _MarkerAction.withdraw => (
+        'Retirar marcador',
+        'El marcador dejará de estar disponible para visitantes y quedará en tus borradores.',
+      ),
+      _ => (
+        'Copiar a mi cuenta',
+        'Se guardará una copia privada en tu cuenta. Podrás probarla y enviarla a revisión desde Tus marcadores.',
+      ),
+    };
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(tr(title)),
+        content: Text(tr(body)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(tr('Cancelar')),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(tr(title)),
+          ),
+        ],
+      ),
+    );
+    if (accepted != true ||
+        !mounted ||
+        widget.controller.profile?.id != owner ||
+        _deleting.contains(marker.id)) {
+      return;
+    }
+    setState(() => _deleting.add(marker.id));
+    try {
+      switch (action) {
+        case _MarkerAction.submit:
+          await publication.submit(owner, marker.id);
+        case _MarkerAction.withdraw:
+          await publication.withdraw(owner, marker.id);
+        case _MarkerAction.copy:
+          final image = await widget.repository.loadImage(owner, marker);
+          await publication.copyLocal(owner, marker, image);
+        default:
+          return;
+      }
+      if (!mounted || widget.controller.profile?.id != owner) return;
+      widget.controller.markersChanged();
+      if (action == _MarkerAction.copy) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(tr('Copia guardada en tu cuenta.'))),
+        );
+      }
+    } catch (error) {
+      if (mounted &&
+          _owner == owner &&
+          widget.controller.profile?.id == owner) {
+        setState(() => _error = _message(error));
+      }
+    } finally {
+      if (mounted && _owner == owner) {
+        setState(() => _deleting.remove(marker.id));
+      }
+    }
+  }
+
+  String _status(ArMarker marker) => AppLocalizations.tr(switch (marker) {
+    _ when marker.isLocal => 'Guardado en este dispositivo',
+    _ when marker.isPublic => 'Publicado',
+    _ when marker.awaitingReview => 'En revisión',
+    _ when marker.requiresChanges => 'Requiere cambios',
+    _ => 'Borrador',
+  });
+
   String _message(Object error) => error is StateError
       ? error.message.toString()
       : AppFailureMapper.from(error).message;
@@ -162,7 +268,13 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Tus marcadores')),
+    appBar: AppBar(
+      title: Text(
+        AppLocalizations.tr(
+          widget.device ? 'Marcadores del dispositivo' : 'Tus marcadores',
+        ),
+      ),
+    ),
     body: _owner == null
         ? const Center(child: Text('Inicia sesión para ver tus marcadores.'))
         : Center(
@@ -176,11 +288,22 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
                     child: FilledButton.icon(
                       onPressed: _loading
                           ? null
-                          : () => _open('/ar-markers/new'),
+                          : () => _open(
+                              '/ar-markers/new${widget.device ? '?device=1' : ''}',
+                            ),
                       icon: const Icon(Icons.add),
                       label: const Text('Añadir marcador'),
                     ),
                   ),
+                  if (!widget.device &&
+                      widget.controller.deviceMarkerRepository != null)
+                    TextButton.icon(
+                      onPressed: () => _open('/ar-markers?device=1'),
+                      icon: const Icon(Icons.smartphone_outlined),
+                      label: Text(
+                        AppLocalizations.tr('Ver marcadores del dispositivo'),
+                      ),
+                    ),
                   if (_loading) const LinearProgressIndicator(),
                   if (_error != null)
                     Padding(
@@ -246,16 +369,48 @@ class _MarkerManagementScreenState extends State<MarkerManagementScreen> {
                                 tooltip: 'Opciones de ${marker.name}',
                                 enabled: !_deleting.contains(marker.id),
                                 onSelected: (action) => _action(marker, action),
-                                itemBuilder: (_) => const [
-                                  PopupMenuItem(
+                                itemBuilder: (_) => [
+                                  const PopupMenuItem(
                                     value: _MarkerAction.edit,
                                     child: Text('Editar'),
                                   ),
-                                  PopupMenuItem(
+                                  const PopupMenuItem(
                                     value: _MarkerAction.scan,
                                     child: Text('Probar RA'),
                                   ),
-                                  PopupMenuItem(
+                                  if (_canPublish && marker.isLocal)
+                                    PopupMenuItem(
+                                      value: _MarkerAction.copy,
+                                      child: Text(
+                                        AppLocalizations.tr(
+                                          'Copiar a mi cuenta',
+                                        ),
+                                      ),
+                                    ),
+                                  if (_canPublish && !marker.isLocal)
+                                    if (marker.isPublic ||
+                                        marker.awaitingReview)
+                                      PopupMenuItem(
+                                        value: _MarkerAction.withdraw,
+                                        child: Text(
+                                          AppLocalizations.tr(
+                                            'Retirar marcador',
+                                          ),
+                                        ),
+                                      )
+                                    else if (!marker.requiresChanges)
+                                      PopupMenuItem(
+                                        value: _MarkerAction.submit,
+                                        enabled:
+                                            marker.isTested &&
+                                            marker.hasPreciseLocation,
+                                        child: Text(
+                                          AppLocalizations.tr(
+                                            'Enviar a revisión',
+                                          ),
+                                        ),
+                                      ),
+                                  const PopupMenuItem(
                                     value: _MarkerAction.delete,
                                     child: Text('Eliminar'),
                                   ),

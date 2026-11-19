@@ -24,6 +24,28 @@ abstract interface class MarkerRepository {
   );
 }
 
+abstract interface class MarkerPublicationRepository
+    implements MarkerRepository {
+  Future<List<ArMarker>> publicForOwner(String viewerId, String ownerId);
+  Future<ArMarker?> getPublic(String viewerId, String id);
+  Future<Uint8List> loadPublicImage(String viewerId, ArMarker marker);
+  Future<ArMarker> copyLocal(String ownerId, ArMarker marker, Uint8List image);
+  Future<void> submit(String ownerId, String id);
+  Future<void> withdraw(String ownerId, String id);
+  Future<List<ArMarker>> reviewQueue(String reviewerId, {int offset = 0});
+  Future<Uint8List> loadReviewImage(String reviewerId, ArMarker marker);
+  Future<void> review(
+    String reviewerId,
+    ArMarker marker, {
+    required bool approve,
+    String? reason,
+  });
+}
+
+class MarkerUnavailable extends StateError {
+  MarkerUnavailable() : super('Esta experiencia ya no está disponible.');
+}
+
 const markerImageMaxBytes = 8 * 1024 * 1024;
 final markerUuidPattern = RegExp(
   r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',

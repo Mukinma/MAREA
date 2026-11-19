@@ -17,9 +17,30 @@ abstract interface class HomeFeedRepository {
   Future<void> setFollowing(String authorId, bool following);
 }
 
-class SupabaseHomeFeedRepository implements HomeFeedRepository {
+typedef ProfileFollowCounts = ({int followers, int following});
+
+abstract interface class ProfileFollowCountsRepository {
+  Future<ProfileFollowCounts?> followCounts(String profileId);
+}
+
+class SupabaseHomeFeedRepository
+    implements HomeFeedRepository, ProfileFollowCountsRepository {
   SupabaseHomeFeedRepository(this.client);
   final SupabaseClient client;
+
+  @override
+  Future<ProfileFollowCounts?> followCounts(String profileId) => _run(() async {
+    final response = await client.rpc(
+      'profile_follow_counts',
+      params: {'profile_uuid': profileId},
+    );
+    if (response == null) return null;
+    final data = response as Map<String, dynamic>;
+    return (
+      followers: data['followers'] as int,
+      following: data['following'] as int,
+    );
+  });
   Future<T> _run<T>(Future<T> Function() operation) async {
     try {
       return await operation();

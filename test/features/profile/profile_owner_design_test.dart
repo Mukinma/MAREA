@@ -142,7 +142,7 @@ void main() {
         expect(find.text('Editar perfil'), findsNothing);
         expect(
           find.byTooltip('Configuración de tu cuenta').hitTestable(),
-          findsOneWidget,
+          findsNothing,
         );
         expect(find.byTooltip('Menú del perfil').hitTestable(), findsOneWidget);
         expect(tester.widget<ProfileWaves>(find.byType(ProfileWaves)).colors, [
@@ -154,9 +154,9 @@ void main() {
             .map((image) => image.path);
         expect(media, containsAll(['visited/avatar.png', 'visited/cover.png']));
         expect(find.byIcon(Icons.verified), findsNothing);
-        expect(find.byType(ProfileStatisticsCard), findsOneWidget);
-        expect(find.text('Sin datos'), findsNWidgets(4));
+        expect(find.text('Sin datos'), findsNothing);
         expect(find.byType(MareaMobileNavigation), findsOneWidget);
+        expect(find.byTooltip('Crear').hitTestable(), findsOneWidget);
         await tester.ensureVisible(find.byType(ProfileShowcasePreview));
         expect(find.text(type.showcaseLabel), findsOneWidget);
         expect(find.text('Contenido del propietario'), findsOneWidget);
@@ -190,7 +190,10 @@ void main() {
         await tester.tap(find.byTooltip('Cerrar menú'));
         await tester.pumpAndSettle();
         expect(find.text('Opciones del perfil'), findsNothing);
-        await tester.tap(find.byTooltip('Configuración de tu cuenta'));
+        await tester.tap(find.byTooltip('Menú del perfil'));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Configuración de tu cuenta'));
+        await tester.tap(find.text('Configuración de tu cuenta'));
         await tester.pumpAndSettle();
         expect(find.byType(SettingsScreen), findsOneWidget);
         router.go('/people/visited');
