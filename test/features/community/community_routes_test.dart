@@ -158,7 +158,9 @@ void main() {
     ) async {
       final repo = _CommunityFake();
       final router = await _open(tester, repo, origin, admin: true);
-      if (origin == '/profile') await _tap(tester, find.text('Publicaciones'));
+      if (origin == '/profile') {
+        await _tap(tester, find.byTooltip('Menú del perfil'));
+      }
       expect(find.text('Oculta por moderación'), findsNothing);
       final before = repo.postLoads;
       await _tap(tester, find.text('Moderación'));

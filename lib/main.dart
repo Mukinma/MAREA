@@ -92,6 +92,12 @@ class _StartupAppState extends State<_StartupApp> {
     final localeController = AppLocaleController();
     await localeController.load();
     late final AppSessionController controller;
+    final deviceMarkers = LocalMarkerRepository(
+      currentOwner: () => controller.profile?.id,
+    );
+    final remoteMarkers =
+        !widget.productionPilot &&
+        const bool.fromEnvironment('AR_MARKERS_REMOTE');
     controller = AppSessionController(
       allowCaptureUploads: !widget.productionPilot,
       authRepository: SupabaseAuthRepository(
@@ -112,12 +118,13 @@ class _StartupAppState extends State<_StartupApp> {
       storiesRepository: SupabaseStoriesRepository(client),
       missionMapRepository: SupabaseMissionMapRepository(client),
       tourRepository: SupabaseTourRepository(client, config.supabaseUrl),
-      markerRepository: const bool.fromEnvironment('AR_MARKERS_REMOTE')
+      markerRepository: remoteMarkers
           ? SupabaseMarkerRepository(
               client,
               currentOwner: () => controller.profile?.id,
             )
-          : LocalMarkerRepository(currentOwner: () => controller.profile?.id),
+          : deviceMarkers,
+      deviceMarkerRepository: remoteMarkers ? deviceMarkers : null,
       socialRepository: SupabaseSocialRepository(client),
       missionSocialRepository: SupabaseMissionSocialRepository(client),
       locationRepository: SupabaseLocationRepository(client),

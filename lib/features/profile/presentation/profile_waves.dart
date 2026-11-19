@@ -29,27 +29,32 @@ class ProfileWavesPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     canvas.save();
-    canvas.scale(size.width, size.height);
+    // The profile reference uses a 390 × 164 viewBox.
+    canvas.scale(size.width / 390, size.height / 164);
     final back = Path()
-      ..moveTo(0, .12)
-      ..cubicTo(.18, -.16, .27, .78, .55, .64)
-      ..cubicTo(.72, .56, .78, .35, 1, .68)
-      ..lineTo(1, 1)
-      ..lineTo(0, 1)
+      ..moveTo(0, 9.10629)
+      ..cubicTo(58, -15.3661, 92, 13.185, 124, 50.9134)
+      ..cubicTo(169, 112.094, 203, 90.6811, 252, 82.5236)
+      ..cubicTo(314, 73.3465, 340, 75.3858, 390, 97.8189)
+      ..lineTo(390, 159)
+      ..lineTo(0, 159)
       ..close();
     final middle = Path()
-      ..moveTo(0, .28)
-      ..cubicTo(.20, -.02, .34, .90, .61, .72)
-      ..cubicTo(.82, .38, .91, .58, 1, .78)
-      ..lineTo(1, 1)
-      ..lineTo(0, 1)
+      ..moveTo(0, 13.2966)
+      ..cubicTo(58, 3.24778, 61, 54.4969, 117, 67.5604)
+      ..cubicTo(173, 72.5848, 184, 99.7167, 215, 101.726)
+      ..cubicTo(263, 111.775, 280, 54.4969, 334, 97.7069)
+      ..cubicTo(355, 119.814, 373, 125.844, 390, 129.863)
+      ..lineTo(390, 158)
+      ..lineTo(0, 158)
       ..close();
     final front = Path()
-      ..moveTo(0, .40)
-      ..cubicTo(.19, .55, .22, .48, .37, .57)
-      ..cubicTo(.55, .65, .56, .99, .83, .95)
-      ..cubicTo(.92, .94, .96, .97, 1, 1)
-      ..lineTo(0, 1)
+      ..moveTo(0, 45)
+      ..cubicTo(47, 64, 64, 89, 118, 88)
+      ..cubicTo(189, 81, 202, 117, 251, 134)
+      ..cubicTo(305, 154, 353, 137, 390, 152)
+      ..lineTo(390, 164)
+      ..lineTo(0, 164)
       ..close();
     canvas.drawPath(back, Paint()..color = Color(colors[0]));
     canvas.drawPath(middle, Paint()..color = Color(colors[1]));

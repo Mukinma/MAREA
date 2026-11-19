@@ -120,6 +120,7 @@ void main() {
       addTearDown(session.dispose);
       final targets = await AppProximityTargets(session).load(fix());
       expect(targets.map((t) => t.id), [id(1), id(6), id(10)]);
+      expect(targets.last.route, '/ar-markers/${id(10)}/visit');
       expect(targets.every((t) => t.isValid), isTrue);
       expect(targets.first.expiresAt, maps.items.first.startsAt);
       expect(maps.lastBounds!.isValid, isTrue);

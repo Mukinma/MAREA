@@ -324,10 +324,12 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
     location: '/people/${widget.profileId}',
     controller: widget.controller,
     child: Scaffold(
-      appBar: AppBar(
-        leading: const ProfileBackButton(fallback: '/explore'),
-        title: Text(AppLocalizations.tr('Perfil')),
-      ),
+      appBar: _profile == null
+          ? AppBar(
+              leading: const ProfileBackButton(fallback: '/explore'),
+              title: Text(AppLocalizations.tr('Perfil')),
+            )
+          : null,
       body: _profile == null
           ? _loading
                 ? const Center(child: MareaSkeleton(kind: SkeletonKind.list))

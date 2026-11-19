@@ -9,13 +9,14 @@ import '../../tours/models/tour_models.dart' show tourId;
 import '../data/marker_repository.dart';
 import '../models/ar_marker.dart';
 
-/// A native tracking callback is the only way to show the marker's content.
+/// Shared native tracking for owner proof and visits to published markers.
 class MarkerScanController extends ChangeNotifier {
   MarkerScanController({
     required this.repository,
     required this.accountId,
     required this.markerId,
     required this.currentAccount,
+    this.publicVisit = false,
     TourLocalStore? localStore,
     MethodChannel? channel,
     Stream<dynamic>? trackingEvents,
@@ -28,6 +29,7 @@ class MarkerScanController extends ChangeNotifier {
        _now = now ?? DateTime.now;
 
   final MarkerRepository repository;
+  final bool publicVisit;
   final String accountId, markerId;
   final String? Function() currentAccount;
   final TourLocalStore _store;
@@ -54,25 +56,42 @@ class MarkerScanController extends ChangeNotifier {
   }
 
   Future<void> load() async {
-    await stop();
+    final stopping = stop();
     final generation = _generation;
-    if (!_current) return;
+    await stopping;
+    if (!_valid(generation)) return;
     loading = true;
     error = null;
+    if (publicVisit) {
+      marker = null;
+      image = null;
+      supported = false;
+    }
     _changed();
     try {
-      final record = await repository.get(accountId, markerId);
+      final publication = repository;
+      final record = publicVisit
+          ? publication is MarkerPublicationRepository
+                ? await publication.getPublic(accountId, markerId)
+                : null
+          : await repository.get(accountId, markerId);
       if (!_valid(generation)) return;
       if (record == null) {
+        if (publicVisit) throw MarkerUnavailable();
         throw StateError('Este marcador ya no está disponible.');
       }
-      final bytes = await repository.loadImage(accountId, record);
+      if (publicVisit) marker = record;
+      final bytes = publicVisit && publication is MarkerPublicationRepository
+          ? await publication.loadPublicImage(accountId, record)
+          : await repository.loadImage(accountId, record);
       if (!_valid(generation)) return;
       var available = false;
       if (!kIsWeb) {
         try {
           available = await _channel.invokeMethod<bool>('supported') ?? false;
         } on MissingPluginException {
+          available = false;
+        } on PlatformException {
           available = false;
         }
       }
@@ -81,7 +100,13 @@ class MarkerScanController extends ChangeNotifier {
       image = bytes;
       supported = available;
     } catch (e) {
-      if (_valid(generation)) error = _message(e);
+      if (_valid(generation)) {
+        if (publicVisit && e is MarkerUnavailable) {
+          marker = null;
+          image = null;
+        }
+        error = _message(e);
+      }
     } finally {
       if (_valid(generation)) {
         loading = false;
@@ -91,15 +116,16 @@ class MarkerScanController extends ChangeNotifier {
   }
 
   Future<void> start() async {
-    await load();
-    if (!_current ||
+    final loadingReference = load();
+    final generation = _generation;
+    await loadingReference;
+    if (!_valid(generation) ||
         !supported ||
         marker == null ||
         image == null ||
         error != null) {
       return;
     }
-    final generation = _generation;
     final record = marker!;
     loading = true;
     _changed();
@@ -183,6 +209,7 @@ class MarkerScanController extends ChangeNotifier {
     _changed();
     final since = _recognizedSince;
     if (!_reporting &&
+        !publicVisit &&
         !_proofAttempted &&
         record.ownerId == accountId &&
         marker?.isTested != true &&

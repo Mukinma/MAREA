@@ -228,6 +228,14 @@ void main() {
         expect(request.method, 'GET');
         expect(request.url.queryParameters['active'], 'eq.true');
         expect(request.url.queryParameters['review_status'], 'eq.approved');
+        expect(request.url.queryParametersAll['latitude'], [
+          'gte.19.0',
+          'lte.20.0',
+        ]);
+        expect(request.url.queryParametersAll['longitude'], [
+          'gte.-99.7',
+          'lte.-98.7',
+        ]);
         return response([]);
       });
       addTearDown(api.dispose);
@@ -245,6 +253,45 @@ void main() {
         isEmpty,
       );
       expect(requests, 1);
+    },
+  );
+
+  test(
+    'copying a local marker twice preserves its private remote draft',
+    () async {
+      Map<String, dynamic>? saved;
+      var uploads = 0;
+      final api = client((request) async {
+        if (request.method == 'GET') return response(saved ?? []);
+        if (request.url.path.contains('/storage/v1/object/')) {
+          uploads++;
+          return response({'Key': request.url.path});
+        }
+        final submitted = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(submitted['id'], markerId);
+        expect(submitted['owner_id'], owner);
+        expect(submitted.containsKey('tested_version'), isFalse);
+        expect(submitted.containsKey('active'), isFalse);
+        saved = {...cloudRow(), ...submitted};
+        return response(saved);
+      });
+      addTearDown(api.dispose);
+      final repository = SupabaseMarkerRepository(
+        api,
+        currentOwner: () => owner,
+      );
+      final local = ArMarker({
+        ...cloudRow(),
+        'storage': 'local',
+        'tested_version': version,
+        'active': true,
+      });
+      final first = await repository.copyLocal(owner, local, markerJpeg());
+      final retry = await repository.copyLocal(owner, local, markerJpeg());
+      expect(first.id, retry.id);
+      expect(first.isPublic, isFalse);
+      expect(first.isTested, isFalse);
+      expect(uploads, 1);
     },
   );
 }

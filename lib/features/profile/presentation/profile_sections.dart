@@ -1,39 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:marea/core/theme/category_visuals.dart';
 import 'package:marea/features/community/models/community_models.dart';
-import 'package:marea/features/community/presentation/community_widgets.dart';
+import 'package:marea/core/theme/app_colors.dart';
 import 'package:marea/features/profile/models/profile.dart';
 import 'package:marea/features/profile/presentation/professional_details.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:marea/core/localization/app_localizations.dart';
 
 String localizedProfileUserTypeLabel(BuildContext context, UserType type) {
-  return AppLocalizations.tr(
-    switch (type) {
-      UserType.general => 'Usuario general',
-      UserType.creator => 'Artista / creador',
-      UserType.entrepreneur => 'Emprendedor',
-      UserType.business => 'Negocio',
-    },
-  );
+  return AppLocalizations.tr(switch (type) {
+    UserType.general => 'Usuario general',
+    UserType.creator => 'Artista / creador',
+    UserType.entrepreneur => 'Emprendedor',
+    UserType.business => 'Negocio',
+  });
 }
 
 String localizedProfileUserTypeDescription(
   BuildContext context,
   UserType type,
 ) {
-  return AppLocalizations.tr(
-    switch (type) {
-      UserType.general =>
-        'Descubre personas, guarda lo que te inspira y participa en misiones.',
-      UserType.creator =>
-        'Comparte tu portafolio y encuentra personas para crear contigo.',
-      UserType.entrepreneur =>
-        'Presenta tus productos y servicios y encuentra nuevas colaboraciones.',
-      UserType.business =>
-        'Presenta tus servicios, comparte tu espacio y organiza eventos.',
-    },
-  );
+  return AppLocalizations.tr(switch (type) {
+    UserType.general =>
+      'Descubre personas, guarda lo que te inspira y participa en misiones.',
+    UserType.creator =>
+      'Comparte tu portafolio y encuentra personas para crear contigo.',
+    UserType.entrepreneur =>
+      'Presenta tus productos y servicios y encuentra nuevas colaboraciones.',
+    UserType.business =>
+      'Presenta tus servicios, comparte tu espacio y organiza eventos.',
+  });
 }
 
 String localizedProfileInterestLabel(BuildContext context, String interest) {
@@ -57,32 +52,38 @@ class ProfileSectionHeading extends StatelessWidget {
     this.action,
     this.onAction,
     this.wave = false,
+    this.trailing,
     super.key,
   });
   final String title;
   final String? action;
   final VoidCallback? onAction;
   final bool wave;
+  final Widget? trailing;
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) => Row(
       children: [
         Expanded(
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF07345C),
+          child: Semantics(
+            header: true,
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF07345C),
+              ),
             ),
           ),
         ),
         if (wave)
           const SizedBox(
-            width: 42,
-            height: 16,
+            width: 30,
+            height: 12,
             child: CustomPaint(painter: _SectionWave()),
           ),
+        ?trailing,
         if (action != null && onAction != null)
           ConstrainedBox(
             constraints: BoxConstraints(maxWidth: constraints.maxWidth * .45),
@@ -90,9 +91,10 @@ class ProfileSectionHeading extends StatelessWidget {
               onPressed: onAction,
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
+                minimumSize: const Size(48, 48),
                 textStyle: const TextStyle(
                   fontFamily: 'NunitoSans',
-                  fontSize: 11,
+                  fontSize: 13,
                 ),
               ),
               child: Text(
@@ -106,189 +108,111 @@ class ProfileSectionHeading extends StatelessWidget {
   );
 }
 
-class ProfileStatisticsCard extends StatelessWidget {
-  const ProfileStatisticsCard({super.key});
-  // There is no backend profile aggregate. Absence is never a numeric zero.
-  static const _stats = [
-    (Icons.assignment_turned_in_outlined, Color(0xFFDDF7FA), Color(0xFF00A6BF)),
-    (Icons.star_border_rounded, Color(0xFFFFF3DA), Color(0xFFF5A400)),
-    (Icons.bolt_rounded, Color(0xFFECE3FF), Color(0xFF7952DE)),
-    (Icons.people_outline, Color(0xFFDDF7FA), Color(0xFF00A6BF)),
-  ];
+class ProfileAbout extends StatelessWidget {
+  const ProfileAbout({required this.profile, this.onEdit, super.key});
+  final CommunityProfile profile;
+  final VoidCallback? onEdit;
   @override
   Widget build(BuildContext context) {
-    final labels = [
-      AppLocalizations.tr('Misiones completadas'),
-      AppLocalizations.tr('Valoración'),
-      AppLocalizations.tr('Porcentaje de respuesta'),
-      AppLocalizations.tr('Colaboraciones locales'),
-    ];
-    final noData = AppLocalizations.tr('Sin datos');
-    return Material(
-      key: const Key('profile-statistics'),
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final columns =
-                constraints.maxWidth < 320 ||
-                    MediaQuery.textScalerOf(context).scale(12) > 16
-                ? 2
-                : 4;
-            return Wrap(
-              runSpacing: 16,
+    final bio = profile.bio?.trim() ?? '';
+    final details = ProfessionalDetails(profile: profile);
+    final hasInterests = profile.interests.isNotEmpty;
+    if (bio.isEmpty && !details.hasContent && !hasInterests && onEdit == null) {
+      return const SizedBox.shrink();
+    }
+    final professional =
+        profile.userType == UserType.business ||
+        profile.userType == UserType.entrepreneur;
+    final needsIntroduction = bio.isEmpty && onEdit != null;
+    return Padding(
+      padding: const EdgeInsets.only(top: 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ProfileSectionHeading(
+            title: AppLocalizations.tr(
+              professional ? 'Sobre nosotros' : 'Sobre mí',
+            ),
+            wave: true,
+          ),
+          const SizedBox(height: 8),
+          Material(
+            color: AppColors.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: AppColors.border),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                for (var i = 0; i < _stats.length; i++)
-                  SizedBox(
-                    width: constraints.maxWidth / columns,
-                    child: Semantics(
-                      label: '${labels[i]}: $noData',
-                      excludeSemantics: true,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          border: i % columns == 0
-                              ? null
-                              : const Border(
-                                  left: BorderSide(color: Color(0xFFEDF0F7)),
-                                ),
-                        ),
-                        child: Column(
-                          children: [
-                            CircleAvatar(
-                              radius: 15,
-                              backgroundColor: _stats[i].$2,
-                              child: Icon(
-                                _stats[i].$1,
-                                color: _stats[i].$3,
-                                size: 18,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              '—',
-                              style: TextStyle(
-                                fontSize: 16,
-                                height: 1.1,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF07345C),
-                              ),
-                            ),
-                            Text(
-                              labels[i],
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Color(0xFF607C98),
-                                height: 1.15,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              noData,
-                              style: const TextStyle(
-                                fontSize: 9,
-                                color: Color(0xFF607C98),
-                              ),
-                            ),
-                          ],
-                        ),
+                if (bio.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      bio,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        height: 1.42,
+                        color: AppColors.textPrimary,
                       ),
                     ),
+                  )
+                else if (needsIntroduction)
+                  ListTile(
+                    minTileHeight: 48,
+                    leading: const Icon(
+                      Icons.edit_note_outlined,
+                      color: AppColors.brandNavy,
+                    ),
+                    title: Text(AppLocalizations.tr('Añadir descripción')),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: onEdit,
                   ),
+                if (details.hasContent) ...[
+                  if (bio.isNotEmpty || needsIntroduction)
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+                  details,
+                ],
+                if (hasInterests) ...[
+                  if (bio.isNotEmpty || needsIntroduction || details.hasContent)
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: _ProfileInterests(interests: profile.interests),
+                  ),
+                ],
               ],
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class ProfileAbout extends StatelessWidget {
-  const ProfileAbout({required this.profile, required this.owner, super.key});
-  final CommunityProfile profile;
-  final bool owner;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ProfileSectionHeading(
-          title:
-              profile.userType == UserType.business ||
-                  profile.userType == UserType.entrepreneur
-              ? AppLocalizations.tr('Sobre nosotros')
-              : AppLocalizations.tr('Sobre mí'),
-          wave: true,
-        ),
-        const SizedBox(height: 7),
-        Text(
-          profile.bio?.trim().isNotEmpty == true
-              ? profile.bio!
-              : AppLocalizations.tr(
-                  'Este perfil aún no ha añadido una descripción.',
-                ),
-          style: const TextStyle(
-            fontSize: 12,
-            height: 1.4,
-            color: Color(0xFF607C98),
-          ),
-        ),
-        ProfessionalDetails(
-          profile: profile,
-          showContact: !owner,
-          showLocation: false,
-        ),
-        if (profile.website?.trim().isNotEmpty == true &&
-            ProfilePreferences.websiteError(profile.website) == null)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: () => runCommunityAction(context, () async {
-                if (!await launchUrl(
-                  Uri.parse(profile.website!),
-                  mode: LaunchMode.externalApplication,
-                )) {
-                  throw StateError('link unavailable');
-                }
-              }),
-              icon: const Icon(Icons.link_rounded, size: 18),
-              label: Text(AppLocalizations.tr('Sitio web')),
-            ),
-          ),
-      ],
-    );
-  }
-}
+class _ProfileInterests extends StatelessWidget {
+  const _ProfileInterests({required this.interests});
+  final List<String> interests;
 
-class ProfileInterests extends StatelessWidget {
-  const ProfileInterests({required this.profile, this.onEdit, super.key});
-  final CommunityProfile profile;
-  final VoidCallback? onEdit;
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ProfileSectionHeading(
-          title: AppLocalizations.tr('Me mueve'),
-          action: onEdit == null ? null : 'Editar intereses',
-          onAction: onEdit,
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: 8,
+    children: [
+      Text(
+        AppLocalizations.tr('Me mueve'),
+        style: const TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
         ),
-        const SizedBox(height: 4),
-        if (profile.interests.isEmpty)
-          Text(
-            AppLocalizations.tr('Aún no hay intereses seleccionados.'),
-            style: const TextStyle(fontSize: 12, color: Color(0xFF607C98)),
-          ),
+      ),
       Wrap(
         spacing: 6,
         runSpacing: 6,
         children: [
-          for (final interest in profile.interests)
+          for (final interest in interests)
             Builder(
               builder: (context) {
                 final style =
@@ -297,46 +221,35 @@ class ProfileInterests extends StatelessWidget {
                 return Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
-                    vertical: 7,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
                     color: style.color,
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
+                    spacing: 6,
                     children: [
                       Icon(style.icon, size: 15, color: style.accent),
-                      const SizedBox(width: 5),
                       Flexible(
                         child: Text(
                           localizedProfileInterestLabel(context, interest),
                           style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF07345C),
+                            fontSize: 12,
+                            color: AppColors.brandNavy,
                           ),
                         ),
                       ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-          ],
-        ),
-            if (onEdit != null)
-              IconButton.outlined(
-                tooltip: AppLocalizations.tr('Añadir intereses'),
-                onPressed: onEdit,
-                style: IconButton.styleFrom(
-                  minimumSize: const Size(36, 36),
-                  padding: const EdgeInsets.all(6),
-                ),
-                icon: const Icon(Icons.add, size: 18),
-              ),
-      ],
-    );
-  }
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
+    ],
+  );
 }
 
 class _SectionWave extends CustomPainter {

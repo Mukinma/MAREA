@@ -64,7 +64,7 @@ Deno.serve(async (request) => {
       if (batch === 99) return jsonResponse(503, {error: 'storage_cleanup_incomplete_retry_deletion'});
     }
   }
-  for (const bucketName of ["tour-inputs", "tour-assets"]) {
+  for (const bucketName of ["tour-inputs", "tour-assets", "ar-marker-images"]) {
     if (!await clearTourStorage(adminClient.storage.from(bucketName), data.user.id)) {
       return jsonResponse(503, {error: "storage_cleanup_incomplete_retry_deletion"});
     }
